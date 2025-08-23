@@ -6,8 +6,8 @@ from typing import Sequence
 import numpy as np
 import pandas as pd
 
-from src.llm_eval.selection.interfaces import QuestionSelector, ModelProfile
-from src.llm_eval.selection.cold_start import simple_cold_start_theta
+from llm_eval.selection.interfaces import QuestionSelector, ModelProfile
+from llm_eval.selection.cold_start import simple_cold_start_theta
 from .training import fit_2pl_parameters, TrainingConfig
 from .anchors import find_anchor_items, AnchorConfig
 from .estimation import estimate_theta_from_anchors, expected_correctness, EstimationConfig
