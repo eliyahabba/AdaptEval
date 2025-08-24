@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import pandas as pd
 
-from src.llm_eval.utils import write_parquet_safely, read_parquet_safely
+from llm_eval.utils import write_parquet_safely, read_parquet_safely
 
 
 @dataclass

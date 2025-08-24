@@ -12,14 +12,11 @@ class ObservationRow(BaseModel):
     model_name: str
     model_family: Optional[str] = None
     model_size_params: Optional[str] = None
-    prompt_variant: Optional[str] = None
     metric_name: str
     raw_score: float
     normalized_score: float
     is_higher_better: bool = True
-    timestamp: str
     run_id: Optional[str] = None
-    snapshot_id: Optional[str] = None
 
     @field_validator("normalized_score")
     @classmethod
