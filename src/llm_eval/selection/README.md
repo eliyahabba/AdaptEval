@@ -6,10 +6,9 @@ Interfaces:
 - `QuestionSelector.select(model_profile, k, matrix_df) -> list[str]`
 
 Implementations:
-- `IRT2PLSelector`: heuristic 2PL, uses cold-start prior for θ and Fisher information.
+- `TinyBenchmarksSelector`: unified IRT implementation. Uses `py-irt` if available for full statistical modeling, with a fallback to a fast heuristic method. Builds a representative subset of questions.
 - `NaiveVarianceSelector`: chooses highest-variance questions across models.
- - `MITVSelector`: interview-style with difficulty levels and optional diversity.
- - `PyIRTSelector` (optional extras): trains 2PL via py-irt/pyro/torch.
+- `MITVSelector`: interview-style with difficulty levels and optional diversity.
 
 Run examples
 ------------
@@ -17,18 +16,18 @@ Run examples
 Python:
 ```python
 import pandas as pd
-from src.llm_eval.selection import IRT2PLSelector, NaiveVarianceSelector, ModelProfile
+from llm_eval.matrix import MatrixStorage
+from llm_eval.selection import TinyBenchmarksSelector, ModelProfile
 
-df = pd.read_csv("examples/tiny_dataset.csv")
-if "normalized_score" not in df.columns:
-    df = df.assign(normalized_score=(df["raw_score"].astype(float) * 100.0))
-sel = IRT2PLSelector()
+df = MatrixStorage("data/processed/matrix.parquet").load()
+sel = TinyBenchmarksSelector()
 qs = sel.select(ModelProfile(model_name="new"), 5, df)
 print(qs)
 ```
 
 CLI:
 ```bash
+# The 'irt' method now points to the TinyBenchmarks implementation
 llm-eval select --method irt --k 5 --model-name new --matrix data/processed/matrix.parquet --out out/selection.json
 ```
 

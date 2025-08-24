@@ -50,11 +50,21 @@ def find_anchor_items(item_params: pd.DataFrame, config: AnchorConfig | None = N
     except Exception:
         df["b_bin"] = pd.cut(df["b"], bins=cfg.levels)
     picked: list[str] = []
-    for _, group in df.groupby("b_bin"):
+    for _, group in df.groupby("b_bin",observed=True):
         if len(group) == 0:
             continue
         top = group.sort_values("anchor_score", ascending=False).head(cfg.per_level)
         picked.extend([str(i) for i in top.index.tolist()])
     return picked
+
+
+def find_anchor_items_by_dataset(item_params: pd.DataFrame, dataset_column: str | None, per_level: int, levels: int) -> dict[str, list[str]]:
+    """Optional per-dataset anchor selection, when item_params includes a dataset column."""
+    if dataset_column is None or dataset_column not in item_params.columns:
+        return {"__all__": find_anchor_items(item_params, AnchorConfig(per_level=per_level, levels=levels))}
+    out: dict[str, list[str]] = {}
+    for ds, grp in item_params.groupby(dataset_column):
+        out[str(ds)] = find_anchor_items(grp, AnchorConfig(per_level=per_level, levels=levels))
+    return out
 
 

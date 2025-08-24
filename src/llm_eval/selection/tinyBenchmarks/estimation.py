@@ -10,6 +10,8 @@ class EstimationConfig:
     # Ability estimation from anchor responses
     max_iter: int = 50
     tol: float = 1e-4
+    # lambda blending (gp-IRT) per dataset
+    lambdas_by_dataset: dict[str, float] | None = None
 
 
 def estimate_theta_from_anchors(
@@ -52,5 +54,21 @@ def expected_correctness(item_params: pd.DataFrame, theta: float) -> pd.Series:
     z = item_params["a"].astype(float) * (theta - item_params["b"].astype(float))
     p = 1.0 / (1.0 + np.exp(-z))
     return p.astype(float)
+
+
+def blend_anchor_and_irt(
+    preds_anchor: pd.Series,
+    preds_irt: pd.Series,
+    lambdas_by_dataset: dict[str, float] | None,
+    item_to_dataset: pd.Series | None = None,
+) -> pd.Series:
+    """Blend predictions as in gp-IRT: lambda*data + (1-lambda)*irt.
+
+    If no per-dataset lambdas are provided, defaults to simple average.
+    """
+    if lambdas_by_dataset is None or item_to_dataset is None:
+        return 0.5 * preds_anchor + 0.5 * preds_irt
+    lam = item_to_dataset.map(lambda d: float(lambdas_by_dataset.get(str(d), 0.5))).astype(float)
+    return lam * preds_anchor + (1.0 - lam) * preds_irt
 
 
