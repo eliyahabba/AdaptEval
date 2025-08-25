@@ -1,9 +1,14 @@
 ### Normalization
 
+**This is the centralized normalization system for the entire pipeline.**
+
 The normalization system supports two approaches:
 
 1. **Standard Normalization**: Per-score normalization to [0,100] range
-2. **IRT Normalization**: Per-scenario optimal thresholds for binary classification
+2. **IRT Normalization**: Per-scenario optimal thresholds for binary classification [0,1]
+
+**Note**: All downstream modules (including `tinyBenchmarks.training`) expect to receive 
+pre-normalized data from this system. No additional normalization should be performed elsewhere.
 
 ## Standard Normalization
 
