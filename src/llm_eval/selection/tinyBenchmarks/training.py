@@ -171,10 +171,11 @@ def binarize_responses(matrix_df: pd.DataFrame) -> pd.DataFrame:
         model_to_idx = {m: i for i, m in enumerate(models)}
         question_to_idx = {q: i for i, q in enumerate(questions)}
         
-        for _, row in dataset_df.iterrows():
-            m_idx = model_to_idx[row["model_name"]]
-            q_idx = question_to_idx[row["question_id"]]
-            Y_dataset[m_idx, q_idx] = row["normalized_score"]
+        # Vectorized filling - much faster than iterrows
+        model_indices = dataset_df["model_name"].map(model_to_idx).values
+        question_indices = dataset_df["question_id"].map(question_to_idx).values
+        scores = dataset_df["normalized_score"].values
+        Y_dataset[model_indices, question_indices] = scores
         
         # Find optimal threshold for this dataset
         best_error = float('inf')
@@ -198,11 +199,11 @@ def binarize_responses(matrix_df: pd.DataFrame) -> pd.DataFrame:
         
         print(f"     📊 {dataset}: threshold={best_threshold:.3f}, error={best_error:.4f}")
         
-        # Apply the optimal threshold to create binary responses
-        for _, row in dataset_df.iterrows():
-            new_row = row.copy()
-            new_row["normalized_score"] = float(int(row["normalized_score"] > best_threshold))
-            result_data.append(new_row)
+        # Apply the optimal threshold to create binary responses - vectorized
+        binary_scores = (dataset_df["normalized_score"] > best_threshold).astype(float)
+        dataset_binary = dataset_df.copy()
+        dataset_binary["normalized_score"] = binary_scores
+        result_data.extend(dataset_binary.to_dict('records'))
     
     return pd.DataFrame(result_data)
 
@@ -286,7 +287,7 @@ def validate_irt_dimensions(
                             continue
                         
                         # Estimate theta using seen questions
-                        theta = _estimate_theta_mle(seen_responses, A, B, all_questions)
+                        theta = estimate_ability_parameters(seen_responses, A, B)
                         
                         # Predict on unseen questions and compare to actual
                         unseen_actual = _get_model_responses(model_orig_df, unseen_questions)
@@ -330,7 +331,7 @@ def validate_irt_dimensions(
                     if len(seen_responses) == 0:
                         continue
                     
-                    theta = _estimate_theta_mle(seen_responses, A, B, all_questions)
+                    theta = estimate_ability_parameters(seen_responses, A, B)
                     
                     unseen_actual = _get_model_responses(model_orig_df, unseen_questions)
                     if len(unseen_actual) == 0:
@@ -367,21 +368,20 @@ def _df_to_irt_matrix(df: pd.DataFrame) -> np.ndarray:
     model_to_idx = {m: i for i, m in enumerate(models)}
     question_to_idx = {q: i for i, q in enumerate(questions)}
     
-    for _, row in df.iterrows():
-        m_idx = model_to_idx[row["model_name"]]
-        q_idx = question_to_idx[row["question_id"]]
-        matrix[m_idx, q_idx] = row["normalized_score"]
+    # Vectorized filling - much faster than iterrows
+    model_indices = df["model_name"].map(model_to_idx).values
+    question_indices = df["question_id"].map(question_to_idx).values
+    scores = df["normalized_score"].values
+    matrix[model_indices, question_indices] = scores
     
     return matrix
 
 
 def _get_model_responses(model_df: pd.DataFrame, question_subset: list) -> dict:
     """Get responses for a specific model and question subset."""
-    responses = {}
-    for _, row in model_df.iterrows():
-        if row["question_id"] in question_subset:
-            responses[row["question_id"]] = row["normalized_score"]
-    return responses
+    # Vectorized filtering and conversion to dict - much faster
+    subset_df = model_df[model_df["question_id"].isin(question_subset)]
+    return dict(zip(subset_df["question_id"], subset_df["normalized_score"]))
 
 
 def _estimate_theta_mle(responses: dict, A: np.ndarray, B: np.ndarray, all_questions: list) -> float:
@@ -505,10 +505,11 @@ def _compute_dataset_variance(dataset_df: pd.DataFrame) -> float:
     model_to_idx = {m: i for i, m in enumerate(models)}
     question_to_idx = {q: i for i, q in enumerate(questions)}
     
-    for _, row in dataset_df.iterrows():
-        m_idx = model_to_idx[row["model_name"]]
-        q_idx = question_to_idx[row["question_id"]]
-        matrix[m_idx, q_idx] = row["normalized_score"]
+    # Vectorized filling - much faster than iterrows
+    model_indices = dataset_df["model_name"].map(model_to_idx).values
+    question_indices = dataset_df["question_id"].map(question_to_idx).values
+    scores = dataset_df["normalized_score"].values
+    matrix[model_indices, question_indices] = scores
     
     # Compute variance across models for each question, then average
     question_variances = []
