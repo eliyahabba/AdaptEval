@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Mapping, Any
 import pandas as pd
 
-from src.llm_eval.ingestion.base import IngestionSource
+from llm_eval.ingestion.base import IngestionSource
 
 
 def _require_datasets():  # pragma: no cover - optional
