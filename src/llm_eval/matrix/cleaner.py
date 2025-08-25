@@ -4,6 +4,12 @@ Matrix data cleaning utilities - MANDATORY cleaning for evaluation quality.
 This module provides functionality to clean evaluation matrices by removing
 models and questions with insufficient coverage. This cleaning is MANDATORY
 and runs automatically to ensure high-quality data.
+
+The cleaning process includes:
+1. Model filtering - keeps models in top 80% of coverage per dataset
+2. Question filtering - keeps questions answered by top 80% of models  
+3. Dataset filtering - removes datasets with insufficient size
+4. Matrix completion - ensures all remaining models answer the same questions (complete matrix)
 """
 
 from typing import Dict, List, Tuple, Optional
@@ -114,14 +120,19 @@ class MatrixCleaner:
             df, iter_removed_questions, question_details = self._clean_questions_silent(df)
             df, iter_removed_datasets, dataset_iter_details = self._clean_datasets_silent(df)
             
+            # NEW: Ensure complete matrix (remove models with insufficient question coverage)
+            df, iter_removed_matrix_models, matrix_details = self._ensure_complete_matrix_silent(df)
+            
             removed_models.update(iter_removed_models)
+            removed_models.update(iter_removed_matrix_models)  # Add matrix completion removals
             removed_questions.update(iter_removed_questions)
             removed_datasets.update(iter_removed_datasets)
             
             dataset_details[f"iteration_{iteration + 1}"] = {
                 "model_details": model_details,
                 "question_details": question_details,
-                "dataset_details": dataset_iter_details
+                "dataset_details": dataset_iter_details,
+                "matrix_completion_details": matrix_details
             }
             
             # Check for convergence
@@ -164,11 +175,16 @@ class MatrixCleaner:
             df, iter_removed_datasets, dataset_iter_details = self._clean_datasets_with_logging(df)
             removed_datasets.update(iter_removed_datasets)
             
+            # NEW: Ensure complete matrix with detailed logging
+            df, iter_removed_matrix_models, matrix_details = self._ensure_complete_matrix_with_logging(df)
+            removed_models.update(iter_removed_matrix_models)
+            
             # Store details for this iteration
             dataset_details[f"iteration_{iteration + 1}"] = {
                 "model_details": model_details,
                 "question_details": question_details,
-                "dataset_details": dataset_iter_details
+                "dataset_details": dataset_iter_details,
+                "matrix_completion_details": matrix_details
             }
             
             print(f"   Ending with: {df.shape[0]:,} rows, {df['model_name'].nunique()} models, {df['question_id'].nunique()} questions")
@@ -535,6 +551,168 @@ class MatrixCleaner:
             
         return df_filtered, removed_datasets, dataset_details
     
+    def _ensure_complete_matrix_with_logging(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str], Dict]:
+        """Ensure complete matrix using simple 80/20 rule - with detailed logging."""
+        if df.empty:
+            return df, [], {}
+            
+        print(f"   🎯 ENSURING COMPLETE MATRIX (80/20 rule per dataset + global cleanup):")
+        
+        dataset_details = {}
+        
+        # Step 1: Clean each dataset separately using 80/20 rule
+        cleaned_df = df.copy()
+        for dataset in sorted(df['dataset'].unique()):
+            dataset_df = cleaned_df[cleaned_df['dataset'] == dataset]
+            if len(dataset_df) == 0:
+                continue
+                
+            print(f"     📊 {dataset}:")
+            
+            # Count questions per model in this dataset
+            model_question_counts = dataset_df.groupby('model_name')['question_id'].nunique().sort_values(ascending=False)
+            total_models = len(model_question_counts)
+            
+            # Find 80th percentile threshold (top 80% of models)
+            threshold_idx = int(total_models * 0.2)  # Bottom 20%
+            if threshold_idx < len(model_question_counts):
+                min_questions = model_question_counts.iloc[threshold_idx]
+            else:
+                min_questions = model_question_counts.min()
+            
+            # Keep models that answer at least this many questions
+            good_models = model_question_counts[model_question_counts >= min_questions].index.tolist()
+            
+            print(f"        Total models: {total_models}")
+            print(f"        Question threshold (80th percentile): {min_questions}")
+            print(f"        Kept models: {len(good_models)}")
+            print(f"        Removed models: {total_models - len(good_models)}")
+            
+            # Remove bad models from this dataset
+            cleaned_df = cleaned_df[
+                (cleaned_df['dataset'] != dataset) | 
+                (cleaned_df['model_name'].isin(good_models))
+            ]
+            
+            dataset_details[dataset] = {
+                "total_models": total_models,
+                "kept_models": len(good_models),
+                "threshold": min_questions,
+                "kept_model_list": sorted(good_models)
+            }
+        
+        # Step 2: Global cleanup - remove models with too few total questions
+        print(f"     🌍 GLOBAL CLEANUP:")
+        
+        # Count total questions per model across all datasets
+        global_model_counts = cleaned_df.groupby('model_name')['question_id'].nunique().sort_values(ascending=False)
+        total_models = len(global_model_counts)
+        
+        # Find top 80% threshold globally
+        threshold_idx = int(total_models * 0.2)  # Bottom 20%
+        if threshold_idx < len(global_model_counts):
+            global_min_questions = global_model_counts.iloc[threshold_idx]
+        else:
+            global_min_questions = global_model_counts.min()
+        
+        # Keep only models above global threshold
+        final_good_models = global_model_counts[global_model_counts >= global_min_questions].index.tolist()
+        removed_models = list(set(global_model_counts.index) - set(final_good_models))
+        
+        print(f"        Total models: {total_models}")
+        print(f"        Global question threshold (80th percentile): {global_min_questions}")
+        print(f"        Final kept models: {len(final_good_models)}")
+        print(f"        Final removed models: {len(removed_models)}")
+        
+        # Apply global filter
+        final_df = cleaned_df[cleaned_df['model_name'].isin(final_good_models)]
+        
+        dataset_details['_global'] = {
+            "total_models": total_models,
+            "kept_models": len(final_good_models),
+            "removed_models": len(removed_models),
+            "threshold": global_min_questions,
+            "removed_model_list": sorted(removed_models)
+        }
+        
+        if removed_models:
+            print(f"   🗑️  TOTAL REMOVED MODELS: {len(removed_models)}")
+            if len(removed_models) <= 10:
+                print(f"      Removed models: {removed_models}")
+        else:
+            print(f"   ✅ NO MODELS REMOVED")
+            
+        return final_df, removed_models, dataset_details
+    
+    def _ensure_complete_matrix_silent(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str], Dict]:
+        """Ensure complete matrix using simple 80/20 rule - silent version."""
+        if df.empty:
+            return df, [], {}
+            
+        dataset_details = {}
+        
+        # Step 1: Clean each dataset separately using 80/20 rule
+        cleaned_df = df.copy()
+        for dataset in sorted(df['dataset'].unique()):
+            dataset_df = cleaned_df[cleaned_df['dataset'] == dataset]
+            if len(dataset_df) == 0:
+                continue
+                
+            # Count questions per model in this dataset
+            model_question_counts = dataset_df.groupby('model_name')['question_id'].nunique().sort_values(ascending=False)
+            total_models = len(model_question_counts)
+            
+            # Find 80th percentile threshold (top 80% of models)
+            threshold_idx = int(total_models * 0.2)  # Bottom 20%
+            if threshold_idx < len(model_question_counts):
+                min_questions = model_question_counts.iloc[threshold_idx]
+            else:
+                min_questions = model_question_counts.min()
+            
+            # Keep models that answer at least this many questions
+            good_models = model_question_counts[model_question_counts >= min_questions].index.tolist()
+            
+            # Remove bad models from this dataset
+            cleaned_df = cleaned_df[
+                (cleaned_df['dataset'] != dataset) | 
+                (cleaned_df['model_name'].isin(good_models))
+            ]
+            
+            dataset_details[dataset] = {
+                "total_models": total_models,
+                "kept_models": len(good_models),
+                "threshold": min_questions,
+                "kept_model_list": sorted(good_models)
+            }
+        
+        # Step 2: Global cleanup - remove models with too few total questions
+        global_model_counts = cleaned_df.groupby('model_name')['question_id'].nunique().sort_values(ascending=False)
+        total_models = len(global_model_counts)
+        
+        # Find top 80% threshold globally
+        threshold_idx = int(total_models * 0.2)  # Bottom 20%
+        if threshold_idx < len(global_model_counts):
+            global_min_questions = global_model_counts.iloc[threshold_idx]
+        else:
+            global_min_questions = global_model_counts.min()
+        
+        # Keep only models above global threshold
+        final_good_models = global_model_counts[global_model_counts >= global_min_questions].index.tolist()
+        removed_models = list(set(global_model_counts.index) - set(final_good_models))
+        
+        # Apply global filter
+        final_df = cleaned_df[cleaned_df['model_name'].isin(final_good_models)]
+        
+        dataset_details['_global'] = {
+            "total_models": total_models,
+            "kept_models": len(final_good_models),
+            "removed_models": len(removed_models),
+            "threshold": global_min_questions,
+            "removed_model_list": sorted(removed_models)
+        }
+            
+        return final_df, removed_models, dataset_details
+    
     def _calculate_coverage_stats_silent(self, df: pd.DataFrame) -> Dict:
         """Calculate coverage statistics silently."""
         if df.empty:
@@ -580,6 +758,7 @@ class MatrixCleaner:
         
         print(f"   ✓ Cleaned: {original_rows:,} → {final_rows:,} rows ({removal_percentage:.1f}% removed)")
         print(f"   ✓ Removed: {len(stats.removed_models)} models, {len(stats.removed_questions)} questions, {len(stats.removed_datasets)} datasets")
+        print(f"   ✓ Matrix completion: ensured all remaining models answer the same questions")
         
         remaining_datasets = list(stats.coverage_stats_after.keys())
         print(f"   ✓ Final: {len(remaining_datasets)} datasets: {remaining_datasets}")

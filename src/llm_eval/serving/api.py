@@ -5,9 +5,9 @@ from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from src.llm_eval.matrix import MatrixStorage
-from src.llm_eval.selection import IRT2PLSelector, NaiveVarianceSelector, ModelProfile
-from src.llm_eval.scoring import SnapshotManager, Leaderboard
+from llm_eval.matrix import MatrixStorage
+from llm_eval.selection import TinyBenchmarksSelector, NaiveVarianceSelector, ModelProfile
+from llm_eval.scoring import SnapshotManager, Leaderboard
 
 
 app = FastAPI(title="AdaptEval API")
@@ -28,7 +28,7 @@ class SelectResponse(BaseModel):
 def select_questions(req: SelectRequest) -> SelectResponse:
     df = MatrixStorage(req.matrix_path).load()
     profile = ModelProfile(model_name=req.model_name)
-    selector = IRT2PLSelector() if req.method == "irt" else NaiveVarianceSelector()
+    selector = TinyBenchmarksSelector() if req.method == "irt" else NaiveVarianceSelector()
     questions = selector.select(profile, req.k, df)
     return SelectResponse(questions=questions)
 

@@ -2,13 +2,13 @@
 
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 class MetricConfig(BaseModel):
     higher_is_better: bool
-    min: float | None = None
-    max: float | None = None
+    min: Optional[float] = None
+    max: Optional[float] = None
     method: str = "minmax"  # minmax|zscore|quantile
 
 
