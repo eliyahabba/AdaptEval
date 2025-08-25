@@ -6,18 +6,16 @@ This script demonstrates the complete pipeline from data ingestion to selection 
 import json
 from pathlib import Path
 from typing import Optional, List
-
 import numpy as np
+
 import pandas as pd
 
 from llm_eval.config import load_yaml_config
-
 from llm_eval.matrix import MatrixBuilder, MatrixStorage
 from llm_eval.normalization import MetricRegistry
-
 from llm_eval.selection.tinyBenchmarks.estimation import (
-    EstimationConfig, 
-    estimate_theta_from_anchors, 
+    EstimationConfig,
+    estimate_theta_from_anchors,
     expected_correctness
 )
 from llm_eval.training import (
@@ -52,11 +50,11 @@ def _save_json(data, file_path: Path, description: str = "file"):
 
 
 def run_estimation_validation(
-    test_matrix: pd.DataFrame,
-    item_params: pd.DataFrame, 
-    anchor_questions: list[str],
-    lambdas_by_dataset: dict[str, float],
-    anchor_weights_by_dataset: dict[str, list[float]] = None
+        test_matrix: pd.DataFrame,
+        item_params: pd.DataFrame,
+        anchor_questions: list[str],
+        lambdas_by_dataset: dict[str, float],
+        anchor_weights_by_dataset: dict[str, list[float]] = None
 ) -> List[dict]:
     """
     Run validation using the estimation-based approach from estimating_performance.ipynb.
@@ -66,68 +64,67 @@ def run_estimation_validation(
     2. Predict performance using anchor-only, p-IRT, and gp-IRT approaches
     3. Compare predictions to actual performance
     """
-    import numpy as np
-    
+
     results = []
-    
+
     # Get unique models and datasets
     models = test_matrix["model_name"].unique()
     datasets = test_matrix["dataset"].unique()
-    
+
     print(f"   Validating {len(models)} models × {len(datasets)} datasets")
-    
+
     # Filter anchor questions to those present in both item_params and test_matrix
     available_anchors = list(set(anchor_questions) & set(item_params.index) & set(test_matrix["question_id"]))
     print(f"   ✓ Using {len(available_anchors)} available anchor questions")
-    
+
     if len(available_anchors) == 0:
         print("   ⚠️  No anchor questions available in test data")
         return results
-    
+
     for dataset_name in datasets:
         print(f"   Processing dataset: {dataset_name}")
-        
+
         # Filter test matrix for this dataset
         dataset_matrix = test_matrix[test_matrix["dataset"] == dataset_name].copy()
-        
+
         if len(dataset_matrix) == 0:
             continue
-            
+
         # Get questions available in this dataset
         dataset_questions = sorted(dataset_matrix["question_id"].unique())
         dataset_anchors = [q for q in available_anchors if q in dataset_questions]
-        
+
         if len(dataset_anchors) == 0:
             print(f"     ⚠️  No anchors available for {dataset_name}")
             continue
-            
+
         print(f"     - {len(dataset_questions)} questions, {len(dataset_anchors)} anchors")
-        
+
         # Get lambda value for this dataset
         dataset_lambda = lambdas_by_dataset.get(dataset_name, 0.5)
-        
+
         for model_name in models:
             try:
                 # Get model responses for this dataset
                 model_matrix = dataset_matrix[dataset_matrix["model_name"] == model_name].copy()
-                
+
                 if len(model_matrix) == 0:
                     continue
-                
+
                 # Prepare model responses as Series indexed by question_id
                 model_responses = model_matrix.set_index("question_id")["normalized_score"]
-                
+
                 # 1. Estimate theta from anchor responses
                 anchor_responses = model_responses.loc[dataset_anchors]
                 config = EstimationConfig(lambdas_by_dataset=lambdas_by_dataset)
-                
+
                 estimated_theta = estimate_theta_from_anchors(
                     item_params, anchor_responses, config=config
                 )
-                
+
                 # 2. Compute true performance (actual dataset average)
                 true_performance = model_responses.mean()
-                
+
                 # 3. Anchor-only prediction using weights (from anchor_points.ipynb)
                 # Y_hat = (Y_anchor * anchor_weights[scenario]).sum(axis=1)
                 dataset_weights = anchor_weights_by_dataset.get(dataset_name, [])
@@ -138,38 +135,40 @@ def run_estimation_validation(
                     if len(weights_array) == len(anchor_responses):
                         anchor_prediction = (anchor_responses * weights_array).sum()
                     else:
-                        print(f"     ⚠️  Weight mismatch for {dataset_name}: {len(weights_array)} weights vs {len(anchor_responses)} anchors")
+                        print(
+                            f"     ⚠️  Weight mismatch for {dataset_name}: {len(weights_array)} weights vs {len(anchor_responses)} anchors")
                         anchor_prediction = anchor_responses.mean()
                 else:
                     # Fallback to simple average if no weights or size mismatch
                     if len(dataset_weights) > 0:
-                        print(f"     ⚠️  Weight count mismatch for {dataset_name}: {len(dataset_weights)} weights vs {len(dataset_anchors)} anchors")
+                        print(
+                            f"     ⚠️  Weight count mismatch for {dataset_name}: {len(dataset_weights)} weights vs {len(dataset_anchors)} anchors")
                     anchor_prediction = anchor_responses.mean()
-                
+
                 # 4. IRT-only prediction (expected performance based on theta)
                 dataset_item_params = item_params.loc[
                     item_params.index.intersection(dataset_questions)
                 ]
                 irt_predictions = expected_correctness(dataset_item_params, estimated_theta)
                 irt_prediction = irt_predictions.mean()
-                
+
                 # 5. Blended prediction (gp-IRT approach)
                 blended_prediction = dataset_lambda * anchor_prediction + (1 - dataset_lambda) * irt_prediction
-                
+
                 # 6. p-IRT prediction (proportion-based blending like in notebook)
                 pirt_lambda = len(dataset_anchors) / len(dataset_questions)
                 pirt_prediction = pirt_lambda * anchor_prediction + (1 - pirt_lambda) * irt_prediction
-                
+
                 # Compute prediction errors
                 anchor_error = abs(anchor_prediction - true_performance)
-                irt_error = abs(irt_prediction - true_performance) 
+                irt_error = abs(irt_prediction - true_performance)
                 blended_error = abs(blended_prediction - true_performance)
                 pirt_error = abs(pirt_prediction - true_performance)
-                
+
                 # Store results
                 result = {
                     "model_name": model_name,
-                    "dataset_name": dataset_name, 
+                    "dataset_name": dataset_name,
                     "num_questions": len(dataset_questions),
                     "num_anchors": len(dataset_anchors),
                     "estimated_theta": float(estimated_theta),
@@ -179,19 +178,19 @@ def run_estimation_validation(
                     "blended_prediction": float(blended_prediction),
                     "pirt_prediction": float(pirt_prediction),
                     "anchor_error": float(anchor_error),
-                    "irt_error": float(irt_error), 
+                    "irt_error": float(irt_error),
                     "blended_error": float(blended_error),
                     "pirt_error": float(pirt_error),
                     "dataset_lambda": float(dataset_lambda),
                     "pirt_lambda": float(pirt_lambda)
                 }
-                
+
                 results.append(result)
-                
+
             except Exception as e:
                 print(f"     ⚠️  Error processing {model_name}: {e}")
                 continue
-    
+
     return results
 
 
@@ -202,19 +201,19 @@ def run_full_evaluation_pipeline(
         use_irt_normalization: bool = True,
         irt_method: str = 'direct',
 
-
         # Train/test split parameters
         split_strategy: str = "temporal",
         test_ratio: float = 0.2,
         split_random_seed: Optional[int] = 42,
-            # Matrix loading parameters
-    force_rebuild: bool = False,
+        # Matrix loading parameters
+        force_rebuild: bool = False,
         # Optional pre-trained selection artifacts
         item_params_path: Optional[str] = None,
         anchors_path: Optional[str] = None,
         # Optional on-the-fly training of selection artifacts
         train_selection_artifacts: bool = True,
-        anchor_selection_method: str = "irt_clustering",  # "irt_clustering", "correctness_clustering", or "difficulty_binning"
+        anchor_selection_method: str = "irt_clustering",
+        # "irt_clustering", "correctness_clustering", or "difficulty_binning"
         save_item_params_path: Optional[str] = None,
         save_anchors_path: Optional[str] = None,
 ):
@@ -248,8 +247,6 @@ def run_full_evaluation_pipeline(
         helm_data_path = defaults["helm_data_path"]
     if output_dir is None:
         output_dir = defaults["output_dir"]
-
-
 
     # Check if matrices already exist
     train_matrix_path = Path(output_dir) / "matrix_train.parquet"
@@ -387,7 +384,7 @@ def run_full_evaluation_pipeline(
         print(f"   ✓ Test matrix loaded: {test_matrix.shape}")
         print(f"   Models: {train_matrix['model_name'].nunique()}")
         print(f"   Datasets: {train_matrix['dataset'].nunique()}")
-        
+
         # Skip to selection setup since matrices are already split and cleaned
         print("   ℹ️ Skipping data cleaning and splitting - using existing matrices")
 
@@ -404,10 +401,10 @@ def run_full_evaluation_pipeline(
         print(f"\n2. Training selection artifacts (IRT + anchors) using train/test split...")
         print(f"   Training on: {train_matrix.shape} samples")
         print(f"   Validating on: {test_matrix.shape} samples")
-        
+
         # Train using both train and test matrices (test used for validation within training)
         params = train_item_parameters(train_matrix, test_matrix)
-        
+
         # Select anchors using the specified method
         if anchor_selection_method == "correctness_clustering":
             print(f"   Using correctness-based clustering for anchor selection")
@@ -418,7 +415,6 @@ def run_full_evaluation_pipeline(
         else:
             print(f"   Using IRT-based clustering for anchor selection")
             anchors = select_anchors(params)
-        
 
         save_item_parameters(params, str(item_params_out))
         save_anchors(anchors, str(anchors_out))
@@ -426,7 +422,7 @@ def run_full_evaluation_pipeline(
         # Wire these paths for downstream selector initialization
         print(f"   ✓ Trained and saved item params → {item_params_out}")
         print(f"   ✓ Trained and saved anchors → {anchors_out}")
-        
+
         # Show training metadata if available
         if hasattr(params, 'attrs'):
             metadata = {}
@@ -435,8 +431,6 @@ def run_full_evaluation_pipeline(
                     metadata[attr_name] = params.attrs[attr_name]
             if metadata:
                 print(f"   ℹ️  Training metadata: {list(metadata.keys())}")
-
-
 
     # Run estimation-based validation
     print(f"\n3. Running estimation-based validation...")
@@ -452,7 +446,7 @@ def run_full_evaluation_pipeline(
         item_params = pd.read_parquet(item_params_path)
         with open(anchors_path, 'r') as f:
             anchors_data = json.load(f)
-        
+
         # Handle different anchor formats (from anchor_points.ipynb vs our format)
         anchor_weights_by_dataset = {}
         if 'anchors' in anchors_data:
@@ -465,7 +459,7 @@ def run_full_evaluation_pipeline(
             anchor_questions = []
             anchor_points = anchors_data['anchor_points']
             anchor_weights = anchors_data['anchor_weights']
-            
+
             for scenario, indices in anchor_points.items():
                 # Convert indices to question_ids if needed
                 scenario_anchors = [str(idx) for idx in indices]
@@ -476,61 +470,62 @@ def run_full_evaluation_pipeline(
             # Fallback: assume the whole data is a list
             anchor_questions = anchors_data if isinstance(anchors_data, list) else []
             anchor_weights_by_dataset = {}
-        
+
         print(f"   ✓ Loaded item parameters: {len(item_params)} questions")
         print(f"   ✓ Loaded anchors: {len(anchor_questions)} questions")
-        
+
         # Get lambdas from item parameters metadata (from training.py)
         if not (hasattr(item_params, 'attrs') and 'lambdas_by_dataset' in item_params.attrs):
-            raise ValueError("No lambda values found in item parameters metadata. This indicates an issue with the training process.")
-        
+            raise ValueError(
+                "No lambda values found in item parameters metadata. This indicates an issue with the training process.")
+
         lambdas_by_dataset = item_params.attrs['lambdas_by_dataset']
         print(f"   ✓ Using lambda values for {len(lambdas_by_dataset)} datasets: {lambdas_by_dataset}")
-        
+
         # Run estimation-based validation
         validation_results = run_estimation_validation(
             test_matrix, item_params, anchor_questions, lambdas_by_dataset, anchor_weights_by_dataset
         )
         all_results = validation_results
-        
+
         print(f"   ✓ Completed {len(all_results)} validations")
-        
+
     except Exception as e:
         print(f"   ⚠️  Error in validation: {e}")
         return None, pd.DataFrame()
 
     # Generate summary report  
     print(f"\n4. Generating summary report...")
-    
+
     if len(all_results) == 0:
         print("   ⚠️  No validation results to summarize")
         return None, pd.DataFrame()
-    
+
     # Convert results to DataFrame
     results_df = pd.DataFrame(all_results)
-    
+
     # Compute average errors by method
     avg_anchor_error = results_df['anchor_error'].mean()
     avg_irt_error = results_df['irt_error'].mean()
     avg_blended_error = results_df['blended_error'].mean()
     avg_pirt_error = results_df['pirt_error'].mean()
-    
+
     print(f"   ✓ Summary (Average Errors):")
     print(f"     - Anchor-only: {avg_anchor_error:.3f}")
     print(f"     - IRT-only: {avg_irt_error:.3f}")
     print(f"     - gp-IRT (blended): {avg_blended_error:.3f}")
     print(f"     - p-IRT: {avg_pirt_error:.3f}")
-    
+
     # Find best method
     error_comparison = {
         'anchor': avg_anchor_error,
-        'irt': avg_irt_error, 
+        'irt': avg_irt_error,
         'blended': avg_blended_error,
         'pirt': avg_pirt_error
     }
     best_method = min(error_comparison, key=error_comparison.get)
     best_error = error_comparison[best_method]
-    
+
     print(f"   ✓ Best method: {best_method} (Error: {best_error:.3f})")
 
     # Save detailed results
@@ -563,7 +558,7 @@ def run_full_evaluation_pipeline(
     _save_json(summary_data, summary_json_path, "Estimation validation summary")
 
     print(f"   ✓ Results saved: {len(results_df)} rows to CSV")
-    
+
     # Show per-dataset performance
     if len(results_df) > 0:
         print(f"\n   📊 Per-dataset performance (gp-IRT method):")
@@ -577,13 +572,13 @@ def run_full_evaluation_pipeline(
     class EstimationSummary:
         def __init__(self, results_df):
             self.results_df = results_df
-            
+
         def get_average_metrics(self):
             return summary_data["average_errors"]
-            
+
         def to_dataframe(self):
             return self.results_df
-    
+
     return EstimationSummary(results_df), results_df
 
 
@@ -604,14 +599,15 @@ if __name__ == "__main__":
     parser.add_argument("--test-ratio", type=float, default=0.2, help="Test set ratio")
     parser.add_argument("--random-seed", type=int, default=42, help="Random seed for splitting")
     # Matrix building arguments
-    parser.add_argument("--force-rebuild", action="store_true", help="Force rebuild matrices even if they already exist")
+    parser.add_argument("--force-rebuild", action="store_true",
+                        help="Force rebuild matrices even if they already exist")
     # Pre-trained selection artifacts
     parser.add_argument("--item-params", help="Path to pre-trained IRT item parameters parquet")
     parser.add_argument("--anchors", help="Path to anchors JSON file")
     # On-the-fly training of selection artifacts
     parser.add_argument("--train-artifacts", action="store_true",
                         help="Train IRT item params and anchors on training split")
-    parser.add_argument("--anchor-method", default="irt_clustering", 
+    parser.add_argument("--anchor-method", default="irt_clustering",
                         choices=["irt_clustering", "correctness_clustering", "difficulty_binning"],
                         help="Anchor selection method: irt_clustering, correctness_clustering, or difficulty_binning")
     parser.add_argument("--save-item-params",
