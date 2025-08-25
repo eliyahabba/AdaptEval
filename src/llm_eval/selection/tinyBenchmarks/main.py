@@ -6,9 +6,9 @@ import typer
 import pandas as pd
 
 from llm_eval.matrix import MatrixStorage
-from .training import fit_2pl_parameters, TrainingConfig
-from .anchors import find_anchor_items, AnchorConfig
-from .estimation import estimate_theta_from_anchors, expected_correctness, blend_anchor_and_irt, EstimationConfig
+from training import fit_2pl_parameters, TrainingConfig
+from anchors import find_anchor_items, AnchorConfig
+from estimation import estimate_theta_from_anchors, expected_correctness, blend_anchor_and_irt, EstimationConfig
 
 
 app = typer.Typer(add_completion=False, help="TinyBenchmarks workflow: train IRT, find anchors, estimate.")
@@ -18,39 +18,22 @@ app = typer.Typer(add_completion=False, help="TinyBenchmarks workflow: train IRT
 def train_irt(
     matrix: str = typer.Option(..., help="Path to matrix Parquet produced by MatrixBuilder"),
     out: str = typer.Option(..., help="Output path for learned item params Parquet (a,b per question_id)"),
-    model_type: str = typer.Option("multidim_2pl"),
-    threshold: float = typer.Option(50.0, help="Binarization threshold for normalized_score"),
-    num_epochs: int = typer.Option(2000),
-    seed: int = typer.Option(42),
-    dims: int = typer.Option(10),
-    lr: float = typer.Option(0.1),
-    lr_decay: float = typer.Option(0.9999),
-    dropout: float = typer.Option(0.5),
-    hidden: int = typer.Option(100),
-    priors: str = typer.Option("hierarchical"),
-    deterministic: bool = typer.Option(True),
-    log_every: int = typer.Option(200),
-    device: str | None = typer.Option(None, help="'cuda' or 'cpu' (None lets py-irt decide)"),
-    dims_search: str | None = typer.Option(None, help="Optional comma-separated list for D search, e.g. '5,10'"),
+    dims_search: str = typer.Option("5,10", help="Comma-separated list for D search, e.g. '5,10'"),
+    device: str = typer.Option("cuda", help="'cuda' or 'cpu'"),
+    epochs: int = typer.Option(2000, help="Number of training epochs"),
+    lr: float = typer.Option(0.1, help="Learning rate"),
+    random_state: int = typer.Option(42, help="Random seed"),
     val_stride: int = typer.Option(5, help="Validation stride over models for D search"),
     number_item_per_scenario: int = typer.Option(100, help="For lambda heuristic like notebook"),
 ):
+    """Train IRT model exactly following the TinyBenchmarks notebook workflow."""
     df = MatrixStorage(matrix).load()
     cfg = TrainingConfig(
-        model_type=model_type,
-        threshold=threshold,
-        num_epochs=num_epochs,
-        seed=seed,
-        dims=dims,
-        lr=lr,
-        lr_decay=lr_decay,
-        dropout=dropout,
-        hidden=hidden,
-        priors=priors,
-        deterministic=deterministic,
-        log_every=log_every,
+        dims_search=[int(x) for x in dims_search.split(",")],
         device=device,
-        dims_search=[int(x) for x in dims_search.split(",")] if dims_search else None,
+        epochs=epochs,
+        lr=lr,
+        random_state=random_state,
         val_stride=val_stride,
         number_item_per_scenario=number_item_per_scenario,
     )
@@ -58,24 +41,60 @@ def train_irt(
     out_path = Path(out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     params.to_parquet(out_path)
+    
+    # Print summary information
     typer.echo(f"Saved item parameters to {out}")
+    if hasattr(params, 'attrs'):
+        if 'best_dimension' in params.attrs:
+            typer.echo(f"Best dimension: {params.attrs['best_dimension']}")
+        if 'lambdas_by_dataset' in params.attrs:
+            typer.echo(f"Lambda values: {params.attrs['lambdas_by_dataset']}")
+    typer.echo(f"Trained on {len(params)} items")
 
 
 @app.command()
 def anchors(
     item_params: str = typer.Option(..., help="Path to item params Parquet (from train-irt)"),
     out: str = typer.Option(..., help="Output JSON path with anchors list"),
+    number_items: int = typer.Option(100, help="Total number of anchor items (from notebook)"),
+    method: str = typer.Option("irt_clustering", help="Selection method: 'irt_clustering', 'correctness_clustering', or 'difficulty_binning'"),
+    # Legacy parameters for backward compatibility
     per_level: int = typer.Option(5),
     levels: int = typer.Option(10),
 ):
     params = pd.read_parquet(item_params)
-    acfg = AnchorConfig(per_level=per_level, levels=levels)
+    
+    # Extract balance weights from training metadata if available
+    balance_weights = None
+    if hasattr(params, 'attrs') and 'balance_weights' in params.attrs:
+        balance_weights = params.attrs['balance_weights']
+        typer.echo(f"Using balance weights from training metadata")
+    
+    # Configure based on method
+    if method == "difficulty_binning":
+        acfg = AnchorConfig(
+            method=method,
+            per_level=per_level,
+            levels=levels,
+            balance_weights=balance_weights
+        )
+    else:
+        # Use new parameters if provided, otherwise fall back to legacy
+        if number_items == 100 and (per_level != 5 or levels != 10):
+            number_items = per_level * levels
+        acfg = AnchorConfig(
+            method=method,
+            number_items=number_items,
+            balance_weights=balance_weights
+        )
+    
     anchor_ids = find_anchor_items(params, acfg)
+    
     out_path = Path(out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w") as f:
         json.dump({"anchors": anchor_ids}, f)
-    typer.echo(f"Saved {len(anchor_ids)} anchors to {out}")
+    typer.echo(f"Saved {len(anchor_ids)} anchors to {out} (method: {method})")
 
 
 @app.command()

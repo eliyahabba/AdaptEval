@@ -4,7 +4,7 @@ import jsonlines
 import os
 import json
 import time
-from utils import *
+from .utils import *
      
 def create_irt_dataset(responses, dataset_name): 
     
@@ -32,6 +32,41 @@ def create_irt_dataset(responses, dataset_name):
     with jsonlines.open(dataset_name, mode='w') as writer:
         writer.write_all([dataset[i] for i in range(len(dataset))])
 
+def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
+    """
+    Trains an IRT model using the py-irt Python API.
+    
+    Parameters:
+    - dataset_name: The name of the dataset file.
+    - D: The number of dimensions for the IRT model.
+    - lr: Learning rate for the model training.
+    - epochs: The number of epochs to train the model.
+    - device: The computing device ('cpu' or 'gpu') to use for training.
+    
+    Returns:
+    - trainer: The trained IRT model trainer object.
+    """
+    from py_irt.training import IrtConfig, IrtModelTrainer
+    
+    # Create IRT config
+    config = IrtConfig(
+        model_type='multidim_2pl',
+        epochs=epochs,
+        priors='hierarchical', 
+        dims=D,
+        lr=lr,
+        lr_decay=0.9999,
+        seed=42,
+        deterministic=True,
+        log_every=max(epochs // 10, 1)  # Log every 10% of epochs
+    )
+    
+    # Create and train the model
+    trainer = IrtModelTrainer(config=config, data_path=dataset_name)
+    trainer.train(device=device)
+    
+    return trainer
+
 def train_irt_model(dataset_name, model_name, D, lr, epochs, device):
     
     """
@@ -50,10 +85,30 @@ def train_irt_model(dataset_name, model_name, D, lr, epochs, device):
     command=f"py-irt train 'multidim_2pl' {dataset_name} {model_name} --dims {D} --lr {lr} --epochs {epochs} --device {device} --priors 'hierarchical' --seed 42 --deterministic --log-every 200"
     os.system(command)
         
+def load_irt_parameters_from_trainer(trainer):
+    """
+    Loads the parameters directly from a trained IRT model trainer.
+    
+    Parameters:
+    - trainer: The trained IRT model trainer object.
+    
+    Returns: 
+    - A, B, and Theta: The discrimination, difficulty, and ability parameters, respectively, from the IRT model.
+    """
+    result_params = trainer.best_params if getattr(trainer, "best_params", None) is not None else trainer.last_params
+    a_list = result_params["disc"]
+    b_list = result_params["diff"]
+    theta_list = result_params["ability"]
+    
+    A = np.array(a_list).T[None, :, :]
+    B = np.array(b_list).T[None, :, :]
+    Theta = np.array(theta_list)[:,:,None]
+    return A, B, Theta
+
 def load_irt_parameters(model_name):
     
     """
-    Loads the parameters from a trained IRT model.
+    Loads the parameters from a trained IRT model file.
     
     Parameters:
     - model_name: The name of the file containing the model parameters.
@@ -62,8 +117,28 @@ def load_irt_parameters(model_name):
     - A, B, and Theta: The discrimination, difficulty, and ability parameters, respectively, from the IRT model.
     """
     
-    with open(model_name+'best_parameters.json') as f:
-        params = json.load(f)
+    params_file = os.path.join(model_name, 'best_parameters.json')
+    
+    # Try multiple possible file locations/names
+    possible_files = [
+        params_file,
+        os.path.join(model_name, 'parameters.json'),
+        model_name + '_best_parameters.json',
+        model_name + '_parameters.json'
+    ]
+    
+    params = None
+    for file_path in possible_files:
+        try:
+            with open(file_path) as f:
+                params = json.load(f)
+                break
+        except FileNotFoundError:
+            continue
+    
+    if params is None:
+        raise FileNotFoundError(f"No parameter file found. Searched: {possible_files}")
+    
     A = np.array(params['disc']).T[None, :, :]
     B = np.array(params['diff']).T[None, :, :]
     Theta = np.array(params['ability'])[:,:,None]
