@@ -13,7 +13,7 @@ from llm_eval.normalization.rules import minmax_normalize, zscore_cdf_normalize,
 class MetricRegistry:
     config: AppConfig
 
-    def normalize(self, metric_name: str, raw_score: float, metadata: Mapping[str, Any]) -> NormalizationResult:  # noqa: E501
+    def normalize(self, metric_name: str, raw_score: float, metadata: Mapping[str, Any]) -> NormalizationResult:
         metric_cfg = self.config.metrics.get(metric_name)
         if metric_cfg is None:
             raise KeyError(f"Unknown metric '{metric_name}'. Configure it in metrics.yaml")

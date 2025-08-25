@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 import pandas as pd
 
-from src.llm_eval.selection import QuestionSelector, ModelProfile
+from llm_eval.selection import QuestionSelector, ModelProfile
 
 
 @dataclass

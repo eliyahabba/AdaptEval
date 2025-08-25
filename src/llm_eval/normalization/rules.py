@@ -113,11 +113,11 @@ def irt_binary_normalize(x: float, threshold: float, higher_is_better: bool = Tr
         higher_is_better: Whether higher scores are better
         
     Returns:
-        Binary score (0 or 100)
+        Binary score (0.0 or 1.0)
     """
     is_correct = float(x) > threshold
     if not higher_is_better:
         is_correct = not is_correct
-    return 100.0 if is_correct else 0.0
+    return 1.0 if is_correct else 0.0
 
 
