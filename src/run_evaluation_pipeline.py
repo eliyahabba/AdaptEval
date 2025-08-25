@@ -3,49 +3,220 @@ Enhanced evaluation pipeline with selection validation.
 This script demonstrates the complete pipeline from data ingestion to selection validation.
 """
 
-import os
-import sys
+import json
 from pathlib import Path
 from typing import Optional, List
 
-from llm_eval.config import load_yaml_config
-from llm_eval.normalization import MetricRegistry
-from llm_eval.matrix import MatrixBuilder, MatrixStorage
-from llm_eval.utils import read_parquet_safely
-from llm_eval.selection import NaiveVarianceSelector, TinyBenchmarksSelector, MITVSelector, ModelProfile
-from llm_eval.evaluation import SelectionValidator, ValidationSummary
+import numpy as np
 import pandas as pd
-import json
+
+from llm_eval.config import load_yaml_config
+
+from llm_eval.matrix import MatrixBuilder, MatrixStorage
+from llm_eval.normalization import MetricRegistry
+
+from llm_eval.selection.tinyBenchmarks.estimation import (
+    EstimationConfig, 
+    estimate_theta_from_anchors, 
+    expected_correctness
+)
 from llm_eval.training import (
     train_item_parameters,
     select_anchors,
+    select_anchors_with_matrix,
     save_item_parameters,
     save_anchors,
 )
+from llm_eval.utils import read_parquet_safely
+
+
+def _get_default_paths():
+    """Get default paths for config and data files."""
+    base_dir = Path(__file__).parent
+    return {
+        "config_paths": [
+            str(base_dir / "llm_eval/config/defaults.yaml"),
+            str(base_dir / "llm_eval/config/metrics.yaml")
+        ],
+        "helm_data_path": str(base_dir / "download_helm/convertor_json/extracted/helm_aggregated.parquet"),
+        "output_dir": base_dir.parent / "data/processed"
+    }
+
+
+def _save_json(data, file_path: Path, description: str = "file"):
+    """Helper function to save JSON data."""
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(file_path, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"   ✓ {description} saved: {file_path}")
+
+
+def run_estimation_validation(
+    test_matrix: pd.DataFrame,
+    item_params: pd.DataFrame, 
+    anchor_questions: list[str],
+    lambdas_by_dataset: dict[str, float],
+    anchor_weights_by_dataset: dict[str, list[float]] = None
+) -> List[dict]:
+    """
+    Run validation using the estimation-based approach from estimating_performance.ipynb.
+    
+    This follows the exact methodology from the notebook:
+    1. Estimate model abilities (theta) from anchor responses
+    2. Predict performance using anchor-only, p-IRT, and gp-IRT approaches
+    3. Compare predictions to actual performance
+    """
+    import numpy as np
+    
+    results = []
+    
+    # Get unique models and datasets
+    models = test_matrix["model_name"].unique()
+    datasets = test_matrix["dataset"].unique()
+    
+    print(f"   Validating {len(models)} models × {len(datasets)} datasets")
+    
+    # Filter anchor questions to those present in both item_params and test_matrix
+    available_anchors = list(set(anchor_questions) & set(item_params.index) & set(test_matrix["question_id"]))
+    print(f"   ✓ Using {len(available_anchors)} available anchor questions")
+    
+    if len(available_anchors) == 0:
+        print("   ⚠️  No anchor questions available in test data")
+        return results
+    
+    for dataset_name in datasets:
+        print(f"   Processing dataset: {dataset_name}")
+        
+        # Filter test matrix for this dataset
+        dataset_matrix = test_matrix[test_matrix["dataset"] == dataset_name].copy()
+        
+        if len(dataset_matrix) == 0:
+            continue
+            
+        # Get questions available in this dataset
+        dataset_questions = sorted(dataset_matrix["question_id"].unique())
+        dataset_anchors = [q for q in available_anchors if q in dataset_questions]
+        
+        if len(dataset_anchors) == 0:
+            print(f"     ⚠️  No anchors available for {dataset_name}")
+            continue
+            
+        print(f"     - {len(dataset_questions)} questions, {len(dataset_anchors)} anchors")
+        
+        # Get lambda value for this dataset
+        dataset_lambda = lambdas_by_dataset.get(dataset_name, 0.5)
+        
+        for model_name in models:
+            try:
+                # Get model responses for this dataset
+                model_matrix = dataset_matrix[dataset_matrix["model_name"] == model_name].copy()
+                
+                if len(model_matrix) == 0:
+                    continue
+                
+                # Prepare model responses as Series indexed by question_id
+                model_responses = model_matrix.set_index("question_id")["normalized_score"]
+                
+                # 1. Estimate theta from anchor responses
+                anchor_responses = model_responses.loc[dataset_anchors]
+                config = EstimationConfig(lambdas_by_dataset=lambdas_by_dataset)
+                
+                estimated_theta = estimate_theta_from_anchors(
+                    item_params, anchor_responses, config=config
+                )
+                
+                # 2. Compute true performance (actual dataset average)
+                true_performance = model_responses.mean()
+                
+                # 3. Anchor-only prediction using weights (from anchor_points.ipynb)
+                # Y_hat = (Y_anchor * anchor_weights[scenario]).sum(axis=1)
+                dataset_weights = anchor_weights_by_dataset.get(dataset_name, [])
+                if len(dataset_weights) > 0 and len(dataset_weights) == len(dataset_anchors):
+                    # Use notebook-style weighted prediction
+                    weights_array = np.array(dataset_weights)
+                    # Ensure weights match anchors exactly
+                    if len(weights_array) == len(anchor_responses):
+                        anchor_prediction = (anchor_responses * weights_array).sum()
+                    else:
+                        print(f"     ⚠️  Weight mismatch for {dataset_name}: {len(weights_array)} weights vs {len(anchor_responses)} anchors")
+                        anchor_prediction = anchor_responses.mean()
+                else:
+                    # Fallback to simple average if no weights or size mismatch
+                    if len(dataset_weights) > 0:
+                        print(f"     ⚠️  Weight count mismatch for {dataset_name}: {len(dataset_weights)} weights vs {len(dataset_anchors)} anchors")
+                    anchor_prediction = anchor_responses.mean()
+                
+                # 4. IRT-only prediction (expected performance based on theta)
+                dataset_item_params = item_params.loc[
+                    item_params.index.intersection(dataset_questions)
+                ]
+                irt_predictions = expected_correctness(dataset_item_params, estimated_theta)
+                irt_prediction = irt_predictions.mean()
+                
+                # 5. Blended prediction (gp-IRT approach)
+                blended_prediction = dataset_lambda * anchor_prediction + (1 - dataset_lambda) * irt_prediction
+                
+                # 6. p-IRT prediction (proportion-based blending like in notebook)
+                pirt_lambda = len(dataset_anchors) / len(dataset_questions)
+                pirt_prediction = pirt_lambda * anchor_prediction + (1 - pirt_lambda) * irt_prediction
+                
+                # Compute prediction errors
+                anchor_error = abs(anchor_prediction - true_performance)
+                irt_error = abs(irt_prediction - true_performance) 
+                blended_error = abs(blended_prediction - true_performance)
+                pirt_error = abs(pirt_prediction - true_performance)
+                
+                # Store results
+                result = {
+                    "model_name": model_name,
+                    "dataset_name": dataset_name, 
+                    "num_questions": len(dataset_questions),
+                    "num_anchors": len(dataset_anchors),
+                    "estimated_theta": float(estimated_theta),
+                    "true_performance": float(true_performance),
+                    "anchor_prediction": float(anchor_prediction),
+                    "irt_prediction": float(irt_prediction),
+                    "blended_prediction": float(blended_prediction),
+                    "pirt_prediction": float(pirt_prediction),
+                    "anchor_error": float(anchor_error),
+                    "irt_error": float(irt_error), 
+                    "blended_error": float(blended_error),
+                    "pirt_error": float(pirt_error),
+                    "dataset_lambda": float(dataset_lambda),
+                    "pirt_lambda": float(pirt_lambda)
+                }
+                
+                results.append(result)
+                
+            except Exception as e:
+                print(f"     ⚠️  Error processing {model_name}: {e}")
+                continue
+    
+    return results
 
 
 def run_full_evaluation_pipeline(
-    config_paths: Optional[List[str]] = None,
-    helm_data_path: Optional[str] = None,
-    output_dir: Optional[str] = None,
-    use_irt_normalization: bool = True,
-    irt_method: str = 'direct',
-    k_values: Optional[List[int]] = None,
+        config_paths: Optional[List[str]] = None,
+        helm_data_path: Optional[str] = None,
+        output_dir: Optional[str] = None,
+        use_irt_normalization: bool = True,
+        irt_method: str = 'direct',
 
-    # Train/test split parameters
-    split_strategy: str = "temporal", 
-    test_ratio: float = 0.2,
-    split_random_seed: Optional[int] = 42,
-    # Matrix loading parameters
-    skip_matrix_build: bool = False,
-    matrix_path: Optional[str] = None,
-    # Optional pre-trained selection artifacts
-    item_params_path: Optional[str] = None,
-    anchors_path: Optional[str] = None,
-    # Optional on-the-fly training of selection artifacts
-    train_selection_artifacts: bool = False,
-    save_item_params_path: Optional[str] = None,
-    save_anchors_path: Optional[str] = None,
+
+        # Train/test split parameters
+        split_strategy: str = "temporal",
+        test_ratio: float = 0.2,
+        split_random_seed: Optional[int] = 42,
+            # Matrix loading parameters
+    force_rebuild: bool = False,
+        # Optional pre-trained selection artifacts
+        item_params_path: Optional[str] = None,
+        anchors_path: Optional[str] = None,
+        # Optional on-the-fly training of selection artifacts
+        train_selection_artifacts: bool = True,
+        anchor_selection_method: str = "irt_clustering",  # "irt_clustering", "correctness_clustering", or "difficulty_binning"
+        save_item_params_path: Optional[str] = None,
+        save_anchors_path: Optional[str] = None,
 ):
     """Run the complete evaluation pipeline with selection validation.
     
@@ -55,164 +226,133 @@ def run_full_evaluation_pipeline(
         output_dir: Output directory for results. If None, uses default.
         use_irt_normalization: Whether to use IRT normalization.
         irt_method: IRT method ('direct' or 'normalized').
-        k_values: List of k values to test. If None, uses defaults.
+
 
         split_strategy: Split strategy ('temporal', 'random', 'model_based', 'question_based').
         test_ratio: Fraction of data for test set.
         split_random_seed: Random seed for splitting reproducibility.
-        skip_matrix_build: If True, skip data ingestion and matrix building, load existing matrix instead.
-        matrix_path: Path to existing matrix parquet file. If None, uses default path.
+        force_rebuild: If True, rebuild matrices even if they already exist. If False, load existing matrices if available.
         item_params_path: Optional path to pre-trained IRT item parameters Parquet (question_id -> a,b).
         anchors_path: Optional path to anchors JSON ({"anchors": [question_id,...]}).
         train_selection_artifacts: If True, train IRT item params and anchors on the selection split and save.
+        anchor_selection_method: Method for anchor selection - "irt_clustering", "correctness_clustering", or "difficulty_binning".
         save_item_params_path: Where to save trained item params (defaults to output_dir/irt/item_params.parquet).
         save_anchors_path: Where to save trained anchors (defaults to output_dir/irt/anchors.json).
     """
-    
-    # Set default paths if not provided
-    if config_paths is None:
-        config_paths = [
-            "/Users/ehabba/PycharmProjects/AdaptEval/src/llm_eval/config/defaults.yaml",
-            "/Users/ehabba/PycharmProjects/AdaptEval/src/llm_eval/config/metrics.yaml"
-        ]
 
+    # Set default paths if not provided
+    defaults = _get_default_paths()
+    if config_paths is None:
+        config_paths = defaults["config_paths"]
     if helm_data_path is None:
-        helm_data_path = "/Users/ehabba/PycharmProjects/AdaptEval/src/download_helm/convertor_json/extracted/helm_aggregated.parquet"
-    
+        helm_data_path = defaults["helm_data_path"]
     if output_dir is None:
-        output_dir = "data/processed"
-    
-    if k_values is None:
-        k_values = [5, 10, 20, 50]
-    
-    # Set default matrix path if not provided
-    if matrix_path is None:
-        matrix_path = Path(output_dir) / "matrix.parquet"
-    
+        output_dir = defaults["output_dir"]
+
+
+
+    # Check if matrices already exist
+    train_matrix_path = Path(output_dir) / "matrix_train.parquet"
+    test_matrix_path = Path(output_dir) / "matrix_test.parquet"
+    matrices_exist = train_matrix_path.exists() and test_matrix_path.exists()
+
+    # Determine whether to rebuild or load existing
+    should_rebuild = force_rebuild or not matrices_exist
+
     # Validate inputs
     if not all(Path(p).exists() for p in config_paths):
         raise FileNotFoundError(f"One or more config files not found: {config_paths}")
-    
-    if skip_matrix_build:
-        # When skipping matrix build, we need the matrix file to exist
-        if not Path(matrix_path).exists():
-            raise FileNotFoundError(f"Matrix file not found for loading: {matrix_path}")
-    else:
-        # When building matrix, we need the HELM data file
-        if not Path(helm_data_path).exists():
-            raise FileNotFoundError(f"HELM data file not found: {helm_data_path}")
-    
+
+    if should_rebuild and not Path(helm_data_path).exists():
+        raise FileNotFoundError(f"HELM data file not found for building matrices: {helm_data_path}")
+
     # Create output directory if it doesn't exist
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-    
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
     normalization_type = "IRT" if use_irt_normalization else "Standard"
-    mode_text = "Matrix Loading" if skip_matrix_build else f"Full Pipeline ({normalization_type} Normalization)"
-    print(f"=== AdaptEval: {mode_text} ===\n")
-    
-    if skip_matrix_build:
-        # Skip to matrix loading
-        print("1. Loading existing matrix...")
-        try:
-            matrix_storage = MatrixStorage(str(matrix_path))
-            matrix_df = matrix_storage.load()
-            print(f"   ✓ Matrix loaded from: {matrix_path}")
-            print(f"   ✓ Matrix shape: {matrix_df.shape}")
-            print(f"   Models: {matrix_df['model_name'].nunique()}")
-            print(f"   Datasets: {matrix_df['dataset'].nunique()}")
-            print(f"   Questions: {matrix_df['question_id'].nunique()}")
-        except Exception as e:
-            print(f"   ✗ Failed to load matrix: {e}")
-            raise
+    if should_rebuild:
+        mode_text = f"Full Pipeline ({normalization_type} Normalization)"
+        if matrices_exist:
+            mode_text += " - Rebuilding existing matrices"
     else:
+        mode_text = "Loading existing matrices"
+    print(f"=== AdaptEval: {mode_text} ===\n")
+
+    if should_rebuild:
         # Full pipeline: build matrix from scratch
         # 1. Load configuration and setup
         print("1. Loading configuration...")
-        try:
-            cfg = load_yaml_config(*config_paths)
-            registry = MetricRegistry(cfg)
-            builder = MatrixBuilder(registry, use_irt_normalization=use_irt_normalization, irt_method=irt_method)
-            print("   ✓ Configuration loaded successfully")
-        except Exception as e:
-            print(f"   ✗ Failed to load configuration: {e}")
-            raise
-        
+        cfg = load_yaml_config(*config_paths)
+        registry = MetricRegistry(cfg)
+        builder = MatrixBuilder(registry, use_irt_normalization=use_irt_normalization, irt_method=irt_method)
+        print("   ✓ Configuration loaded successfully")
+
         # 2. Load and prepare data
         print("2. Loading and processing data...")
-        try:
-            df = read_parquet_safely(helm_data_path)
-            print(f"   ✓ Loaded HELM data: {len(df)} records")
-            
-            # Validate required columns
-            required_columns = ["evaluation_method_name", "evaluation_score", "dataset_name", "hf_split", "hf_index"]
-            missing_columns = [col for col in required_columns if col not in df.columns]
-            if missing_columns:
-                raise ValueError(f"Missing required columns: {missing_columns}")
-            
-            raw = {
-                "metric_name": df["evaluation_method_name"].astype(str),
-                "raw_score": df["evaluation_score"].astype(float),
-                "dataset": df.get("dataset_name", pd.Series(["unknown"]*len(df))).astype(str),
-                "split": df.get("hf_split", pd.Series([None]*len(df))),
-                "model_name": df.get("model_name", pd.Series([""]*len(df))).astype(str),
-                "model_family": df.get("model_family", pd.Series([None]*len(df))),
-            }
-            raw["question_id"] = (
+        df = read_parquet_safely(helm_data_path)
+        print(f"   ✓ Loaded HELM data: {len(df)} records")
+
+        # Validate required columns
+        required_columns = ["evaluation_method_name", "evaluation_score", "dataset_name", "hf_split", "hf_index"]
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns}")
+
+        raw = {
+            "metric_name": df["evaluation_method_name"].astype(str),
+            "raw_score": df["evaluation_score"].astype(float),
+            "dataset": df.get("dataset_name", pd.Series(["unknown"] * len(df))).astype(str),
+            "split": df.get("hf_split", pd.Series([None] * len(df))),
+            "model_name": df.get("model_name", pd.Series([""] * len(df))).astype(str),
+            "model_family": df.get("model_family", pd.Series([None] * len(df))),
+        }
+        raw["question_id"] = (
                 df["dataset_name"].astype(str)
                 + ":"
                 + df["hf_split"].astype(str)
                 + ":"
                 + df["hf_index"].astype(str)
-            )
-            print(f"   ✓ Data preprocessing completed")
-        except Exception as e:
-            print(f"   ✗ Failed to load/preprocess data: {e}")
-            raise
-        
+        )
+        print(f"   ✓ Data preprocessing completed")
+
         # 3. Build normalized matrix
         print("3. Building normalized matrix...")
-        try:
+        raw_matrix_path = output_path / "matrix_raw.parquet"
+        if raw_matrix_path.exists() and not force_rebuild:
+            print(f"   ℹ️  Raw matrix already exists: {raw_matrix_path}")
+            matrix_df = pd.read_parquet(raw_matrix_path)
+        else:
             matrix_df = builder.build(pd.DataFrame(raw))
             print(f"   ✓ Matrix built: {matrix_df.shape}")
             print(f"   Models: {matrix_df['model_name'].nunique()}")
             print(f"   Datasets: {matrix_df['dataset'].nunique()}")
             print(f"   Questions: {matrix_df['question_id'].nunique()}")
-        except Exception as e:
-            print(f"   ✗ Failed to build matrix: {e}")
-            raise
-
-    # Clean matrix data (step number depends on whether we built or loaded)
-    step_num = "2" if skip_matrix_build else "3.1"
-    print(f"\n{step_num}. Data cleaning:")
-    try:
+            # save the raw matrix
+            matrix_df.to_parquet(raw_matrix_path, index=False)
+            # Clean matrix data
+            print(f"\n4. Data cleaning:")
         from llm_eval.matrix import create_cleaner
         cleaner = create_cleaner()
         matrix_df, cleaning_stats = cleaner.clean(matrix_df)
-        
-        # Save cleaning report
-        cleaning_report_path = Path(output_dir) / "cleaning_report.json"
-        with open(cleaning_report_path, "w") as f:
-            # Convert dataclass to dict for JSON serialization
-            report_data = {
-                "original_shape": cleaning_stats.original_shape,
-                "final_shape": cleaning_stats.final_shape,
-                "removed_models": cleaning_stats.removed_models,
-                "removed_questions": cleaning_stats.removed_questions,
-                "removed_datasets": cleaning_stats.removed_datasets,
-                "coverage_stats_before": cleaning_stats.coverage_stats_before,
-                "coverage_stats_after": cleaning_stats.coverage_stats_after,
-                "iterations": cleaning_stats.iterations,
-                "dataset_cleaning_details": cleaning_stats.dataset_cleaning_details
-            }
-            json.dump(report_data, f, indent=2)
-        
-    except Exception as e:
-        print(f"   ✗ Failed to clean matrix: {e}")
-        raise
 
-    # Split to train/test (always enabled)
-    step_num = "3" if skip_matrix_build else "3.2"
-    print(f"\n{step_num}. Train/test split:")
-    try:
+        # Save cleaning report
+        report_data = {
+            "original_shape": cleaning_stats.original_shape,
+            "final_shape": cleaning_stats.final_shape,
+            "removed_models": cleaning_stats.removed_models,
+            "removed_questions": cleaning_stats.removed_questions,
+            "removed_datasets": cleaning_stats.removed_datasets,
+            "coverage_stats_before": cleaning_stats.coverage_stats_before,
+            "coverage_stats_after": cleaning_stats.coverage_stats_after,
+            "iterations": cleaning_stats.iterations,
+            "dataset_cleaning_details": cleaning_stats.dataset_cleaning_details
+        }
+        # cleaning_report_path = output_path / "cleaning_report.json"
+        # _save_json(report_data, cleaning_report_path, "Cleaning report")
+
+        # Split to train/test (always enabled)
+        print(f"\n5. Train/test split:")
         from llm_eval.matrix import create_splitter
         splitter = create_splitter(
             strategy=split_strategy,
@@ -220,253 +360,304 @@ def run_full_evaluation_pipeline(
             random_seed=split_random_seed
         )
         train_df, test_df = splitter.split(matrix_df)
-        
+
         # Get split information
         split_info = splitter.get_split_info(train_df, test_df)
-        
+
         # Save both splits
-        train_path = Path(output_dir) / "matrix_train.parquet"
-        test_path = Path(output_dir) / "matrix_test.parquet"
-        MatrixStorage(str(train_path)).save(train_df)
-        MatrixStorage(str(test_path)).save(test_df)
-        
-        print(f"   ✓ Split ({split_info['strategy']}): {split_info['train_size']} train, {split_info['test_size']} test ({split_info['actual_test_ratio']:.1%})")
-        
+        MatrixStorage(str(train_matrix_path)).save(train_df)
+        MatrixStorage(str(test_matrix_path)).save(test_df)
+
+        print(
+            f"   ✓ Split ({split_info['strategy']}): {split_info['train_size']} train, {split_info['test_size']} test ({split_info['actual_test_ratio']:.1%})")
+
         # Use train for selection training, test for validation
-        matrix_for_selection = train_df
-        matrix_for_validation = test_df
-        
+        train_matrix = train_df
+        test_matrix = test_df
+
         # Save split info
-        split_info_path = Path(output_dir) / "split_info.json"
-        with open(split_info_path, "w") as f:
-            json.dump(split_info, f, indent=2)
+        split_info_path = output_path / "split_info.json"
+        _save_json(split_info, split_info_path, "Split info")
+    else:
+        # Load existing matrices
+        print("1. Loading existing matrices...")
+        train_matrix = MatrixStorage(str(train_matrix_path)).load()
+        test_matrix = MatrixStorage(str(test_matrix_path)).load()
+        print(f"   ✓ Train matrix loaded: {train_matrix.shape}")
+        print(f"   ✓ Test matrix loaded: {test_matrix.shape}")
+        print(f"   Models: {train_matrix['model_name'].nunique()}")
+        print(f"   Datasets: {train_matrix['dataset'].nunique()}")
         
-    except Exception as e:
-        print(f"   ✗ Failed to split matrix: {e}")
-        raise
+        # Skip to selection setup since matrices are already split and cleaned
+        print("   ℹ️ Skipping data cleaning and splitting - using existing matrices")
 
-    # Save final matrix (only if we built it, not if we loaded it)
-    if not skip_matrix_build:
-        matrix_output_path = Path(output_dir) / "matrix.parquet"
-        MatrixStorage(str(matrix_output_path)).save(matrix_df)
-        print(f"   ✓ Final matrix saved: {matrix_output_path}")
-    
     # Optional: Train selection artifacts (item params + anchors)
-    if train_selection_artifacts:
-        print(f"\n4a. Training selection artifacts (IRT + anchors) on selection split...")
-        try:
-            params = train_item_parameters(matrix_for_selection)
-            anchors = select_anchors(params)
-            # Determine output paths
-            item_params_out = Path(save_item_params_path) if save_item_params_path else Path(output_dir) / "irt" / "item_params.parquet"
-            anchors_out = Path(save_anchors_path) if save_anchors_path else Path(output_dir) / "irt" / "anchors.json"
-            item_params_out.parent.mkdir(parents=True, exist_ok=True)
-            anchors_out.parent.mkdir(parents=True, exist_ok=True)
-            save_item_parameters(params, str(item_params_out))
-            save_anchors(anchors, str(anchors_out))
-            # Wire these paths for downstream selector initialization
-            item_params_path = str(item_params_out)
-            anchors_path = str(anchors_out)
-            print(f"   ✓ Trained and saved item params → {item_params_out}")
-            print(f"   ✓ Trained and saved anchors → {anchors_out}")
-        except Exception as e:
-            print(f"   ✗ Failed to train selection artifacts: {e}")
-            raise
+    # Determine output paths
+    irt_dir = output_path / "irt"
+    irt_dir.mkdir(parents=True, exist_ok=True)
 
-    # Setup selection methods
-    step_num = "5"
-    print(f"\n{step_num}. Setting up selection methods...")
+    item_params_out = Path(save_item_params_path) if save_item_params_path else irt_dir / "item_params.parquet"
+    anchors_out = Path(save_anchors_path) if save_anchors_path else irt_dir / "anchors.json"
+    item_params_path = str(item_params_out)
+    anchors_path = str(anchors_out)
+    if train_selection_artifacts:
+        print(f"\n2. Training selection artifacts (IRT + anchors) using train/test split...")
+        print(f"   Training on: {train_matrix.shape} samples")
+        print(f"   Validating on: {test_matrix.shape} samples")
+        
+        # Train using both train and test matrices (test used for validation within training)
+        params = train_item_parameters(train_matrix, test_matrix)
+        
+        # Select anchors using the specified method
+        if anchor_selection_method == "correctness_clustering":
+            print(f"   Using correctness-based clustering for anchor selection")
+            anchors = select_anchors_with_matrix(params, train_matrix, method=anchor_selection_method)
+        elif anchor_selection_method == "difficulty_binning":
+            print(f"   Using difficulty binning for anchor selection")
+            anchors = select_anchors_with_matrix(params, None, method=anchor_selection_method)
+        else:
+            print(f"   Using IRT-based clustering for anchor selection")
+            anchors = select_anchors(params)
+        
+
+        save_item_parameters(params, str(item_params_out))
+        save_anchors(anchors, str(anchors_out))
+
+        # Wire these paths for downstream selector initialization
+        print(f"   ✓ Trained and saved item params → {item_params_out}")
+        print(f"   ✓ Trained and saved anchors → {anchors_out}")
+        
+        # Show training metadata if available
+        if hasattr(params, 'attrs'):
+            metadata = {}
+            for attr_name in ["val_errors_by_dataset", "lambdas_by_dataset", "best_dimension"]:
+                if attr_name in params.attrs:
+                    metadata[attr_name] = params.attrs[attr_name]
+            if metadata:
+                print(f"   ℹ️  Training metadata: {list(metadata.keys())}")
+
+
+
+    # Run estimation-based validation
+    print(f"\n3. Running estimation-based validation...")
+    all_results = []
+
+    # Load item parameters and anchors for validation
+    if not item_params_path or not anchors_path:
+        print("   ⚠️  Warning: No item parameters or anchors provided for validation")
+        return None, pd.DataFrame()
+
     try:
-        selectors = {
-            # "naive": NaiveVarianceSelector(),
-            "irt": TinyBenchmarksSelector(
-                item_params_path=item_params_path,
-                anchors_path=anchors_path,
-            ), 
-            # "mitv": MITVSelector()
-        }
-        print(f"   ✓ Initialized {len(selectors)} selectors")
-        if item_params_path or anchors_path:
-            print("   ℹ️  Using pre-trained selection artifacts:" )
-            if item_params_path:
-                print(f"      - item_params: {item_params_path}")
-            if anchors_path:
-                print(f"      - anchors: {anchors_path}")
+        # Load the saved artifacts
+        item_params = pd.read_parquet(item_params_path)
+        with open(anchors_path, 'r') as f:
+            anchors_data = json.load(f)
+        
+        # Handle different anchor formats (from anchor_points.ipynb vs our format)
+        anchor_weights_by_dataset = {}
+        if 'anchors' in anchors_data:
+            # Our format: {'anchors': [list of question_ids]}
+            anchor_questions = anchors_data['anchors']
+            # Use uniform weights if no weights provided
+            anchor_weights_by_dataset = {}
+        elif 'anchor_points' in anchors_data and 'anchor_weights' in anchors_data:
+            # notebook format: {'anchor_points': {scenario: anchor_indices}, 'anchor_weights': {scenario: weights}}
+            anchor_questions = []
+            anchor_points = anchors_data['anchor_points']
+            anchor_weights = anchors_data['anchor_weights']
+            
+            for scenario, indices in anchor_points.items():
+                # Convert indices to question_ids if needed
+                scenario_anchors = [str(idx) for idx in indices]
+                anchor_questions.extend(scenario_anchors)
+                # Store weights by dataset/scenario for validation
+                anchor_weights_by_dataset[scenario] = anchor_weights.get(scenario, [])
+        else:
+            # Fallback: assume the whole data is a list
+            anchor_questions = anchors_data if isinstance(anchors_data, list) else []
+            anchor_weights_by_dataset = {}
+        
+        print(f"   ✓ Loaded item parameters: {len(item_params)} questions")
+        print(f"   ✓ Loaded anchors: {len(anchor_questions)} questions")
+        
+        # Get lambdas from item parameters metadata (from training.py)
+        if not (hasattr(item_params, 'attrs') and 'lambdas_by_dataset' in item_params.attrs):
+            raise ValueError("No lambda values found in item parameters metadata. This indicates an issue with the training process.")
+        
+        lambdas_by_dataset = item_params.attrs['lambdas_by_dataset']
+        print(f"   ✓ Using lambda values for {len(lambdas_by_dataset)} datasets: {lambdas_by_dataset}")
+        
+        # Run estimation-based validation
+        validation_results = run_estimation_validation(
+            test_matrix, item_params, anchor_questions, lambdas_by_dataset, anchor_weights_by_dataset
+        )
+        all_results = validation_results
+        
+        print(f"   ✓ Completed {len(all_results)} validations")
+        
     except Exception as e:
-        print(f"   ✗ Failed to initialize selectors: {e}")
-        raise
+        print(f"   ⚠️  Error in validation: {e}")
+        return None, pd.DataFrame()
+
+    # Generate summary report  
+    print(f"\n4. Generating summary report...")
     
-    # Run selection validation
-    step_num = "6"
-    print(f"\n{step_num}. Running selection validation...")
-    try:
-        validator = SelectionValidator(matrix_for_validation)
-        
-        # Get all models and datasets for validation
-        available_models = matrix_for_validation["model_name"].unique()
-        available_datasets = matrix_for_validation["dataset"].unique()
-        
-        sample_models = available_models
-        sample_datasets = available_datasets
-        
-        print(f"   ✓ Testing {len(sample_models)} models × {len(sample_datasets)} datasets × {len(k_values)} k-values")
-        
-        all_results = []
-        total_validations = len(sample_models) * len(sample_datasets) * len(selectors) * len(k_values)
-        completed = 0
-        
-        for k in k_values:
-            for model_name in sample_models:
-                for dataset_name in sample_datasets:
-                    for selector_name, selector in selectors.items():
-                        try:
-                            result = validator.validate_selection(
-                                selector, selector_name, model_name, k, dataset_name
-                            )
-                            all_results.append(result)
-                            completed += 1
-                        except Exception as e:
-                            print(f"   ⚠️  Error: {selector_name}/{model_name}/{dataset_name}: {e}")
-                            completed += 1
-                            continue
-        
-        print(f"   ✓ Completed {completed}/{total_validations} validations")
-    except Exception as e:
-        print(f"   ✗ Failed during validation: {e}")
-        raise
+    if len(all_results) == 0:
+        print("   ⚠️  No validation results to summarize")
+        return None, pd.DataFrame()
     
-    # Generate summary report
-    step_num = "7"
-    print(f"\n{step_num}. Generating summary report...")
-    try:
-        summary = ValidationSummary(results=all_results)
-        avg_metrics = summary.get_average_metrics()
-        
-        print(f"   ✓ Summary: RMSE={avg_metrics.get('avg_rmse', 0):.3f}, Correlation={avg_metrics.get('avg_correlation', 0):.3f}")
-    except Exception as e:
-        print(f"   ✗ Failed to generate summary: {e}")
-        raise
+    # Convert results to DataFrame
+    results_df = pd.DataFrame(all_results)
     
+    # Compute average errors by method
+    avg_anchor_error = results_df['anchor_error'].mean()
+    avg_irt_error = results_df['irt_error'].mean()
+    avg_blended_error = results_df['blended_error'].mean()
+    avg_pirt_error = results_df['pirt_error'].mean()
+    
+    print(f"   ✓ Summary (Average Errors):")
+    print(f"     - Anchor-only: {avg_anchor_error:.3f}")
+    print(f"     - IRT-only: {avg_irt_error:.3f}")
+    print(f"     - gp-IRT (blended): {avg_blended_error:.3f}")
+    print(f"     - p-IRT: {avg_pirt_error:.3f}")
+    
+    # Find best method
+    error_comparison = {
+        'anchor': avg_anchor_error,
+        'irt': avg_irt_error, 
+        'blended': avg_blended_error,
+        'pirt': avg_pirt_error
+    }
+    best_method = min(error_comparison, key=error_comparison.get)
+    best_error = error_comparison[best_method]
+    
+    print(f"   ✓ Best method: {best_method} (Error: {best_error:.3f})")
+
     # Save detailed results
-    step_num = "8"
-    print(f"\n{step_num}. Saving results...")
-    try:
-        results_df = summary.to_dataframe()
-        results_csv_path = Path(output_dir) / "validation_results.csv"
-        results_df.to_csv(results_csv_path, index=False)
-        
-        # Save summary metrics
-        summary_data = {
-            "timestamp": pd.Timestamp.now().isoformat(),
-            "total_validations": len(all_results),
-            "k_values": k_values,
-            "selectors": list(selectors.keys()),
-            "sample_models": sample_models.tolist(),
-            "sample_datasets": sample_datasets.tolist(),
-            "average_metrics": avg_metrics,
-            "config": {
-                "use_irt_normalization": use_irt_normalization,
-                "irt_method": irt_method
-            }
+    print(f"\n5. Saving results...")
+    results_csv_path = output_path / "estimation_validation_results.csv"
+    results_df.to_csv(results_csv_path, index=False)
+
+    # Save summary metrics
+    summary_data = {
+        "timestamp": pd.Timestamp.now().isoformat(),
+        "total_validations": len(all_results),
+        "num_models": results_df['model_name'].nunique(),
+        "num_datasets": results_df['dataset_name'].nunique(),
+        "average_errors": {
+            "anchor_only": float(avg_anchor_error),
+            "irt_only": float(avg_irt_error),
+            "gp_irt_blended": float(avg_blended_error),
+            "p_irt": float(avg_pirt_error)
+        },
+        "best_method": best_method,
+        "best_error": float(best_error),
+        "config": {
+            "use_irt_normalization": use_irt_normalization,
+            "irt_method": irt_method,
+            "validation_approach": "estimation_based"
         }
-        
-        summary_json_path = Path(output_dir) / "validation_summary.json"
-        with open(summary_json_path, "w") as f:
-            json.dump(summary_data, f, indent=2)
-        
-        print(f"   ✓ Results saved: {len(results_df)} rows to CSV and JSON")
-    except Exception as e:
-        print(f"   ✗ Failed to save results: {e}")
-        raise
+    }
+
+    summary_json_path = output_path / "estimation_validation_summary.json"
+    _save_json(summary_data, summary_json_path, "Estimation validation summary")
+
+    print(f"   ✓ Results saved: {len(results_df)} rows to CSV")
     
-    # Show best performing selectors
-    try:
-        best_by_rmse = results_df.groupby('selector_name')['rmse'].mean().sort_values()
-        best_selector = best_by_rmse.index[0] if len(best_by_rmse) > 0 else "N/A"
-        best_rmse = best_by_rmse.iloc[0] if len(best_by_rmse) > 0 else 0
-        print(f"   ✓ Best selector: {best_selector} (RMSE: {best_rmse:.3f})")
-    except Exception as e:
-        print(f"   ⚠️  Could not determine best selector: {e}")
+    # Show per-dataset performance
+    if len(results_df) > 0:
+        print(f"\n   📊 Per-dataset performance (gp-IRT method):")
+        dataset_errors = results_df.groupby('dataset_name')['blended_error'].mean().sort_values()
+        for dataset, error in dataset_errors.items():
+            print(f"     - {dataset}: {error:.3f}")
+
+    print(f"\n✅ Estimation-based validation complete!")
+
+    # Return compatible format for backward compatibility
+    class EstimationSummary:
+        def __init__(self, results_df):
+            self.results_df = results_df
+            
+        def get_average_metrics(self):
+            return summary_data["average_errors"]
+            
+        def to_dataframe(self):
+            return self.results_df
     
-    print(f"\n✅ Pipeline complete!")
-    
-    return summary, results_df
+    return EstimationSummary(results_df), results_df
 
 
 if __name__ == "__main__":
     import argparse
-    
+
     # Better command line argument parsing
     parser = argparse.ArgumentParser(description="Run AdaptEval evaluation pipeline")
     parser.add_argument("--irt", action="store_true", help="Use IRT normalization", default=True)
     parser.add_argument("--normalized", action="store_true", help="Use normalized IRT method", default=True)
     parser.add_argument("--config", nargs="+", help="Paths to config files")
-    parser.add_argument("--helm-data", help="Path to HELM data parquet")
-    parser.add_argument("--output-dir", help="Output directory for results")
-    parser.add_argument("--k-values", nargs="+", type=int, help="K values to test")
+    parser.add_argument("--data-path", help="Path to HELM data parquet file")
+    parser.add_argument("--output", help="Output directory for results")
+
     # Train/test split arguments
-    parser.add_argument("--split-strategy", default="temporal", help="Split strategy (temporal, random, model_based, question_based)")
+    parser.add_argument("--split-strategy", default="temporal",
+                        help="Split strategy (temporal, random, model_based, question_based)")
     parser.add_argument("--test-ratio", type=float, default=0.2, help="Test set ratio")
-    parser.add_argument("--split-seed", type=int, default=42, help="Random seed for splitting")
-    # Matrix loading arguments
-    parser.add_argument("--skip-matrix-build", action="store_true", help="Skip matrix building and load existing matrix instead")
-    parser.add_argument("--matrix-path", help="Path to existing matrix parquet file to load")
+    parser.add_argument("--random-seed", type=int, default=42, help="Random seed for splitting")
+    # Matrix building arguments
+    parser.add_argument("--force-rebuild", action="store_true", help="Force rebuild matrices even if they already exist")
     # Pre-trained selection artifacts
-    parser.add_argument("--item-params-path", help="Path to pre-trained IRT item parameters parquet")
-    parser.add_argument("--anchors-path", help="Path to anchors JSON produced by training stage")
+    parser.add_argument("--item-params", help="Path to pre-trained IRT item parameters parquet")
+    parser.add_argument("--anchors", help="Path to anchors JSON file")
     # On-the-fly training of selection artifacts
-    parser.add_argument("--train-selection-artifacts", action="store_true", help="Train IRT item params and anchors on selection split")
-    parser.add_argument("--save-item-params-path", help="Where to save trained item params (defaults to output_dir/irt/item_params.parquet)")
-    parser.add_argument("--save-anchors-path", help="Where to save trained anchors (defaults to output_dir/irt/anchors.json)")
-    
+    parser.add_argument("--train-artifacts", action="store_true",
+                        help="Train IRT item params and anchors on training split")
+    parser.add_argument("--anchor-method", default="irt_clustering", 
+                        choices=["irt_clustering", "correctness_clustering", "difficulty_binning"],
+                        help="Anchor selection method: irt_clustering, correctness_clustering, or difficulty_binning")
+    parser.add_argument("--save-item-params",
+                        help="Where to save trained item params (defaults to output/irt/item_params.parquet)")
+    parser.add_argument("--save-anchors", help="Where to save trained anchors (defaults to output/irt/anchors.json)")
+
     args = parser.parse_args()
-    
+
     # Set parameters
     use_irt = args.irt
     irt_method = 'normalized' if args.normalized else 'direct'
-    k_values = args.k_values
+
     split_strategy = args.split_strategy
     test_ratio = args.test_ratio
-    split_seed = args.split_seed
-    skip_matrix_build = args.skip_matrix_build
-    matrix_path = args.matrix_path
-    item_params_path = args.item_params_path
-    anchors_path = args.anchors_path
-    train_selection_artifacts = args.train_selection_artifacts
-    save_item_params_path = args.save_item_params_path
-    save_anchors_path = args.save_anchors_path
-    
-    if skip_matrix_build:
-        print("Skipping matrix build - loading existing matrix")
+    split_seed = args.random_seed
+    force_rebuild = args.force_rebuild
+    item_params_path = args.item_params
+    anchors_path = args.anchors
+    train_selection_artifacts = args.train_artifacts
+    anchor_selection_method = args.anchor_method
+    save_item_params_path = args.save_item_params
+    save_anchors_path = args.save_anchors
+
+    if force_rebuild:
+        print("Force rebuild enabled - rebuilding matrices")
     elif use_irt:
         print(f"Using IRT normalization with {irt_method} method")
     else:
         print("Using standard normalization")
-    
-    try:
-        summary, results_df = run_full_evaluation_pipeline(
-            config_paths=args.config,
-            helm_data_path=args.helm_data,
-            output_dir=args.output_dir,
-            use_irt_normalization=use_irt, 
-            irt_method=irt_method,
-            k_values=k_values,
-            split_strategy=split_strategy,
-            test_ratio=test_ratio,
-            split_random_seed=split_seed,
-            skip_matrix_build=skip_matrix_build,
-            matrix_path=matrix_path,
-            item_params_path=item_params_path,
-            anchors_path=anchors_path,
-            train_selection_artifacts=train_selection_artifacts,
-            save_item_params_path=save_item_params_path,
-            save_anchors_path=save_anchors_path,
-        )
-        print("Pipeline completed successfully!")
-    except Exception as e:
-        print(f"Pipeline failed: {e}")
-        sys.exit(1)
 
+    summary, results_df = run_full_evaluation_pipeline(
+        config_paths=args.config,
+        helm_data_path=args.data_path,
+        output_dir=args.output,
+        use_irt_normalization=use_irt,
+        irt_method=irt_method,
 
-
-
+        split_strategy=split_strategy,
+        test_ratio=test_ratio,
+        split_random_seed=split_seed,
+        force_rebuild=force_rebuild,
+        item_params_path=item_params_path,
+        anchors_path=anchors_path,
+        train_selection_artifacts=train_selection_artifacts,
+        anchor_selection_method=anchor_selection_method,
+        save_item_params_path=save_item_params_path,
+        save_anchors_path=save_anchors_path,
+    )
+    print("Pipeline completed successfully!")
