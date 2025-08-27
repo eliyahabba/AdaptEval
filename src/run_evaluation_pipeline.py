@@ -355,22 +355,23 @@ def run_full_evaluation_pipeline(
     # Convert results to DataFrame
     results_df = pd.DataFrame(all_results)
 
-    # Compute average errors by method
+    # Compute average and median errors by method
     avg_anchor_error = results_df['anchor_error'].mean()
-    avg_irt_error = results_df['irt_error'].mean()
     avg_blended_error = results_df['blended_error'].mean()
     avg_pirt_error = results_df['pirt_error'].mean()
+    
+    median_anchor_error = results_df['anchor_error'].median()
+    median_blended_error = results_df['blended_error'].median()
+    median_pirt_error = results_df['pirt_error'].median()
 
     print(f"   ✓ Summary (Average Errors):")
-    print(f"     - Anchor-only: {avg_anchor_error:.3f}")
-    print(f"     - IRT-only: {avg_irt_error:.3f}")
-    print(f"     - gp-IRT (blended): {avg_blended_error:.3f}")
-    print(f"     - p-IRT: {avg_pirt_error:.3f}")
+    print(f"     - Anchor-only: {avg_anchor_error:.3f} (median: {median_anchor_error:.3f})")
+    print(f"     - gp-IRT (blended): {avg_blended_error:.3f} (median: {median_blended_error:.3f})")
+    print(f"     - p-IRT: {avg_pirt_error:.3f} (median: {median_pirt_error:.3f})")
 
     # Find best method
     error_comparison = {
         'anchor': avg_anchor_error,
-        'irt': avg_irt_error,
         'blended': avg_blended_error,
         'pirt': avg_pirt_error
     }
@@ -392,9 +393,13 @@ def run_full_evaluation_pipeline(
         "num_datasets": results_df['dataset_name'].nunique(),
         "average_errors": {
             "anchor_only": float(avg_anchor_error),
-            "irt_only": float(avg_irt_error),
             "gp_irt_blended": float(avg_blended_error),
             "p_irt": float(avg_pirt_error)
+        },
+        "median_errors": {
+            "anchor_only": float(median_anchor_error),
+            "gp_irt_blended": float(median_blended_error),
+            "p_irt": float(median_pirt_error)
         },
         "best_method": best_method,
         "best_error": float(best_error),

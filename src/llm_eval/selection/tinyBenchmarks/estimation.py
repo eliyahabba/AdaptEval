@@ -454,7 +454,6 @@ def run_estimation_validation(
                     "blended_prediction": float(blended_prediction),
                     "pirt_prediction": float(pirt_prediction),
                     "anchor_error": float(anchor_error),
-                    "irt_error": float(irt_error),
                     "blended_error": float(blended_error),
                     "pirt_error": float(pirt_error),
                     "dataset_lambda": float(scenario_lambda),
@@ -482,19 +481,16 @@ def run_estimation_validation(
         # Calculate and print average errors per scenario for each method
         for scenario_name, scenario_data in scenario_results.items():
             anchor_errors = [r["anchor_error"] for r in scenario_data]
-            irt_errors = [r["irt_error"] for r in scenario_data]
             blended_errors = [r["blended_error"] for r in scenario_data]
             pirt_errors = [r["pirt_error"] for r in scenario_data]
             
             avg_anchor_error = np.mean(anchor_errors)
-            avg_irt_error = np.mean(irt_errors)
             avg_blended_error = np.mean(blended_errors)
             avg_pirt_error = np.mean(pirt_errors)
             
             # Find the best method for this scenario
             method_errors = {
                 "Anchor-only": avg_anchor_error,
-                "IRT-only": avg_irt_error,
                 "gp-IRT": avg_blended_error,
                 "p-IRT": avg_pirt_error
             }
@@ -502,7 +498,6 @@ def run_estimation_validation(
             
             print(f"     {scenario_name}:")
             print(f"       • Anchor-only: {avg_anchor_error:.4f}")
-            print(f"       • IRT-only:    {avg_irt_error:.4f}")
             print(f"       • gp-IRT:      {avg_blended_error:.4f}")
             print(f"       • p-IRT:       {avg_pirt_error:.4f}")
             print(f"       → Best: {best_method} ({method_errors[best_method]:.4f})")
@@ -510,28 +505,45 @@ def run_estimation_validation(
         # Overall performance summary
         print("\n   Overall performance summary:")
         all_anchor_errors = [r["anchor_error"] for r in results]
-        all_irt_errors = [r["irt_error"] for r in results]
         all_blended_errors = [r["blended_error"] for r in results]
         all_pirt_errors = [r["pirt_error"] for r in results]
         
         overall_anchor_error = np.mean(all_anchor_errors)
-        overall_irt_error = np.mean(all_irt_errors)
         overall_blended_error = np.mean(all_blended_errors)
         overall_pirt_error = np.mean(all_pirt_errors)
         
         overall_method_errors = {
             "Anchor-only": overall_anchor_error,
-            "IRT-only": overall_irt_error,
             "gp-IRT": overall_blended_error,
             "p-IRT": overall_pirt_error
         }
         overall_best_method = min(overall_method_errors.keys(), key=lambda k: overall_method_errors[k])
         
         print(f"     • Anchor-only: {overall_anchor_error:.4f}")
-        print(f"     • IRT-only:    {overall_irt_error:.4f}")
         print(f"     • gp-IRT:      {overall_blended_error:.4f}")
         print(f"     • p-IRT:       {overall_pirt_error:.4f}")
         print(f"     → Overall best: {overall_best_method} ({overall_method_errors[overall_best_method]:.4f})")
+        
+        # Per-method performance across all scenarios
+        print("\n   Per-method performance across scenarios:")
+        
+        methods = ["Anchor-only", "gp-IRT", "p-IRT"]
+        error_keys = ["anchor_error", "blended_error", "pirt_error"]
+        
+        for method, error_key in zip(methods, error_keys):
+            print(f"\n     {method}:")
+            scenario_errors = {}
+            for result in results:
+                scenario_name = result["scenario_name"]
+                if scenario_name not in scenario_errors:
+                    scenario_errors[scenario_name] = []
+                scenario_errors[scenario_name].append(result[error_key])
+            
+            # Calculate average and median error per scenario for this method
+            for scenario_name in sorted(scenario_errors.keys()):
+                avg_error = np.mean(scenario_errors[scenario_name])
+                median_error = np.median(scenario_errors[scenario_name])
+                print(f"       scenario: {scenario_name}, avg. error: {avg_error:.3f}, median error: {median_error:.3f}")
     
     return results
 
