@@ -6,7 +6,6 @@ This script demonstrates the complete pipeline from data ingestion to selection 
 import json
 from pathlib import Path
 from typing import Optional, List
-import numpy as np
 
 import pandas as pd
 
@@ -14,18 +13,13 @@ from llm_eval.config import load_yaml_config
 from llm_eval.matrix import MatrixBuilder, MatrixStorage
 from llm_eval.normalization import MetricRegistry
 from llm_eval.selection.tinyBenchmarks.estimation import (
-    EstimationConfig,
-    estimate_theta_from_anchors,
-    expected_correctness,
     run_estimation_validation
 )
+from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import (
     train_item_parameters,
-    select_anchors,
-    select_anchors_with_matrix,
     select_anchors_structured_with_matrix,
     save_item_parameters,
-    save_anchors,
     save_anchors_structured,
 )
 from llm_eval.utils import read_parquet_safely
@@ -52,9 +46,6 @@ def _save_json(data, file_path: Path, description: str = "file"):
     print(f"   ✓ {description} saved: {file_path}")
 
 
-
-
-
 def run_full_evaluation_pipeline(
         config_paths: Optional[List[str]] = None,
         helm_data_path: Optional[str] = None,
@@ -75,6 +66,7 @@ def run_full_evaluation_pipeline(
         # "irt_clustering", "correctness_clustering", or "difficulty_binning"
         save_item_params_path: Optional[str] = None,
         save_anchors_path: Optional[str] = None,
+        anchors_per_dataset: int = 100,
 ):
     """Run the complete evaluation pipeline with selection validation.
     
@@ -236,7 +228,6 @@ def run_full_evaluation_pipeline(
     item_params_out = Path(save_item_params_path) if save_item_params_path else irt_dir / "item_params.parquet"
     anchors_out = Path(save_anchors_path) if save_anchors_path else irt_dir / "anchors.json"
 
-
     # Train IRT parameters if requested
     params = None
     if train_irt_params:
@@ -245,10 +236,14 @@ def run_full_evaluation_pipeline(
         print(f"   Validating on: {test_matrix.shape} samples")
 
         # Train using both train and test matrices (test used for validation within training)
-        params = train_item_parameters(train_matrix, test_matrix)
+        params = train_item_parameters(
+            train_matrix,
+            test_matrix,
+            config=TrainingConfig(number_item_per_scenario=anchors_per_dataset)
+        )
         save_item_parameters(params, str(item_params_out))
         print(f"   ✓ Trained and saved item params → {item_params_out}")
-        
+
         # Debug: Check if dataset column is preserved
         if "dataset" in params.columns:
             print(f"   ✓ Dataset column preserved: {params['dataset'].nunique()} datasets")
@@ -282,15 +277,14 @@ def run_full_evaluation_pipeline(
         step_num = 3 if train_irt_params else 2
         print(f"\n{step_num}. Training anchor selection...")
         print(f"   Using {anchor_selection_method} method")
-        print(f"   Selecting 100 anchors PER DATASET (like notebook), not from all data together")
+        print(f"   Selecting {anchors_per_dataset} anchors PER DATASET (like notebook), not from all data together")
 
         # New: Select per-dataset anchors with weights and save structured output
         anchors_by_dataset, weights_by_dataset = select_anchors_structured_with_matrix(
-            params, train_matrix, number_items=100, method=anchor_selection_method
+            params, train_matrix, number_items=anchors_per_dataset, method=anchor_selection_method
         )
         save_anchors_structured(anchors_by_dataset, weights_by_dataset, str(anchors_out))
         print(f"   ✓ Trained and saved structured anchors → {anchors_out}")
-        
 
         total = sum(len(v) for v in anchors_by_dataset.values())
         print(f"   ✓ Total anchors: {total} (selected from all data together)")
@@ -359,7 +353,7 @@ def run_full_evaluation_pipeline(
     avg_anchor_error = results_df['anchor_error'].mean()
     avg_blended_error = results_df['blended_error'].mean()
     avg_pirt_error = results_df['pirt_error'].mean()
-    
+
     median_anchor_error = results_df['anchor_error'].median()
     median_blended_error = results_df['blended_error'].median()
     median_pirt_error = results_df['pirt_error'].median()
@@ -465,6 +459,8 @@ if __name__ == "__main__":
     parser.add_argument("--anchor-method", default="irt_clustering",
                         choices=["irt_clustering", "correctness_clustering", "difficulty_binning"],
                         help="Anchor selection method: irt_clustering, correctness_clustering, or difficulty_binning")
+    parser.add_argument("--anchors-per-dataset", type=int, default=100,
+                        help="Number of anchors to select per dataset (default: 100)")
     parser.add_argument("--save-item-params",
                         help="Where to save trained item params (defaults to output/irt/item_params.parquet)")
     parser.add_argument("--save-anchors", help="Where to save trained anchors (defaults to output/irt/anchors.json)")
@@ -482,6 +478,7 @@ if __name__ == "__main__":
     train_irt_params = args.train_irt
     train_anchors = args.train_anchors
     anchor_selection_method = args.anchor_method
+    anchors_per_dataset = args.anchors_per_dataset
     save_item_params_path = args.save_item_params
     save_anchors_path = args.save_anchors
 
@@ -491,14 +488,14 @@ if __name__ == "__main__":
         print(f"Using IRT normalization with {irt_method} method")
     else:
         print("Using standard normalization")
-    
+
     # Show training configuration
     training_config = []
     if train_irt_params:
         training_config.append("IRT parameters")
     if train_anchors:
         training_config.append(f"anchors ({anchor_selection_method})")
-    
+
     if training_config:
         print(f"Training: {', '.join(training_config)}")
     else:
@@ -520,5 +517,6 @@ if __name__ == "__main__":
         anchor_selection_method=anchor_selection_method,
         save_item_params_path=save_item_params_path,
         save_anchors_path=save_anchors_path,
+        anchors_per_dataset=anchors_per_dataset,
     )
     print("Pipeline completed successfully!")
