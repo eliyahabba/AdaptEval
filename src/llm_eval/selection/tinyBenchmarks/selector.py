@@ -27,8 +27,7 @@ class TinyBenchmarksSelector(QuestionSelector):
     """
 
     # Anchor selection parameters
-    anchors_per_level: int = 3
-    levels: int = 10
+    number_items: int = 100  # fixed number of anchor items per dataset (from notebook)
 
     # No training parameters - selector only uses pre-trained artifacts
 
@@ -94,7 +93,7 @@ class TinyBenchmarksSelector(QuestionSelector):
         if loaded is not None:
             self._cached_anchor_ids = loaded
             return loaded
-        acfg = AnchorConfig(per_level=self.anchors_per_level, levels=self.levels)
+        acfg = AnchorConfig(number_items=self.number_items)
         anchor_ids = find_anchor_items(item_params, acfg)
         self._cached_anchor_ids = anchor_ids
         return anchor_ids

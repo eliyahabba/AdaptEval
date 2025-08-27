@@ -58,7 +58,7 @@ class TrainingConfig:
     
     # Additional py-irt parameters (if needed)
     model_type: str = "multidim_2pl"
-    priors: str = "hierarchical"
+    # priors: str = "hierarchical"
     deterministic: bool = True
     log_every: int = 200
 
@@ -250,6 +250,10 @@ def validate_irt_dimensions(
     
     errors_by_dimension = []
     errors_by_dataset = {}
+
+    # Helper to extract scenario root from dataset name
+    def scenario_from_dataset(name: str) -> str:
+        return name.split(".")[0] if isinstance(name, str) and "." in name else name
     
     for D in tqdm(Ds, desc="Validating dimensions"):
         # Train IRT model on training data
@@ -268,34 +272,42 @@ def validate_irt_dimensions(
             dataset_errors = []
             
             if "dataset" in val_df.columns:
-                datasets = sorted(val_df["dataset"].unique())
-                for dataset in datasets:
-                    dataset_val_df = val_df[val_df["dataset"] == dataset]
-                    dataset_orig_df = original_val_df[original_val_df["dataset"] == dataset]
-                    
+                # Group by scenario root (prefix before '.')
+                scenarios = sorted({scenario_from_dataset(d) for d in val_df["dataset"].unique()})
+                for scenario in tqdm(scenarios):
+                    dataset_val_df = val_df[val_df["dataset"].map(lambda d: scenario_from_dataset(d) == scenario)]
+                    dataset_orig_df = original_val_df[original_val_df["dataset"].map(lambda d: scenario_from_dataset(d) == scenario)]
+
                     if dataset_val_df.empty:
                         continue
-                    
+
                     model_errors = []
                     for model_name in dataset_val_df["model_name"].unique():
                         model_val_df = dataset_val_df[dataset_val_df["model_name"] == model_name]
                         model_orig_df = dataset_orig_df[dataset_orig_df["model_name"] == model_name]
-                        
+
                         # Get seen responses for theta estimation
                         seen_responses = _get_model_responses(model_val_df, seen_questions)
                         if len(seen_responses) == 0:
                             continue
-                        
-                        # Estimate theta using seen questions
-                        theta = estimate_ability_parameters(seen_responses, A, B)
-                        
+
+                        # Estimate theta using seen questions with multi-D IRT estimator
+                        present_questions = [q for q in seen_questions if q in seen_responses]
+                        if not present_questions:
+                            continue
+                        seen_indices = [all_questions.index(q) for q in present_questions]
+                        A_seen = A[:, :, seen_indices]
+                        B_seen = B[:, :, seen_indices]
+                        seen_vec = np.array([seen_responses[q] for q in present_questions], dtype=float)
+                        theta = estimate_ability_parameters(seen_vec, A_seen, B_seen)
+
                         # Predict on unseen questions and compare to actual
                         unseen_actual = _get_model_responses(model_orig_df, unseen_questions)
                         if len(unseen_actual) == 0:
                             continue
-                        
+
                         unseen_pred = _predict_responses(theta, A, B, unseen_questions, all_questions)
-                        
+
                         # Apply balance weights if available
                         if balance_weights is not None and len(balance_weights) == len(all_questions):
                             weighted_pred = np.mean([
@@ -309,16 +321,16 @@ def validate_irt_dimensions(
                         else:
                             weighted_pred = np.mean(list(unseen_pred.values()))
                             weighted_actual = np.mean(list(unseen_actual.values()))
-                        
+
                         model_errors.append(abs(weighted_pred - weighted_actual))
-                    
+
                     if model_errors:
                         dataset_error = np.mean(model_errors)
                         dataset_errors.append(dataset_error)
-                        
-                        if dataset not in errors_by_dataset:
-                            errors_by_dataset[dataset] = []
-                        errors_by_dataset[dataset].append(dataset_error)
+
+                        if scenario not in errors_by_dataset:
+                            errors_by_dataset[scenario] = []
+                        errors_by_dataset[scenario].append(dataset_error)
             
             else:
                 # No dataset separation, treat as one dataset
@@ -331,7 +343,14 @@ def validate_irt_dimensions(
                     if len(seen_responses) == 0:
                         continue
                     
-                    theta = estimate_ability_parameters(seen_responses, A, B)
+                    present_questions = [q for q in seen_questions if q in seen_responses]
+                    if not present_questions:
+                        continue
+                    seen_indices = [all_questions.index(q) for q in present_questions]
+                    A_seen = A[:, :, seen_indices]
+                    B_seen = B[:, :, seen_indices]
+                    seen_vec = np.array([seen_responses[q] for q in present_questions], dtype=float)
+                    theta = estimate_ability_parameters(seen_vec, A_seen, B_seen)
                     
                     unseen_actual = _get_model_responses(model_orig_df, unseen_questions)
                     if len(unseen_actual) == 0:
@@ -429,19 +448,32 @@ def _estimate_theta_mle(responses: dict, A: np.ndarray, B: np.ndarray, all_quest
     return theta
 
 
-def _predict_responses(theta: float, A: np.ndarray, B: np.ndarray, questions: list, all_questions: list) -> dict:
-    """Predict responses for given questions using estimated theta."""
+def _predict_responses(theta: np.ndarray | float, A: np.ndarray, B: np.ndarray, questions: list, all_questions: list) -> dict:
+    """Predict responses for given questions using estimated theta (supports multi-D)."""
     predictions = {}
-    
+
+    # Normalize theta shape to (1, D, 1)
+    if isinstance(theta, np.ndarray):
+        if theta.ndim == 3:
+            theta_arr = theta
+        elif theta.ndim == 1:
+            theta_arr = theta[None, :, None]
+        elif theta.ndim == 2 and theta.shape[0] == 1:
+            theta_arr = theta[:, :, None]
+        else:
+            # Fallback to scalar interpretation
+            theta_arr = np.array(theta, dtype=float).reshape(1, 1, 1)
+    else:
+        theta_arr = np.array([[theta]], dtype=float)[:, :, None]
+
     for q in questions:
         if q in all_questions:
             q_idx = all_questions.index(q)
             if q_idx < A.shape[2]:
-                a = np.linalg.norm(A[0, :, q_idx])
-                b = np.mean(B[0, :, q_idx])
-                p = sigmoid(a * theta - b)
-                predictions[q] = p
-    
+                # Use item_curve to compute probability with multi-D parameters
+                P = item_curve(theta_arr, A[:, :, q_idx:q_idx+1], B[:, :, q_idx:q_idx+1])
+                predictions[q] = float(np.squeeze(P))
+
     return predictions
 
 
@@ -472,25 +504,29 @@ def compute_lambda_values(
         
         return lambdas
     
-    # Compute lambda for each dataset
-    datasets = sorted(original_matrix_df["dataset"].unique())
-    
-    for dataset in datasets:
-        dataset_df = original_matrix_df[original_matrix_df["dataset"] == dataset]
-        
-        # Compute variance for this dataset
-        variance = _compute_dataset_variance(dataset_df)
-        
-        # Get validation error for this dataset
-        if dataset in validation_errors and len(validation_errors[dataset]) > best_dim_idx:
-            error = validation_errors[dataset][best_dim_idx]
+    # Helper to scenario root
+    def scenario_from_dataset(name: str) -> str:
+        return name.split(".")[0] if isinstance(name, str) and "." in name else name
+
+    # Compute lambda for each scenario (group of subdatasets)
+    scenarios = sorted({scenario_from_dataset(d) for d in original_matrix_df["dataset"].unique()})
+
+    for scenario in scenarios:
+        scenario_df = original_matrix_df[original_matrix_df["dataset"].map(lambda d: scenario_from_dataset(d) == scenario)]
+
+        # Compute variance for this scenario
+        variance = _compute_dataset_variance(scenario_df)
+
+        # Get validation error for this scenario
+        if scenario in validation_errors and len(validation_errors[scenario]) > best_dim_idx:
+            error = validation_errors[scenario][best_dim_idx]
         else:
             error = 0.05  # Default small error
-        
+
         # Apply notebook scaling and compute lambda
         v_scaled = variance / (4 * number_item)
         lambda_val = get_lambda(error, v_scaled)
-        lambdas[dataset] = lambda_val
+        lambdas[scenario] = lambda_val
     
     return lambdas
 
@@ -599,6 +635,11 @@ def fit_2pl_parameters(matrix_df: pd.DataFrame, config: TrainingConfig | None = 
         "b": b_values[:min_len]
     }, index=question_ids[:min_len])
     params.index.name = "question_id"
+    
+    # Add dataset information from matrix (needed for per-dataset anchor selection)
+    if "dataset" in matrix_df.columns:
+        question_to_dataset = matrix_df.groupby("question_id")["dataset"].first()
+        params["dataset"] = params.index.map(question_to_dataset)
     
     # Step 5: Compute lambda values for anchor-IRT blending
     print("Step 5: Computing lambda values...")

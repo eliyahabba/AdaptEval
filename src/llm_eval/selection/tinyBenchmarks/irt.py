@@ -52,7 +52,7 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
     config = IrtConfig(
         model_type='multidim_2pl',
         epochs=epochs,
-        priors='hierarchical', 
+        # priors='hierarchical',
         dims=D,
         lr=lr,
         lr_decay=0.9999,

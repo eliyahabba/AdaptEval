@@ -58,9 +58,7 @@ def anchors(
     out: str = typer.Option(..., help="Output JSON path with anchors list"),
     number_items: int = typer.Option(100, help="Total number of anchor items (from notebook)"),
     method: str = typer.Option("irt_clustering", help="Selection method: 'irt_clustering', 'correctness_clustering', or 'difficulty_binning'"),
-    # Legacy parameters for backward compatibility
-    per_level: int = typer.Option(5),
-    levels: int = typer.Option(10),
+
 ):
     params = pd.read_parquet(item_params)
     
@@ -71,24 +69,23 @@ def anchors(
         typer.echo(f"Using balance weights from training metadata")
     
     # Configure based on method
-    if method == "difficulty_binning":
-        acfg = AnchorConfig(
-            method=method,
-            per_level=per_level,
-            levels=levels,
-            balance_weights=balance_weights
-        )
-    else:
-        # Use new parameters if provided, otherwise fall back to legacy
-        if number_items == 100 and (per_level != 5 or levels != 10):
-            number_items = per_level * levels
-        acfg = AnchorConfig(
-            method=method,
-            number_items=number_items,
-            balance_weights=balance_weights
-        )
+    acfg = AnchorConfig(
+        method=method,
+        number_items=number_items,
+        balance_weights=balance_weights
+    )
     
-    anchor_ids = find_anchor_items(params, acfg)
+    # Use per-dataset selection if dataset column is available
+    if "dataset" in params.columns:
+        from anchors import find_anchor_items_by_dataset
+        # For main.py, we don't have matrix_df, so pass None (works for irt_clustering and difficulty_binning)
+        anchors_by_dataset = find_anchor_items_by_dataset(params, "dataset", number_items, method, matrix_df=None)
+        # Combine all anchors from all datasets
+        anchor_ids = []
+        for dataset, anchors in anchors_by_dataset.items():
+            anchor_ids.extend(anchors)
+    else:
+        anchor_ids = find_anchor_items(params, acfg)
     
     out_path = Path(out)
     out_path.parent.mkdir(parents=True, exist_ok=True)

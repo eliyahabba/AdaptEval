@@ -38,10 +38,6 @@ class AnchorConfig:
     method: Literal["irt_clustering", "correctness_clustering", "difficulty_binning"] = "irt_clustering"  # selection method
     random_state: int = 42  # for reproducible clustering
     balance_weights: np.ndarray | None = None  # balance weights for multi-subscenario datasets
-    
-    # Legacy parameters for difficulty_binning method
-    per_level: int = 5  # anchors per difficulty level
-    levels: int = 10   # number of difficulty levels
 
 
 def find_anchor_items_clustering(
@@ -145,10 +141,11 @@ def find_anchor_items_clustering(
 
 
 def find_anchor_items_difficulty_binning(item_params: pd.DataFrame, config: AnchorConfig | None = None) -> list[str]:
-    """Select anchor items distributed across difficulty levels (original approach).
+    """Select anchor items distributed across difficulty levels.
 
-    - Bin by difficulty (b parameter)
-    - Within each bin, rank by Fisher information anchor score and take top-k
+    - Bin by difficulty (b parameter) into 10 levels
+    - Within each bin, rank by Fisher information anchor score and take items
+    - Total items taken = config.number_items, distributed across bins
     """
     cfg = config or AnchorConfig()
     if item_params.empty:
@@ -162,19 +159,29 @@ def find_anchor_items_difficulty_binning(item_params: pd.DataFrame, config: Anch
     df = item_params.copy()
     df["anchor_score"] = anchorscore
     
-    # Bin by difficulty b into cfg.levels quantiles
-    # Fallback: if not enough distinct values, use cut on range
+    # Default to 10 levels for binning
+    levels = 10
+    per_level = max(1, cfg.number_items // levels)  # Distribute items across levels
+    
+    # Bin by difficulty b into levels quantiles
     try:
-        df["b_bin"] = pd.qcut(df["b"], q=cfg.levels, duplicates="drop")
+        df["b_bin"] = pd.qcut(df["b"], q=levels, duplicates="drop")
     except Exception:
-        df["b_bin"] = pd.cut(df["b"], bins=cfg.levels)
+        df["b_bin"] = pd.cut(df["b"], bins=levels)
     
     picked: list[str] = []
+    remaining_items = cfg.number_items
+    
     for _, group in df.groupby("b_bin", observed=True):
-        if len(group) == 0:
+        if len(group) == 0 or remaining_items <= 0:
             continue
-        top = group.sort_values("anchor_score", ascending=False).head(cfg.per_level)
+        
+        # Take up to per_level items from this bin, but don't exceed remaining_items
+        items_to_take = min(per_level, len(group), remaining_items)
+        top = group.sort_values("anchor_score", ascending=False).head(items_to_take)
         picked.extend([str(i) for i in top.index.tolist()])
+        remaining_items -= items_to_take
+    
     return picked
 
 
@@ -200,35 +207,40 @@ def find_anchor_items(item_params: pd.DataFrame, config: AnchorConfig | None = N
 def find_anchor_items_by_dataset(
     item_params: pd.DataFrame, 
     dataset_column: str | None, 
-    per_level: int, 
-    levels: int,
-    method: str = "irt_clustering"
+    number_items: int = 100,
+    method: str = "irt_clustering",
+    matrix_df: pd.DataFrame | None = None
 ) -> dict[str, list[str]]:
     """Find anchor items per dataset using specified method.
     
     Args:
         item_params: DataFrame with IRT parameters
         dataset_column: Column name for dataset grouping
-        per_level: Anchors per level (for binning) or total items = per_level * levels
-        levels: Number of levels (for binning)
+        number_items: Fixed number of anchor items per dataset (from notebook, default=100)
         method: Selection method - "irt_clustering", "correctness_clustering", or "difficulty_binning"
+        matrix_df: Optional matrix for correctness-based clustering
     """
     if dataset_column is None or dataset_column not in item_params.columns:
-        if method == "difficulty_binning":
-            config = AnchorConfig(method=method, per_level=per_level, levels=levels)
-        else:
-            number_items = per_level * levels
-            config = AnchorConfig(method=method, number_items=number_items)
+        config = AnchorConfig(method=method, number_items=number_items)
         return {"__all__": find_anchor_items(item_params, config)}
     
     out: dict[str, list[str]] = {}
     for ds, grp in item_params.groupby(dataset_column):
-        if method == "difficulty_binning":
-            config = AnchorConfig(method=method, per_level=per_level, levels=levels)
+        # Ensure we don't request more anchors than available questions
+        actual_number_items = min(number_items, len(grp))
+        config = AnchorConfig(method=method, number_items=actual_number_items)
+        
+        # For correctness clustering, we need to filter matrix_df to this dataset
+        if method == "correctness_clustering" and matrix_df is not None:
+            # Filter matrix to this dataset and questions in this group
+            dataset_matrix = matrix_df[
+                (matrix_df["dataset"] == ds) & 
+                (matrix_df["question_id"].isin(grp.index))
+            ]
+            anchor_ids, _ = find_anchor_items_clustering(grp, dataset_matrix, config)
+            out[str(ds)] = anchor_ids
         else:
-            number_items = min(per_level * levels, len(grp))
-            config = AnchorConfig(method=method, number_items=number_items)
-        out[str(ds)] = find_anchor_items(grp, config)
+            out[str(ds)] = find_anchor_items(grp, config)
     return out
 
 
