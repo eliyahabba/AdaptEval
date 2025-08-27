@@ -34,8 +34,7 @@ def train(
     deterministic: bool = typer.Option(True),
     log_every: int = typer.Option(200),
     device: str | None = typer.Option(None),
-    per_level: int = typer.Option(5),
-    levels: int = typer.Option(10),
+    number_items: int = typer.Option(100, help="Number of anchor items per dataset (from notebook)"),
 ):
     df = MatrixStorage(matrix).load()
     cfg = TrainingConfig(
@@ -54,7 +53,7 @@ def train(
     )
     params = train_item_parameters(df, config=cfg)
     save_item_parameters(params, out_params)
-    anchors = select_anchors(params, per_level=per_level, levels=levels)
+    anchors = select_anchors(params, number_items=number_items)
     save_anchors(anchors, out_anchors)
     typer.echo(f"Saved item params -> {out_params}; anchors -> {out_anchors}")
 
