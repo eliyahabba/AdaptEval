@@ -1,2 +1,5 @@
 /.idea/
 /.venv311/
+/src/download_helm/
+/data/
+/examples/
