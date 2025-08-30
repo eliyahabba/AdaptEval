@@ -4,6 +4,7 @@ Dataset utilities for HELM conversion.
 Handles dataset name extraction, mapping, and processing.
 """
 
+import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -34,47 +35,72 @@ def validate_mapping_config(enabled: bool, mapping_dir: Optional[Path] = None) -
         return False, None
 
 
-def normalize_dataset_name(dataset_name: str) -> str:
+def load_dataset_mappings(mappings_file: Optional[Path] = None) -> Dict[str, str]:
     """
-    Normalize dataset name to standard format.
+    Load dataset name mappings from JSON file.
+    
+    Args:
+        mappings_file: Path to JSON file with mappings (optional)
+        
+    Returns:
+        Dictionary of dataset name mappings
+    """
+    if mappings_file is None:
+        # Try to find default mappings file
+        current_dir = Path(__file__).parent.parent
+        mappings_file = current_dir / "dataset_mappings.json"
+    
+    try:
+        if mappings_file.exists():
+            with open(mappings_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return data.get("dataset_name_mappings", {})
+    except Exception as e:
+        print(f"Warning: Could not load mappings from {mappings_file}: {e}")
+    
+    return {}
 
+
+def normalize_dataset_name(dataset_name: str, 
+                          custom_mappings: Optional[Dict[str, str]] = None,
+                          mappings_file: Optional[Path] = None) -> str:
+    """
+    Normalize dataset name using configurable mappings from JSON file.
+    
     Args:
         dataset_name: Raw dataset name
-
+        custom_mappings: Optional custom mapping dictionary {old_name: new_name}
+        mappings_file: Optional path to JSON mappings file
+        
     Returns:
         Normalized dataset name
     """
     if not dataset_name:
         return dataset_name
 
-    # Specific normalizations
-    if dataset_name == "openbookqa":
-        return "openbook_qa"
-    if dataset_name == "gsm":
-        return "gsm8k"
-    if dataset_name == "narrative_qa":
-        return "narrativeqa"
-    if dataset_name == "wmt-14":
-        return "wmt14"
+    # Load mappings from JSON file
+    mappings = load_dataset_mappings(mappings_file)
+    
+    # Override/extend with custom mappings if provided
+    if custom_mappings:
+        mappings.update(custom_mappings)
 
     # Handle compound names (e.g., mmlu.anatomy)
     if '.' in dataset_name:
         base_name, subject = dataset_name.split('.', 1)
-        if base_name == "openbookqa":
-            return f"openbook_qa.{subject}"
-        if base_name == "gsm":
-            return f"gsm8k.{subject}"
-        if base_name == "narrative_qa":
-            return f"narrativeqa.{subject}"
-        if base_name == "wmt-14":
-            return f"wmt14.{subject}"
-
-    return dataset_name
+        # Apply mapping to base name if exists
+        normalized_base = mappings.get(base_name, base_name)
+        return f"{normalized_base}.{subject}"
+    
+    # Apply direct mapping if exists, otherwise keep original
+    return mappings.get(dataset_name, dataset_name)
 
 
 def extract_dataset_name_from_run_spec(run_spec: Dict, scenario: Dict) -> Optional[str]:
     """
-    Extract dataset name from run specification and scenario.
+    Extract dataset name from HELM run specification and scenario.
+    
+    This function knows HELM's structure but doesn't hardcode specific dataset names.
 
     Args:
         run_spec: Run specification dictionary
@@ -86,83 +112,79 @@ def extract_dataset_name_from_run_spec(run_spec: Dict, scenario: Dict) -> Option
     dataset_base = None
     subject = None
 
-    # Extract from scenario_spec class_name
+    # Try to extract from scenario_spec class_name
     if run_spec and "scenario_spec" in run_spec:
         spec = run_spec.get("scenario_spec", {})
         class_name = spec.get("class_name", "")
 
         if class_name:
-            # Handle OpenBookQA in commonsense_scenario
-            if "commonsense_scenario.OpenBookQA" in class_name:
-                dataset_base = "openbook_qa"
+            # Extract dataset name from class name (remove common suffixes)
+            dataset_from_class = class_name.lower()
+            
+            # Remove common HELM patterns
+            if "_scenario" in dataset_from_class:
+                dataset_from_class = dataset_from_class.replace("_scenario", "")
+            
+            # Handle nested class names (e.g., "commonsense_scenario.OpenBookQA")
+            if "." in dataset_from_class:
+                parts = dataset_from_class.split(".")
+                # Use the last part (usually the actual dataset name)
+                dataset_base = parts[-1].lower()
             else:
-                # Extract dataset name from class name
-                for part in class_name.split('.'):
-                    part_lower = part.lower()
-                    if "_scenario" in part_lower:
-                        dataset_base = part_lower.replace("_scenario", "")
-                        break
+                dataset_base = dataset_from_class
 
-        # Extract subject from arguments
+        # Extract subject/subset from arguments
         if "args" in spec:
             args = spec["args"]
-            if "subject" in args and args["subject"]:
-                subject = args["subject"]
-            elif "subset" in args and args["subset"]:
-                subject = args["subset"]
-            elif 'source_language' in args and 'target_language' in args:
-                # Translation case: extract languages
-                source_lang = args['source_language']
-                target_lang = args['target_language']
-                subject = f"{source_lang}-{target_lang}"
+            # Try common argument names for subjects
+            subject = (args.get("subject") or 
+                      args.get("subset") or 
+                      args.get("category"))
+            
+            # Handle translation datasets
+            if not subject and "source_language" in args and "target_language" in args:
+                subject = f"{args['source_language']}-{args['target_language']}"
 
-    # Extract from run name parameters
-    if not dataset_base and run_spec and "name" in run_spec:
+    # Try to extract from run name parameters (e.g., "dataset=mmlu,subject=anatomy")
+    if run_spec and "name" in run_spec:
         run_name = run_spec["name"]
-
-        # Check for dataset= parameter
-        if "dataset=" in run_name:
-            dataset_parts = [p for p in run_name.split(",") if "dataset=" in p]
-            if dataset_parts:
-                dataset_value = dataset_parts[0].split("=")[1]
-                if dataset_value.lower() == "openbookqa":
-                    dataset_base = "openbook_qa"
-                else:
-                    dataset_base = dataset_value
-
-        # Check for subset= parameter
-        if "subset=" in run_name:
-            subset_parts = [p for p in run_name.split(",") if "subset=" in p]
-            if subset_parts:
-                subject = subset_parts[0].split("=")[1]
-
-        # Fallback: extract from run name prefix
-        elif ":" in run_name and not dataset_base:
+        
+        # Extract dataset parameter
+        if not dataset_base and "dataset=" in run_name:
+            dataset_base = _extract_parameter_from_string(run_name, "dataset")
+        
+        # Extract subject parameter
+        if not subject:
+            subject = (_extract_parameter_from_string(run_name, "subject") or
+                      _extract_parameter_from_string(run_name, "subset"))
+        
+        # Fallback: use prefix before colon
+        if not dataset_base and ":" in run_name:
             dataset_base = run_name.split(":")[0]
 
-        # Extract subject from run name
-        if not subject and "subject=" in run_name:
-            subject_part = [p for p in run_name.split(",") if "subject=" in p]
-            if subject_part:
-                subject = subject_part[0].split("=")[1]
-
-    # Extract from scenario name as last resort
+    # Last resort: use scenario name
     if not dataset_base and scenario and "name" in scenario:
-        scenario_name = scenario["name"]
-        if scenario_name.lower() == "openbookqa":
-            dataset_base = "openbook_qa"
-        else:
-            dataset_base = scenario_name
+        dataset_base = scenario["name"].lower()
 
-    # Build full dataset name
+    # Build final dataset name
     if dataset_base:
         if subject:
-            dataset_name = f"{dataset_base}.{subject}"
+            return f"{dataset_base}.{subject}"
         else:
-            dataset_name = dataset_base
-        return dataset_name
-
+            return dataset_base
+    
     return None
+
+
+def _extract_parameter_from_string(text: str, param: str) -> Optional[str]:
+    """Extract parameter value from comma-separated key=value string."""
+    try:
+        parts = [p.strip() for p in text.split(",") if f"{param}=" in p]
+        if parts:
+            return parts[0].split("=")[1]
+        return None
+    except:
+        return None
 
 
 def get_question_index_fallback(instance: Dict) -> Tuple[int, str]:
