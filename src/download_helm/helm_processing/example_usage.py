@@ -6,7 +6,7 @@ advanced mapping mode (with JSON files) and generic fallback mode.
 """
 
 from pathlib import Path
-from converter_utils.dataset_utils import create_instance_section, normalize_dataset_name, validate_mapping_config
+from converter_utils.dataset_utils import create_instance_section, normalize_dataset_name
 
 
 def example_with_mapping_enabled():
@@ -49,16 +49,18 @@ def example_explicit_configuration():
 def process_helm_data_with_mapping(mapping_dir: Path):
     """Process data using advanced mapping."""
     sample_instance = get_sample_instance()
-    normalized_name = normalize_dataset_name("mmlu.geography")
-
+    
+    # Use any dataset name - completely generic
+    dataset_name = "your_dataset.your_subject"  # Replace with actual dataset name
+    
     result = create_instance_section(
         instance=sample_instance,
         display_request={},
-        dataset_name=normalized_name,
+        dataset_name=dataset_name,
         map_dir=mapping_dir,
         use_mapping=True
     )
-
+    
     print(f"Result with mapping: {result}")
     return result
 
@@ -66,15 +68,17 @@ def process_helm_data_with_mapping(mapping_dir: Path):
 def process_helm_data_fallback():
     """Process data using fallback mode."""
     sample_instance = get_sample_instance()
-    normalized_name = normalize_dataset_name("mmlu.geography")
-
+    
+    # Any dataset name works - no restrictions
+    dataset_name = "any_dataset_name.any_subject"  # Replace with actual dataset name
+    
     result = create_instance_section(
         instance=sample_instance,
         display_request={},
-        dataset_name=normalized_name,
+        dataset_name=dataset_name,
         use_mapping=False
     )
-
+    
     print(f"Result with fallback: {result}")
     return result
 
@@ -82,16 +86,24 @@ def process_helm_data_fallback():
 def process_helm_data_explicit():
     """Process data with explicit parameters."""
     sample_instance = get_sample_instance()
-    normalized_name = normalize_dataset_name("mmlu.geography")
-
-    # Auto-detect mode (no map_dir = fallback mode)
+    
+    # Option 1: Use default JSON mappings
+    dataset_name = normalize_dataset_name("gsm.mathematics")  # Will use dataset_mappings.json
+    
+    # Option 2: Use custom mappings (overrides JSON)
+    custom_mappings = {"legacy_eval": "modern_eval"}
+    dataset_name_custom = normalize_dataset_name("legacy_eval.category", custom_mappings)
+    
+    # Option 3: Use completely new dataset (no mapping needed)
+    new_dataset_name = "my_company_dataset.finance"  # Works as-is
+    
     result = create_instance_section(
         instance=sample_instance,
         display_request={},
-        dataset_name=normalized_name
+        dataset_name=new_dataset_name
         # No map_dir or use_mapping specified = auto fallback
     )
-
+    
     print(f"Result with auto-detect: {result}")
     return result
 
@@ -102,13 +114,13 @@ def get_sample_instance():
         "id": "id42",
         "split": "test",
         "input": {
-            "text": "What is the capital of France?"
+            "text": "Sample question text"
         },
         "references": [
-            {"output": {"text": "Paris"}},
-            {"output": {"text": "London"}},
-            {"output": {"text": "Berlin"}},
-            {"output": {"text": "Madrid"}}
+            {"output": {"text": "Option A"}},
+            {"output": {"text": "Option B"}},
+            {"output": {"text": "Option C"}},
+            {"output": {"text": "Option D"}}
         ]
     }
 

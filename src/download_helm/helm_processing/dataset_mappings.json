@@ -1,0 +1,13 @@
+{
+  "dataset_name_mappings": {
+    "openbookqa": "openbook_qa",
+    "gsm": "gsm8k",
+    "narrative_qa": "narrativeqa",
+    "wmt-14": "wmt14"
+  },
+  "description": "Optional dataset name mappings - add your own as needed",
+  "example_usage": {
+    "your_old_name": "your_new_name",
+    "legacy_dataset": "modern_dataset"
+  }
+}

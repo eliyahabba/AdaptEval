@@ -1,12 +1,11 @@
-import os
 import json
 import logging
-import pandas as pd
-import requests
-from typing import List, Optional, Dict
+import os
+from typing import List, Dict
+
 import colorama
+import requests
 from colorama import Fore, Style
-import argparse
 from tqdm import tqdm
 
 # Import centralized settings (paths, constants)
@@ -17,7 +16,6 @@ from settings import (
     HELM_VERSIONS,
     HELM_LITE_BASE_URL_TEMPLATE,
     HELM_FILE_TYPES,
-    DEFAULT_CSV_FILE_DOWNLOAD,
 )
 
 # Initialize colorama
@@ -82,7 +80,6 @@ def get_json_from_url(url):
         return None
 
 
-
 def download_single_task(task: str, start_version: str = DEFAULT_START_VERSION, output_dir: str = DOWNLOADS_DIR,
                          overwrite: bool = False) -> Dict:
     """
@@ -105,7 +102,7 @@ def download_single_task(task: str, start_version: str = DEFAULT_START_VERSION, 
 
     # Create directory for this task with proper permissions for later deletion
     save_dir = os.path.join(output_dir, task)
-    
+
     # Remove directory if it exists to ensure clean state
     if os.path.exists(save_dir) and overwrite:
         try:
@@ -114,10 +111,10 @@ def download_single_task(task: str, start_version: str = DEFAULT_START_VERSION, 
             log_info(f"Removed existing directory: {save_dir}", "🗑️")
         except Exception as e:
             log_warning(f"Could not remove existing directory: {e}", "⚠️")
-    
+
     # Create the directory with full permissions
     os.makedirs(save_dir, exist_ok=True)
-    
+
     # Set directory permissions to 0o777 (rwxrwxrwx) to ensure it can be deleted later
     try:
         os.chmod(save_dir, 0o777)

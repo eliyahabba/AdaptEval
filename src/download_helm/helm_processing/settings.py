@@ -22,15 +22,14 @@ from typing import Dict, List
 
 # Path to the HF mapping data directory used by `convert_cluade.py`.
 # NOTE: This value mirrors the previously hardcoded path to preserve behavior.
-HF_MAP_DATA_DIR: Path = Path(__file__).parent.parent.parent.parent / "data" / "hf_map_data"
+HF_MAP_DATA_DIR: Path = Path(__file__).parents[3] / "data" / "hf_map_data"
 
 # Path to model metadata CSV file used by model utilities
 MODEL_METADATA_CSV: Path = Path(__file__).parent / "model_metadata.csv"
 
 # Default CSVs used by CLI defaults in download/processor scripts. Kept identical
 # to existing per-script defaults to avoid behavior changes.
-DEFAULT_CSV_FILE_DOWNLOAD: Path = Path(__file__).parent.parent.parent / "download_helm" / "download" / "helm_lite_v1.13.0.csv"
-DEFAULT_CSV_FILE_PROCESSOR: Path = Path(__file__).parent.parent.parent / "download_helm" / "download" / "helm_lite_v1.13.0.csv"
+DEFAULT_CSV_FILE_PROCESSOR: Path = Path(__file__).parents[2] / "download_helm" / "download" / "helm_lite_v1.13.0.csv"
 
 # Subdirectory names (relative to the module locations that use them)
 DOWNLOADS_SUBDIR: str = "downloads"
@@ -66,29 +65,6 @@ HELM_FILE_TYPES: List[str] = [
 
 # Concurrency for `ProcessPoolExecutor` in `helm_data_processor.py`
 PROCESS_POOL_MAX_WORKERS: int = 16
-
-
-# --------------------------------------------------------------------------------------
-# Registries
-# --------------------------------------------------------------------------------------
-
-# Map dataset base names to HF repos. Mirrors previous in-file mapping.
-DATASET_REGISTRY: Dict[str, str] = {
-    "med_qa": "bigbio/med_qa",
-    "openbook_qa": "allenai/openbookqa",
-    "mmlu": "cais/mmlu",
-    "gsm": "openai/gsm8k",
-    "gsm8k": "openai/gsm8k",
-    "legalbench": "nguha/legalbench",
-    "narrativeqa": "deepmind/narrativeqa",
-    "wmt14": "wmt/wmt14",
-}
-
-# Optional: central place for known model metadata (names -> info). Currently
-# the project derives model info from `model_metadata.csv`. Keep this mapping
-# empty to preserve behavior, but leave as an extension point for future use.
-MODEL_REGISTRY: Dict[str, dict] = {}
-
 
 # --------------------------------------------------------------------------------------
 # Small utility constants

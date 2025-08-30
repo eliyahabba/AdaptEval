@@ -5,12 +5,11 @@ Converts HELM evaluation data to standardized evaluation schema format.
 """
 
 import argparse
-import json
 import os
 from typing import List
 
 # Import centralized settings
-from settings import HF_MAP_DATA_DIR, DATASET_REGISTRY, MODEL_METADATA_CSV
+from settings import HF_MAP_DATA_DIR, MODEL_METADATA_CSV
 # Import utility modules
 from .converter_utils.data_loading import (
     load_json_file,
@@ -30,7 +29,6 @@ from .converter_utils.model_utils import create_evaluation_id, create_model_sect
 
 # Global variables for caching
 MODEL_INFO = None
-DATASET_TO_HF_REPO = DATASET_REGISTRY
 
 
 def initialize_model_info():
