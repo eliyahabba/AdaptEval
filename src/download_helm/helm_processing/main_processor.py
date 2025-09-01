@@ -1,9 +1,11 @@
+import asyncio
 import json
 import logging
 import os
 import shutil
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathlib import Path
 from typing import List
 
 import colorama
@@ -12,17 +14,19 @@ import pandas as pd
 from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 
+from create_helm_csv import main as create_csv_main
+from helm_converter import main as convert_main
+# Import functions from helm_downloader.py
+from helm_downloader import (
+    download_tasks, log_info, log_success, log_error, log_warning, log_step
+)
 # Import centralized settings for paths and constants
 from settings import (
     DOWNLOADS_SUBDIR,
     OUTPUT_SUBDIR,
     TQDM_BAR_FORMAT,
     PROCESS_POOL_MAX_WORKERS,
-    DEFAULT_CSV_FILE_PROCESSOR,
-)
-# Import functions from helm_downloader.py
-from helm_downloader import (
-    download_tasks, log_info, log_success, log_error, log_warning, log_step
+    BENCHMARK_CSVS_DIR,
 )
 
 # Initialize colorama
@@ -42,11 +46,9 @@ logger = logging.getLogger("HELM_Processor")
 # Configure base directories
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOADS_DIR = os.path.join(BASE_DIR, DOWNLOADS_SUBDIR)
-OUTPUT_DIR = os.path.join(BASE_DIR, OUTPUT_SUBDIR)
 
 # Create necessary directories
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 def read_tasks_from_csv(csv_file: str, adapter_method: str = None) -> List[str]:
@@ -102,20 +104,18 @@ def read_tasks_from_csv(csv_file: str, adapter_method: str = None) -> List[str]:
         return []
 
 
-def convert_data(data_dir: str) -> str:
+def convert_data(data_dir: str, output_dir: str) -> str:
     """
     Convert the extracted data using convert_cluade.py
     Returns the path to the converted CSV file
     """
     # Create a unique output filename based on the data directory
     dir_basename = os.path.basename(data_dir)
-    output_file = os.path.join(OUTPUT_DIR, f"{dir_basename}_converted.csv")
+    output_file = os.path.join(output_dir, f"{dir_basename}_converted.csv")
 
     log_step(f"Converting data from {data_dir} to {output_file}", "🔄")
 
     try:
-        # Import the helm_converter module directly
-        from src.download_helm.helm_processing.helm_converter import main as convert_main
 
         # Call the main function directly
         log_info(f"Running conversion", "⚙️")
@@ -141,7 +141,8 @@ def cleanup(zip_path: str) -> None:
         log_info(f"Removed ZIP file: {zip_path}", "🗑️")
 
 
-def process_line(line: str, keep_temp_files: bool = False, overwrite: bool = False) -> dict:
+def process_line(line: str, output_dir: str, benchmark: str, keep_temp_files: bool = False,
+                 overwrite: bool = False) -> dict:
     """
     Process a single line from start to finish
     Returns a dictionary with the results
@@ -158,7 +159,7 @@ def process_line(line: str, keep_temp_files: bool = False, overwrite: bool = Fal
     }
 
     # Create a predictable output filename based on the line
-    expected_output_file = os.path.join(OUTPUT_DIR, f"{line}_converted.csv")
+    expected_output_file = os.path.join(output_dir, f"{line}_converted.csv")
 
     # Check if the output file already exists
     if os.path.exists(expected_output_file) and not overwrite:
@@ -183,7 +184,7 @@ def process_line(line: str, keep_temp_files: bool = False, overwrite: bool = Fal
     try:
         # Download the data
         log_step(f"Starting download phase", "🔽")
-        downloaded_files = download_tasks([line], output_dir=DOWNLOADS_DIR, overwrite=overwrite)
+        downloaded_files = download_tasks([line], output_dir=DOWNLOADS_DIR, benchmark=benchmark, overwrite=overwrite)
         if not downloaded_files:
             log_error(f"No files were downloaded")
             raise ValueError("No files were downloaded")
@@ -192,7 +193,7 @@ def process_line(line: str, keep_temp_files: bool = False, overwrite: bool = Fal
 
         # Convert the data
         log_step(f"Starting conversion phase", "🔄")
-        converted_file = convert_data(saved_dir)
+        converted_file = convert_data(saved_dir, output_dir)
         if not converted_file:
             log_error(f"Conversion failed")
             raise ValueError("Conversion failed")
@@ -228,8 +229,8 @@ def process_line(line: str, keep_temp_files: bool = False, overwrite: bool = Fal
     return result
 
 
-def main(input_file: str = None, input_lines: List[str] = None, csv_file: str = None,
-         adapter_method: str = None, keep_temp_files: bool = False, overwrite: bool = False):
+def main(csv_file: str, output_dir: Path, benchmark: str, adapter_method: str = None, keep_temp_files: bool = False,
+         overwrite: bool = False):
     """
     Main function to process all lines
     """
@@ -259,7 +260,9 @@ def main(input_file: str = None, input_lines: List[str] = None, csv_file: str = 
 
         # Parallel execution with a fixed-size process pool
         with ProcessPoolExecutor(max_workers=PROCESS_POOL_MAX_WORKERS) as executor:
-            future_to_line = {executor.submit(process_line, line, keep_temp_files, overwrite): line for line in lines}
+            future_to_line = {
+                executor.submit(process_line, line, output_dir, benchmark, keep_temp_files, overwrite): line for line in
+                lines}
 
             for future in as_completed(future_to_line):
                 line = future_to_line[future]
@@ -317,7 +320,7 @@ def main(input_file: str = None, input_lines: List[str] = None, csv_file: str = 
     log_info(f"  🔢 Total entries across all files: {total_entries}")
 
     # Save results to a JSON file
-    results_file = os.path.join(OUTPUT_DIR, "processing_results.json")
+    results_file = os.path.join(output_dir, "processing_results.json")
     with open(results_file, 'w', encoding='utf-8') as f:
         json.dump({
             "summary": {
@@ -340,10 +343,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Process HELM data from download to conversion")
-    # group = parser.add_mutually_exclusive_group(required=True)
-    parser.add_argument("--csv-file", help="CSV file with 'Run' column containing HELM catalog lines",
-                        default=str(DEFAULT_CSV_FILE_PROCESSOR))
-    parser.add_argument("--input-line", help="Single line to process")
+    parser.add_argument("--benchmark", help="Benchmark name to process (e.g., 'lite', 'mmlu').", default="classic")
     parser.add_argument("--adapter-method", help="Filter tasks by Adapter method (e.g., 'multiple_choice_joint')")
     parser.add_argument("--keep-temp", action="store_true", help="Keep temporary files (zip and extracted directories)")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing output files")
@@ -353,15 +353,35 @@ if __name__ == "__main__":
     log_info(f"Starting HELM Data Processor", "🚀")
     log_info(f"Arguments: {args}", "🔧")
 
-    if args.csv_file:
-        log_step(f"Processing from CSV file: {args.csv_file}", "📋")
-        main(csv_file=args.csv_file, adapter_method=args.adapter_method,
-             keep_temp_files=args.keep_temp, overwrite=args.overwrite)
-    elif args.input_file:
-        log_step(f"Processing from input file: {args.input_file}", "📄")
-        main(input_file=args.input_file, keep_temp_files=args.keep_temp, overwrite=args.overwrite)
-    elif args.input_line:
-        log_step(f"Processing single line: {args.input_line}", "📝")
-        main(input_lines=[args.input_line], keep_temp_files=args.keep_temp, overwrite=args.overwrite)
+    log_step(f"Processing benchmark: {args.benchmark}", "📊")
+
+    # Create dynamic output directory
+    output_dir_path = Path(BASE_DIR) / OUTPUT_SUBDIR / args.benchmark
+    os.makedirs(output_dir_path, exist_ok=True)
+    log_info(f"Output will be saved to: {output_dir_path}", "📂")
+
+    # Construct path to the CSV file
+    csv_to_process = BENCHMARK_CSVS_DIR / f"helm_{args.benchmark}.csv"
+
+    if not csv_to_process.exists() or args.overwrite:
+        if not csv_to_process.exists():
+            log_warning(f"CSV for benchmark '{args.benchmark}' not found. Downloading...", "📥")
+        else:
+            log_info(f"Overwrite flag is set. Re-downloading CSV for benchmark '{args.benchmark}'.", "📥")
+        try:
+            asyncio.run(create_csv_main(benchmark=args.benchmark, output_dir=str(BENCHMARK_CSVS_DIR)))
+            log_success(f"Successfully created CSV: {csv_to_process}", "✅")
+        except Exception as e:
+            log_error(f"Failed to create CSV for benchmark '{args.benchmark}': {e}", "❌")
+            sys.exit(1)
+    else:
+        log_info(f"Found existing CSV for benchmark '{args.benchmark}': {csv_to_process}", "📄")
+
+    csv_to_process_str = str(csv_to_process)
+
+    log_step(f"Processing from CSV file: {csv_to_process_str}", "📋")
+    main(csv_file=csv_to_process_str, output_dir=output_dir_path, benchmark=args.benchmark,
+         adapter_method=args.adapter_method,
+         keep_temp_files=args.keep_temp, overwrite=args.overwrite)
 
     log_success(f"HELM Data Processor completed", "🏁")

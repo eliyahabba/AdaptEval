@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import List, Dict
+from typing import List
 
 import colorama
 import requests
@@ -14,7 +14,8 @@ from settings import (
     OUTPUT_SUBDIR,
     DEFAULT_START_VERSION,
     HELM_VERSIONS,
-    HELM_LITE_BASE_URL_TEMPLATE,
+    HELM_URL_WITH_BENCHMARK_TEMPLATE,
+    HELM_URL_WITHOUT_BENCHMARK_TEMPLATE,
     HELM_FILE_TYPES,
 )
 
@@ -80,11 +81,11 @@ def get_json_from_url(url):
         return None
 
 
-def download_single_task(task: str, start_version: str = DEFAULT_START_VERSION, output_dir: str = DOWNLOADS_DIR,
-                         overwrite: bool = False) -> Dict:
+def download_task(task: str, output_dir: str, benchmark: str, overwrite: bool = False,
+                  start_version: str = DEFAULT_START_VERSION) -> str or None:
     """
-    Download a single HELM task from multiple possible versions
-    Returns statistics about what was downloaded
+    Download and extract files for a given task.
+    This function tries different versions of HELM data.
     """
     log_step(f"Downloading task: {task}", "🔽")
 
@@ -95,7 +96,7 @@ def download_single_task(task: str, start_version: str = DEFAULT_START_VERSION, 
     versions = versions[start_idx:]
 
     # Base URL template
-    base_url_template = HELM_LITE_BASE_URL_TEMPLATE
+    base_url_template = HELM_URL_WITH_BENCHMARK_TEMPLATE
 
     # Different file types to download for each task
     file_types = list(HELM_FILE_TYPES)
@@ -143,8 +144,11 @@ def download_single_task(task: str, start_version: str = DEFAULT_START_VERSION, 
 
         # Try each version in order until we find the file
         for version in versions:
-            cur_url = f"{base_url_template.format(version=version)}/{task}/{file_type}.json"
+            cur_url = f"{base_url_template.format(benchmark=benchmark, version=version)}/{task}/{file_type}.json"
             json_data = get_json_from_url(cur_url)
+            if json_data is None:
+                cur_url = f"{HELM_URL_WITHOUT_BENCHMARK_TEMPLATE.format(version=version)}/{task}/{file_type}.json"
+                json_data = get_json_from_url(cur_url)
 
             if json_data:
                 with open(save_path, "w") as f:
@@ -168,49 +172,24 @@ def download_single_task(task: str, start_version: str = DEFAULT_START_VERSION, 
             "⚠️"
         )
 
-    return task_stats
+    return save_dir
 
 
-def download_tasks(tasks: List[str], start_version: str = DEFAULT_START_VERSION,
-                   output_dir: str = DOWNLOADS_DIR, overwrite: bool = False) -> Dict:
+def download_tasks(tasks: List[str], output_dir: str, benchmark: str, overwrite: bool = False,
+                   start_version: str = DEFAULT_START_VERSION) -> List[str]:
     """
-    Download multiple HELM tasks
-    Returns statistics about what was downloaded
+    Download a list of tasks and return the paths to the saved files.
     """
     log_step(f"Downloading {len(tasks)} tasks", "🔽")
 
-    # Initialize statistics
-    download_stats = {
-        "total_tasks": len(tasks),
-        "total_files_checked": len(tasks) * len(HELM_FILE_TYPES),
-        "files_found": 0,
-        "files_missing": 0,
-        "version_usage": {version: 0 for version in HELM_VERSIONS}
-    }
-
-    # Process each task with a progress bar
+    saved_files = []
     for task in tqdm(tasks, desc="Processing tasks"):
-        task_stats = download_single_task(task, start_version, output_dir, overwrite)
+        log_step(f"Starting download for task: {task}")
+        saved_file = download_task(task, output_dir, benchmark, overwrite, start_version)
+        if saved_file:
+            saved_files.append(saved_file)
+            log_success(f"Successfully downloaded task '{task}' to '{saved_file}'")
+        else:
+            log_error(f"Failed to download task: {task}")
 
-        # Update global statistics
-        download_stats["files_found"] += task_stats["found_files"]
-        download_stats["files_missing"] += task_stats["missing_files"]
-
-        # Update version usage
-        for version, count in task_stats["version_usage"].items():
-            if version in download_stats["version_usage"]:
-                download_stats["version_usage"][version] += count
-
-    # Print final statistics
-    log_step("Download Statistics", "📊")
-    log_info(f"Total tasks processed: {download_stats['total_tasks']}")
-    log_info(f"Total files checked: {download_stats['total_files_checked']}")
-    log_info(f"Files found: {download_stats['files_found']}")
-    log_info(f"Files missing: {download_stats['files_missing']}")
-
-    log_step("Files found per version:", "📈")
-    for version, count in download_stats["version_usage"].items():
-        if count > 0:
-            log_info(f"{version}: {count} files")
-
-    return download_stats
+    return saved_files

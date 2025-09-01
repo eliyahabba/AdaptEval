@@ -1,9 +1,14 @@
+import argparse
 import asyncio
+import os
+
 import pandas as pd
 from playwright.async_api import async_playwright
 
+from settings import BENCHMARK_CSVS_DIR
 
-async def scrape_helm_data():
+
+async def scrape_helm_data(benchmark: str):
     """
     Scrape HELM data using direct URL navigation with proper page refresh
     to prevent caching issues.
@@ -30,7 +35,7 @@ async def scrape_helm_data():
         ))
 
         page_number = 1
-        max_pages = 30  # Safety limit
+        max_pages = 100  # Safety limit
         consecutive_empty_pages = 0
         max_empty_pages = 3  # Stop after 3 consecutive pages with no data
 
@@ -40,7 +45,7 @@ async def scrape_helm_data():
             print(f"Processing page {page_number}...")
 
             # Full URL including hash
-            url = f"https://crfm.stanford.edu/helm/lite/latest/#/runs?page={page_number}"
+            url = f"https://crfm.stanford.edu/helm/{benchmark}/latest/#/runs?page={page_number}"
 
             try:
                 # Navigate to the page and force a complete page load
@@ -113,9 +118,6 @@ async def scrape_helm_data():
                     print(f"No data extracted from page {page_number}")
                     consecutive_empty_pages += 1
 
-                # Take a screenshot for verification (optional)
-                await page.screenshot(path=f"page_{page_number}.png")
-
                 # Move to next page
                 page_number += 1
 
@@ -130,13 +132,14 @@ async def scrape_helm_data():
     return all_data
 
 
-async def main():
-    data = await scrape_helm_data()
+async def main(benchmark: str, output_dir: str):
+    data = await scrape_helm_data(benchmark)
 
     if data:
         # Create DataFrame and save to CSV
         df = pd.DataFrame(data)
-        csv_filename = "helm_data.csv"
+        os.makedirs(output_dir, exist_ok=True)
+        csv_filename = os.path.join(output_dir, f"helm_{benchmark}.csv")
         df.to_csv(csv_filename, index=True)
         print(f"Data saved to {csv_filename}. Total records: {len(data)}")
 
@@ -154,4 +157,18 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description="Scrape HELM data and save to CSV.")
+    parser.add_argument(
+        "--benchmark",
+        type=str,
+        default="lite",
+        help="The HELM benchmark to scrape (e.g., 'lite', 'mmlu')."
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default=str(BENCHMARK_CSVS_DIR),
+        help="The directory to save the output CSV file."
+    )
+    args = parser.parse_args()
+    asyncio.run(main(args.benchmark, args.output_dir))

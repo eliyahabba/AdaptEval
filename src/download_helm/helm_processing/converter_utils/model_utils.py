@@ -29,10 +29,13 @@ def get_model_info(model_name: str, model_metadata: Dict[str, dict]) -> Dict:
     Returns:
         Model information dictionary
     """
-    model_data = model_metadata[model_name]
+    name, family = model_name.split("/")
+    # get model data if available
+    # model_data = model_metadata[model_name]
+
     return {
     "name": model_name,
-    "family": model_data["family"]
+    "family": family
     }
 
 

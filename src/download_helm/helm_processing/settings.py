@@ -27,12 +27,14 @@ HF_MAP_DATA_DIR: Path = Path(__file__).parents[3] / "data" / "hf_map_data"
 # Path to model metadata CSV file used by model utilities
 MODEL_METADATA_CSV: Path = Path(__file__).parent / "model_metadata.csv"
 
-# Default CSVs used by CLI defaults in download/processor scripts. Kept identical
-# to existing per-script defaults to avoid behavior changes.
-DEFAULT_CSV_FILE_PROCESSOR: Path = Path(__file__).parents[2] / "download_helm" / "download" / "helm_lite_v1.13.0.csv"
+# Base directory for all data files
+DATA_DIR: Path = Path(__file__).parent / "data"
+
+# Directory for storing downloaded benchmark CSVs.
+BENCHMARK_CSVS_DIR: Path = DATA_DIR / "benchmark_lines"
 
 # Subdirectory names (relative to the module locations that use them)
-DOWNLOADS_SUBDIR: str = "downloads"
+DOWNLOADS_SUBDIR: str = "data/downloads"
 OUTPUT_SUBDIR: str = "converted_data"
 
 
@@ -41,14 +43,19 @@ OUTPUT_SUBDIR: str = "converted_data"
 # --------------------------------------------------------------------------------------
 
 # Versions to search for when downloading HELM files (kept identical ordering)
-HELM_VERSIONS: List[str] = [f"v1.{i}.0" for i in range(14)]  # v1.0.0 to v1.13.0
-
+HELM_1_VERSIONS: List[str] = [f"v1.{i}.0" for i in range(14)]  # v1.0.0 to v1.13.0
+HELM_0_VERSIONS: List[str] = [f"v0.{i}.0" for i in range(3,14)]  # v1.0.0 to v1.13.0
+HELM_VERSIONS: List[str] = HELM_1_VERSIONS + HELM_0_VERSIONS
 # Default starting version
 DEFAULT_START_VERSION: str = "v1.0.0"
 
-# Base URL template for HELM lite assets (unchanged)
-HELM_LITE_BASE_URL_TEMPLATE: str = (
-    "https://storage.googleapis.com/crfm-helm-public/lite/benchmark_output/runs/{version}"
+# Base URL template for HELM assets
+HELM_URL_WITH_BENCHMARK_TEMPLATE: str = (
+    "https://storage.googleapis.com/crfm-helm-public/{benchmark}/benchmark_output/runs/{version}"
+)
+
+HELM_URL_WITHOUT_BENCHMARK_TEMPLATE: str = (
+    "https://storage.googleapis.com/crfm-helm-public/benchmark_output/runs/{version}"
 )
 
 # File types fetched per task (unchanged)
@@ -64,7 +71,7 @@ HELM_FILE_TYPES: List[str] = [
 ]
 
 # Concurrency for `ProcessPoolExecutor` in `helm_data_processor.py`
-PROCESS_POOL_MAX_WORKERS: int = 16
+PROCESS_POOL_MAX_WORKERS: int = 8
 
 # --------------------------------------------------------------------------------------
 # Small utility constants

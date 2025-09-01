@@ -8,24 +8,24 @@ import argparse
 import os
 from typing import List
 
-# Import centralized settings
-from settings import HF_MAP_DATA_DIR, MODEL_METADATA_CSV
 # Import utility modules
-from .converter_utils.data_loading import (
+from converter_utils.data_loading import (
     load_json_file,
     get_model_metadata,
     save_csv_file,
 )
-from .converter_utils.dataset_utils import (
+from converter_utils.dataset_utils import (
     extract_dataset_name_from_run_spec,
     create_instance_section,
 )
-from .converter_utils.evaluation_utils import (
+from converter_utils.evaluation_utils import (
     create_evaluation_section,
     create_output_section,
     convert_nan_to_null,
 )
-from .converter_utils.model_utils import create_evaluation_id, create_model_section
+from converter_utils.model_utils import create_evaluation_id, create_model_section
+# Import centralized settings
+from settings import HF_MAP_DATA_DIR, MODEL_METADATA_CSV
 
 # Global variables for caching
 MODEL_INFO = None
@@ -127,11 +127,6 @@ def main(data_dir: str, output_file: str) -> None:
     save_csv_file(examples_processed, output_file)
 
     print(f"Converted {len(examples)} examples and saved to {output_file}")
-
-    # Also print the first example in JSON format for quick inspection
-    # if examples:
-    #     print("\nFirst example:")
-    #     print(json.dumps(examples_processed[0], indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":
