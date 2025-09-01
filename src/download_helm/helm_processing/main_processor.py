@@ -230,7 +230,7 @@ def process_line(line: str, output_dir: str, benchmark: str, keep_temp_files: bo
 
 
 def main(csv_file: str, output_dir: Path, benchmark: str, adapter_method: str = None, keep_temp_files: bool = False,
-         overwrite: bool = False):
+         overwrite: bool = False, max_workers: int = PROCESS_POOL_MAX_WORKERS):
     """
     Main function to process all lines
     """
@@ -259,7 +259,7 @@ def main(csv_file: str, output_dir: Path, benchmark: str, adapter_method: str = 
         )
 
         # Parallel execution with a fixed-size process pool
-        with ProcessPoolExecutor(max_workers=PROCESS_POOL_MAX_WORKERS) as executor:
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
             future_to_line = {
                 executor.submit(process_line, line, output_dir, benchmark, keep_temp_files, overwrite): line for line in
                 lines}
@@ -347,6 +347,8 @@ if __name__ == "__main__":
     parser.add_argument("--adapter-method", help="Filter tasks by Adapter method (e.g., 'multiple_choice_joint')")
     parser.add_argument("--keep-temp", action="store_true", help="Keep temporary files (zip and extracted directories)")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing output files")
+    parser.add_argument("--max-workers", type=int, default=PROCESS_POOL_MAX_WORKERS,
+                        help=f"Maximum number of parallel processes (default: {PROCESS_POOL_MAX_WORKERS})")
 
     args = parser.parse_args()
 
@@ -382,6 +384,6 @@ if __name__ == "__main__":
     log_step(f"Processing from CSV file: {csv_to_process_str}", "📋")
     main(csv_file=csv_to_process_str, output_dir=output_dir_path, benchmark=args.benchmark,
          adapter_method=args.adapter_method,
-         keep_temp_files=args.keep_temp, overwrite=args.overwrite)
+         keep_temp_files=args.keep_temp, overwrite=args.overwrite, max_workers=args.max_workers)
 
     log_success(f"HELM Data Processor completed", "🏁")

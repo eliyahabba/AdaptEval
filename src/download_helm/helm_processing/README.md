@@ -1,163 +1,177 @@
-# HELM Processing - Flexible Dataset Support
+# HELM Processing System
 
-מערכת עיבוד HELM גנרית שתומכת בכל דאטה סט חדש ללא שינוי קוד:
+A comprehensive system for downloading, processing, and converting HELM (Holistic Evaluation of Language Models) evaluation data into standardized formats.
 
-## מצבי פעולה
+## Quick Start
 
-### 1. מצב מתקדם (Advanced Mapping Mode)
-- משתמש בקבצי JSON עם מיפוי מדויק של שאלות
-- מאפשר חיפוש מדויק ומהיר של שאלות
-- תומך בכל דאטה סט עם קבצי mapping מתאימים
+To get started immediately, simply run:
 
-### 2. מצב דיפולטי (Generic Fallback Mode) 
-- פועל ללא קבצי JSON נוספים
-- משתמש בפירוק ID מהמבנה הסטנדרטי של HELM
-- **תומך בכל דאטה סט חדש אוטומטית**
-
-## איך להשתמש
-
-### שימוש עם מיפוי מתקדם
-
-```python
-from pathlib import Path
-from converter_utils.dataset_utils import create_instance_section
-
-# הגדרת נתיב לקבצי המיפוי
-mapping_dir = Path("/path/to/your/mapping/files")
-
-# שימוש עם מיפוי מתקדם
-result = create_instance_section(
-    instance=instance_data,
-    display_request={},
-    dataset_name="mmlu.geography",
-    map_dir=mapping_dir,
-    use_mapping=True
-)
+```bash
+python main_processor.py --benchmark lite
 ```
 
-### שימוש במצב דיפולטי (לשיתוף)
+Or try other available benchmarks:
 
-```python
-from converter_utils.dataset_utils import create_instance_section
-
-# שימוש במצב דיפולטי - ID parsing בלבד
-result = create_instance_section(
-    instance=instance_data,
-    display_request={},
-    dataset_name="mmlu.geography",
-    use_mapping=False
-)
-
-# או פשוט אל תעביר שום הגדרה (auto-detect)
-result = create_instance_section(
-    instance=instance_data,
-    display_request={},
-    dataset_name="mmlu.geography"
-)
+```bash
+python main_processor.py --benchmark mmlu
+python main_processor.py --benchmark classic
 ```
 
-### קונפיגורציה גמישה
+The system will automatically:
+1. Scrape the HELM website to discover all available evaluations
+2. Download the raw data files
+3. Convert everything to standardized CSV format
 
-- **מיפויי שמות**: בקובץ JSON נפרד (`dataset_mappings.json`)
-- **ארגומנטים ברורים**: כל הקונפיגורציה מועברת כארגומנטים  
-- **אין global state**: אין משתנים גלובליים או config מורכב
+That's it! Your processed data will be saved in the `data/converted_data/` directory.
 
-## דוגמת שימוש מלאה
+## Overview
 
-```python
-from converter_utils.dataset_utils import create_instance_section, normalize_dataset_name
+This system provides a complete pipeline for working with HELM evaluation data:
 
-# עיבוד instance
-instance = {
-    "id": "id123",
-    "split": "test", 
-    "input": {"text": "Sample question text"},
-    "references": [
-        {"output": {"text": "Option A"}},
-        {"output": {"text": "Option B"}},
-        {"output": {"text": "Option C"}}
-    ]
-}
+1. **Step 1**: Builds a table of all relevant (model, dataset) pairs by scraping the HELM website
+2. **Step 2**: Downloads multiple JSON files for each (model, dataset) pair from HELM's storage
+3. **Step 3**: Converts and merges the data into standardized CSV files with customizable schema
 
-# השתמש בכל שם דאטה סט שאתה רוצה
-dataset_name = "your_dataset_name.your_subject"  # החלף עם השם שלך
+## How It Works
 
-# יצירת section (מצב דיפולטי) - עובד עם כל דאטה סט
-result = create_instance_section(
-    instance=instance,
-    display_request={},
-    dataset_name=dataset_name,
-    use_mapping=False
-)
+### Core Pipeline
 
-print(result)
-# Output: {
-#     "raw_input": "Sample question text",
-#     "dataset_name": "your_dataset_name.your_subject", 
-#     "hf_split": "test",
-#     "hf_index": 123
-# }
+The system operates in three main phases:
+
+1. **Data Discovery** (`create_helm_csv.py`): Scrapes the HELM website to build a comprehensive table of all available (model, dataset) evaluation runs
+2. **Data Download** (`helm_downloader.py`): Downloads 8 different JSON files for each evaluation run from HELM's Google Cloud Storage
+3. **Data Conversion** (`helm_converter.py`): Transforms the raw HELM data into a standardized evaluation schema
+
+### File Structure
+
+```
+data/
+├── benchmark_lines/           # Step 1: Scraped task tables
+│   ├── helm_lite.csv
+│   ├── helm_mmlu.csv
+│   └── helm_classic.csv
+├── downloads/                 # Step 2: Raw HELM JSON files
+│   └── {task_name}/
+│       ├── run_spec.json
+│       ├── instances.json
+│       ├── display_requests.json
+│       ├── display_predictions.json
+│       ├── stats.json
+│       ├── per_instance_stats.json
+│       ├── scenario.json
+│       └── scenario_state.json
+└── converted_data/            # Step 3: Final CSV outputs
+    ├── lite/                  # Example benchmark directories
+    ├── mmlu/                  # (additional benchmarks will be created
+    └── classic/               #  as needed based on HELM website)
 ```
 
-## קבצים במערכת
+**Note**: The benchmark directories (`lite/`, `mmlu/`, `classic/`) are just examples. The system automatically creates directories for any benchmark available on the HELM website.
 
-- `converter_utils/dataset_utils.py` - כל הפונקציות העיקריות כולל validation
-- `converter_utils/advanced_mapping.py` - לוגיקת מיפוי מתקדמת (נדרשת רק במצב מתקדם)
-- `dataset_mappings.json` - מיפויי שמות דאטה סטים (ניתן לעריכה)
-- `example_usage.py` - דוגמאות שימוש
+### Python Module Structure
 
-## יתרונות החדשים
+- **`main_processor.py`**: Orchestrates the entire pipeline with parallel processing
+- **`create_helm_csv.py`**: Web scraping module for discovering available evaluations
+- **`helm_downloader.py`**: Downloads raw HELM data from multiple versions
+- **`helm_converter.py`**: Converts HELM data to standardized evaluation format
+- **`settings.py`**: Centralized configuration for paths and constants
+- **`converter_utils/`**: Modular utilities for data processing:
+  - `data_loading.py`: JSON/CSV file operations
+  - `dataset_utils.py`: Dataset name extraction and mapping
+  - `evaluation_utils.py`: Evaluation metrics and scoring
+  - `model_utils.py`: Model metadata processing
+  - `advanced_mapping.py`: Optional advanced question mapping
 
-### גמישות מלאה
-✅ **תומך בכל דאטה סט חדש** ללא שינוי קוד  
-✅ **ללא שמות קודקדים** - עובד עם כל שם דאטה סט  
-✅ **מיפויים מותאמים אישית** - רק כשנדרש  
-✅ **חילוץ אוטומטי מ-HELM** - מבין את מבנה HELM ללא הגבלות  
+## Output Schema
 
-### מצב מתקדם
-✅ חיפוש מדויק של שאלות  
-✅ תמיכה במקרי קצה מורכבים  
-✅ ביצועים מהירים עם cache  
+The final CSV files contain standardized evaluation data with the following structure (customizable in `helm_converter.py`):
 
-### מצב דיפולטי  
-✅ לא דורש קבצי JSON נוספים  
-✅ פשוט לשיתוף עם אחרים  
-✅ עובד out-of-the-box עם כל דאטה סט  
-✅ טיפול חכם במקרי קצה  
-
-## דוגמאות להוספת דאטה סטים חדשים
-
-```python
-# דוגמה 1: כל דאטה סט חדש עובד מיד
-dataset_name = "company_evaluation.financial_analysis"
-result = create_instance_section(instance, {}, dataset_name)
-# עובד מיד! ✅
-
-# דוגמה 2: מיפויים אוטומטיים מקובץ JSON
-normalized = normalize_dataset_name("gsm.math")  # → "gsm8k.math" (מ-dataset_mappings.json)
-
-# דוגמה 3: מיפוי מותאם (עוקף את ה-JSON)
-custom_mappings = {"legacy_name": "modern_name"} 
-normalized = normalize_dataset_name("legacy_name.category", custom_mappings)
-# → "modern_name.category"
-
-# דוגמה 4: HELM חדש יחלץ כל שם אוטומטית
-run_spec = {
-    "scenario_spec": {
-        "class_name": "custom_research_scenario",
-        "args": {"domain": "healthcare"}
-    }
-}
-extracted = extract_dataset_name_from_run_spec(run_spec, {})
-# → "custom_research.healthcare" ✅
+```csv
+evaluation_id,dataset_name,hf_split,hf_index,raw_input,ground_truth,model_name,model_family,output,evaluation_method_name,evaluation_score
 ```
 
-## הערות חשובות
+**Key Fields:**
+- `evaluation_id`: Unique identifier for each evaluation
+- `dataset_name`: Normalized dataset name (e.g., "mmlu.anatomy")
+- `hf_split`: Data split (train/test/validation)
+- `hf_index`: Question index in the original dataset
+- `raw_input`: The question text
+- `ground_truth`: Correct answer (A, B, C, D for multiple choice)
+- `model_name`: Model identifier
+- `model_family`: Model family/architecture
+- `output`: Model's predicted response
+- `evaluation_method_name`: Evaluation metric used
+- `evaluation_score`: Numerical score (0-1)
 
-1. **גנרי לחלוטין**: אין שמות דאטה סטים קודקדים בקוד
-2. **מיפויים ב-JSON**: קל לעריכה ללא שינוי קוד Python
-3. **ארגומנטים ברורים**: כל הקונפיגורציה מועברת כארגומנטים
-4. **תאימות לאחור**: הקוד הקיים ימשיך לעבוד ללא שינויים  
-5. **הוספה קלה**: דאטה סטים חדשים עובדים מיד ללא שינוי קוד
-6. **עריכה נוחה**: פשוט לערוך את `dataset_mappings.json` להוסיף מיפויים
+## Usage
+
+### Basic Usage
+
+```bash
+# Process all tasks from a benchmark
+python main_processor.py --benchmark lite
+
+# Filter by adapter method
+python main_processor.py --benchmark mmlu --adapter-method multiple_choice_joint
+
+# Keep temporary files for debugging
+python main_processor.py --benchmark classic --keep-temp
+```
+
+### Advanced Configuration
+
+The system supports two modes for dataset processing:
+
+1. **Generic Mode** (default): Works with any dataset using ID parsing
+2. **Advanced Mapping Mode**: Uses JSON mapping files for precise question matching
+
+### Customizing Output Schema
+
+To modify the output format, edit the field ordering in `helm_converter.py`:
+
+```python
+# In process_helm_data() function, modify this section:
+ordered_fields = [
+    'evaluation_id', 'dataset_name', 'hf_split', 'hf_index',
+    'raw_input', 'ground_truth', 'model_name', 'model_family',
+    'output', 'evaluation_method_name', 'evaluation_score'
+    # Add or remove fields as needed
+]
+```
+
+## Key Features
+
+- **Parallel Processing**: Uses ProcessPoolExecutor for efficient multi-core processing
+- **Version Fallback**: Automatically tries multiple HELM versions to find complete data
+- **Flexible Schema**: Easily customizable output format
+- **Robust Error Handling**: Continues processing even if individual tasks fail
+- **Progress Tracking**: Real-time progress bars and detailed logging
+- **Dataset Agnostic**: Works with any HELM dataset without code changes
+
+## Evaluation Metrics
+
+The system supports a comprehensive set of evaluation metrics defined in `converter_utils/evaluation_utils.py`. The current metrics were manually curated from observed HELM data and include:
+
+- `exact_match` / `label_only_match`: Direct choice comparison
+- `quasi_exact_match` / `quasi_label_only_match`: Choice comparison with tolerance
+- `final_number_exact_match` / `final_number_match`: Numerical answer comparison
+- `math_equiv_chain_of_thought`: Mathematical equivalence evaluation
+- `f1_score`: F1 score calculation
+- `exact_match_with_references`: Reference-based exact matching
+- `quasi_exact_match_with_references`: Reference-based quasi matching
+- `bleu_4`: BLEU-4 score
+- `rouge_l`: ROUGE-L score
+- `meteor`: METEOR score
+
+**Note**: These metrics were manually identified from HELM data. Additional metrics may exist in the raw files that aren't currently supported. If you encounter evaluation errors, check the raw JSON files for other metric names and add them to the `get_evaluation_metrics()` function in `evaluation_utils.py`.
+
+## Configuration
+
+Edit `settings.py` to customize:
+- Download paths and directories
+- HELM version ranges
+- Concurrency settings
+- Progress bar formatting
+
+The system is designed to be completely generic - it works with any new HELM dataset without requiring code modifications.
 

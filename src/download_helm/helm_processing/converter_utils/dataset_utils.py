@@ -49,7 +49,7 @@ def load_dataset_mappings(mappings_file: Optional[Path] = None) -> Dict[str, str
         # Try to find default mappings file
         current_dir = Path(__file__).parent.parent
         mappings_file = current_dir / "dataset_mappings.json"
-    
+
     try:
         if mappings_file.exists():
             with open(mappings_file, 'r', encoding='utf-8') as f:
@@ -57,13 +57,13 @@ def load_dataset_mappings(mappings_file: Optional[Path] = None) -> Dict[str, str
                 return data.get("dataset_name_mappings", {})
     except Exception as e:
         print(f"Warning: Could not load mappings from {mappings_file}: {e}")
-    
+
     return {}
 
 
-def normalize_dataset_name(dataset_name: str, 
-                          custom_mappings: Optional[Dict[str, str]] = None,
-                          mappings_file: Optional[Path] = None) -> str:
+def normalize_dataset_name(dataset_name: str,
+                           custom_mappings: Optional[Dict[str, str]] = None,
+                           mappings_file: Optional[Path] = None) -> str:
     """
     Normalize dataset name using configurable mappings from JSON file.
     
@@ -80,7 +80,7 @@ def normalize_dataset_name(dataset_name: str,
 
     # Load mappings from JSON file
     mappings = load_dataset_mappings(mappings_file)
-    
+
     # Override/extend with custom mappings if provided
     if custom_mappings:
         mappings.update(custom_mappings)
@@ -91,7 +91,7 @@ def normalize_dataset_name(dataset_name: str,
         # Apply mapping to base name if exists
         normalized_base = mappings.get(base_name, base_name)
         return f"{normalized_base}.{subject}"
-    
+
     # Apply direct mapping if exists, otherwise keep original
     return mappings.get(dataset_name, dataset_name)
 
@@ -120,11 +120,11 @@ def extract_dataset_name_from_run_spec(run_spec: Dict, scenario: Dict) -> Option
         if class_name:
             # Extract dataset name from class name (remove common suffixes)
             dataset_from_class = class_name.lower()
-            
+
             # Remove common HELM patterns
             if "_scenario" in dataset_from_class:
                 dataset_from_class = dataset_from_class.replace("_scenario", "")
-            
+
             # Handle nested class names (e.g., "commonsense_scenario.OpenBookQA")
             if "." in dataset_from_class:
                 parts = dataset_from_class.split(".")
@@ -137,10 +137,10 @@ def extract_dataset_name_from_run_spec(run_spec: Dict, scenario: Dict) -> Option
         if "args" in spec:
             args = spec["args"]
             # Try common argument names for subjects
-            subject = (args.get("subject") or 
-                      args.get("subset") or 
-                      args.get("category"))
-            
+            subject = (args.get("subject") or
+                       args.get("subset") or
+                       args.get("category"))
+
             # Handle translation datasets
             if not subject and "source_language" in args and "target_language" in args:
                 subject = f"{args['source_language']}-{args['target_language']}"
@@ -148,16 +148,16 @@ def extract_dataset_name_from_run_spec(run_spec: Dict, scenario: Dict) -> Option
     # Try to extract from run name parameters (e.g., "dataset=mmlu,subject=anatomy")
     if run_spec and "name" in run_spec:
         run_name = run_spec["name"]
-        
+
         # Extract dataset parameter
         if not dataset_base and "dataset=" in run_name:
             dataset_base = _extract_parameter_from_string(run_name, "dataset")
-        
+
         # Extract subject parameter
         if not subject:
             subject = (_extract_parameter_from_string(run_name, "subject") or
-                      _extract_parameter_from_string(run_name, "subset"))
-        
+                       _extract_parameter_from_string(run_name, "subset"))
+
         # Fallback: use prefix before colon
         if not dataset_base and ":" in run_name:
             dataset_base = run_name.split(":")[0]
@@ -172,7 +172,7 @@ def extract_dataset_name_from_run_spec(run_spec: Dict, scenario: Dict) -> Option
             return f"{dataset_base}.{subject}"
         else:
             return dataset_base
-    
+
     return None
 
 

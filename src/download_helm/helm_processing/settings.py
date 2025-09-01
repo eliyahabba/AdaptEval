@@ -20,7 +20,6 @@ from typing import Dict, List
 # Paths (environment-specific)
 # --------------------------------------------------------------------------------------
 
-# Path to the HF mapping data directory used by `convert_cluade.py`.
 # NOTE: This value mirrors the previously hardcoded path to preserve behavior.
 HF_MAP_DATA_DIR: Path = Path(__file__).parents[3] / "data" / "hf_map_data"
 
@@ -34,9 +33,8 @@ DATA_DIR: Path = Path(__file__).parent / "data"
 BENCHMARK_CSVS_DIR: Path = DATA_DIR / "benchmark_lines"
 
 # Subdirectory names (relative to the module locations that use them)
-DOWNLOADS_SUBDIR: str = "data/downloads"
-OUTPUT_SUBDIR: str = "converted_data"
-
+DOWNLOADS_SUBDIR: Path = DATA_DIR / "downloads"
+OUTPUT_SUBDIR: Path = DATA_DIR / "converted_data"
 
 # --------------------------------------------------------------------------------------
 # HELM download & processing settings
@@ -44,7 +42,7 @@ OUTPUT_SUBDIR: str = "converted_data"
 
 # Versions to search for when downloading HELM files (kept identical ordering)
 HELM_1_VERSIONS: List[str] = [f"v1.{i}.0" for i in range(14)]  # v1.0.0 to v1.13.0
-HELM_0_VERSIONS: List[str] = [f"v0.{i}.0" for i in range(3,14)]  # v1.0.0 to v1.13.0
+HELM_0_VERSIONS: List[str] = [f"v0.{i}.0" for i in range(3, 14)]  # v1.0.0 to v1.13.0
 HELM_VERSIONS: List[str] = HELM_1_VERSIONS + HELM_0_VERSIONS
 # Default starting version
 DEFAULT_START_VERSION: str = "v1.0.0"
@@ -81,5 +79,3 @@ PROCESS_POOL_MAX_WORKERS: int = 8
 TQDM_BAR_FORMAT: str = (
     "{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]"
 )
-
-
