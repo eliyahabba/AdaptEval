@@ -15,7 +15,7 @@ from llm_eval.normalization import MetricRegistry
 from llm_eval.selection.tinyBenchmarks.estimation import (
     run_estimation_validation
 )
-from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
+from llm_eval.selection.tinyBenchmarks.training import TrainingConfig, compute_lambda_values
 from llm_eval.training import (
     train_item_parameters,
     select_anchors_structured_with_matrix,
@@ -67,6 +67,7 @@ def run_full_evaluation_pipeline(
         save_item_params_path: Optional[str] = None,
         save_anchors_path: Optional[str] = None,
         anchors_per_dataset: int = 100,
+        anchor_counts: Optional[List[int]] = None,
 ):
     """Run the complete evaluation pipeline with selection validation.
     
@@ -95,6 +96,9 @@ def run_full_evaluation_pipeline(
         helm_data_path = defaults["helm_data_path"]
     if output_dir is None:
         output_dir = defaults["output_dir"]
+
+    # Default anchor counts (support multi-anchor experiments)
+    anchor_counts = anchor_counts or [anchors_per_dataset]
 
     # Check if matrices already exist
     train_matrix_path = Path(output_dir) / "matrix_train.parquet"
@@ -275,24 +279,31 @@ def run_full_evaluation_pipeline(
                 )
 
         step_num = 3 if train_irt_params else 2
-        print(f"\n{step_num}. Training anchor selection...")
+        print(f"\n{step_num}. Training anchor selection (multi-count)...")
         print(f"   Using {anchor_selection_method} method")
-        print(f"   Selecting {anchors_per_dataset} anchors PER DATASET (like notebook), not from all data together")
+        print(f"   Anchor counts: {anchor_counts}")
 
-        # New: Select per-dataset anchors with weights and save structured output
-        anchors_by_dataset, weights_by_dataset = select_anchors_structured_with_matrix(
-            params, train_matrix, number_items=anchors_per_dataset, method=anchor_selection_method
-        )
-        save_anchors_structured(anchors_by_dataset, weights_by_dataset, str(anchors_out))
-        print(f"   ✓ Trained and saved structured anchors → {anchors_out}")
+        for count in anchor_counts:
+            print(f"   → Selecting {count} anchors PER DATASET")
+            anchors_by_dataset, weights_by_dataset = select_anchors_structured_with_matrix(
+                params, train_matrix, number_items=count, method=anchor_selection_method
+            )
+            count_path = irt_dir / f"anchors_{count}.json"
+            save_anchors_structured(anchors_by_dataset, weights_by_dataset, str(count_path))
+            total = sum(len(v) for v in anchors_by_dataset.values())
+            print(f"     ✓ Saved {total} anchors → {count_path}")
 
-        total = sum(len(v) for v in anchors_by_dataset.values())
-        print(f"   ✓ Total anchors: {total} (selected from all data together)")
+        # Backward-compat single anchors file for default count
+        if anchors_per_dataset in anchor_counts:
+            default_path = irt_dir / f"anchors_{anchors_per_dataset}.json"
+            if default_path.exists():
+                anchors_out.write_text(default_path.read_text())
+                print(f"   ℹ️  Copied default anchors to {anchors_out}")
 
     # Run estimation-based validation
     step_number = 3 if train_irt_params or train_anchors else 2
-    print(f"\n{step_number}. Running estimation-based validation...")
-    all_results = []
+    print(f"\n{step_number}. Running estimation-based validation (per anchor count)...")
+    all_results: list[dict] = []
 
     # Load item parameters and anchors for validation
     if not item_params_out or not anchors_out:
@@ -300,40 +311,57 @@ def run_full_evaluation_pipeline(
         return None, pd.DataFrame()
 
     try:
-        # Load the saved artifacts
+        # Load item parameters once
         item_params = pd.read_parquet(item_params_out)
-        with open(anchors_out, 'r') as f:
-            anchors_data = json.load(f)
-
-        # New: support structured anchors saved earlier; also keep backward compatibility
-        anchor_weights_by_dataset = {}
-        anchor_questions = []
-        anchors_by_dataset = anchors_data.get('anchors_by_dataset')
-        weights_by_dataset = anchors_data.get('anchor_weights_by_dataset')
-
-        for ds, ids in anchors_by_dataset.items():
-            anchor_questions.extend([str(q) for q in ids])
-            if isinstance(weights_by_dataset, dict) and ds in weights_by_dataset:
-                anchor_weights_by_dataset[ds] = weights_by_dataset[ds]
-
         print(f"   ✓ Loaded item parameters: {len(item_params)} questions")
-        print(f"   ✓ Loaded anchors: {len(anchor_questions)} (across datasets)")
 
-        # Get lambdas from item parameters metadata (from training.py)
-        if not (hasattr(item_params, 'attrs') and 'lambdas_by_dataset' in item_params.attrs):
-            raise ValueError(
-                "No lambda values found in item parameters metadata. This indicates an issue with the training process.")
+        # Retrieve training metadata for lambda recomputation
+        if not (hasattr(item_params, 'attrs')):
+            raise ValueError("Item parameters missing training metadata in attrs")
+        attrs = item_params.attrs
+        validation_errors = attrs.get('validation_errors')
+        dims_search = attrs.get('config_dims_search', [5, 10])
+        best_dimension = attrs.get('best_dimension')
+        try:
+            best_dim_idx = dims_search.index(best_dimension) if best_dimension in dims_search else 0
+        except Exception:
+            best_dim_idx = 0
 
-        lambdas_by_dataset = item_params.attrs['lambdas_by_dataset']
-        print(f"   ✓ Using lambda values for {len(lambdas_by_dataset)} datasets: {lambdas_by_dataset}")
+        # For each anchor count, load anchors, recompute lambdas, validate
+        for count in anchor_counts:
+            anchors_file = irt_dir / f"anchors_{count}.json"
+            if not anchors_file.exists():
+                print(f"   ⚠️  Missing anchors file for count {count}: {anchors_file}")
+                continue
 
-        # Run estimation-based validation
-        validation_results = run_estimation_validation(
-            test_matrix, item_params, anchors_by_dataset, lambdas_by_dataset, anchor_weights_by_dataset
-        )
-        all_results = validation_results
+            with open(anchors_file, 'r') as f:
+                anchors_data = json.load(f)
 
-        print(f"   ✓ Completed {len(all_results)} validations")
+            anchors_by_dataset = anchors_data.get('anchors_by_dataset')
+            weights_by_dataset = anchors_data.get('anchor_weights_by_dataset')
+
+            anchor_weights_by_dataset = {}
+            for ds, ids in anchors_by_dataset.items():
+                if isinstance(weights_by_dataset, dict) and ds in weights_by_dataset:
+                    anchor_weights_by_dataset[ds] = weights_by_dataset[ds]
+
+            # Recompute lambdas for this anchor count without retraining IRT
+            lambdas_by_dataset = compute_lambda_values(
+                original_matrix_df=train_matrix,
+                validation_errors=validation_errors or {},
+                best_dim_idx=best_dim_idx,
+                number_item=count,
+            )
+            print(f"   • Lambdas (count={count}): {lambdas_by_dataset}")
+
+            # Run validation and tag results with anchor_count
+            validation_results = run_estimation_validation(
+                test_matrix, item_params, anchors_by_dataset, lambdas_by_dataset, anchor_weights_by_dataset
+            )
+            for r in validation_results:
+                r['anchor_count'] = count
+            all_results.extend(validation_results)
+            print(f"   ✓ Completed {len(validation_results)} validations for count={count}")
 
     except Exception as e:
         print(f"   ⚠️  Error in validation: {e}")
@@ -349,58 +377,62 @@ def run_full_evaluation_pipeline(
     # Convert results to DataFrame
     results_df = pd.DataFrame(all_results)
 
-    # Compute average and median errors by method
-    avg_anchor_error = results_df['anchor_error'].mean()
-    avg_blended_error = results_df['blended_error'].mean()
-    avg_pirt_error = results_df['pirt_error'].mean()
+    # Per-count reporting
+    print("   ✓ Summary by anchor count:")
+    per_count_summary = {}
+    for count in sorted(results_df.get('anchor_count', pd.Series()).unique()):
+        sub = results_df[results_df['anchor_count'] == count]
+        if sub.empty:
+            continue
+        avg_anchor_error = sub['anchor_error'].mean()
+        avg_blended_error = sub['blended_error'].mean()
+        avg_pirt_error = sub['pirt_error'].mean()
+        median_anchor_error = sub['anchor_error'].median()
+        median_blended_error = sub['blended_error'].median()
+        median_pirt_error = sub['pirt_error'].median()
 
-    median_anchor_error = results_df['anchor_error'].median()
-    median_blended_error = results_df['blended_error'].median()
-    median_pirt_error = results_df['pirt_error'].median()
-
-    print(f"   ✓ Summary (Average Errors):")
-    print(f"     - Anchor-only: {avg_anchor_error:.3f} (median: {median_anchor_error:.3f})")
-    print(f"     - gp-IRT (blended): {avg_blended_error:.3f} (median: {median_blended_error:.3f})")
-    print(f"     - p-IRT: {avg_pirt_error:.3f} (median: {median_pirt_error:.3f})")
-
-    # Find best method
-    error_comparison = {
-        'anchor': avg_anchor_error,
-        'blended': avg_blended_error,
-        'pirt': avg_pirt_error
-    }
-    best_method = min(error_comparison, key=error_comparison.get)
-    best_error = error_comparison[best_method]
-
-    print(f"   ✓ Best method: {best_method} (Error: {best_error:.3f})")
+        print(f"     - {count} anchors → anchor: {avg_anchor_error:.3f} (med {median_anchor_error:.3f}), "
+              f"p-IRT: {avg_pirt_error:.3f} (med {median_pirt_error:.3f}), "
+              f"gp-IRT: {avg_blended_error:.3f} (med {median_blended_error:.3f})")
+        per_count_summary[count] = {
+            'avg': {
+                'anchor': float(avg_anchor_error),
+                'pirt': float(avg_pirt_error),
+                'gp_irt': float(avg_blended_error),
+            },
+            'median': {
+                'anchor': float(median_anchor_error),
+                'pirt': float(median_pirt_error),
+                'gp_irt': float(median_blended_error),
+            }
+        }
 
     # Save detailed results
     print(f"\n{step_number + 2}. Saving results...")
     results_csv_path = output_path / "estimation_validation_results.csv"
     results_df.to_csv(results_csv_path, index=False)
+    # Also save per-count CSVs
+    for count in sorted(results_df.get('anchor_count', pd.Series()).unique()):
+        sub = results_df[results_df['anchor_count'] == count]
+        if not sub.empty:
+            per_count_path = output_path / f"estimation_validation_results_{count}.csv"
+            sub.to_csv(per_count_path, index=False)
 
-    # Save summary metrics
+    # Save summary metrics (ensure JSON-safe keys/types)
+    safe_per_count_summary = {str(k): v for k, v in per_count_summary.items()}
+    safe_anchor_counts = [int(c) for c in anchor_counts]
+
     summary_data = {
         "timestamp": pd.Timestamp.now().isoformat(),
         "total_validations": len(all_results),
         "num_models": results_df['model_name'].nunique(),
         "num_datasets": results_df['dataset_name'].nunique(),
-        "average_errors": {
-            "anchor_only": float(avg_anchor_error),
-            "gp_irt_blended": float(avg_blended_error),
-            "p_irt": float(avg_pirt_error)
-        },
-        "median_errors": {
-            "anchor_only": float(median_anchor_error),
-            "gp_irt_blended": float(median_blended_error),
-            "p_irt": float(median_pirt_error)
-        },
-        "best_method": best_method,
-        "best_error": float(best_error),
+        "per_count_summary": safe_per_count_summary,
         "config": {
             "use_irt_normalization": use_irt_normalization,
             "irt_method": irt_method,
-            "validation_approach": "estimation_based"
+            "validation_approach": "estimation_based",
+            "anchor_counts": safe_anchor_counts,
         }
     }
 
