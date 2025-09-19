@@ -1,13 +1,13 @@
-import numpy as np
-from scipy.optimize import minimize
-import jsonlines
-import os
 import json
-import time
+import os
+
+import jsonlines
+from scipy.optimize import minimize
+
 from .utils import *
-     
-def create_irt_dataset(responses, dataset_name): 
-    
+
+
+def create_irt_dataset(responses, dataset_name):
     """
     Creates a dataset suitable for IRT analysis from a given set of responses and saves it in a JSON lines format.
     
@@ -15,22 +15,28 @@ def create_irt_dataset(responses, dataset_name):
     - responses: A numpy array where each row represents a subject and each column a question.
     - dataset_name: The name of the file where the dataset will be saved.
     """
-    
+
     dataset = []
     for i in range(responses.shape[0]):
         aux = {}
         aux_q = {}
-        
+
         # Iterate over each question to create a response dict
         for j in range(responses.shape[1]):
-            aux_q['q' + str(j)] = int(responses[i, j])
-        aux['subject_id'] = str(i)
-        aux['responses'] = aux_q
-        dataset.append(aux)
-    
+            val = responses[i, j]
+            # Skip missing responses (NaN) to match py-irt JSONL expectations
+            if not np.isnan(val):
+                aux_q['q' + str(j)] = int(val)
+        # Only include subjects with at least one observed response
+        if len(aux_q) > 0:
+            aux['subject_id'] = str(i)
+            aux['responses'] = aux_q
+            dataset.append(aux)
+
     # Save the dataset in JSON lines format
     with jsonlines.open(dataset_name, mode='w') as writer:
         writer.write_all([dataset[i] for i in range(len(dataset))])
+
 
 def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
     """
@@ -47,7 +53,7 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
     - trainer: The trained IRT model trainer object.
     """
     from py_irt.training import IrtConfig, IrtModelTrainer
-    
+
     # Create IRT config
     config = IrtConfig(
         model_type='multidim_2pl',
@@ -60,15 +66,15 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
         deterministic=True,
         log_every=max(epochs // 10, 1)  # Log every 10% of epochs
     )
-    
+
     # Create and train the model
     trainer = IrtModelTrainer(config=config, data_path=dataset_name)
     trainer.train(device=device)
-    
+
     return trainer
 
+
 def train_irt_model(dataset_name, model_name, D, lr, epochs, device):
-    
     """
     Trains an IRT model using the py-irt command-line tool.
     
@@ -80,11 +86,12 @@ def train_irt_model(dataset_name, model_name, D, lr, epochs, device):
     - epochs: The number of epochs to train the model.
     - device: The computing device ('cpu' or 'gpu') to use for training.
     """
-    
+
     # Constructing the command string
-    command=f"py-irt train 'multidim_2pl' {dataset_name} {model_name} --dims {D} --lr {lr} --epochs {epochs} --device {device} --priors 'hierarchical' --seed 42 --deterministic --log-every 200"
+    command = f"py-irt train 'multidim_2pl' {dataset_name} {model_name} --dims {D} --lr {lr} --epochs {epochs} --device {device} --priors 'hierarchical' --seed 42 --deterministic --log-every 200"
     os.system(command)
-        
+
+
 def load_irt_parameters_from_trainer(trainer):
     """
     Loads the parameters directly from a trained IRT model trainer.
@@ -99,14 +106,14 @@ def load_irt_parameters_from_trainer(trainer):
     a_list = result_params["disc"]
     b_list = result_params["diff"]
     theta_list = result_params["ability"]
-    
+
     A = np.array(a_list).T[None, :, :]
     B = np.array(b_list).T[None, :, :]
-    Theta = np.array(theta_list)[:,:,None]
+    Theta = np.array(theta_list)[:, :, None]
     return A, B, Theta
 
+
 def load_irt_parameters(model_name):
-    
     """
     Loads the parameters from a trained IRT model file.
     
@@ -116,9 +123,9 @@ def load_irt_parameters(model_name):
     Returns: 
     - A, B, and Theta: The discrimination, difficulty, and ability parameters, respectively, from the IRT model.
     """
-    
+
     params_file = os.path.join(model_name, 'best_parameters.json')
-    
+
     # Try multiple possible file locations/names
     possible_files = [
         params_file,
@@ -126,7 +133,7 @@ def load_irt_parameters(model_name):
         model_name + '_best_parameters.json',
         model_name + '_parameters.json'
     ]
-    
+
     params = None
     for file_path in possible_files:
         try:
@@ -135,19 +142,17 @@ def load_irt_parameters(model_name):
                 break
         except FileNotFoundError:
             continue
-    
+
     if params is None:
         raise FileNotFoundError(f"No parameter file found. Searched: {possible_files}")
-    
+
     A = np.array(params['disc']).T[None, :, :]
     B = np.array(params['diff']).T[None, :, :]
-    Theta = np.array(params['ability'])[:,:,None]
+    Theta = np.array(params['ability'])[:, :, None]
     return A, B, Theta
 
 
-
 def estimate_ability_parameters(responses_test, A, B, theta_init=None, eps=1e-10, optimizer="BFGS"):
-    
     """
     Estimates the ability parameters for a new set of test responses.
     
@@ -165,13 +170,13 @@ def estimate_ability_parameters(responses_test, A, B, theta_init=None, eps=1e-10
     """
 
     D = A.shape[1]
-    
+
     # Define the negative log likelihood function
     def neg_log_like(x):
         P = item_curve(x.reshape(1, D, 1), A, B).squeeze()
         log_likelihood = np.sum(responses_test * np.log(P + eps) + (1 - responses_test) * np.log(1 - P + eps))
         return -log_likelihood
-    
+
     # Ensure the initial theta is a numpy array with the correct shape
     if type(theta_init) == np.ndarray:
         theta_init = theta_init.reshape(-1)
@@ -180,6 +185,6 @@ def estimate_ability_parameters(responses_test, A, B, theta_init=None, eps=1e-10
         theta_init = np.zeros(D)
 
     # Use the minimize function to find the ability parameters that minimize the negative log likelihood
-    optimal_theta = minimize(neg_log_like, theta_init, method = optimizer).x[None,:,None] 
-    
+    optimal_theta = minimize(neg_log_like, theta_init, method=optimizer).x[None, :, None]
+
     return optimal_theta
