@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from typing import Mapping, Any, Callable, Dict, List
 import pandas as pd
+from tqdm import tqdm
 
 from llm_eval.config import AppConfig
 from llm_eval.normalization.base import AbstractNormalizer, NormalizationResult
@@ -65,7 +66,8 @@ class MetricRegistry:
         thresholds = {}
         
         # Group by dataset to handle each scenario separately
-        for dataset in matrix_df['dataset'].unique():
+        for dataset in tqdm(
+                matrix_df['dataset'].unique()):
             dataset_data = matrix_df[matrix_df['dataset'] == dataset]
             
             # Create pivot table: models x questions
