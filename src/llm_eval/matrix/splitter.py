@@ -23,7 +23,7 @@ class SplitStrategy(Enum):
 @dataclass
 class SplitConfig:
     """Configuration for matrix splitting."""
-    strategy: SplitStrategy = SplitStrategy.TEMPORAL
+    strategy: SplitStrategy = SplitStrategy.MODEL_BASED
     test_ratio: float = 0.2
     random_seed: Optional[int] = 42
     temporal_split_column: str = "model_name"  # Column to use for temporal ordering
