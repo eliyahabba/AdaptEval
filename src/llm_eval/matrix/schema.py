@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field, field_validator
 class ObservationRow(BaseModel):
     dataset: str
     split: Optional[str] = None
-    task_type: str
     question_id: str
     model_name: str
     model_family: Optional[str] = None
@@ -16,7 +15,6 @@ class ObservationRow(BaseModel):
     raw_score: float
     normalized_score: float
     is_higher_better: bool = True
-    run_id: Optional[str] = None
 
     @field_validator("normalized_score")
     @classmethod
