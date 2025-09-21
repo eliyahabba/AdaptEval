@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from pathlib import Path
 import json
+from pathlib import Path
+
 import pandas as pd
 
+from llm_eval.selection.tinyBenchmarks.anchors import AnchorConfig, find_anchor_items, find_anchor_items_clustering
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig, fit_2pl_parameters
-from llm_eval.selection.tinyBenchmarks.anchors import AnchorConfig, find_anchor_items, find_anchor_items_clustering, find_anchor_items_by_dataset
 
 
 def train_item_parameters(
-    train_matrix_df: pd.DataFrame, 
-    test_matrix_df: pd.DataFrame | None = None,
-    config: TrainingConfig | None = None
+        train_matrix_df: pd.DataFrame,
+        test_matrix_df: pd.DataFrame | None = None,
+        config: TrainingConfig | None = None
 ) -> pd.DataFrame:
     """Train or estimate 2PL item parameters (a,b) per question_id using tinyBenchmarks utilities.
     
@@ -29,170 +29,19 @@ def train_item_parameters(
     return fit_2pl_parameters(train_matrix_df, config)
 
 
-def train_and_validate_item_parameters(
-    train_matrix_df: pd.DataFrame, 
-    test_matrix_df: pd.DataFrame,
-    config: TrainingConfig | None = None
-) -> tuple[pd.DataFrame, dict]:
-    """Train IRT parameters on train set and validate on test set.
-    
-    This is an alternative to the notebook's internal cross-validation approach.
-    Trains on train_matrix_df and evaluates the quality on test_matrix_df.
-    
-    Args:
-        train_matrix_df: Training data matrix 
-        test_matrix_df: Test data matrix for validation
-        config: Training configuration
-    
-    Returns:
-        Tuple of (item_params, validation_metrics)
-    """
-    # Train on training data
-    item_params = fit_2pl_parameters(train_matrix_df, config)
-    
-    # Validate on test data (compute metrics like RMSE, correlation, etc.)
-    # This could be extended to compute test set performance metrics
-    validation_metrics = {
-        "train_questions": len(train_matrix_df["question_id"].unique()),
-        "test_questions": len(test_matrix_df["question_id"].unique()),
-        "train_models": len(train_matrix_df["model_name"].unique()),
-        "test_models": len(test_matrix_df["model_name"].unique()),
-    }
-    
-    return item_params, validation_metrics
-
-
-def select_anchors_with_matrix(
-    item_params: pd.DataFrame, 
-    matrix_df: pd.DataFrame | None = None,
-    number_items: int = 100,
-    method: str = "irt_clustering",
-    dataset_column: str = "dataset"
-) -> list[str]:
-    """Select anchor items with access to matrix data for different methods.
-    
-    From the notebook: selects 100 anchors PER SCENARIO separately.
-    
-    Args:
-        item_params: DataFrame with IRT parameters and attached metadata
-        matrix_df: Optional matrix for correctness-based clustering
-        number_items: Fixed number of anchor items per dataset (from notebook, default=100)
-        method: Selection method - "irt_clustering", "correctness_clustering", or "difficulty_binning"
-        dataset_column: Column name for dataset grouping (default: "dataset")
-        
-    Returns:
-        List of anchor question IDs (from all datasets combined)
-    """
-    # Check if we have dataset information
-    if dataset_column in item_params.columns:
-        # Use per-dataset selection like in the notebook
-        anchors_by_dataset = find_anchor_items_by_dataset(
-            item_params,
-            dataset_column,
-            number_items=number_items,
-            method=method,
-            matrix_df=matrix_df
-        )
-        # Combine all anchors from all datasets
-        all_anchors = []
-        for dataset, anchors in anchors_by_dataset.items():
-            all_anchors.extend(anchors)
-        return all_anchors
-    else:
-        # Fallback: select from all data together if no dataset column
-        balance_weights = None
-        if hasattr(item_params, 'attrs') and 'balance_weights' in item_params.attrs:
-            balance_weights = item_params.attrs['balance_weights']
-        
-        cfg = AnchorConfig(
-            method=method,
-            number_items=number_items,
-            balance_weights=balance_weights
-        )
-        
-        if method == "correctness_clustering" and matrix_df is not None:
-            anchor_ids, _ = find_anchor_items_clustering(item_params, matrix_df, cfg)
-            return anchor_ids
-        else:
-            return find_anchor_items(item_params, cfg)
-
-
-def select_anchors(
-    item_params: pd.DataFrame, 
-    number_items: int = 100,
-    dataset_column: str = "dataset"
-) -> list[str]:
-    """Select anchor items using the default IRT clustering approach.
-    
-    From the notebook: selects 100 anchors PER SCENARIO separately, 
-    not from all data together.
-    
-    Args:
-        item_params: DataFrame with IRT parameters and attached metadata
-        number_items: Fixed number of anchor items per dataset (from notebook, default=100)
-        dataset_column: Column name for dataset grouping (default: "dataset")
-        
-    Returns:
-        List of anchor question IDs (from all datasets combined)
-    """
-    # Check if we have dataset information
-    if dataset_column in item_params.columns:
-        # Use per-dataset selection like in the notebook
-        anchors_by_dataset = find_anchor_items_by_dataset(
-            item_params, 
-            dataset_column, 
-            number_items=number_items,
-            method="irt_clustering"
-        )
-        # Combine all anchors from all datasets
-        all_anchors = []
-        for dataset, anchors in anchors_by_dataset.items():
-            all_anchors.extend(anchors)
-        return all_anchors
-    else:
-        # Fallback: select from all data together if no dataset column
-        balance_weights = None
-        if hasattr(item_params, 'attrs') and 'balance_weights' in item_params.attrs:
-            balance_weights = item_params.attrs['balance_weights']
-        
-        cfg = AnchorConfig(
-            method="irt_clustering",
-            number_items=number_items,
-            balance_weights=balance_weights
-        )
-        return find_anchor_items(item_params, cfg)
-
-
 def save_item_parameters(df: pd.DataFrame, out_path: str) -> None:
     p = Path(out_path)
     p.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(p)
 
 
-def load_item_parameters(path: str) -> pd.DataFrame:
-    return pd.read_parquet(Path(path))
-
-
-def save_anchors(anchors: list[str], out_path: str) -> None:
-    p = Path(out_path)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w") as f:
-        json.dump({"anchors": anchors}, f)
-
-
-def load_anchors(path: str) -> list[str]:
-    with open(Path(path), "r") as f:
-        data = json.load(f)
-    return [str(x) for x in data.get("anchors", [])]
-
-
 # New structured API to support per-dataset anchors with weights (scenario-based)
 def select_anchors_structured_with_matrix(
-    item_params: pd.DataFrame,
-    matrix_df: pd.DataFrame | None = None,
-    number_items: int = 100,
-    method: str = "irt_clustering",
-    dataset_column: str = "dataset"
+        item_params: pd.DataFrame,
+        matrix_df: pd.DataFrame | None = None,
+        number_items: int = 100,
+        method: str = "irt_clustering",
+        dataset_column: str = "dataset"
 ) -> tuple[dict[str, list[str]], dict[str, list[float]]]:
     """Select anchors per dataset and return questions and weights by dataset.
 
@@ -282,9 +131,9 @@ def select_anchors_structured_with_matrix(
 
 
 def save_anchors_structured(
-    anchors_by_dataset: dict[str, list[str]],
-    anchor_weights_by_dataset: dict[str, list[float]],
-    out_path: str,
+        anchors_by_dataset: dict[str, list[str]],
+        anchor_weights_by_dataset: dict[str, list[float]],
+        out_path: str,
 ) -> None:
     """Save structured anchors with weights by dataset to JSON.
 
@@ -302,5 +151,3 @@ def save_anchors_structured(
     }
     with open(p, "w") as f:
         json.dump(payload, f)
-
-

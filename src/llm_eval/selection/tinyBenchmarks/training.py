@@ -44,10 +44,10 @@ def sigmoid(z):
 class TrainingConfig:
     """Configuration matching the notebook parameters exactly."""
     # Core parameters from notebook
-    dims_search: list[int] = field(default_factory=lambda: [5, 10])  # Reduced for testing  
+    dims_search: list[int] = field(default_factory=lambda: [5, 10])  # Reduced for testing
     device: str = 'cpu'  # default to CPU for compatibility
     epochs: int = 2000  # Reduced for testing
-    lr: float = .1  # Reduced learning rate for stability
+    lr: float = .01  # Reduced learning rate for stability
     random_state: int = 42  # notebook default
     
     # Validation parameters (from notebook Cell 11)
@@ -235,8 +235,9 @@ def validate_irt_dimensions(
     Ds = config.dims_search
     
     # Split models for validation
-    models = sorted(binary_matrix_df["model_name"].unique())
-    val_models = models[::config.val_stride]  # Every 5th model
+    # Preserve insertion order like the notebook (no sorting)
+    models = list(pd.unique(binary_matrix_df["model_name"]))
+    val_models = models[::config.val_stride]  # Every 5th model starting at 0
     train_models = [m for m in models if m not in set(val_models)]
     
     train_df = binary_matrix_df[binary_matrix_df["model_name"].isin(train_models)]
@@ -244,7 +245,8 @@ def validate_irt_dimensions(
     original_val_df = original_matrix_df[original_matrix_df["model_name"].isin(val_models)]
     
     # Get all questions and split into seen/unseen
-    all_questions = sorted(binary_matrix_df["question_id"].unique())
+    # Preserve insertion order of questions as appeared in the data
+    all_questions = list(pd.unique(binary_matrix_df["question_id"]))
     seen_questions = all_questions[::2]  # Every other question
     unseen_questions = all_questions[1::2]
     
@@ -494,14 +496,17 @@ def compute_lambda_values(
     lambdas = {}
     
     if "dataset" not in original_matrix_df.columns:
-        # No dataset separation, compute single lambda
+        # No dataset separation, compute single lambda exactly like notebook:
+        # v = mean over models of var over items (questions)
         variance = _compute_dataset_variance(original_matrix_df)
-        error = 0.05  # Default small error
-        
+        if "all" not in validation_errors or len(validation_errors["all"]) <= best_dim_idx:
+            raise ValueError("Missing validation error for 'all' dataset; cannot compute lambda without fallback.")
+        error = validation_errors["all"][best_dim_idx]
+
         v_scaled = variance / (4 * number_item)
         lambda_val = get_lambda(error, v_scaled)
         lambdas["all"] = lambda_val
-        
+
         return lambdas
     
     # Helper to scenario root
@@ -514,14 +519,13 @@ def compute_lambda_values(
     for scenario in scenarios:
         scenario_df = original_matrix_df[original_matrix_df["dataset"].map(lambda d: scenario_from_dataset(d) == scenario)]
 
-        # Compute variance for this scenario
+        # Compute variance for this scenario: mean over models of var across items
         variance = _compute_dataset_variance(scenario_df)
 
-        # Get validation error for this scenario
-        if scenario in validation_errors and len(validation_errors[scenario]) > best_dim_idx:
-            error = validation_errors[scenario][best_dim_idx]
-        else:
-            error = 0.05  # Default small error
+        # Get validation error for this scenario (no fallback to match notebook)
+        if scenario not in validation_errors or len(validation_errors[scenario]) <= best_dim_idx:
+            raise ValueError(f"Missing validation error for scenario '{scenario}'; cannot compute lambda without fallback.")
+        error = validation_errors[scenario][best_dim_idx]
 
         # Apply notebook scaling and compute lambda
         v_scaled = variance / (4 * number_item)
@@ -532,30 +536,33 @@ def compute_lambda_values(
 
 
 def _compute_dataset_variance(dataset_df: pd.DataFrame) -> float:
-    """Compute variance of scores across models for a dataset."""
-    # Create model x question matrix
-    models = sorted(dataset_df["model_name"].unique())
-    questions = sorted(dataset_df["question_id"].unique())
-    
+    """Compute variance exactly like the notebook: per-model variance across items, then mean."""
+    # Preserve insertion order for models and questions
+    models = list(pd.unique(dataset_df["model_name"]))
+    questions = list(pd.unique(dataset_df["question_id"]))
+
+    if len(models) == 0 or len(questions) == 0:
+        return 0.0
+
     matrix = np.full((len(models), len(questions)), np.nan)
     model_to_idx = {m: i for i, m in enumerate(models)}
     question_to_idx = {q: i for i, q in enumerate(questions)}
-    
-    # Vectorized filling - much faster than iterrows
+
+    # Vectorized filling
     model_indices = dataset_df["model_name"].map(model_to_idx).values
     question_indices = dataset_df["question_id"].map(question_to_idx).values
     scores = dataset_df["normalized_score"].values
     matrix[model_indices, question_indices] = scores
-    
-    # Compute variance across models for each question, then average
-    question_variances = []
-    for q_idx in range(len(questions)):
-        question_scores = matrix[:, q_idx]
-        valid_scores = question_scores[~np.isnan(question_scores)]
+
+    # Per-model variance across items, then mean across models
+    model_variances = []
+    for m_idx in range(len(models)):
+        model_scores = matrix[m_idx, :]
+        valid_scores = model_scores[~np.isnan(model_scores)]
         if len(valid_scores) > 1:
-            question_variances.append(np.var(valid_scores, ddof=0))
-    
-    return np.mean(question_variances) if question_variances else 0.1
+            model_variances.append(np.var(valid_scores, ddof=0))
+
+    return float(np.mean(model_variances)) if model_variances else 0.0
 
 
 # Validation functions removed - data is already processed by normalization pipeline

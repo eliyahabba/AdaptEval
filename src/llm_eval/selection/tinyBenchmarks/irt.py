@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 import jsonlines
 from scipy.optimize import minimize
@@ -41,27 +42,28 @@ def create_irt_dataset(responses, dataset_name):
 def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
     """
     Trains an IRT model using the py-irt Python API.
-    
+
     Parameters:
     - dataset_name: The name of the dataset file.
     - D: The number of dimensions for the IRT model.
     - lr: Learning rate for the model training.
     - epochs: The number of epochs to train the model.
     - device: The computing device ('cpu' or 'gpu') to use for training.
-    
+
     Returns:
     - trainer: The trained IRT model trainer object.
     """
     from py_irt.training import IrtConfig, IrtModelTrainer
-
+    from src.llm_eval.selection.tinyBenchmarks.two_param_logistic import TwoParamLogistic
     # Create IRT config
     config = IrtConfig(
+        # model_type=TwoParamLogistic,
         model_type='multidim_2pl',
-        epochs=epochs,
-        # priors='hierarchical',
+        # epochs=epochs,
+        priors='hierarchical',
         dims=D,
         lr=lr,
-        lr_decay=0.9999,
+        # lr_decay=0.9999,
         seed=42,
         deterministic=True,
         log_every=max(epochs // 10, 1)  # Log every 10% of epochs
@@ -70,8 +72,29 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
     # Create and train the model
     trainer = IrtModelTrainer(config=config, data_path=dataset_name)
     trainer.train(device=device)
-
+    # Constructing the command string
+    # command=f"py-irt train 'multidim_2pl' {dataset_name} {model_name} --dims {D} --lr {lr} --epochs {epochs} --device {device} --priors 'hierarchical' --seed 42 --deterministic --log-every 200"
+    # with SuppressPrints():
+    #     os.system(command)
     return trainer
+
+
+class SuppressPrints:
+    """
+    A context manager to suppress prints to the console, useful for making output cleaner.
+    """
+
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        self._original_stderr = sys.stderr
+        sys.stdout = open(os.devnull, 'w')
+        sys.stderr = open(os.devnull, 'w')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stderr.close()
+        sys.stdout = self._original_stdout
+        sys.stderr = self._original_stderr
 
 
 def train_irt_model(dataset_name, model_name, D, lr, epochs, device):

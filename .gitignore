@@ -1,5 +1,10 @@
 /.idea/
 /.venv311/
-/src/download_helm/
+/src/download_helm/convertor_json_back
+/src/download_helm/convertor_json
+/src/download_helm/helm_processing/data
 /data/
 /examples/
+/src/download_helm/download/
+/src/download_helm/helm_processing/
+/src/download_helm/
