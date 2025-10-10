@@ -223,7 +223,8 @@ def validate_irt_dimensions(
     binary_matrix_df: pd.DataFrame,
     original_matrix_df: pd.DataFrame,
     balance_weights: np.ndarray,
-    config: TrainingConfig
+    config: TrainingConfig,
+    output_dir: str | None = None
 ) -> tuple[int, dict[str, list[float]]]:
     """Validate IRT dimensions using cross-validation.
     
@@ -231,6 +232,13 @@ def validate_irt_dimensions(
     and evaluate on the other half ('unseen') to choose the best dimension.
     
     This follows the notebook validation logic but works with any dataset structure.
+    
+    Args:
+        binary_matrix_df: Binary matrix DataFrame for training
+        original_matrix_df: Original matrix DataFrame for validation  
+        balance_weights: Balance weights for multi-subscenario datasets
+        config: Training configuration
+        output_dir: Optional directory to save IRT dataset files (if None, uses temporary directory)
     """
     Ds = config.dims_search
     
@@ -259,12 +267,23 @@ def validate_irt_dimensions(
     
     for D in tqdm(Ds, desc="Validating dimensions"):
         # Train IRT model on training data
-        with tempfile.TemporaryDirectory() as temp_dir:
-            dataset_path = os.path.join(temp_dir, 'irt_val_dataset.jsonlines')
+        if output_dir:
+            # Save in permanent directory if provided
+            os.makedirs(output_dir, exist_ok=True)
+            dataset_path = os.path.join(output_dir, f'irt_val_dataset_dim{D}.jsonlines')
+            temp_dir = None
+        else:
+            # Use temporary directory as fallback
+            temp_dir = tempfile.TemporaryDirectory()
+            dataset_path = os.path.join(temp_dir.name, 'irt_val_dataset.jsonlines')
+        
+        try:
             
             # Convert training data to IRT format
             train_responses = _df_to_irt_matrix(train_df)
             create_irt_dataset(train_responses, dataset_path)
+            if output_dir:
+                print(f"   📁 Saved validation dataset: {dataset_path}")
             
             # Train model using Python API
             trainer = train_irt_model_python_api(dataset_path, D, config.lr, config.epochs, config.device)
@@ -372,6 +391,11 @@ def validate_irt_dimensions(
                 errors_by_dimension.append(np.mean(dataset_errors))
             else:
                 errors_by_dimension.append(float('inf'))
+        
+        finally:
+            # Clean up temporary directory if used
+            if temp_dir:
+                temp_dir.cleanup()
     
     # Choose best dimension
     best_idx = np.argmin(errors_by_dimension)
@@ -568,7 +592,7 @@ def _compute_dataset_variance(dataset_df: pd.DataFrame) -> float:
 # Validation functions removed - data is already processed by normalization pipeline
 
 
-def fit_2pl_parameters(matrix_df: pd.DataFrame, config: TrainingConfig | None = None) -> pd.DataFrame:
+def fit_2pl_parameters(matrix_df: pd.DataFrame, config: TrainingConfig | None = None, output_dir: str | None = None) -> pd.DataFrame:
     """Fit 2PL parameters following the TinyBenchmarks methodology.
 
     This is a generalized version that works with any dataset structure while
@@ -583,6 +607,7 @@ def fit_2pl_parameters(matrix_df: pd.DataFrame, config: TrainingConfig | None = 
     Args:
         matrix_df: DataFrame with columns [model_name, question_id, normalized_score, dataset?, subscenario?]
         config: Training configuration
+        output_dir: Optional directory to save IRT dataset files (if None, uses temporary directory)
 
     Returns:
         DataFrame indexed by question_id with columns ["a", "b"] and attached metadata.
@@ -604,23 +629,39 @@ def fit_2pl_parameters(matrix_df: pd.DataFrame, config: TrainingConfig | None = 
     # Step 3: Validate dimensions using cross-validation
     print("Step 3: Validating dimensions...")
     best_dimension, validation_errors = validate_irt_dimensions(
-        binary_matrix_df, matrix_df, balance_weights, cfg
+        binary_matrix_df, matrix_df, balance_weights, cfg, output_dir
     )
     best_dim_idx = cfg.dims_search.index(best_dimension) if best_dimension in cfg.dims_search else 0
     print(f"Best dimension: {best_dimension}")
     
     # Step 4: Train final IRT model
     print("Step 4: Training final IRT model...")
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dataset_path = os.path.join(temp_dir, 'irt_dataset.jsonlines')
+    if output_dir:
+        # Save in permanent directory if provided
+        os.makedirs(output_dir, exist_ok=True)
+        dataset_path = os.path.join(output_dir, 'irt_dataset_final.jsonlines')
+        temp_dir = None
+    else:
+        # Use temporary directory as fallback
+        temp_dir = tempfile.TemporaryDirectory()
+        dataset_path = os.path.join(temp_dir.name, 'irt_dataset.jsonlines')
+    
+    try:
         
         # Convert to IRT format and train
         train_matrix = _df_to_irt_matrix(binary_matrix_df)
         create_irt_dataset(train_matrix, dataset_path)
+        if output_dir:
+            print(f"   📁 Saved final training dataset: {dataset_path}")
         trainer = train_irt_model_python_api(dataset_path, best_dimension, cfg.lr, cfg.epochs, cfg.device)
         
         # Load trained parameters directly from trainer
         A, B, Theta = load_irt_parameters_from_trainer(trainer)
+    
+    finally:
+        # Clean up temporary directory if used
+        if temp_dir:
+            temp_dir.cleanup()
     
     print("IRT model training completed")
     

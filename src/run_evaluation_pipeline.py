@@ -311,7 +311,8 @@ def _train_per_skill(per_skill_splits: dict, train_irt_params: bool, train_ancho
             params = train_item_parameters(
                 train_matrix,
                 test_matrix,
-                config=TrainingConfig(number_item_per_scenario=anchors_per_dataset)
+                config=TrainingConfig(number_item_per_scenario=anchors_per_dataset),
+                output_dir=str(skill_irt_dir)
             )
             save_item_parameters(params, str(item_params_out))
             sp.skill_ok(skill, f"Saved: {item_params_out}")
@@ -402,6 +403,103 @@ def _run_skill_validation(skill: str, item_params_out: Path, skill_irt_dir: Path
         sp.skill_ok(skill, f"Completed {len(validation_results)} validations for count={count}")
     
     return skill_results
+
+
+def _print_final_skill_summary(results_df: pd.DataFrame, per_skill_splits: dict, sp: StepPrinter):
+    """Print a concise final summary of performance by skill."""
+    if results_df.empty:
+        return
+    
+    print(f"\n{'='*60}")
+    print(f"🎯 FINAL SUMMARY - Performance by Skill")
+    print(f"{'='*60}")
+    
+    # Calculate train/test statistics across all skills
+    total_train_models = set()
+    total_train_datasets = set()
+    total_test_models = set()
+    total_test_datasets = set()
+    total_train_samples = 0
+    total_test_samples = 0
+    
+    for skill, split_data in per_skill_splits.items():
+        train_df = split_data['train']
+        test_df = split_data['test']
+        
+        total_train_models.update(train_df['model_name'].unique())
+        total_train_datasets.update(train_df['dataset'].unique())
+        total_test_models.update(test_df['model_name'].unique())
+        total_test_datasets.update(test_df['dataset'].unique())
+        total_train_samples += len(train_df)
+        total_test_samples += len(test_df)
+    
+    # Overall data statistics from validation results
+    total_models = results_df['model_name'].nunique()
+    total_datasets = results_df['dataset_name'].nunique()
+    total_validations = len(results_df)
+    
+    print(f"📊 Data Overview:")
+    print(f"   Train: {len(total_train_models)} models, {len(total_train_datasets)} datasets, {total_train_samples} samples")
+    print(f"   Test:  {len(total_test_models)} models, {len(total_test_datasets)} datasets, {total_test_samples} samples")
+    print(f"   Validation: {total_validations} tests across {total_models} models, {total_datasets} datasets")
+    
+    # Group by skill and calculate average performance
+    skill_summary = results_df.groupby('skill').agg({
+        'blended_error': ['mean', 'std', 'count'],
+        'anchor_count': 'first',  # Assuming same anchor count per skill
+        'model_name': 'nunique',
+        'dataset_name': 'nunique'
+    }).round(3)
+    
+    skill_summary.columns = ['avg_error', 'std_error', 'n_validations', 'anchor_count', 'n_models', 'n_datasets']
+    skill_summary = skill_summary.sort_values('avg_error')
+    
+    # Determine performance categories
+    overall_median = results_df['blended_error'].median()
+    
+    print(f"\nMethod: gp-IRT | Overall Median Error: {overall_median:.3f}")
+    print(f"{'Skill':<25} {'Error':<8} {'±Std':<8} {'Status':<12} {'Train':<8} {'Test':<8} {'Valid':<6}")
+    print(f"{'-'*75}")
+    
+    for skill, row in skill_summary.iterrows():
+        avg_err = row['avg_error']
+        std_err = row['std_error']
+        n_tests = int(row['n_validations'])
+        n_models = int(row['n_models'])
+        n_datasets = int(row['n_datasets'])
+        
+        # Get train/test info for this skill
+        if skill in per_skill_splits:
+            train_df = per_skill_splits[skill]['train']
+            test_df = per_skill_splits[skill]['test']
+            train_info = f"{train_df['model_name'].nunique()}/{train_df['dataset'].nunique()}"
+            test_info = f"{test_df['model_name'].nunique()}/{test_df['dataset'].nunique()}"
+        else:
+            train_info = "N/A"
+            test_info = "N/A"
+        
+        # Categorize performance
+        if avg_err <= overall_median * 0.8:
+            status = "🟢 Excellent"
+        elif avg_err <= overall_median:
+            status = "🟡 Good"
+        elif avg_err <= overall_median * 1.5:
+            status = "🟠 Fair"
+        else:
+            status = "🔴 Poor"
+        
+        skill_short = skill[:24] if len(skill) > 24 else skill
+        print(f"{skill_short:<25} {avg_err:<8.3f} ±{std_err:<7.3f} {status:<12} {train_info:<8} {test_info:<8} {n_tests:<6}")
+    
+    # Overall conclusion
+    excellent_skills = len(skill_summary[skill_summary['avg_error'] <= overall_median * 0.8])
+    total_skills = len(skill_summary)
+    
+    print(f"\n📈 CONCLUSION:")
+    print(f"   • {excellent_skills}/{total_skills} skills show excellent performance")
+    print(f"   • Best performing: {skill_summary.index[0]} ({skill_summary.iloc[0]['avg_error']:.3f})")
+    print(f"   • Most challenging: {skill_summary.index[-1]} ({skill_summary.iloc[-1]['avg_error']:.3f})")
+    print(f"{'='*60}\n")
 
 
 def _generate_summary_report(all_results: List[dict], output_path: Path, anchor_counts: List[int],
@@ -597,6 +695,10 @@ def run_full_evaluation_pipeline(
     results_df = _generate_summary_report(all_results, output_path, anchor_counts,
                                         use_irt_normalization, irt_method, split_strategy,
                                         test_ratio, split_random_seed, sp)
+
+    # Print final skill-based summary
+    if not results_df.empty:
+        _print_final_skill_summary(results_df, per_skill_splits, sp)
 
     if results_df.empty:
         return None, pd.DataFrame()

@@ -12,7 +12,8 @@ from llm_eval.selection.tinyBenchmarks.training import TrainingConfig, fit_2pl_p
 def train_item_parameters(
         train_matrix_df: pd.DataFrame,
         test_matrix_df: pd.DataFrame | None = None,
-        config: TrainingConfig | None = None
+        config: TrainingConfig | None = None,
+        output_dir: str | None = None
 ) -> pd.DataFrame:
     """Train or estimate 2PL item parameters (a,b) per question_id using tinyBenchmarks utilities.
     
@@ -20,13 +21,14 @@ def train_item_parameters(
         train_matrix_df: Training data matrix for IRT parameter estimation
         test_matrix_df: Optional test data matrix (currently unused, reserved for future validation)
         config: Training configuration
+        output_dir: Optional directory to save IRT dataset files (if None, uses temporary directory)
     
     Returns:
         DataFrame indexed by question_id with columns ["a", "b"] and attached metadata.
     """
     # Train IRT model on training data only
     # The notebook's internal validation logic will use cross-validation within the training set
-    return fit_2pl_parameters(train_matrix_df, config)
+    return fit_2pl_parameters(train_matrix_df, config, output_dir)
 
 
 def save_item_parameters(df: pd.DataFrame, out_path: str) -> None:

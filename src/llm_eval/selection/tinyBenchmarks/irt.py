@@ -54,7 +54,6 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device):
     - trainer: The trained IRT model trainer object.
     """
     from py_irt.training import IrtConfig, IrtModelTrainer
-    from src.llm_eval.selection.tinyBenchmarks.two_param_logistic import TwoParamLogistic
     # Create IRT config
     config = IrtConfig(
         # model_type=TwoParamLogistic,
