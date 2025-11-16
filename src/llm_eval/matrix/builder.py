@@ -109,7 +109,7 @@ class MatrixBuilder:
 
         # Select and rename columns to match ObservationRow schema
         result_df = df[[
-            "dataset", "split", "question_id", "model_name",
+            "dataset", "hf_split", "question_id", "model_name",
             "model_family", "metric_name", "raw_score",
             "normalized_score", "is_higher_better"
         ]].copy()

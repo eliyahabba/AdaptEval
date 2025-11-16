@@ -5,49 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
-
-def sigmoid(z):
-    """
-    Compute the sigmoid function for the input z.
-
-    Parameters:
-    - z: A numeric value or numpy array.
-
-    Returns:
-    - The sigmoid of z.
-    """
-    return 1 / (1 + np.exp(-z))
-
-
-def item_curve(theta, a, b):
-    """
-    Compute the item response curve for given parameters.
-
-    Parameters:
-    - theta: The ability parameter of the subject - shape [n_models, n_dims, 1]
-    - a: The discrimination parameter of the item - shape [n_models, n_items]
-    - b: The difficulty parameter of the item - shape [n_models, n_items]
-
-    Returns:
-    - The probability of a correct response given the item parameters and subject ability.
-    """
-    # Handle different input shapes for compatibility
-    if theta.ndim == 3:  # [n_models, n_dims, 1] format from original code
-        theta_squeezed = theta.squeeze(axis=2)  # [n_models, n_dims]
-        if theta_squeezed.shape[1] == 1:  # Single dimension case
-            theta_val = theta_squeezed[:, 0:1]  # [n_models, 1]
-        else:
-            theta_val = theta_squeezed
-    elif theta.ndim == 1:  # [n_models] format
-        theta_val = theta.reshape(-1, 1)  # [n_models, 1]
-    else:  # [n_models, 1] format
-        theta_val = theta
-    
-    # Compute z = a*theta - b
-    z = a * theta_val - b  # Broadcasting: [n_models, n_items]
-    z = np.clip(z, -30, 30)
-    
-    return sigmoid(z)
+from .math_utils import sigmoid, item_curve, estimate_ability_parameters
 
 
 @dataclass
@@ -57,49 +15,6 @@ class EstimationConfig:
     tol: float = 1e-4
     # lambda blending (gp-IRT) per dataset
     lambdas_by_dataset: dict[str, float] | None = None
-
-
-def estimate_ability_parameters(responses_test, A, B, theta_init=None, eps=1e-10, optimizer="BFGS"):
-    """
-    Estimates the ability parameters for a new set of test responses.
-
-    Parameters:
-    - responses_test: A 1D array of the test subject's responses.
-    - A: The discrimination parameters of the IRT model [n_models, n_items].
-    - B: The difficulty parameters of the IRT model [n_models, n_items].
-    - theta_init: Initial guess for the ability parameters.
-    - eps: A small value to avoid division by zero and log of zero errors.
-    - optimizer: The optimization method to use.
-
-    Returns: 
-    - optimal_theta: The estimated ability parameters for the test subject [n_models, 1, 1].
-    """
-
-    # For our case, we assume single-dimensional ability (D=1)
-    D = 1
-
-    # Define the negative log likelihood function
-    def neg_log_like(x):
-        # x is the theta parameter(s) being optimized
-        theta_reshaped = np.array(x).reshape(1, 1, 1)  # [1, 1, 1] format
-        P = item_curve(theta_reshaped, A, B).squeeze()  # [n_items]
-        log_likelihood = np.sum(responses_test * np.log(P + eps) + (1 - responses_test) * np.log(1 - P + eps))
-        return -log_likelihood
-
-    # Ensure the initial theta is a numpy array with the correct shape
-    if theta_init is not None and isinstance(theta_init, np.ndarray):
-        if theta_init.size == 1:
-            theta_init_val = float(theta_init.flatten()[0])
-        else:
-            theta_init_val = 0.0
-    else:
-        theta_init_val = 0.0
-
-    # Use the minimize function to find the ability parameters that minimize the negative log likelihood
-    result = minimize(neg_log_like, theta_init_val, method=optimizer)
-    optimal_theta = np.array([[[result.x[0]]]])  # [1, 1, 1] format
-
-    return optimal_theta
 
 
 def estimate_theta_from_anchors(

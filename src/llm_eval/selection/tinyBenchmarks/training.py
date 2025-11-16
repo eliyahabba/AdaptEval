@@ -32,12 +32,7 @@ import json
 
 # Import the exact functions from notebook files
 from .irt import create_irt_dataset, train_irt_model, train_irt_model_python_api, load_irt_parameters, load_irt_parameters_from_trainer, estimate_ability_parameters
-from .utils import sigmoid, item_curve
-
-# Define sigmoid locally if not available
-def sigmoid(z):
-    """Compute the sigmoid function."""
-    return 1 / (1 + np.exp(-np.clip(z, -500, 500)))
+from .math_utils import sigmoid, item_curve
 
 
 @dataclass
@@ -538,9 +533,17 @@ def compute_lambda_values(
         return name.split(".")[0] if isinstance(name, str) and "." in name else name
 
     # Compute lambda for each scenario (group of subdatasets)
-    scenarios = sorted({scenario_from_dataset(d) for d in original_matrix_df["dataset"].unique()})
+    # Only process scenarios that have validation errors
+    available_scenarios = set(validation_errors.keys())
+    all_scenarios = sorted({scenario_from_dataset(d) for d in original_matrix_df["dataset"].unique()})
+    
+    # Filter to scenarios that have validation errors
+    scenarios_to_process = [s for s in all_scenarios if s in available_scenarios]
+    
+    if not scenarios_to_process:
+        raise ValueError(f"No scenarios with validation errors found. Available: {available_scenarios}, Required: {all_scenarios}")
 
-    for scenario in scenarios:
+    for scenario in scenarios_to_process:
         scenario_df = original_matrix_df[original_matrix_df["dataset"].map(lambda d: scenario_from_dataset(d) == scenario)]
 
         # Compute variance for this scenario: mean over models of var across items
