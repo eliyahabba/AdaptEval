@@ -276,7 +276,7 @@ def validate_irt_dimensions(
             
             # Convert training data to IRT format
             train_responses = _df_to_irt_matrix(train_df)
-            create_irt_dataset(train_responses, dataset_path)
+            _ = create_irt_dataset(train_responses, dataset_path)
             if output_dir:
                 print(f"   📁 Saved validation dataset: {dataset_path}")
             
@@ -595,7 +595,12 @@ def _compute_dataset_variance(dataset_df: pd.DataFrame) -> float:
 # Validation functions removed - data is already processed by normalization pipeline
 
 
-def fit_2pl_parameters(matrix_df: pd.DataFrame, config: TrainingConfig | None = None, output_dir: str | None = None) -> pd.DataFrame:
+def fit_2pl_parameters(
+    matrix_df: pd.DataFrame,
+    config: TrainingConfig | None = None,
+    output_dir: str | None = None,
+    anchor_items: list[dict] | None = None,
+) -> pd.DataFrame:
     """Fit 2PL parameters following the TinyBenchmarks methodology.
 
     This is a generalized version that works with any dataset structure while
@@ -653,10 +658,19 @@ def fit_2pl_parameters(matrix_df: pd.DataFrame, config: TrainingConfig | None = 
         
         # Convert to IRT format and train
         train_matrix = _df_to_irt_matrix(binary_matrix_df)
-        create_irt_dataset(train_matrix, dataset_path)
+        question_ids = sorted(binary_matrix_df["question_id"].unique())
+        question_id_mapping = create_irt_dataset(train_matrix, dataset_path, question_ids=question_ids)
         if output_dir:
             print(f"   📁 Saved final training dataset: {dataset_path}")
-        trainer = train_irt_model_python_api(dataset_path, best_dimension, cfg.lr, cfg.epochs, cfg.device)
+        trainer = train_irt_model_python_api(
+            dataset_path,
+            best_dimension,
+            cfg.lr,
+            cfg.epochs,
+            cfg.device,
+            anchor_items=anchor_items,
+            question_id_mapping=question_id_mapping,
+        )
         
         # Load trained parameters directly from trainer
         A, B, Theta = load_irt_parameters_from_trainer(trainer)

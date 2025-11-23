@@ -13,7 +13,8 @@ def train_item_parameters(
         train_matrix_df: pd.DataFrame,
         test_matrix_df: pd.DataFrame | None = None,
         config: TrainingConfig | None = None,
-        output_dir: str | None = None
+        output_dir: str | None = None,
+        anchor_items: list[dict] | None = None,
 ) -> pd.DataFrame:
     """Train or estimate 2PL item parameters (a,b) per question_id using tinyBenchmarks utilities.
     
@@ -28,7 +29,7 @@ def train_item_parameters(
     """
     # Train IRT model on training data only
     # The notebook's internal validation logic will use cross-validation within the training set
-    return fit_2pl_parameters(train_matrix_df, config, output_dir)
+    return fit_2pl_parameters(train_matrix_df, config, output_dir, anchor_items=anchor_items)
 
 
 def save_item_parameters(df: pd.DataFrame, out_path: str) -> None:

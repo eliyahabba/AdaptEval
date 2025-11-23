@@ -38,14 +38,32 @@ def estimate_theta_from_anchors(
         return init_theta
         
     # Extract parameters and responses for common items
-    a_values = item_params.loc[common, "a"].astype(float).values
-    b_values = item_params.loc[common, "b"].astype(float).values
-    y_values = anchor_responses.loc[common].astype(float).values
+    # Check for multidimensional parameters (if 'a' contains lists/arrays)
+    first_a = item_params.loc[common[0], "a"]
+    is_multidim = isinstance(first_a, (list, np.ndarray, tuple))
     
-    # Reshape for compatibility with original function format
-    # A and B should be [n_models, n_items] format, we have 1 model
-    A = a_values.reshape(1, -1)  # [1, n_items]
-    B = b_values.reshape(1, -1)  # [1, n_items]
+    if is_multidim:
+        # Stack to shape [n_items, n_dims] then transpose to [n_dims, n_items]
+        # item_params "a" column contains lists/arrays of size D
+        a_list = item_params.loc[common, "a"].tolist()
+        b_list = item_params.loc[common, "b"].tolist()
+        
+        a_values = np.array(a_list).T  # [D, n_items]
+        b_values = np.array(b_list).T  # [D, n_items]
+        
+        # Reshape to [1, n_dims, n_items] for estimate_ability_parameters
+        A = a_values[None, :, :]
+        B = b_values[None, :, :]
+    else:
+        # Standard 1D case
+        a_values = item_params.loc[common, "a"].astype(float).values
+        b_values = item_params.loc[common, "b"].astype(float).values
+        
+        # Reshape to [1, n_items] (treated as [1, 1, n_items] internally)
+        A = a_values.reshape(1, -1)
+        B = b_values.reshape(1, -1)
+        
+    y_values = anchor_responses.loc[common].astype(float).values
     
     # Use the original estimation function
     try:
@@ -249,7 +267,10 @@ def run_estimation_validation(
                 # remove duplicates if any
                 model_responses = model_responses[~model_responses.index.duplicated(keep='first')]
                 # 1. Estimate theta from anchor responses
-                anchor_responses = model_responses.loc[scenario_anchors]
+                available_anchor_ids = [q for q in scenario_anchors if q in model_responses.index]
+                if not available_anchor_ids:
+                    continue
+                anchor_responses = model_responses.loc[available_anchor_ids]
                 config = EstimationConfig(lambdas_by_dataset=lambdas_by_dataset)
                 
                 estimated_theta = estimate_theta_from_anchors(
@@ -295,7 +316,7 @@ def run_estimation_validation(
                 
                 # 4. p-IRT prediction (EXACTLY like notebook - separate seen/unseen)
                 # First, identify seen (anchor) and unseen questions in this SCENARIO
-                seen_questions = [q for q in scenario_anchors if q in scenario_questions]
+                seen_questions = available_anchor_ids
                 unseen_questions = [q for q in scenario_questions if q not in scenario_anchors]
                 
                 # data_part: (balance_weights*Y_test)[j,ind_seen].mean()
@@ -352,7 +373,7 @@ def run_estimation_validation(
                 # Compute prediction errors
                 anchor_error = abs(anchor_prediction - true_performance)
                 irt_error = abs(irt_prediction - true_performance)
-                blended_error = abs(blended_prediction - true_performance)
+                gp_irt_error = abs(blended_prediction - true_performance)
                 pirt_error = abs(pirt_prediction - true_performance)
                 
                 # Store results
@@ -366,10 +387,10 @@ def run_estimation_validation(
                     "true_performance": float(true_performance),
                     "anchor_prediction": float(anchor_prediction),
                     "irt_prediction": float(irt_prediction),
-                    "blended_prediction": float(blended_prediction),
+                    "gp_irt_prediction": float(blended_prediction),
                     "pirt_prediction": float(pirt_prediction),
                     "anchor_error": float(anchor_error),
-                    "blended_error": float(blended_error),
+                    "gp_irt_error": float(gp_irt_error),
                     "pirt_error": float(pirt_error),
                     "dataset_lambda": float(scenario_lambda),
                     "pirt_lambda": float(pirt_lambda)
@@ -396,46 +417,46 @@ def run_estimation_validation(
         # Calculate and print average errors per scenario for each method
         for scenario_name, scenario_data in scenario_results.items():
             anchor_errors = [r["anchor_error"] for r in scenario_data]
-            blended_errors = [r["blended_error"] for r in scenario_data]
+            gp_errors = [r["gp_irt_error"] for r in scenario_data]
             pirt_errors = [r["pirt_error"] for r in scenario_data]
             
             avg_anchor_error = np.mean(anchor_errors)
-            avg_blended_error = np.mean(blended_errors)
+            avg_gp_error = np.mean(gp_errors)
             avg_pirt_error = np.mean(pirt_errors)
             
             # Find the best method for this scenario
             method_errors = {
                 "Anchor-only": avg_anchor_error,
-                "gp-IRT": avg_blended_error,
+                "gp-IRT": avg_gp_error,
                 "p-IRT": avg_pirt_error
             }
             best_method = min(method_errors.keys(), key=lambda k: method_errors[k])
             
             print(f"     {scenario_name}:")
             print(f"       • Anchor-only: {avg_anchor_error:.4f}")
-            print(f"       • gp-IRT:      {avg_blended_error:.4f}")
+            print(f"       • gp-IRT:      {avg_gp_error:.4f}")
             print(f"       • p-IRT:       {avg_pirt_error:.4f}")
             print(f"       → Best: {best_method} ({method_errors[best_method]:.4f})")
         
         # Overall performance summary
         print("\n   Overall performance summary:")
         all_anchor_errors = [r["anchor_error"] for r in results]
-        all_blended_errors = [r["blended_error"] for r in results]
+        all_gp_errors = [r["gp_irt_error"] for r in results]
         all_pirt_errors = [r["pirt_error"] for r in results]
         
         overall_anchor_error = np.mean(all_anchor_errors)
-        overall_blended_error = np.mean(all_blended_errors)
+        overall_gp_error = np.mean(all_gp_errors)
         overall_pirt_error = np.mean(all_pirt_errors)
         
         overall_method_errors = {
             "Anchor-only": overall_anchor_error,
-            "gp-IRT": overall_blended_error,
+            "gp-IRT": overall_gp_error,
             "p-IRT": overall_pirt_error
         }
         overall_best_method = min(overall_method_errors.keys(), key=lambda k: overall_method_errors[k])
         
         print(f"     • Anchor-only: {overall_anchor_error:.4f}")
-        print(f"     • gp-IRT:      {overall_blended_error:.4f}")
+        print(f"     • gp-IRT:      {overall_gp_error:.4f}")
         print(f"     • p-IRT:       {overall_pirt_error:.4f}")
         print(f"     → Overall best: {overall_best_method} ({overall_method_errors[overall_best_method]:.4f})")
         
@@ -443,7 +464,7 @@ def run_estimation_validation(
         print("\n   Per-method performance across scenarios:")
         
         methods = ["Anchor-only", "gp-IRT", "p-IRT"]
-        error_keys = ["anchor_error", "blended_error", "pirt_error"]
+        error_keys = ["anchor_error", "gp_irt_error", "pirt_error"]
         
         for method, error_key in zip(methods, error_keys):
             print(f"\n     {method}:")

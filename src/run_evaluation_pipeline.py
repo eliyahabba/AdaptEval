@@ -7,9 +7,10 @@ import json
 from pathlib import Path
 from typing import Optional, List
 
+import numpy as np
 import pandas as pd
 
-from llm_eval.config import load_yaml_config
+from llm_eval.config import load_yaml_config, SplitSettings, SplitRatios
 from llm_eval.matrix import MatrixBuilder, MatrixStorage
 from llm_eval.normalization import MetricRegistry
 from llm_eval.selection.tinyBenchmarks.estimation import (
@@ -166,81 +167,158 @@ def _build_matrix_if_needed(builder: MatrixBuilder, raw_df: pd.DataFrame, output
     return matrix_df
 
 
+def _get_skill_split_ratios(skill: str, split_settings: SplitSettings | None, fallback_test_ratio: float) -> SplitRatios:
+    if split_settings is not None:
+        return split_settings.for_skill(skill).normalized()
+    train_ratio = max(0.0, 1.0 - fallback_test_ratio)
+    ratios = SplitRatios(train_ratio=train_ratio, link_ratio=0.0, test_ratio=fallback_test_ratio)
+    return ratios.normalized()
+
+
+def _partition_datasets_for_link(
+        datasets: List[str],
+        ratios: SplitRatios,
+        random_seed: Optional[int]
+) -> tuple[List[str], List[str]]:
+    """Split dataset names into base (train/test) and link-only sets."""
+    if ratios.link_ratio <= 0 or len(datasets) < 2:
+        return list(datasets), []
+
+    rng = np.random.default_rng(random_seed)
+    n_total = len(datasets)
+    n_link = max(1, int(round(n_total * ratios.link_ratio)))
+    if n_link >= n_total:
+        n_link = n_total - 1
+
+    chosen = rng.choice(datasets, size=n_link, replace=False)
+    link_set = set(str(x) for x in chosen.tolist())
+    base = [d for d in datasets if d not in link_set]
+
+    # Safety: ensure at least one dataset remains for base split
+    if not base:
+        base = [link_set.pop()]
+        link_set = set(datasets) - set(base)
+
+    return base, sorted(link_set)
+
+
 def _split_matrices_per_skill(matrix_df: pd.DataFrame, output_path: Path, split_strategy: str, 
-                             test_ratio: float, split_random_seed: int, sp: StepPrinter) -> dict:
+                             test_ratio: float, split_random_seed: int, sp: StepPrinter,
+                             split_settings: SplitSettings | None) -> dict:
     """Split matrices per skill and save them."""
-    sp.step("Train/test split per skill")
+    sp.step("Train/link/test split per skill")
     
     from llm_eval.matrix import create_splitter
     skills_in_matrix = list(sorted(matrix_df["skill"].astype(str).unique()))
-    sp.info(f"Found {len(skills_in_matrix)} skills: {', '.join(skills_in_matrix)}")
-    sp.info(f"Using split strategy: {split_strategy}, test_ratio: {test_ratio}, random_seed: {split_random_seed}")
-    per_skill_splits = {}
+    sp.info(f"Found {len(skills_in_matrix)} skills")
+    if split_settings is not None:
+        default_ratios = split_settings.default.normalized()
+        ratio_msg = (f"T:{default_ratios.train_ratio:.2f}, "
+                     f"L:{default_ratios.link_ratio:.2f}, "
+                     f"Te:{default_ratios.test_ratio:.2f}")
+    else:
+        ratio_msg = f"test_ratio={test_ratio:.2f}"
+    sp.info(f"Using split strategy: {split_strategy}, ratios: {ratio_msg}, random_seed: {split_random_seed}")
     
+    per_skill_splits = {}
+    skill_analysis = []
+    
+    # Analyze all skills first
     for skill in skills_in_matrix:
         skill_df = matrix_df[matrix_df["skill"] == skill].copy()
         
-        # Check if skill has enough data for train/test split
         unique_models = skill_df["model_name"].nunique()
         unique_datasets = skill_df["dataset"].nunique()
         total_samples = len(skill_df)
         
-        # Log skill details for debugging
-        datasets_list = skill_df["dataset"].unique().tolist()
-        models_list = skill_df["model_name"].unique().tolist()
+        # Determine status and reason
+        status = "✓ OK"
+        reason = ""
         
-        sp.info(f"Skill '{skill}': {unique_datasets} dataset(s) {datasets_list}, {unique_models} model(s), {total_samples} samples")
-        
-        # Skip if insufficient diversity for meaningful split
         if unique_datasets < 2:
-            sp.warn(f"Skipping skill '{skill}': only {unique_datasets} dataset(s), cannot create diverse train/test split")
+            status = "✗ SKIP"
+            reason = f"Only {unique_datasets} dataset"
+        elif unique_models < 2:
+            status = "✗ SKIP"
+            reason = f"Only {unique_models} model"
+        elif total_samples < 20:
+            status = "✗ SKIP"
+            reason = f"Only {total_samples} samples"
+        
+        skill_analysis.append({
+            'skill': skill,
+            'datasets': unique_datasets,
+            'models': unique_models,
+            'samples': total_samples,
+            'status': status,
+            'reason': reason
+        })
+    
+    # Print skills analysis table
+    print(f"\n   📊 Skills Analysis:")
+    print(f"   {'Skill':<30} {'Datasets':<9} {'Models':<7} {'Samples':<10} {'Status':<8} {'Reason'}")
+    print(f"   {'-'*75}")
+    
+    for analysis in skill_analysis:
+        skill_short = analysis['skill'][:29] if len(analysis['skill']) > 29 else analysis['skill']
+        print(f"   {skill_short:<30} {analysis['datasets']:<9} {analysis['models']:<7} {analysis['samples']:<10} {analysis['status']:<8} {analysis['reason']}")
+    
+    # Process skills that passed the analysis
+    processed_skills = []
+    skipped_skills = []
+    
+    for analysis in skill_analysis:
+        if analysis['status'] == "✗ SKIP":
+            skipped_skills.append(analysis['skill'])
             continue
             
-        if unique_models < 2:
-            sp.warn(f"Skipping skill '{skill}': only {unique_models} model(s), cannot split train/test")
+        skill = analysis['skill']
+        skill_df = matrix_df[matrix_df["skill"] == skill].copy()
+        ratios_cfg = _get_skill_split_ratios(skill, split_settings, test_ratio)
+        datasets_available = sorted(skill_df["dataset"].astype(str).unique())
+        base_datasets, link_dataset_list = _partition_datasets_for_link(datasets_available, ratios_cfg, split_random_seed)
+        if not base_datasets:
+            sp.skill_warn(skill, "No datasets available for train/test after reserving link datasets")
+            skipped_skills.append(skill)
             continue
-            
-        if total_samples < 20:  # Minimum reasonable size (increased from 10)
-            sp.warn(f"Skipping skill '{skill}': only {total_samples} samples, too small for reliable split")
-            continue
+        base_df = skill_df[skill_df["dataset"].isin(base_datasets)].copy()
+        link_df = (
+            skill_df[skill_df["dataset"].isin(link_dataset_list)].copy()
+            if link_dataset_list
+            else skill_df.iloc[0:0].copy()
+        )
+        if ratios_cfg.link_ratio > 0 and link_dataset_list and link_df.empty:
+            sp.skill_warn(skill, "Link datasets selected but no rows available; skipping link split for this skill")
+        base_ratio_total = ratios_cfg.train_ratio + ratios_cfg.test_ratio
+        base_test_ratio = ratios_cfg.test_ratio / base_ratio_total if base_ratio_total > 0 else ratios_cfg.test_ratio
         
         skill_dir = output_path / "skills" / skill
         skill_dir.mkdir(parents=True, exist_ok=True)
         
         splitter = create_splitter(
             strategy=split_strategy,
-            test_ratio=test_ratio,
+            test_ratio=base_test_ratio,
             random_seed=split_random_seed
         )
         
         try:
-            train_df, test_df = splitter.split(skill_df)
-            split_info = splitter.get_split_info(train_df, test_df)
+            train_df, test_df = splitter.split(base_df)
             
-            # Validate split quality - ensure both train and test have diversity
+            # Validate split quality
             train_datasets = train_df["dataset"].nunique()
             test_datasets = test_df["dataset"].nunique()
+            link_datasets = link_df["dataset"].nunique() if not link_df.empty else 0
             train_models = train_df["model_name"].nunique()
             test_models = test_df["model_name"].nunique()
+            link_models = link_df["model_name"].nunique() if not link_df.empty else 0
             
-            if train_datasets == 0 or test_datasets == 0:
-                sp.warn(f"Skipping skill '{skill}': split resulted in empty train ({train_datasets} datasets) or test ({test_datasets} datasets)")
-                continue
-                
-            if train_models == 0 or test_models == 0:
-                sp.warn(f"Skipping skill '{skill}': split resulted in empty train ({train_models} models) or test ({test_models} models)")
+            if train_datasets == 0 or test_datasets == 0 or train_models == 0 or test_models == 0:
+                skipped_skills.append(skill)
                 continue
                 
         except Exception as e:
-            sp.warn(f"Skipping skill '{skill}': split failed - {str(e)}")
+            skipped_skills.append(skill)
             continue
-        
-        per_skill_splits[skill] = {
-            "train": train_df,
-            "test": test_df,
-            "info": split_info,
-            "dir": skill_dir,
-        }
         
         # Check if existing split was done with same parameters
         split_info_file = skill_dir / "split_info.json"
@@ -251,35 +329,100 @@ def _split_matrices_per_skill(matrix_df: pd.DataFrame, output_path: Path, split_
                 existing_seed = existing_split_info.get('random_seed')
                 existing_strategy = existing_split_info.get('strategy')
                 existing_ratio = existing_split_info.get('test_ratio')
+                existing_link_ratio = existing_split_info.get('link_ratio')
                 
                 if (existing_seed != split_random_seed or 
                     existing_strategy != split_strategy or 
-                    abs(existing_ratio - test_ratio) > 0.001):
-                    sp.warn(f"[{skill}] Split parameters changed! "
-                           f"Old: seed={existing_seed}, strategy={existing_strategy}, ratio={existing_ratio:.3f} "
-                           f"New: seed={split_random_seed}, strategy={split_strategy}, ratio={test_ratio:.3f}")
+                    abs(existing_ratio - ratios_cfg.test_ratio) > 0.001 or
+                    abs((existing_link_ratio or 0.0) - ratios_cfg.link_ratio) > 0.001):
+                    sp.warn(f"[{skill}] Split parameters changed!")
             except Exception:
-                pass  # If we can't read old split info, just proceed
+                pass
         
         # Save per-skill matrices and split info
         MatrixStorage(str(skill_dir / "matrix_train.parquet")).save(train_df)
+        MatrixStorage(str(skill_dir / "matrix_link.parquet")).save(link_df)
         MatrixStorage(str(skill_dir / "matrix_test.parquet")).save(test_df)
+        total_rows = len(train_df) + len(link_df) + len(test_df)
+        split_info = {
+            "strategy": split_strategy,
+            "random_seed": split_random_seed,
+            "target_train_ratio": ratios_cfg.train_ratio,
+            "target_link_ratio": ratios_cfg.link_ratio,
+            "target_test_ratio": ratios_cfg.test_ratio,
+            "train_ratio": ratios_cfg.train_ratio,
+            "link_ratio": ratios_cfg.link_ratio,
+            "test_ratio": ratios_cfg.test_ratio,
+            "train_size": len(train_df),
+            "link_size": len(link_df),
+            "test_size": len(test_df),
+            "total_size": total_rows,
+            "actual_train_ratio": (len(train_df) / total_rows) if total_rows else 0,
+            "actual_link_ratio": (len(link_df) / total_rows) if total_rows else 0,
+            "actual_test_ratio": (len(test_df) / total_rows) if total_rows else 0,
+            "train_models": train_models,
+            "link_models": link_models,
+            "test_models": test_models,
+            "train_datasets": train_datasets,
+            "link_datasets": link_datasets,
+            "test_datasets": test_datasets,
+            "train_dataset_names": sorted(train_df["dataset"].unique().tolist()),
+            "link_dataset_names": sorted(link_df["dataset"].unique().tolist()),
+            "test_dataset_names": sorted(test_df["dataset"].unique().tolist()),
+        }
         _save_json(split_info, split_info_file, f"Split info ({skill})")
         
-        sp.ok(f"{skill}: {split_info['train_size']} train ({train_datasets}D, {train_models}M), "
-              f"{split_info['test_size']} test ({test_datasets}D, {test_models}M) "
-              f"({split_info['actual_test_ratio']:.1%})")
+        per_skill_splits[skill] = {
+            "train": train_df,
+            "link": link_df,
+            "test": test_df,
+            "info": split_info,
+            "dir": skill_dir,
+        }
+        
+        processed_skills.append({
+            'skill': skill,
+            'train_size': split_info['train_size'],
+            'link_size': split_info['link_size'],
+            'test_size': split_info['test_size'],
+            'train_datasets': train_datasets,
+            'link_datasets': link_datasets,
+            'test_datasets': test_datasets,
+            'train_models': train_models,
+            'link_models': link_models,
+            'test_models': test_models,
+            'train_ratio': split_info['actual_train_ratio'],
+            'link_ratio': split_info['actual_link_ratio'],
+            'test_ratio': split_info['actual_test_ratio']
+        })
     
-    # Summary of skill processing
+    # Print processing results table
+    if processed_skills:
+        print(f"\n   ✅ Successfully Processed Skills:")
+        print(f"   {'Skill':<30} {'Train':<12} {'Link':<12} {'Test':<12} {'Train D/M':<10} {'Link D/M':<10} {'Test D/M':<10}")
+        print(f"   {'-'*110}")
+        
+        for proc in processed_skills:
+            skill_short = proc['skill'][:29] if len(proc['skill']) > 29 else proc['skill']
+            train_info = f"{proc['train_size']:,}"
+            link_info = f"{proc['link_size']:,}"
+            test_info = f"{proc['test_size']:,}"
+            train_dm = f"{proc['train_datasets']}/{proc['train_models']}"
+            link_dm = f"{proc['link_datasets']}/{proc['link_models']}" if proc['link_size'] else "0/0"
+            test_dm = f"{proc['test_datasets']}/{proc['test_models']}"
+            ratios = f"T:{proc['train_ratio']:.1%} L:{proc['link_ratio']:.1%} Te:{proc['test_ratio']:.1%}"
+            
+            print(f"   {skill_short:<30} {train_info:<12} {link_info:<12} {test_info:<12} {train_dm:<10} {link_dm:<10} {test_dm:<10} {ratios}")
+    
+    # Summary
     total_skills = len(skills_in_matrix)
-    processed_skills = len(per_skill_splits)
-    skipped_skills = total_skills - processed_skills
+    processed_count = len(per_skill_splits)
+    skipped_count = len(skipped_skills)
     
-    if skipped_skills > 0:
-        skipped_list = [skill for skill in skills_in_matrix if skill not in per_skill_splits]
-        sp.info(f"Processed {processed_skills}/{total_skills} skills, skipped {skipped_skills}: {', '.join(skipped_list)}")
-    else:
-        sp.ok(f"Successfully processed all {processed_skills} skills")
+    print(f"\n   📈 Summary: {processed_count}/{total_skills} skills processed, {skipped_count} skipped")
+    if skipped_skills:
+        skipped_short = [s[:20] + "..." if len(s) > 20 else s for s in skipped_skills]
+        print(f"   Skipped: {', '.join(skipped_short)}")
     
     return per_skill_splits
 
@@ -291,7 +434,9 @@ def _train_per_skill(per_skill_splits: dict, train_irt_params: bool, train_ancho
     sp.step("Per-skill IRT training and validation")
     
     all_results = []
+    training_summary = []
     
+    # Process each skill
     for skill, split in per_skill_splits.items():
         skill_dir = split["dir"]
         skill_irt_dir = skill_dir / "irt"
@@ -301,13 +446,18 @@ def _train_per_skill(per_skill_splits: dict, train_irt_params: bool, train_ancho
         train_matrix = split["train"]
         test_matrix = split["test"]
         
-        # Train IRT parameters if requested OR if they don't exist
+        # Determine what needs to be done
         params_exist = item_params_out.exists()
         should_train_irt = train_irt_params or not params_exist
         
+        missing_anchors = [count for count in anchor_counts if not (skill_irt_dir / f"anchors_{count}.json").exists()]
+        should_train_anchors = train_anchors or len(missing_anchors) > 0
+        
+        irt_action = "Retrain" if (params_exist and train_irt_params) else ("Train" if should_train_irt else "Load")
+        anchor_action = "Retrain" if (not missing_anchors and train_anchors) else ("Train" if should_train_anchors else "Load")
+        
+        # Train IRT parameters if needed
         if should_train_irt:
-            action = "Retraining" if params_exist else "Training"
-            sp.skill_info(skill, f"{action} IRT parameters ...")
             params = train_item_parameters(
                 train_matrix,
                 test_matrix,
@@ -315,31 +465,17 @@ def _train_per_skill(per_skill_splits: dict, train_irt_params: bool, train_ancho
                 output_dir=str(skill_irt_dir)
             )
             save_item_parameters(params, str(item_params_out))
-            sp.skill_ok(skill, f"Saved: {item_params_out}")
         else:
             params = pd.read_parquet(item_params_out)
-            sp.skill_info(skill, f"Loaded existing IRT parameters: {len(params)} questions")
         
-        # Train anchors if requested OR if any anchor files are missing
-        missing_anchors = [count for count in anchor_counts if not (skill_irt_dir / f"anchors_{count}.json").exists()]
-        should_train_anchors = train_anchors or len(missing_anchors) > 0
-        
+        # Train anchors if needed
         if should_train_anchors:
-            if missing_anchors:
-                sp.skill_info(skill, f"Training anchor selection - missing counts: {missing_anchors}")
-            else:
-                sp.skill_info(skill, f"Retraining anchor selection ({anchor_selection_method})")
-            
             for count in anchor_counts:
                 anchors_by_dataset, weights_by_dataset = select_anchors_structured_with_matrix(
                     params, train_matrix, number_items=count, method=anchor_selection_method
                 )
                 count_path = skill_irt_dir / f"anchors_{count}.json"
                 save_anchors_structured(anchors_by_dataset, weights_by_dataset, str(count_path))
-                total = sum(len(v) for v in anchors_by_dataset.values())
-                sp.skill_ok(skill, f"Saved {total} anchors → {count_path}")
-        else:
-            sp.skill_info(skill, f"Using existing anchor files for counts: {anchor_counts}")
         
         # Run validation
         try:
@@ -352,9 +488,38 @@ def _train_per_skill(per_skill_splits: dict, train_irt_params: bool, train_ancho
                 skill_results_df = pd.DataFrame(skill_results)
                 skill_results_df.to_csv(skill_dir / "estimation_validation_results.csv", index=False)
                 
+                # Calculate average error for this skill
+                avg_error = skill_results_df['gp_irt_error'].mean()
+                validation_count = len(skill_results)
+            else:
+                avg_error = float('nan')
+                validation_count = 0
+                
         except Exception as e:
-            sp.skill_warn(skill, f"Error in validation: {e}")
-            continue
+            avg_error = float('nan')
+            validation_count = 0
+        
+        training_summary.append({
+            'skill': skill,
+            'irt_action': irt_action,
+            'anchor_action': anchor_action,
+            'validations': validation_count,
+            'avg_error': avg_error
+        })
+    
+    # Print training summary table
+    print(f"\n   🔧 Training & Validation Summary:")
+    print(f"   {'Skill':<30} {'IRT':<8} {'Anchors':<8} {'Valid':<6} {'Avg Error'}")
+    print(f"   {'-'*65}")
+    
+    for summary in training_summary:
+        skill_short = summary['skill'][:29] if len(summary['skill']) > 29 else summary['skill']
+        irt_status = summary['irt_action']
+        anchor_status = summary['anchor_action']
+        valid_count = summary['validations']
+        avg_err = f"{summary['avg_error']:.3f}" if not pd.isna(summary['avg_error']) else "N/A"
+        
+        print(f"   {skill_short:<30} {irt_status:<8} {anchor_status:<8} {valid_count:<6} {avg_err}")
     
     return all_results
 
@@ -373,7 +538,6 @@ def _run_skill_validation(skill: str, item_params_out: Path, skill_irt_dir: Path
     for count in anchor_counts:
         anchors_file = skill_irt_dir / f"anchors_{count}.json"
         if not anchors_file.exists():
-            sp.skill_warn(skill, f"Missing anchors file for count {count}")
             continue
         
         with open(anchors_file, 'r') as f:
@@ -388,7 +552,6 @@ def _run_skill_validation(skill: str, item_params_out: Path, skill_irt_dir: Path
             best_dim_idx=best_dim_idx,
             number_item=count,
         )
-        print(f"     • [{skill}] Lambdas (count={count}): {lambdas_by_dataset}")
         
         validation_results = run_estimation_validation(
             test_matrix, item_params, anchors_data['anchors_by_dataset'], 
@@ -400,7 +563,6 @@ def _run_skill_validation(skill: str, item_params_out: Path, skill_irt_dir: Path
             r.update({'anchor_count': count, 'skill': skill})
         
         skill_results.extend(validation_results)
-        sp.skill_ok(skill, f"Completed {len(validation_results)} validations for count={count}")
     
     return skill_results
 
@@ -445,7 +607,7 @@ def _print_final_skill_summary(results_df: pd.DataFrame, per_skill_splits: dict,
     
     # Group by skill and calculate average performance
     skill_summary = results_df.groupby('skill').agg({
-        'blended_error': ['mean', 'std', 'count'],
+        'gp_irt_error': ['mean', 'std', 'count'],
         'anchor_count': 'first',  # Assuming same anchor count per skill
         'model_name': 'nunique',
         'dataset_name': 'nunique'
@@ -455,7 +617,7 @@ def _print_final_skill_summary(results_df: pd.DataFrame, per_skill_splits: dict,
     skill_summary = skill_summary.sort_values('avg_error')
     
     # Determine performance categories
-    overall_median = results_df['blended_error'].median()
+    overall_median = results_df['gp_irt_error'].median()
     
     print(f"\nMethod: gp-IRT | Overall Median Error: {overall_median:.3f}")
     print(f"{'Skill':<25} {'Error':<8} {'±Std':<8} {'Status':<12} {'Train':<8} {'Test':<8} {'Valid':<6}")
@@ -514,8 +676,8 @@ def _generate_summary_report(all_results: List[dict], output_path: Path, anchor_
     
     results_df = pd.DataFrame(all_results)
     
-    # Per-count reporting
-    sp.ok("Summary by anchor count:")
+    # Per-count reporting (more compact)
+    sp.ok("Performance by anchor count:")
     per_count_summary = {}
     
     for count in sorted(results_df['anchor_count'].unique()):
@@ -525,18 +687,14 @@ def _generate_summary_report(all_results: List[dict], output_path: Path, anchor_
         
         # Calculate statistics for all error types
         stats = {}
-        for error_type in ['anchor_error', 'pirt_error', 'blended_error']:
+        for error_type in ['anchor_error', 'pirt_error', 'gp_irt_error']:
             stats[error_type] = {
                 'avg': float(sub[error_type].mean()),
                 'median': float(sub[error_type].median())
             }
         
-        print(f"     - {count} anchors → anchor: {stats['anchor_error']['avg']:.3f} "
-              f"(med {stats['anchor_error']['median']:.3f}), "
-              f"p-IRT: {stats['pirt_error']['avg']:.3f} "
-              f"(med {stats['pirt_error']['median']:.3f}), "
-              f"gp-IRT: {stats['blended_error']['avg']:.3f} "
-              f"(med {stats['blended_error']['median']:.3f})")
+        print(f"     - {count:3d} anchors → gp-IRT: {stats['gp_irt_error']['avg']:.3f} "
+              f"(anchor: {stats['anchor_error']['avg']:.3f}, p-IRT: {stats['pirt_error']['avg']:.3f})")
         
         per_count_summary[count] = {
             'avg': {k.replace('_error', ''): v['avg'] for k, v in stats.items()},
@@ -544,7 +702,6 @@ def _generate_summary_report(all_results: List[dict], output_path: Path, anchor_
         }
     
     # Save detailed results
-    sp.step("Saving results")
     results_csv_path = output_path / "estimation_validation_results.csv"
     results_df.to_csv(results_csv_path, index=False)
     
@@ -579,13 +736,6 @@ def _generate_summary_report(all_results: List[dict], output_path: Path, anchor_
     summary_json_path = output_path / "estimation_validation_summary.json"
     _save_json(summary_data, summary_json_path, "Estimation validation summary")
     sp.ok(f"Results saved: {len(results_df)} rows to CSV")
-    
-    # Show per-dataset performance
-    if len(results_df) > 0:
-        print(f"\n   📊 Per-dataset performance (gp-IRT method):")
-        dataset_errors = results_df.groupby('dataset_name')['blended_error'].mean().sort_values()
-        for dataset, error in dataset_errors.items():
-            print(f"     - {dataset}: {error:.3f}")
     
     print(f"\n✅ Estimation-based validation complete!")
     return results_df
@@ -681,8 +831,15 @@ def run_full_evaluation_pipeline(
     
     matrix_df = _build_matrix_if_needed(builder, raw_df, output_path, force_rebuild, skills_mapping, sp)
     
-    per_skill_splits = _split_matrices_per_skill(matrix_df, output_path, split_strategy, 
-                                               test_ratio, split_random_seed, sp)
+    per_skill_splits = _split_matrices_per_skill(
+        matrix_df,
+        output_path,
+        split_strategy,
+        test_ratio,
+        split_random_seed,
+        sp,
+        cfg.split_settings,
+    )
     
     # Check if we have any skills to process
     if not per_skill_splits:
@@ -713,7 +870,7 @@ def run_full_evaluation_pipeline(
             return {
                 'anchor_error': float(results_df['anchor_error'].mean()),
                 'pirt_error': float(results_df['pirt_error'].mean()),
-                'blended_error': float(results_df['blended_error'].mean())
+                'gp_irt_error': float(results_df['gp_irt_error'].mean())
             }
 
         def to_dataframe(self):
