@@ -71,7 +71,12 @@ def _get_split_counts(skill_dir: Path) -> tuple[int | None, int | None]:
     try:
         with open(split_info_file, "r") as f:
             data = json.load(f)
-        return data.get("train_models"), data.get("test_models")
+        
+        # Support both new (nested counts) and old (flat) structure
+        if "counts" in data:
+            return data["counts"].get("train_models"), data["counts"].get("test_models")
+        else:
+            return data.get("train_models"), data.get("test_models")
     except Exception:
         return None, None
 
@@ -90,19 +95,36 @@ def collect_equating_results(
             train_models, test_models = _get_split_counts(skill_dir)
             eq_df = _load_equating_results(skill_dir, anchor_count)
             if eq_df is not None and "method" in eq_df.columns:
-                for method, group in eq_df.groupby("method"):
+                # Handle grouping by method and optionally eval_set
+                group_cols = ["method"]
+                if "eval_set" in eq_df.columns:
+                    group_cols.append("eval_set")
+                
+                for group_key, group in eq_df.groupby(group_cols):
                     if group.empty:
                         continue
-                    records.extend(
-                        _per_model_records(
-                            skill,
-                            method,
-                            group,
-                            anchor_count,
-                            train_models,
-                            test_models,
-                        )
+                        
+                    if "eval_set" in group_cols:
+                        method, eval_set = group_key
+                    else:
+                        method = group_key
+                        eval_set = None
+
+                    new_records = _per_model_records(
+                        skill,
+                        method,
+                        group,
+                        anchor_count,
+                        train_models,
+                        test_models,
                     )
+                    
+                    # Add eval_set info if present
+                    if eval_set:
+                        for r in new_records:
+                            r["eval_set"] = eval_set
+                            
+                    records.extend(new_records)
 
             has_baseline = any(
                 rec["skill"] == skill and rec["method"] == "baseline_train_only" for rec in records

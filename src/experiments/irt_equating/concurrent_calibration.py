@@ -21,7 +21,7 @@ def run_concurrent_calibration(
     output_subdir: str = "equating/concurrent",
     number_item_per_scenario: int = 100,
     dims_search: str = "5,10",
-    device: str = "cpu",
+    device: str | None = None,
     epochs: int = 2000,
     lr: float = 0.1,
     skip_existing: bool = True,
@@ -38,22 +38,25 @@ def run_concurrent_calibration(
         print(f"   → Results already exist, skipping: {out_path}")
         return None
 
-    train_df = _load_matrix(skill_dir / "matrix_train.parquet")
-    link_path = skill_dir / "matrix_link.parquet"
-    link_df = _load_matrix(link_path)
-    test_df = _load_matrix(skill_dir / "matrix_test.parquet")
+    train_df = _load_matrix(skill_dir / "matrix_train_base.parquet")
+    link_df = _load_matrix(skill_dir / "matrix_train_link.parquet")
+    test_df = _load_matrix(skill_dir / "matrix_test_base.parquet")
 
     combined_df = pd.concat([train_df, link_df], ignore_index=True).drop_duplicates()
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    cfg = TrainingConfig(
-        number_item_per_scenario=number_item_per_scenario,
-        dims_search=[int(d.strip()) for d in dims_search.split(",") if d.strip()],
-        device=device,
-        epochs=epochs,
-        lr=lr,
-    )
+    # Build config kwargs, omitting device if None to use auto-detection
+    config_kwargs = {
+        "number_item_per_scenario": number_item_per_scenario,
+        "dims_search": [int(d.strip()) for d in dims_search.split(",") if d.strip()],
+        "epochs": epochs,
+        "lr": lr,
+    }
+    if device is not None:
+        config_kwargs["device"] = device
+    
+    cfg = TrainingConfig(**config_kwargs)
 
     params = train_item_parameters(
         combined_df,
@@ -65,7 +68,7 @@ def run_concurrent_calibration(
     out_path = output_dir / "item_params_concurrent.parquet"
     save_item_parameters(params, str(out_path))
 
-    combined_path = output_dir / "matrix_train_link.parquet"
+    combined_path = output_dir / "matrix_calibration_train.parquet"
     combined_df.to_parquet(combined_path, index=False)
 
     return out_path
@@ -81,7 +84,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--number-item-per-scenario", type=int, default=100)
     parser.add_argument("--dims-search", default="5,10", help="Comma-separated list of dimensions to search")
-    parser.add_argument("--device", default="cpu", choices=["cpu", "cuda"])
+    parser.add_argument("--device", default=None, help="Device for training (cpu/cuda). Auto-detects if not specified.")
     parser.add_argument("--epochs", type=int, default=2000)
     parser.add_argument("--lr", type=float, default=0.01)
     parser.add_argument("--force", action="store_true", help="Force rerun even if results already exist")

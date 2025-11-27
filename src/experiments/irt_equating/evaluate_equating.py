@@ -7,7 +7,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from llm_eval.selection.tinyBenchmarks.estimation import run_estimation_validation
+from llm_eval.selection.tinyBenchmarks.estimation import run_estimation_validation, estimate_theta_from_anchors
 from llm_eval.selection.tinyBenchmarks.training import compute_lambda_values
 
 
@@ -87,11 +87,47 @@ def _evaluate_method(
     anchors_by_dataset: Dict[str, List[str]],
     anchor_weights_by_dataset: Dict[str, List[float]] | None,
     anchor_count: int,
+    base_matrix_for_theta: pd.DataFrame | None = None,
 ) -> List[dict]:
+    # If we have a base matrix, compute thetas from it FIRST
+    precomputed_thetas = None
+    if base_matrix_for_theta is not None:
+        precomputed_thetas = {}
+        
+        # Identify anchors
+        all_anchors = set()
+        for anchors in anchors_by_dataset.values():
+            all_anchors.update(anchors)
+            
+        # Filter base matrix to anchors only
+        base_anchors_df = base_matrix_for_theta[base_matrix_for_theta["question_id"].isin(all_anchors)]
+        
+        for model_name in test_matrix["model_name"].unique():
+            # Get this model's responses from BASE
+            model_base_df = base_anchors_df[base_anchors_df["model_name"] == model_name]
+            if not model_base_df.empty:
+                # Prepare responses
+                responses = model_base_df.set_index("question_id")["normalized_score"]
+                responses = responses[~responses.index.duplicated(keep='first')]
+                
+                # Estimate
+                theta = estimate_theta_from_anchors(item_params, responses)
+                precomputed_thetas[model_name] = theta
+
     test_questions = set(test_matrix["question_id"].astype(str).unique())
-    filtered_anchors, filtered_weights = _filter_anchors(
-        item_params, anchors_by_dataset, anchor_weights_by_dataset, test_questions
-    )
+    
+    try:
+        filtered_anchors, filtered_weights = _filter_anchors(
+            item_params, anchors_by_dataset, anchor_weights_by_dataset, test_questions
+        )
+    except ValueError:
+        if precomputed_thetas:
+            # It's okay to have no anchors in the test set if we have precomputed thetas!
+            filtered_anchors = {}
+            filtered_weights = {}
+        else:
+            raise
+
     lambdas = _compute_lambdas(train_matrix, item_params, anchor_count)
     results = run_estimation_validation(
         test_matrix=test_matrix,
@@ -99,6 +135,7 @@ def _evaluate_method(
         anchors_by_dataset=filtered_anchors,
         lambdas_by_dataset=lambdas,
         anchor_weights_by_dataset=filtered_weights,
+        precomputed_thetas=precomputed_thetas,
     )
     for row in results:
         row["method"] = method_name
@@ -114,10 +151,22 @@ def evaluate_equating(
     if not skill_dir.exists():
         raise FileNotFoundError(f"Skill directory not found: {skill_dir}")
 
-    train_df = _load_matrix(skill_dir / "matrix_train.parquet")
-    link_path = skill_dir / "matrix_link.parquet"
-    link_df = pd.read_parquet(link_path) if link_path.exists() else train_df.iloc[0:0].copy()
-    test_df = _load_matrix(skill_dir / "matrix_test.parquet")
+    train_df = _load_matrix(skill_dir / "matrix_train_base.parquet")
+    
+    link_train_path = skill_dir / "matrix_train_link.parquet"
+    link_train_df = _load_matrix(link_train_path) if link_train_path.exists() else train_df.iloc[0:0].copy()
+    
+    test_sets = {}
+    test_base_path = skill_dir / "matrix_test_base.parquet"
+    if test_base_path.exists():
+        test_sets["Base"] = _load_matrix(test_base_path)
+        
+    test_link_path = skill_dir / "matrix_test_link.parquet"
+    if test_link_path.exists():
+        test_sets["Link"] = _load_matrix(test_link_path)
+        
+    if not test_sets:
+        raise FileNotFoundError(f"No test matrices found in {skill_dir}")
 
     anchors_path = skill_dir / "irt" / f"anchors_{anchor_count}.json"
     if not anchors_path.exists():
@@ -141,7 +190,7 @@ def evaluate_equating(
 
     concurrent_params_path = skill_dir / "equating" / "concurrent" / "item_params_concurrent.parquet"
     if concurrent_params_path.exists():
-        combined_df = pd.concat([train_df, link_df], ignore_index=True).drop_duplicates()
+        combined_df = pd.concat([train_df, link_train_df], ignore_index=True).drop_duplicates()
         methods.append(
             (
                 "concurrent_calibration",
@@ -152,7 +201,7 @@ def evaluate_equating(
 
     fixed_params_path = skill_dir / "equating" / "fixed_anchor" / "item_params_fixed_anchor.parquet"
     if fixed_params_path.exists():
-        combined_df = pd.concat([train_df, link_df], ignore_index=True).drop_duplicates()
+        combined_df = pd.concat([train_df, link_train_df], ignore_index=True).drop_duplicates()
         methods.append(
             (
                 "fixed_anchor_calibration",
@@ -166,19 +215,31 @@ def evaluate_equating(
 
     results: List[dict] = []
     for method_name, params_df, train_matrix in methods:
-        try:
-            method_results = _evaluate_method(
-                method_name,
-                params_df,
-                train_matrix,
-                test_df,
-                anchors_by_dataset,
-                anchor_weights_by_dataset,
-                anchor_count,
-            )
-            results.extend(method_results)
-        except Exception as exc:
-            print(f"⚠️  Evaluation failed for {method_name}: {exc}")
+        # Pre-load base matrix for theta estimation if needed
+        base_matrix = test_sets.get("Base")
+        
+        for eval_set_name, test_matrix in test_sets.items():
+            if test_matrix.empty:
+                continue
+            try:
+                # If we are evaluating Link, pass Base as the source for Theta
+                theta_source = base_matrix if eval_set_name == "Link" else None
+                
+                method_results = _evaluate_method(
+                    method_name,
+                    params_df,
+                    train_matrix,
+                    test_matrix,
+                    anchors_by_dataset,
+                    anchor_weights_by_dataset,
+                    anchor_count,
+                    base_matrix_for_theta=theta_source,
+                )
+                for r in method_results:
+                    r["eval_set"] = eval_set_name
+                results.extend(method_results)
+            except Exception as exc:
+                print(f"⚠️  Evaluation failed for {method_name} on {eval_set_name}: {exc}")
 
     if not results:
         raise RuntimeError("No evaluation results produced.")
@@ -193,7 +254,7 @@ def evaluate_equating(
     results_df.to_csv(out_csv, index=False)
 
     summary = (
-        results_df.groupby("method")[["anchor_error", "pirt_error", "gp_irt_error"]]
+        results_df.groupby(["method", "eval_set"])[["anchor_error", "pirt_error", "gp_irt_error"]]
         .agg(["mean", "std", "count"])
         .round(4)
     )

@@ -169,6 +169,7 @@ def run_estimation_validation(
     anchors_by_dataset: Dict[str, List[str]],
     lambdas_by_dataset: Dict[str, float],
     anchor_weights_by_dataset: Optional[Dict[str, List[float]]] = None,
+    precomputed_thetas: Optional[Dict[str, float]] = None,
 ) -> List[Dict]:
     """
     Run estimation validation following the exact methodology from estimating_performance.ipynb.
@@ -184,6 +185,7 @@ def run_estimation_validation(
         anchors_by_dataset: Dictionary mapping scenario names to lists of anchor question IDs
         lambdas_by_dataset: Dictionary mapping scenario names to lambda values (from training)
         anchor_weights_by_dataset: Optional weights for anchor questions per scenario
+        precomputed_thetas: Optional dict mapping model_name -> theta. If provided, skips theta estimation.
         
     Returns:
         List of validation results, one per model-dataset combination
@@ -266,16 +268,21 @@ def run_estimation_validation(
                 model_responses = model_matrix.set_index("question_id")["normalized_score"]
                 # remove duplicates if any
                 model_responses = model_responses[~model_responses.index.duplicated(keep='first')]
-                # 1. Estimate theta from anchor responses
+                # 1. Estimate theta from anchor responses (or use precomputed)
                 available_anchor_ids = [q for q in scenario_anchors if q in model_responses.index]
-                if not available_anchor_ids:
-                    continue
-                anchor_responses = model_responses.loc[available_anchor_ids]
-                config = EstimationConfig(lambdas_by_dataset=lambdas_by_dataset)
                 
-                estimated_theta = estimate_theta_from_anchors(
-                    item_params, anchor_responses, config=config
-                )
+                if precomputed_thetas is not None and model_name in precomputed_thetas:
+                    estimated_theta = precomputed_thetas[model_name]
+                    anchor_responses = model_responses.loc[available_anchor_ids] if available_anchor_ids else pd.Series([], dtype=float)
+                else:
+                    if not available_anchor_ids:
+                        continue
+                    anchor_responses = model_responses.loc[available_anchor_ids]
+                    config = EstimationConfig(lambdas_by_dataset=lambdas_by_dataset)
+                    
+                    estimated_theta = estimate_theta_from_anchors(
+                        item_params, anchor_responses, config=config
+                    )
                 
                 # 2. Compute true performance using balance weights (EXACTLY like in notebook)
                 # Get balance weights for this scenario
@@ -299,7 +306,7 @@ def run_estimation_validation(
                 
                 # 3. Anchor-only prediction (like notebook: Y_anchor*anchor_weights).sum(axis=1)
                 anchor_prediction = None
-                if anchor_weights_by_dataset:
+                if not anchor_responses.empty and anchor_weights_by_dataset:
                     scenario_weights_full = anchor_weights_by_dataset.get(scenario_name, [])
                     
                     if scenario_weights_full and len(scenario_weights_full) == len(scenario_anchors_full):
@@ -312,7 +319,13 @@ def run_estimation_validation(
                 
                 # Fallback to simple average if weights are not available
                 if anchor_prediction is None:
-                    anchor_prediction = float(anchor_responses.mean())
+                    if not anchor_responses.empty:
+                        anchor_prediction = float(anchor_responses.mean())
+                    else:
+                        # If no anchors (e.g. Link evaluation), we can't compute anchor_prediction.
+                        # We set it to NaN or handle it later. For now, let's set it to a placeholder
+                        # or defer until we have IRT prediction.
+                        anchor_prediction = None 
                 
                 # 4. p-IRT prediction (EXACTLY like notebook - separate seen/unseen)
                 # First, identify seen (anchor) and unseen questions in this SCENARIO
@@ -320,15 +333,20 @@ def run_estimation_validation(
                 unseen_questions = [q for q in scenario_questions if q not in scenario_anchors]
                 
                 # data_part: (balance_weights*Y_test)[j,ind_seen].mean()
+                data_part = 0.0
                 if seen_questions and len(scenario_balance_weights) == len(scenario_questions):
                     seen_indices = [i for i, q in enumerate(scenario_questions) if q in seen_questions]
                     seen_weights = scenario_balance_weights[seen_indices]
                     seen_responses = np.array([model_responses[q] for q in seen_questions])
-                    data_part = (seen_weights * seen_responses).mean() if len(seen_weights) > 0 else anchor_prediction
-                else:
+                    if len(seen_weights) > 0:
+                        data_part = (seen_weights * seen_responses).mean()
+                    elif anchor_prediction is not None:
+                         data_part = anchor_prediction
+                elif anchor_prediction is not None:
                     data_part = anchor_prediction
                 
                 # irt_part: (balance_weights*item_curve(theta, A, B))[0,ind_unseen].mean()  
+                irt_part = 0.0
                 if unseen_questions:
                     unseen_item_params = item_params.loc[item_params.index.intersection(unseen_questions)]
                     if len(unseen_item_params) > 0:
@@ -352,11 +370,17 @@ def run_estimation_validation(
                 pirt_lambda = len(seen_questions) / len(scenario_questions) if len(scenario_questions) > 0 else 1.0
                 pirt_prediction = pirt_lambda * data_part + (1 - pirt_lambda) * irt_part
                 
+                # If anchor_prediction was None (no local anchors), use irt_part as fallback for reporting
+                if anchor_prediction is None:
+                    anchor_prediction = irt_part
+                
                 # 5. gp-IRT prediction (EXACTLY like notebook: lambda*preds + (1-lambda)*pirt_preds)
                 blended_prediction = scenario_lambda * anchor_prediction + (1 - scenario_lambda) * pirt_prediction
                 
                 # For reporting: compute "pure" IRT prediction (like expected_correctness but with balance weights)
                 all_item_params = item_params.loc[item_params.index.intersection(scenario_questions)]
+                irt_prediction = None
+                
                 if len(all_item_params) > 0:
                     A_all = all_item_params["a"].values.reshape(1, -1)
                     B_all = all_item_params["b"].values.reshape(1, -1)
@@ -364,16 +388,22 @@ def run_estimation_validation(
                     
                     if len(scenario_balance_weights) == len(scenario_questions):
                         all_weights = scenario_balance_weights
-                        irt_prediction = (all_weights * irt_probs_all).mean() if len(all_weights) > 0 else irt_probs_all.mean()
+                        if len(all_weights) > 0:
+                            irt_prediction = (all_weights * irt_probs_all).mean()
+                        else:
+                            irt_prediction = irt_probs_all.mean()
                     else:
                         irt_prediction = irt_probs_all.mean()
-                else:
-                    irt_prediction = 0.5  # Fallback
                 
+                if irt_prediction is None:
+                    # If we cannot compute IRT prediction (e.g. no item params for this scenario),
+                    # we cannot meaningfully evaluate this model on this scenario.
+                    continue
+
                 # Compute prediction errors
-                anchor_error = abs(anchor_prediction - true_performance)
+                anchor_error = abs(anchor_prediction - true_performance) if anchor_prediction is not None else None
                 irt_error = abs(irt_prediction - true_performance)
-                gp_irt_error = abs(blended_prediction - true_performance)
+                gp_irt_error = abs(blended_prediction - true_performance) if blended_prediction is not None else None
                 pirt_error = abs(pirt_prediction - true_performance)
                 
                 # Store results
@@ -385,12 +415,13 @@ def run_estimation_validation(
                     "num_anchors": len(scenario_anchors),
                     "estimated_theta": float(estimated_theta),
                     "true_performance": float(true_performance),
-                    "anchor_prediction": float(anchor_prediction),
+                    "anchor_prediction": float(anchor_prediction) if anchor_prediction is not None else None,
                     "irt_prediction": float(irt_prediction),
-                    "gp_irt_prediction": float(blended_prediction),
+                    "gp_irt_prediction": float(blended_prediction) if blended_prediction is not None else None,
                     "pirt_prediction": float(pirt_prediction),
-                    "anchor_error": float(anchor_error),
-                    "gp_irt_error": float(gp_irt_error),
+                    "anchor_error": float(anchor_error) if anchor_error is not None else None,
+                    "irt_error": float(irt_error),
+                    "gp_irt_error": float(gp_irt_error) if gp_irt_error is not None else None,
                     "pirt_error": float(pirt_error),
                     "dataset_lambda": float(scenario_lambda),
                     "pirt_lambda": float(pirt_lambda)

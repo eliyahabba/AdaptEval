@@ -295,105 +295,163 @@ def _split_matrices_per_skill(matrix_df: pd.DataFrame, output_path: Path, split_
         skill_dir = output_path / "skills" / skill
         skill_dir.mkdir(parents=True, exist_ok=True)
         
-        splitter = create_splitter(
-            strategy=split_strategy,
-            test_ratio=base_test_ratio,
-            random_seed=split_random_seed
-        )
-        
-        try:
-            train_df, test_df = splitter.split(base_df)
-            
-            # Validate split quality
-            train_datasets = train_df["dataset"].nunique()
-            test_datasets = test_df["dataset"].nunique()
-            link_datasets = link_df["dataset"].nunique() if not link_df.empty else 0
-            train_models = train_df["model_name"].nunique()
-            test_models = test_df["model_name"].nunique()
-            link_models = link_df["model_name"].nunique() if not link_df.empty else 0
-            
-            if train_datasets == 0 or test_datasets == 0 or train_models == 0 or test_models == 0:
-                skipped_skills.append(skill)
-                continue
-                
-        except Exception as e:
-            skipped_skills.append(skill)
-            continue
-        
-        # Check if existing split was done with same parameters
+        # Check if existing valid split exists to skip processing
         split_info_file = skill_dir / "split_info.json"
-        if split_info_file.exists():
+        skipped_rebuild = False
+        
+        if split_info_file.exists() and not force_rebuild:
             try:
                 with open(split_info_file, 'r') as f:
                     existing_split_info = json.load(f)
+                
+                # Verify parameters match
                 existing_seed = existing_split_info.get('random_seed')
                 existing_strategy = existing_split_info.get('strategy')
                 existing_ratio = existing_split_info.get('test_ratio')
                 existing_link_ratio = existing_split_info.get('link_ratio')
                 
-                if (existing_seed != split_random_seed or 
-                    existing_strategy != split_strategy or 
-                    abs(existing_ratio - ratios_cfg.test_ratio) > 0.001 or
-                    abs((existing_link_ratio or 0.0) - ratios_cfg.link_ratio) > 0.001):
-                    sp.warn(f"[{skill}] Split parameters changed!")
-            except Exception:
+                params_match = (
+                    existing_seed == split_random_seed and 
+                    existing_strategy == split_strategy and 
+                    abs(existing_ratio - ratios_cfg.test_ratio) < 0.001 and
+                    abs((existing_link_ratio or 0.0) - ratios_cfg.link_ratio) < 0.001
+                )
+                
+                # Verify files exist
+                files_exist = (
+                    (skill_dir / "matrix_train_base.parquet").exists() and
+                    (skill_dir / "matrix_train_link.parquet").exists() and
+                    (skill_dir / "matrix_test_base.parquet").exists() and
+                    (skill_dir / "matrix_test_link.parquet").exists()
+                )
+                
+                if params_match and files_exist:
+                    sp.skill_info(skill, "Loading existing splits (parameters match)")
+                    
+                    # Load existing data
+                    train_base_df = pd.read_parquet(skill_dir / "matrix_train_base.parquet")
+                    train_link_df = pd.read_parquet(skill_dir / "matrix_train_link.parquet")
+                    test_base_df = pd.read_parquet(skill_dir / "matrix_test_base.parquet")
+                    test_link_df = pd.read_parquet(skill_dir / "matrix_test_link.parquet")
+                    
+                    # Reconstruct link_df from quadrants
+                    link_df = pd.concat([train_link_df, test_link_df])
+
+                    split_info = existing_split_info
+                    skipped_rebuild = True
+                    
+            except Exception as e:
+                # If loading fails, proceed to rebuild
                 pass
-        
-        # Save per-skill matrices and split info
-        MatrixStorage(str(skill_dir / "matrix_train.parquet")).save(train_df)
-        MatrixStorage(str(skill_dir / "matrix_link.parquet")).save(link_df)
-        MatrixStorage(str(skill_dir / "matrix_test.parquet")).save(test_df)
-        total_rows = len(train_df) + len(link_df) + len(test_df)
-        split_info = {
-            "strategy": split_strategy,
-            "random_seed": split_random_seed,
-            "target_train_ratio": ratios_cfg.train_ratio,
-            "target_link_ratio": ratios_cfg.link_ratio,
-            "target_test_ratio": ratios_cfg.test_ratio,
-            "train_ratio": ratios_cfg.train_ratio,
-            "link_ratio": ratios_cfg.link_ratio,
-            "test_ratio": ratios_cfg.test_ratio,
-            "train_size": len(train_df),
-            "link_size": len(link_df),
-            "test_size": len(test_df),
-            "total_size": total_rows,
-            "actual_train_ratio": (len(train_df) / total_rows) if total_rows else 0,
-            "actual_link_ratio": (len(link_df) / total_rows) if total_rows else 0,
-            "actual_test_ratio": (len(test_df) / total_rows) if total_rows else 0,
-            "train_models": train_models,
-            "link_models": link_models,
-            "test_models": test_models,
-            "train_datasets": train_datasets,
-            "link_datasets": link_datasets,
-            "test_datasets": test_datasets,
-            "train_dataset_names": sorted(train_df["dataset"].unique().tolist()),
-            "link_dataset_names": sorted(link_df["dataset"].unique().tolist()),
-            "test_dataset_names": sorted(test_df["dataset"].unique().tolist()),
-        }
-        _save_json(split_info, split_info_file, f"Split info ({skill})")
+
+        if not skipped_rebuild:
+            splitter = create_splitter(
+                strategy=split_strategy,
+                test_ratio=base_test_ratio,
+                random_seed=split_random_seed
+            )
+            
+            try:
+                train_base_df, test_base_df = splitter.split(base_df)
+
+                # Identify models for splitting link data
+                train_models = set(train_base_df["model_name"].unique())
+                test_models = set(test_base_df["model_name"].unique())
+
+                # Create Link Quadrants
+                if not link_df.empty:
+                    train_link_df = link_df[link_df["model_name"].isin(train_models)].copy()
+                    test_link_df = link_df[link_df["model_name"].isin(test_models)].copy()
+                else:
+                    train_link_df = link_df.iloc[0:0].copy()
+                    test_link_df = link_df.iloc[0:0].copy()
+                
+                # Validate split quality
+                train_datasets = train_base_df["dataset"].nunique()
+                test_datasets = test_base_df["dataset"].nunique()
+                link_datasets = link_df["dataset"].nunique() if not link_df.empty else 0
+                
+                train_base_models_count = train_base_df["model_name"].nunique()
+                test_base_models_count = test_base_df["model_name"].nunique()
+                train_link_models_count = train_link_df["model_name"].nunique() if not train_link_df.empty else 0
+                test_link_models_count = test_link_df["model_name"].nunique() if not test_link_df.empty else 0
+                
+                if train_datasets == 0 or test_datasets == 0 or train_base_models_count == 0 or test_base_models_count == 0:
+                    skipped_skills.append(skill)
+                    continue
+                    
+            except Exception as e:
+                skipped_skills.append(skill)
+                continue
+            
+            # Save per-skill matrices and split info
+            # 4 Quadrants
+            MatrixStorage(str(skill_dir / "matrix_train_base.parquet")).save(train_base_df)
+            MatrixStorage(str(skill_dir / "matrix_train_link.parquet")).save(train_link_df)
+            MatrixStorage(str(skill_dir / "matrix_test_base.parquet")).save(test_base_df)
+            MatrixStorage(str(skill_dir / "matrix_test_link.parquet")).save(test_link_df)
+            
+            total_rows = len(train_base_df) + len(link_df) + len(test_base_df)
+            
+            # Simplified split info structure reflecting the 4 quadrants
+            split_info = {
+                # Configuration
+                "strategy": split_strategy,
+                "random_seed": split_random_seed,
+                "ratios_config": {
+                    "train": ratios_cfg.train_ratio,
+                    "link": ratios_cfg.link_ratio,
+                    "test": ratios_cfg.test_ratio
+                },
+                
+                # Quadrant Sizes (Rows)
+                "sizes": {
+                    "train_base": len(train_base_df),
+                    "train_link": len(train_link_df),
+                    "test_base": len(test_base_df),
+                    "test_link": len(test_link_df),
+                    "total": total_rows
+                },
+
+                # Counts (Models & Datasets)
+                "counts": {
+                    "train_models": train_base_models_count,
+                    "test_models": test_base_models_count,
+                    "base_datasets": train_datasets, # Same for train_base and test_base
+                    "link_datasets": link_datasets   # Same for train_link and test_link
+                },
+
+                # Specific Dataset Names
+                "dataset_names": {
+                    "base": sorted(train_base_df["dataset"].unique().tolist()),
+                    "link": sorted(link_df["dataset"].unique().tolist())
+                }
+            }
+            _save_json(split_info, split_info_file, f"Split info ({skill})")
         
         per_skill_splits[skill] = {
-            "train": train_df,
-            "link": link_df,
-            "test": test_df,
+            "train_base": train_base_df,
+            "train_link": train_link_df,
+            "test_base": test_base_df,
+            "test_link": test_link_df,
             "info": split_info,
             "dir": skill_dir,
         }
         
         processed_skills.append({
             'skill': skill,
-            'train_size': split_info['train_size'],
-            'link_size': split_info['link_size'],
-            'test_size': split_info['test_size'],
-            'train_datasets': train_datasets,
-            'link_datasets': link_datasets,
-            'test_datasets': test_datasets,
-            'train_models': train_models,
-            'link_models': link_models,
-            'test_models': test_models,
-            'train_ratio': split_info['actual_train_ratio'],
-            'link_ratio': split_info['actual_link_ratio'],
-            'test_ratio': split_info['actual_test_ratio']
+            'train_size': split_info['sizes']['train_base'],
+            'link_size': len(link_df),
+            'test_size': split_info['sizes']['test_base'],
+            'train_datasets': split_info['counts']['base_datasets'],
+            'link_datasets': split_info['counts']['link_datasets'],
+            'test_datasets': split_info['counts']['base_datasets'],
+            'train_models': split_info['counts']['train_models'],
+            'link_models': split_info['counts']['link_datasets'], # Placeholder logic kept for print compatibility
+            'test_models': split_info['counts']['test_models'],
+            'train_ratio': split_info['sizes']['train_base'] / total_rows if total_rows else 0,
+            'link_ratio': len(link_df) / total_rows if total_rows else 0,
+            'test_ratio': split_info['sizes']['test_base'] / total_rows if total_rows else 0
         })
     
     # Print processing results table
@@ -443,8 +501,8 @@ def _train_per_skill(per_skill_splits: dict, train_irt_params: bool, train_ancho
         skill_irt_dir.mkdir(parents=True, exist_ok=True)
         item_params_out = skill_irt_dir / "item_params.parquet"
         
-        train_matrix = split["train"]
-        test_matrix = split["test"]
+        train_matrix = split["train_base"]
+        test_matrix = split["test_base"]
         
         # Determine what needs to be done
         params_exist = item_params_out.exists()
@@ -585,8 +643,8 @@ def _print_final_skill_summary(results_df: pd.DataFrame, per_skill_splits: dict,
     total_test_samples = 0
     
     for skill, split_data in per_skill_splits.items():
-        train_df = split_data['train']
-        test_df = split_data['test']
+        train_df = split_data['train_base']
+        test_df = split_data['test_base']
         
         total_train_models.update(train_df['model_name'].unique())
         total_train_datasets.update(train_df['dataset'].unique())
@@ -632,8 +690,8 @@ def _print_final_skill_summary(results_df: pd.DataFrame, per_skill_splits: dict,
         
         # Get train/test info for this skill
         if skill in per_skill_splits:
-            train_df = per_skill_splits[skill]['train']
-            test_df = per_skill_splits[skill]['test']
+            train_df = per_skill_splits[skill]['train_base']
+            test_df = per_skill_splits[skill]['test_base']
             train_info = f"{train_df['model_name'].nunique()}/{train_df['dataset'].nunique()}"
             test_info = f"{test_df['model_name'].nunique()}/{test_df['dataset'].nunique()}"
         else:

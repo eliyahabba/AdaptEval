@@ -150,14 +150,34 @@ def plot_equating_results(
 
     figure_paths: List[Path] = []
 
-    for skill, skill_df in df.groupby("skill"):
-        skill_path = output_root / "figures" / f"{skill}_triplet_boxplot.png"
-        _plot_combined_boxplot(skill_df, metrics_list, skill_path)
-        figure_paths.append(skill_path)
+    # Function to generate plots for a specific dataframe subset
+    def _generate_plots_for_subset(subset_df: pd.DataFrame, suffix: str = ""):
+        for skill, skill_df in subset_df.groupby("skill"):
+            skill_path = output_root / "figures" / f"{skill}_triplet_boxplot{suffix}.png"
+            try:
+                _plot_combined_boxplot(skill_df, metrics_list, skill_path)
+                figure_paths.append(skill_path)
+            except ValueError:
+                pass # Skip if no methods available
 
-    overall_path = output_root / "figures" / "overall_triplet_boxplot.png"
-    _plot_combined_boxplot(df, metrics_list, overall_path)
-    figure_paths.append(overall_path)
+        overall_path = output_root / "figures" / f"overall_triplet_boxplot{suffix}.png"
+        try:
+            _plot_combined_boxplot(subset_df, metrics_list, overall_path)
+            figure_paths.append(overall_path)
+        except ValueError:
+            pass
+
+    if "eval_set" in df.columns:
+        # Generate plots per eval_set
+        for eval_set, es_df in df.groupby("eval_set"):
+            _generate_plots_for_subset(es_df, suffix=f"_{eval_set}")
+            
+        # Also generate a combined one if needed, but separated is better.
+        # If we want a "legacy" view that ignores eval_set (e.g. for baseline which might be implicit),
+        # we might just stick to the separated ones.
+    else:
+        # Legacy behavior
+        _generate_plots_for_subset(df)
 
     return figure_paths
 

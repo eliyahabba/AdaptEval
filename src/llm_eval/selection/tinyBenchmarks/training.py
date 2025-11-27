@@ -35,12 +35,34 @@ from .irt import create_irt_dataset, train_irt_model, train_irt_model_python_api
 from .math_utils import sigmoid, item_curve
 
 
+def get_best_device() -> str:
+    """Auto-detect the best available device for py-irt training.
+    
+    Returns 'cuda' if available, otherwise 'cpu'.
+    
+    Note: MPS (Apple Silicon GPU) is not supported by py-irt because:
+    1. py-irt validates device to only accept 'cpu' or 'cuda'
+    2. Even with a monkey-patch, PyTorch's MPS backend is missing operators
+       needed for Pyro's probabilistic sampling (e.g., _standard_gamma)
+    3. MPS with fallback is ~20x slower than pure CPU for IRT training
+    
+    Therefore, CPU is the best choice for Mac users until py-irt adds MPS support.
+    """
+    try:
+        import torch
+        if torch.cuda.is_available():
+            return "cuda"
+    except ImportError:
+        pass
+    return "cpu"
+
+
 @dataclass
 class TrainingConfig:
     """Configuration matching the notebook parameters exactly."""
     # Core parameters from notebook
     dims_search: list[int] = field(default_factory=lambda: [5, 10])  # Reduced for testing
-    device: str = 'cpu'  # default to CPU for compatibility
+    device: str = field(default_factory=get_best_device)  # auto-detect best device
     epochs: int = 2000  # Reduced for testing
     lr: float = .01  # Reduced learning rate for stability
     random_state: int = 42  # notebook default
