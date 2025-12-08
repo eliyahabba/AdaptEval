@@ -133,12 +133,26 @@ def main(
                 number_item=anchor_count,
             )
 
+            # Extract MIRT matrices if available
+            A_matrix = None
+            B_matrix = None
+            question_ids_order = None
+            A_list = attrs.get("A_matrix")
+            B_list = attrs.get("B_matrix")
+            if A_list is not None and B_list is not None:
+                A_matrix = np.array(A_list)
+                B_matrix = np.array(B_list)
+                question_ids_order = list(extended.index)
+
             results = run_estimation_validation(
                 test_matrix=test_matrix,
                 item_params=extended,
                 anchors_by_dataset=anchors_by_dataset,
                 lambdas_by_dataset=lambdas_by_dataset,
                 anchor_weights_by_dataset=anchor_weights_by_dataset,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                question_ids_order=question_ids_order,
             )
             res_df = pd.DataFrame(results)
             res_path = skill_dir_p / f"estimation_validation_results_linked_{anchor_count}.csv"

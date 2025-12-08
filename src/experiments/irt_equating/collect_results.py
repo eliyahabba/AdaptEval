@@ -8,7 +8,7 @@ import json
 import pandas as pd
 
 
-METRIC_COLUMNS = ["anchor_error", "pirt_error", "gp_irt_error"]
+METRIC_COLUMNS = ["anchor_error", "pirt_error", "gp_irt_error", "irt_error"]
 
 
 def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:

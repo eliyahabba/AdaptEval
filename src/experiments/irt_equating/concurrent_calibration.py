@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
-from llm_eval.training import train_item_parameters, save_item_parameters
+from llm_eval.training import train_item_parameters, save_item_parameters, select_anchors_structured_with_matrix, save_anchors_structured
 
 
 def _load_matrix(path: Path) -> pd.DataFrame:
@@ -70,6 +70,17 @@ def run_concurrent_calibration(
 
     combined_path = output_dir / "matrix_calibration_train.parquet"
     combined_df.to_parquet(combined_path, index=False)
+
+    # Select Equated Anchors (Base+Link)
+    try:
+        anchors, weights = select_anchors_structured_with_matrix(
+            params, combined_df, number_items=number_item_per_scenario, method="irt_clustering"
+        )
+        anchors_path = output_dir / f"anchors_concurrent_{number_item_per_scenario}.json"
+        save_anchors_structured(anchors, weights, str(anchors_path))
+        print(f"   ✓ Selected {number_item_per_scenario} equated anchors saved to {anchors_path}")
+    except Exception as e:
+        print(f"   ⚠ Failed to select concurrent anchors: {e}")
 
     return out_path
 

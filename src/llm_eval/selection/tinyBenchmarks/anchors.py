@@ -43,17 +43,25 @@ class AnchorConfig:
 def find_anchor_items_clustering(
     item_params: pd.DataFrame, 
     matrix_df: pd.DataFrame | None = None,
-    config: AnchorConfig | None = None
+    config: AnchorConfig | None = None,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
 ) -> tuple[list[str], np.ndarray]:
     """Find anchor items using KMeans clustering following the notebook approach.
     
     From notebook: Uses KMeans clustering either on IRT parameters (a,b) or on 
     correctness patterns across models, with balance weights for MMLU-style datasets.
     
+    IMPORTANT: For irt_clustering method, if A_matrix and B_matrix are provided,
+    they will be used directly (full multidimensional parameters). Otherwise,
+    falls back to scalar (a,b) from item_params.
+    
     Args:
         item_params: DataFrame with IRT parameters (a,b) indexed by question_id
         matrix_df: Optional matrix DataFrame for correctness-based clustering
         config: Configuration for anchor selection
+        A_matrix: Optional full discrimination matrix shape (1, D, n_items)
+        B_matrix: Optional full difficulty matrix shape (1, D, n_items)
         
     Returns:
         Tuple of (anchor_question_ids, anchor_weights)
@@ -68,10 +76,26 @@ def find_anchor_items_clustering(
     
     # Prepare clustering features (X) based on method
     if cfg.method == "irt_clustering":
-        # From notebook: X = np.vstack((A.squeeze(), B.squeeze().reshape((1,-1)))).T
-        # Use IRT parameters (a,b) as features for clustering
-        X = np.column_stack([item_params["a"].values, item_params["b"].values])
         question_ids = item_params.index.tolist()
+        
+        # Check if full multidimensional matrices are provided
+        if A_matrix is not None and B_matrix is not None:
+            # Use full multidimensional parameters like efficbench:
+            # X = vstack(A.squeeze(), B.squeeze()).T -> shape (n_items, 2*D)
+            A_squeezed = A_matrix.squeeze()  # (D, n_items)
+            B_squeezed = B_matrix.squeeze()  # (D, n_items)
+            
+            # Ensure correct shape
+            if A_squeezed.ndim == 1:
+                A_squeezed = A_squeezed.reshape(1, -1)
+                B_squeezed = B_squeezed.reshape(1, -1)
+            
+            X = np.vstack((A_squeezed, B_squeezed)).T  # (n_items, 2*D)
+            print(f"   🎯 Anchor clustering using full MIRT parameters: {X.shape[1]} features (D={A_squeezed.shape[0]})")
+        else:
+            # Fallback to scalar (a,b) from item_params
+            X = np.column_stack([item_params["a"].values, item_params["b"].values])
+            print(f"   ⚠️  Anchor clustering using scalar (a,b): {X.shape[1]} features")
     elif cfg.method == "correctness_clustering":
         # From notebook: X = Y_train[:,scenarios_position[scenario]].T  
         # Use correctness patterns across models as features

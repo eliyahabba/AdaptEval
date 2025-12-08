@@ -52,7 +52,8 @@ def create_irt_dataset(responses, dataset_name, question_ids=None):
     return question_id_to_irt_id
 
 
-def train_irt_model_python_api(dataset_name, D, lr, epochs, device, anchor_items: list[dict] | None = None, question_id_mapping: dict[str, str] | None = None):
+def train_irt_model_python_api(dataset_name, D, lr, epochs, device, anchor_items: list[dict] | None = None, question_id_mapping: dict[str, str] | None = None,
+                               lr_decay: float = 0.9999, deterministic: bool = True):
     """
     Trains an IRT model using the py-irt Python API.
 
@@ -64,6 +65,8 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device, anchor_items
     - device: The computing device ('cpu' or 'gpu') to use for training.
     - anchor_items: List of anchor item dicts with 'item_id', 'difficulty', 'discrimination', etc.
     - question_id_mapping: Mapping from original question IDs to IRT item IDs (q0, q1, ...)
+    - lr_decay: Learning rate decay factor.
+    - deterministic: Whether to use deterministic training (default: True).
 
     Returns:
     - trainer: The trained IRT model trainer object.
@@ -77,9 +80,9 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device, anchor_items
         priors='hierarchical',
         dims=D,
         lr=lr,
-        # lr_decay=0.9999,
+        lr_decay=lr_decay,
         seed=42,
-        deterministic=True,
+        deterministic=deterministic,
         log_every=max(epochs // 10, 1)  # Log every 10% of epochs
     )
 
@@ -112,7 +115,7 @@ def train_irt_model_python_api(dataset_name, D, lr, epochs, device, anchor_items
         
         if mapped_anchor_items:
             dataset.add_anchor_items(mapped_anchor_items)
-            trainer_kwargs = {"dataset": dataset, "data_path": None}
+            trainer_kwargs = {"dataset": dataset, "data_path": dataset_name}
 
             existing_initializers = list(getattr(config, "initializers", []) or [])
             if "anchor_items" not in existing_initializers:

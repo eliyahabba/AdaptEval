@@ -175,31 +175,63 @@ def _get_skill_split_ratios(skill: str, split_settings: SplitSettings | None, fa
     return ratios.normalized()
 
 
+def _get_scenario_from_dataset(dataset_name: str) -> str:
+    """Extract scenario name from dataset name (e.g., 'mmluscenario.anatomy' -> 'mmluscenario')."""
+    return dataset_name.split(".")[0] if "." in dataset_name else dataset_name
+
+
 def _partition_datasets_for_link(
         datasets: List[str],
         ratios: SplitRatios,
         random_seed: Optional[int]
 ) -> tuple[List[str], List[str]]:
-    """Split dataset names into base (train/test) and link-only sets."""
+    """Split dataset names into base (train/test) and link-only sets.
+    
+    IMPORTANT: The split is done at the SCENARIO level, not the dataset level.
+    This means if 'mmluscenario.anatomy' goes to Link, ALL 'mmluscenario.*' datasets
+    will go to Link. This ensures clean separation between Base and Link domains.
+    """
     if ratios.link_ratio <= 0 or len(datasets) < 2:
         return list(datasets), []
 
+    # Step 1: Group datasets by scenario
+    scenario_to_datasets: dict[str, List[str]] = {}
+    for ds in datasets:
+        scenario = _get_scenario_from_dataset(ds)
+        scenario_to_datasets.setdefault(scenario, []).append(ds)
+    
+    scenarios = sorted(scenario_to_datasets.keys())
+    n_scenarios = len(scenarios)
+    
+    # If only one scenario, can't split
+    if n_scenarios < 2:
+        return list(datasets), []
+    
+    # Step 2: Select scenarios for Link (not individual datasets)
     rng = np.random.default_rng(random_seed)
-    n_total = len(datasets)
-    n_link = max(1, int(round(n_total * ratios.link_ratio)))
-    if n_link >= n_total:
-        n_link = n_total - 1
+    n_link_scenarios = max(1, int(round(n_scenarios * ratios.link_ratio)))
+    if n_link_scenarios >= n_scenarios:
+        n_link_scenarios = n_scenarios - 1
 
-    chosen = rng.choice(datasets, size=n_link, replace=False)
-    link_set = set(str(x) for x in chosen.tolist())
-    base = [d for d in datasets if d not in link_set]
+    chosen_scenarios = rng.choice(scenarios, size=n_link_scenarios, replace=False)
+    link_scenarios_set = set(str(x) for x in chosen_scenarios.tolist())
+    base_scenarios = [s for s in scenarios if s not in link_scenarios_set]
 
-    # Safety: ensure at least one dataset remains for base split
-    if not base:
-        base = [link_set.pop()]
-        link_set = set(datasets) - set(base)
+    # Safety: ensure at least one scenario remains for base split
+    if not base_scenarios:
+        base_scenarios = [link_scenarios_set.pop()]
+        link_scenarios_set = set(scenarios) - set(base_scenarios)
 
-    return base, sorted(link_set)
+    # Step 3: Expand scenarios back to full dataset lists
+    base_datasets = []
+    link_datasets = []
+    for scenario, ds_list in scenario_to_datasets.items():
+        if scenario in link_scenarios_set:
+            link_datasets.extend(ds_list)
+        else:
+            base_datasets.extend(ds_list)
+
+    return sorted(base_datasets), sorted(link_datasets)
 
 
 def _split_matrices_per_skill(matrix_df: pd.DataFrame, output_path: Path, split_strategy: str, 
@@ -307,12 +339,16 @@ def _split_matrices_per_skill(matrix_df: pd.DataFrame, output_path: Path, split_
                 # Verify parameters match
                 existing_seed = existing_split_info.get('random_seed')
                 existing_strategy = existing_split_info.get('strategy')
-                existing_ratio = existing_split_info.get('test_ratio')
-                existing_link_ratio = existing_split_info.get('link_ratio')
+                
+                # Get ratios from ratios_config (nested structure)
+                ratios_config = existing_split_info.get('ratios_config', {})
+                existing_ratio = ratios_config.get('test', existing_split_info.get('test_ratio'))
+                existing_link_ratio = ratios_config.get('link', existing_split_info.get('link_ratio'))
                 
                 params_match = (
                     existing_seed == split_random_seed and 
                     existing_strategy == split_strategy and 
+                    existing_ratio is not None and
                     abs(existing_ratio - ratios_cfg.test_ratio) < 0.001 and
                     abs((existing_link_ratio or 0.0) - ratios_cfg.link_ratio) < 0.001
                 )
@@ -338,6 +374,7 @@ def _split_matrices_per_skill(matrix_df: pd.DataFrame, output_path: Path, split_
                     link_df = pd.concat([train_link_df, test_link_df])
 
                     split_info = existing_split_info
+                    total_rows = split_info.get('sizes', {}).get('total', len(train_base_df) + len(link_df) + len(test_base_df))
                     skipped_rebuild = True
                     
             except Exception as e:
@@ -587,9 +624,30 @@ def _run_skill_validation(skill: str, item_params_out: Path, skill_irt_dir: Path
                          test_matrix: pd.DataFrame, sp: StepPrinter) -> List[dict]:
     """Run validation for a single skill."""
     item_params = pd.read_parquet(item_params_out)
+    
+    # Try to load MIRT matrices from metadata file
+    metadata_path = item_params_out.with_suffix('.meta.json')
+    if metadata_path.exists():
+        try:
+            with open(metadata_path, 'r') as f:
+                item_params.attrs = json.load(f)
+        except Exception as e:
+            print(f"Warning: Could not load metadata from {metadata_path}: {e}")
+    
     attrs = getattr(item_params, 'attrs', {})
     validation_errors = attrs.get('validation_errors', {})
     best_dim_idx = attrs.get('config_dims_search', [5, 10]).index(attrs.get('best_dimension', 5)) if attrs.get('best_dimension') else 0
+    
+    # Extract MIRT matrices if available
+    A_matrix = None
+    B_matrix = None
+    question_ids_order = None
+    A_list = attrs.get("A_matrix")
+    B_list = attrs.get("B_matrix")
+    if A_list is not None and B_list is not None:
+        A_matrix = np.array(A_list)
+        B_matrix = np.array(B_list)
+        question_ids_order = list(item_params.index)
     
     skill_results = []
     
@@ -613,7 +671,10 @@ def _run_skill_validation(skill: str, item_params_out: Path, skill_irt_dir: Path
         
         validation_results = run_estimation_validation(
             test_matrix, item_params, anchors_data['anchors_by_dataset'], 
-            lambdas_by_dataset, anchor_weights_by_dataset
+            lambdas_by_dataset, anchor_weights_by_dataset,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            question_ids_order=question_ids_order,
         )
         
         # Add metadata to results

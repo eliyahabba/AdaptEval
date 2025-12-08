@@ -33,9 +33,20 @@ def train_item_parameters(
 
 
 def save_item_parameters(df: pd.DataFrame, out_path: str) -> None:
+    """Save item parameters to parquet, plus MIRT matrices to JSON if available."""
+    import json
     p = Path(out_path)
     p.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(p)
+    
+    # Also save MIRT matrices and metadata to JSON if available in attrs
+    if hasattr(df, 'attrs') and df.attrs:
+        metadata_path = p.with_suffix('.meta.json')
+        try:
+            with open(metadata_path, 'w') as f:
+                json.dump(df.attrs, f)
+        except Exception as e:
+            print(f"Warning: Could not save metadata: {e}")
 
 
 # New structured API to support per-dataset anchors with weights (scenario-based)

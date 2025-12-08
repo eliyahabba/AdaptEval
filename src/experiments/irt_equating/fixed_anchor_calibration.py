@@ -5,10 +5,11 @@ import json
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
-from llm_eval.training import train_item_parameters, save_item_parameters
+from llm_eval.training import train_item_parameters, save_item_parameters, select_anchors_structured_with_matrix, save_anchors_structured
 
 
 def _load_matrix(path: Path) -> pd.DataFrame:
@@ -17,22 +18,57 @@ def _load_matrix(path: Path) -> pd.DataFrame:
     return pd.read_parquet(path)
 
 
-def _build_anchor_items(baseline_params: pd.DataFrame, available_questions: set[str]) -> list[dict]:
+def _build_anchor_items(
+    baseline_params: pd.DataFrame, 
+    available_questions: set[str],
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+) -> list[dict]:
+    """Build anchor items from baseline parameters.
+    
+    If A_matrix and B_matrix are provided (full MIRT vectors), uses them directly
+    as vector anchors. Otherwise, falls back to scalar anchors (a, b columns).
+    
+    Args:
+        baseline_params: DataFrame with 'a' and 'b' columns, indexed by question_id
+        available_questions: Set of question IDs available in the current dataset
+        A_matrix: Full discrimination matrix, shape (1, D, n_items)
+        B_matrix: Full difficulty matrix, shape (1, D, n_items)
+    
+    Returns:
+        List of anchor item dicts with either vector or scalar parameters
+    """
     baseline_params = baseline_params.copy()
     baseline_params.index = baseline_params.index.astype(str)
     subset = baseline_params.loc[baseline_params.index.intersection(available_questions)]
     if subset.empty:
         raise ValueError("No overlap between baseline item params and current matrix for anchoring")
     
-    # Vectorized approach: much faster than iterrows()
-    anchors = [
-        {
-            "item_id": item_id,
-            "difficulty": float(b),
-            "discrimination": float(a),
-        }
-        for item_id, b, a in zip(subset.index, subset["b"], subset["a"])
-    ]
+    # Get the question order from baseline_params index
+    baseline_qids = list(baseline_params.index)
+    
+    anchors = []
+    for item_id in subset.index:
+        anchor = {"item_id": item_id}
+        
+        # Try to use vector parameters if available
+        if A_matrix is not None and B_matrix is not None:
+            try:
+                base_idx = baseline_qids.index(item_id)
+                # Extract vectors: A_matrix shape is (1, D, n_items)
+                anchor["discrimination_vector"] = A_matrix[0, :, base_idx].tolist()
+                anchor["difficulty_vector"] = B_matrix[0, :, base_idx].tolist()
+            except (ValueError, IndexError):
+                # Fall back to scalar if vector extraction fails
+                anchor["difficulty"] = float(subset.loc[item_id, "b"])
+                anchor["discrimination"] = float(subset.loc[item_id, "a"])
+        else:
+            # Use scalar parameters
+            anchor["difficulty"] = float(subset.loc[item_id, "b"])
+            anchor["discrimination"] = float(subset.loc[item_id, "a"])
+        
+        anchors.append(anchor)
+    
     return anchors
 
 
@@ -63,10 +99,30 @@ def run_fixed_anchor_calibration(
     link_df = _load_matrix(skill_dir / "matrix_train_link.parquet")
     test_df = _load_matrix(skill_dir / "matrix_test_base.parquet")
     baseline_params = pd.read_parquet(skill_dir / "irt" / "item_params.parquet")
+    
+    # Load baseline MIRT matrices if available
+    baseline_meta_path = skill_dir / "irt" / "item_params.meta.json"
+    A_baseline, B_baseline = None, None
+    if baseline_meta_path.exists():
+        try:
+            with open(baseline_meta_path) as f:
+                baseline_meta = json.load(f)
+            if "A_matrix" in baseline_meta and "B_matrix" in baseline_meta:
+                A_baseline = np.array(baseline_meta["A_matrix"])
+                B_baseline = np.array(baseline_meta["B_matrix"])
+                print(f"   ✓ Loaded baseline MIRT matrices: A{A_baseline.shape}, B{B_baseline.shape}")
+        except Exception as e:
+            print(f"   ⚠ Could not load baseline matrices: {e}")
 
     combined_df = pd.concat([train_df, link_df], ignore_index=True).drop_duplicates()
     available_questions = set(combined_df["question_id"].astype(str).unique())
-    anchor_items = _build_anchor_items(baseline_params, available_questions)
+    anchor_items = _build_anchor_items(baseline_params, available_questions, A_baseline, B_baseline)
+    
+    # Log anchor type
+    if anchor_items and "discrimination_vector" in anchor_items[0]:
+        print(f"   ✓ Using VECTOR anchors for {len(anchor_items)} items")
+    else:
+        print(f"   ⚠ Using SCALAR anchors for {len(anchor_items)} items (vectors not available)")
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -102,11 +158,25 @@ def run_fixed_anchor_calibration(
         anchor_items=anchor_items,
     )
 
+    # Note: With vector anchors, py-irt now preserves the exact vectors during training,
+    # so we no longer need to manually replace them after training.
+
     out_path = output_dir / "item_params_fixed_anchor.parquet"
     save_item_parameters(params, str(out_path))
 
     combined_path = output_dir / "matrix_train_link.parquet"
     combined_df.to_parquet(combined_path, index=False)
+
+    # Select Equated Anchors (Base+Link)
+    try:
+        anchors, weights = select_anchors_structured_with_matrix(
+            params, combined_df, number_items=number_item_per_scenario, method="irt_clustering"
+        )
+        anchors_path = output_dir / f"anchors_fixed_{number_item_per_scenario}.json"
+        save_anchors_structured(anchors, weights, str(anchors_path))
+        print(f"   ✓ Selected {number_item_per_scenario} equated anchors saved to {anchors_path}")
+    except Exception as e:
+        print(f"   ⚠ Failed to select fixed anchors: {e}")
 
     metadata = {
         "skill": skill,
@@ -135,7 +205,7 @@ def _process_skill(kwargs: dict) -> tuple[str, str, Exception | None]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Fixed-anchor calibration with py-irt anchor items support")
-    parser.add_argument("--skill", default=None, help="Skill name (directory under skills root). If not provided, runs on all skills.")
+    parser.add_argument("--skill", default="Entailment & Bias", help="Skill name (directory under skills root). If not provided, runs on all skills.")
     parser.add_argument(
         "--skills-root",
         default="/Users/ehabba/PycharmProjects/AdaptEval/data/processed/skills",
@@ -146,7 +216,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default=None, help="Device for training (cpu/cuda). Auto-detects if not specified.")
     parser.add_argument("--epochs", type=int, default=1000)
     parser.add_argument("--lr", type=float, default=0.01)
-    parser.add_argument("--force", action="store_true", help="Force rerun even if results already exist")
+    parser.add_argument("--force", action="store_true", help="Force rerun even if results already exist", default=True)
     parser.add_argument("--workers", type=int, default=1, help="Number of parallel workers. Use 1 for sequential processing.")
     return parser.parse_args()
 

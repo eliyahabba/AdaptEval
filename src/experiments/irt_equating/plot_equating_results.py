@@ -9,11 +9,12 @@ import numpy as np
 import pandas as pd
 
 
-DEFAULT_METRICS = ["anchor_error_mean", "pirt_error_mean", "gp_irt_error_mean"]
+DEFAULT_METRICS = ["anchor_error_mean", "pirt_error_mean", "gp_irt_error_mean", "irt_error_mean"]
 METRIC_LABELS = {
     "anchor_error_mean": "Anchor-only error",
     "pirt_error_mean": "p-IRT error",
     "gp_irt_error_mean": "gp-IRT error",
+    "irt_error_mean": "IRT error (calibration)",
 }
 METHOD_ORDER = [
     "baseline_train_only",
@@ -208,7 +209,10 @@ def main() -> None:
         aggregate_path = (
             Path(args.skills_root).parent / "equating" / "results" / f"aggregate_metrics_{args.anchor_count}.csv"
         )
-    metrics = [m.strip() for m in args.metrics.split(",") if m.strip()]
+    if isinstance(args.metrics, str):
+        metrics = [m.strip() for m in args.metrics.split(",") if m.strip()]
+    else:
+        metrics = args.metrics
     generated = plot_equating_results(aggregate_path, metrics=metrics, output_dir=Path(args.output_dir) if args.output_dir else None)
     print("Generated figures:")
     for path in generated:

@@ -29,6 +29,7 @@ import pandas as pd
 from tqdm import tqdm
 import pickle
 import json
+import torch
 
 # Import the exact functions from notebook files
 from .irt import create_irt_dataset, train_irt_model, train_irt_model_python_api, load_irt_parameters, load_irt_parameters_from_trainer, estimate_ability_parameters
@@ -48,12 +49,8 @@ def get_best_device() -> str:
     
     Therefore, CPU is the best choice for Mac users until py-irt adds MPS support.
     """
-    try:
-        import torch
-        if torch.cuda.is_available():
-            return "cuda"
-    except ImportError:
-        pass
+    if torch.cuda.is_available():
+        return "cuda"
     return "cpu"
 
 
@@ -61,12 +58,12 @@ def get_best_device() -> str:
 class TrainingConfig:
     """Configuration matching the notebook parameters exactly."""
     # Core parameters from notebook
-    dims_search: list[int] = field(default_factory=lambda: [5, 10])  # Reduced for testing
+    dims_search: list[int] = field(default_factory=lambda: [2, 5])  # Match efficbench [2, 5]
     device: str = field(default_factory=get_best_device)  # auto-detect best device
     epochs: int = 2000  # Reduced for testing
-    lr: float = .01  # Reduced learning rate for stability
+    lr: float = .1  # Reduced learning rate for stability
     random_state: int = 42  # notebook default
-    
+    lr_decay = 0.9999
     # Validation parameters (from notebook Cell 11)
     val_stride: int = 5  # val_ind = list(range(0,Y_bin_train.shape[0],5))
     
@@ -83,67 +80,97 @@ class TrainingConfig:
 def compute_balance_weights(matrix_df: pd.DataFrame) -> np.ndarray:
     """Compute balance weights for datasets with multiple subscenarios.
     
-    Since the AdaptEval system doesn't have subscenarios by default, this function
-    will look for patterns in dataset names that might indicate subscenarios.
-    For example: "legalbench.abercrombie" and "legalbench.corporate_lobbying" 
-    could be considered subscenarios of "legalbench".
-    
-    The logic follows the TinyBenchmarks notebook: for datasets that have subscenarios,
-    apply the formula: N/(n_sub*n_i) where:
-    - N = total questions in the parent dataset
+    This follows the TinyBenchmarks methodology exactly:
+    For datasets with subscenarios (like MMLU with 57 subjects), apply the formula:
+    weight = N / (n_sub * n_i) where:
+    - N = total questions in the scenario
     - n_sub = number of subscenarios 
     - n_i = number of questions in subscenario i
+    
+    This gives higher weight to items from smaller subscenarios.
+    
+    The function checks for:
+    1. "original_dataset" column (preferred - used by load_pickle_mmlu)
+    2. "subscenario" column
+    3. Dot notation in "dataset" column (e.g., "legalbench.abercrombie")
     """
-    # if "question_id" not in matrix_df.columns:
-    #     return np.ones(0)
-    #
     # Get all unique questions and initialize weights
     all_questions = sorted(matrix_df["question_id"].unique())
     balance_weights = np.ones(len(all_questions))
     question_to_idx = {q: i for i, q in enumerate(all_questions)}
     
-    # # If we don't have dataset info, return uniform weights
-    # if "dataset" not in matrix_df.columns:
-    #     return balance_weights
-
-    # Look for dataset hierarchies based on naming patterns (e.g., "legalbench.xxx")
-    datasets = matrix_df["dataset"].unique()
-    parent_datasets = {}
+    # Determine subscenario column
+    subscenario_col = None
+    if "original_dataset" in matrix_df.columns:
+        # Check if original_dataset has different values than dataset
+        if matrix_df["original_dataset"].nunique() > matrix_df["dataset"].nunique():
+            subscenario_col = "original_dataset"
+    if subscenario_col is None and "subscenario" in matrix_df.columns:
+        subscenario_col = "subscenario"
     
-    for dataset in datasets:
-        if "." in dataset:  # Potential subscenario format: parent.child
-            parent = dataset.split(".")[0]
-            if parent not in parent_datasets:
-                parent_datasets[parent] = []
-            parent_datasets[parent].append(dataset)
-        else:
-            # Top-level dataset
-            if dataset not in parent_datasets:
-                parent_datasets[dataset] = [dataset]
-    
-    # Apply balance weights only for parents with multiple children
-    for parent_name, child_datasets in parent_datasets.items():
-        if len(child_datasets) > 1:  # Multi-subscenario dataset
-            print(f"   ⚖️  Applying balance weights for {parent_name}: {len(child_datasets)} subscenarios")
+    if subscenario_col is not None:
+        # Use explicit subscenario column
+        print(f"   ⚖️  Using '{subscenario_col}' for subscenario balance weights")
+        
+        # Group by parent scenario (dataset column)
+        for scenario_name in matrix_df["dataset"].unique():
+            scenario_df = matrix_df[matrix_df["dataset"] == scenario_name]
+            subscenarios = scenario_df[subscenario_col].unique()
             
-            # Get all questions for this parent dataset
-            parent_df = matrix_df[matrix_df["dataset"].isin(child_datasets)]
-            parent_questions = parent_df["question_id"].unique()
-            N = len(parent_questions)  # Total questions in parent dataset
-            n_sub = len(child_datasets)  # Number of subscenarios
-            
-            for child_dataset in child_datasets:
-                child_df = matrix_df[matrix_df["dataset"] == child_dataset]
-                child_questions = child_df["question_id"].unique()
-                n_i = len(child_questions)  # Questions in this subscenario
+            if len(subscenarios) > 1:
+                # Multi-subscenario scenario
+                N = scenario_df["question_id"].nunique()  # Total questions
+                n_sub = len(subscenarios)  # Number of subscenarios
                 
-                if n_i > 0:  # Avoid division by zero
-                    # Apply notebook formula: N/(n_sub*n_i)
-                    weight = N / (n_sub * n_i)
+                print(f"      {scenario_name}: {N} questions, {n_sub} subscenarios")
+                
+                for subscenario in subscenarios:
+                    sub_df = scenario_df[scenario_df[subscenario_col] == subscenario]
+                    sub_questions = sub_df["question_id"].unique()
+                    n_i = len(sub_questions)  # Questions in this subscenario
                     
-                    for q in child_questions:
-                        if q in question_to_idx:
-                            balance_weights[question_to_idx[q]] = weight
+                    if n_i > 0:
+                        # Apply formula: N/(n_sub*n_i)
+                        weight = N / (n_sub * n_i)
+                        
+                        for q in sub_questions:
+                            if q in question_to_idx:
+                                balance_weights[question_to_idx[q]] = weight
+    else:
+        # Fallback: Look for dot notation in dataset names
+        datasets = matrix_df["dataset"].unique()
+        parent_datasets = {}
+        
+        for dataset in datasets:
+            if "." in dataset:
+                parent = dataset.split(".")[0]
+                parent_datasets.setdefault(parent, []).append(dataset)
+            else:
+                parent_datasets.setdefault(dataset, [dataset])
+        
+        for parent_name, child_datasets in parent_datasets.items():
+            if len(child_datasets) > 1:
+                print(f"   ⚖️  Applying balance weights for {parent_name}: {len(child_datasets)} subscenarios")
+                
+                parent_df = matrix_df[matrix_df["dataset"].isin(child_datasets)]
+                N = parent_df["question_id"].nunique()
+                n_sub = len(child_datasets)
+                
+                for child_dataset in child_datasets:
+                    child_df = matrix_df[matrix_df["dataset"] == child_dataset]
+                    child_questions = child_df["question_id"].unique()
+                    n_i = len(child_questions)
+                    
+                    if n_i > 0:
+                        weight = N / (n_sub * n_i)
+                        for q in child_questions:
+                            if q in question_to_idx:
+                                balance_weights[question_to_idx[q]] = weight
+    
+    # Print summary
+    unique_weights = len(set(balance_weights))
+    if unique_weights > 1:
+        print(f"   ⚖️  Balance weights: min={balance_weights.min():.4f}, max={balance_weights.max():.4f}, unique={unique_weights}")
     
     return balance_weights
 
@@ -303,7 +330,7 @@ def validate_irt_dimensions(
                 print(f"   📁 Saved validation dataset: {dataset_path}")
             
             # Train model using Python API
-            trainer = train_irt_model_python_api(dataset_path, D, config.lr, config.epochs, config.device)
+            trainer = train_irt_model_python_api(dataset_path, D, config.lr, config.epochs, config.device, deterministic=config.deterministic)
             A, B, Theta = load_irt_parameters_from_trainer(trainer)
             
             # Validate on each dataset separately
@@ -644,6 +671,24 @@ def fit_2pl_parameters(
     """
     cfg = config or TrainingConfig()
     
+    # Check for cached results first (if output_dir provided and no anchor_items)
+    # Skip cache if anchor_items provided since that changes the training
+    if output_dir and not anchor_items:
+        import json
+        params_path = os.path.join(output_dir, "item_params.parquet")
+        meta_path = os.path.join(output_dir, "item_params.meta.json")
+        
+        if os.path.exists(params_path):
+            try:
+                params = pd.read_parquet(params_path)
+                if os.path.exists(meta_path):
+                    with open(meta_path) as f:
+                        params.attrs = json.load(f)
+                print(f"   ✓ Loaded cached IRT params from {params_path}")
+                return params
+            except Exception as e:
+                print(f"   ⚠️ Failed to load cache ({e}), retraining...")
+    
     print("Starting IRT training following TinyBenchmarks methodology...")
     
     # Step 1: Compute balance weights for multi-subscenario datasets
@@ -655,6 +700,24 @@ def fit_2pl_parameters(
     print("Step 2: Binarizing responses...")
     binary_matrix_df = binarize_responses(matrix_df)
     print("Responses binarized with optimal thresholds per dataset")
+    
+    # Step 2b: Filter out zero-variance questions (uninformative for IRT)
+    # These questions have identical responses from all models and provide no discriminative information
+    print("Step 2b: Filtering zero-variance questions...")
+    variance_per_question = binary_matrix_df.groupby("question_id")["normalized_score"].var()
+    zero_var_questions = set(variance_per_question[variance_per_question == 0].index)
+    if zero_var_questions:
+        original_count = binary_matrix_df["question_id"].nunique()
+        binary_matrix_df = binary_matrix_df[~binary_matrix_df["question_id"].isin(zero_var_questions)].copy()
+        # Also filter matrix_df for consistency in validation steps (use copy to avoid modifying input)
+        matrix_df = matrix_df[~matrix_df["question_id"].isin(zero_var_questions)].copy()
+        filtered_count = binary_matrix_df["question_id"].nunique()
+        print(f"   ⚠️  Removed {len(zero_var_questions)} zero-variance questions ({original_count} → {filtered_count})")
+        # Recompute balance weights for filtered data
+        balance_weights = compute_balance_weights(matrix_df)
+        print(f"   ✓ Recomputed balance weights for {len(balance_weights)} questions")
+    else:
+        print("   ✓ No zero-variance questions found")
     
     # Step 3: Validate dimensions using cross-validation
     print("Step 3: Validating dimensions...")
@@ -692,6 +755,8 @@ def fit_2pl_parameters(
             cfg.device,
             anchor_items=anchor_items,
             question_id_mapping=question_id_mapping,
+            lr_decay=cfg.lr_decay,
+            deterministic=cfg.deterministic,
         )
         
         # Load trained parameters directly from trainer
@@ -707,10 +772,17 @@ def fit_2pl_parameters(
     # Convert parameters to DataFrame format
     question_ids = sorted(matrix_df["question_id"].unique())
     
-    # Handle multi-dimensional parameters
+    # Store full matrices for proper MIRT computation (like TinyBenchmarks original)
+    # A shape: (1, D, num_items), B shape: (1, D, num_items)
+    A_full = A
+    B_full = B
+    
+    # Compute scalar summaries for backward compatibility and anchor selection
+    # IMPORTANT: Use norm for 'a' and mean for 'b' to match py-irt anchor scaling
+    # py-irt divides anchor discrimination by sqrt(D) so norm recovers original value
     if len(A.shape) == 3:  # (1, D, num_items)
-        a_values = np.linalg.norm(A[0], axis=0)  # Collapse dimensions to scalar
-        b_values = np.mean(B[0], axis=0)
+        a_values = np.linalg.norm(A[0], axis=0)  # L2 norm of discrimination vector
+        b_values = np.mean(B[0], axis=0)  # Mean of difficulty across dims
     else:  # Already scalar
         a_values = A.flatten()
         b_values = B.flatten()
@@ -759,8 +831,22 @@ def fit_2pl_parameters(
         "config_epochs": cfg.epochs,
         "config_lr": cfg.lr,
         "config_device": cfg.device,
-        "config_dims_search": cfg.dims_search
+        "config_dims_search": cfg.dims_search,
+        # Store full MIRT matrices (like TinyBenchmarks original)
+        "A_matrix": make_json_serializable(A_full),  # (1, D, num_items)
+        "B_matrix": make_json_serializable(B_full),  # (1, D, num_items)
     }
+    
+    # Auto-save item params for caching (if output_dir was provided)
+    if output_dir:
+        import json
+        params_path = os.path.join(output_dir, "item_params.parquet")
+        meta_path = os.path.join(output_dir, "item_params.meta.json")
+        
+        params.to_parquet(params_path)
+        with open(meta_path, 'w') as f:
+            json.dump(params.attrs, f, indent=2)
+        print(f"   📁 Saved item params: {params_path}")
     
     print(f"IRT training completed successfully. Parameters for {len(params)} questions.")
     return params
