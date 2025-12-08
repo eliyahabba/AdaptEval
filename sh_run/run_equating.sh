@@ -18,9 +18,11 @@ PROJECT_DIR="/cs/labs/gabis/eliyahabba/AdaptEval"
 cd $PROJECT_DIR
 echo "Current directory: $(pwd)"
 
+export PYTHONPATH=$PROJECT_DIR:$PYTHONPATH
+echo "PYTHONPATH: $PYTHONPATH"
 # Load modules
-module load cuda
-module load torch
+#module load cuda
+#module load torch
 
 # Activate virtual environment
 source /cs/snapless/gabis/eliyahabba/venvs/AdaptEval/bin/activate
@@ -48,7 +50,8 @@ python -m src.experiments.cross_dataset_equating \
     --test-ratio 0.25 \
     --seed 42 \
     --dims 2 5 \
-    --epochs 2000
+    --epochs 2000 \
+    --all-datasets
 
 # Print resource usage at the end
 echo "Job resource usage:"
