@@ -44,7 +44,7 @@ OUTPUT_DIR="${PROJECT_DIR}/data/cross_dataset_equating"
 
 # Run the experiment
 echo "Starting cross-dataset equating experiment..."
-python -m src.experiments.cross_dataset_equating \
+python -m src/experiments/cross_dataset_equating.py \
     --output-dir "${OUTPUT_DIR}" \
     --n-anchors-per-dataset 100 \
     --test-ratio 0.25 \
