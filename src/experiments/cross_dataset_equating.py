@@ -1072,25 +1072,45 @@ def run_single_split_experiment(
         B_matrix=B_fixed,
     )
     
-    # Save fixed-anchor parameters
-    fixed_anchor_dir = split_dir / "irt_fixed_anchor"
-    fixed_anchor_dir.mkdir(parents=True, exist_ok=True)
-    save_item_parameters(item_params_fixed, str(fixed_anchor_dir / "item_params.parquet"))
+    # Note: item_params are saved automatically by fit_2pl_parameters() when output_dir is provided
     
     # =========================================================================
     # Compile results
     # =========================================================================
+    ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
+    
     def summarize_results(results: list[dict], prefix: str) -> dict:
         if not results:
             return {}
         df = pd.DataFrame(results)
-        return {
-            f'{prefix}_n_validations': len(df),
-            f'{prefix}_gp_irt_error_mean': float(df['gp_irt_error'].mean()),
-            f'{prefix}_gp_irt_error_std': float(df['gp_irt_error'].std()),
-            f'{prefix}_anchor_error_mean': float(df['anchor_error'].mean()),
-            f'{prefix}_pirt_error_mean': float(df['pirt_error'].mean()) if 'pirt_error' in df else None,
-        }
+        summary = {f'{prefix}_n_validations': len(df)}
+        for metric in ERROR_METRICS:
+            if metric in df.columns:
+                vals = df[metric].dropna()
+                if len(vals) > 0:
+                    summary[f'{prefix}_{metric}_mean'] = float(vals.mean())
+                    summary[f'{prefix}_{metric}_std'] = float(vals.std())
+        return summary
+    
+    def summarize_per_dataset(results: list[dict]) -> dict:
+        """Compute per-dataset statistics for all error metrics."""
+        if not results:
+            return {}
+        df = pd.DataFrame(results)
+        if 'scenario_name' not in df.columns:
+            return {}
+        
+        per_dataset = {}
+        for scenario, group in df.groupby('scenario_name'):
+            stats = {'n_models': len(group)}
+            for metric in ERROR_METRICS:
+                if metric in group.columns:
+                    vals = group[metric].dropna()
+                    if len(vals) > 0:
+                        stats[f'{metric}_mean'] = float(vals.mean())
+                        stats[f'{metric}_std'] = float(vals.std())
+            per_dataset[scenario] = stats
+        return per_dataset
     
     result = {
         'skill': skill,
@@ -1107,6 +1127,10 @@ def run_single_split_experiment(
         **summarize_results(base_results, 'base'),
         **summarize_results(link_results_concurrent, 'link_concurrent'),
         **summarize_results(link_results_fixed, 'link_fixed'),
+        # Per-dataset breakdown
+        'base_per_dataset': summarize_per_dataset(base_results),
+        'link_concurrent_per_dataset': summarize_per_dataset(link_results_concurrent),
+        'link_fixed_per_dataset': summarize_per_dataset(link_results_fixed),
     }
     
     # Save results
@@ -1455,6 +1479,175 @@ def analyze_dataset_role_impact(output_dir: str | Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def plot_role_impact_analysis(output_dir: str | Path, df: pd.DataFrame | None = None) -> list[Path]:
+    """Create visualizations for role impact analysis.
+    
+    Generates:
+    1. Bar chart comparing Base vs Link errors per dataset
+    2. Delta (Link - Base) showing calibration penalty
+    3. Per-skill summary boxplot
+    
+    Returns list of generated figure paths.
+    """
+    import matplotlib.pyplot as plt
+    
+    output_dir = Path(output_dir)
+    figures_dir = output_dir / "figures"
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    
+    if df is None:
+        df = analyze_dataset_role_impact(output_dir)
+    
+    if df.empty:
+        print("No data for plotting")
+        return []
+    
+    generated_figures = []
+    
+    # Set style
+    try:
+        plt.style.use('seaborn-v0_8-whitegrid')
+    except:
+        plt.style.use('seaborn-whitegrid')
+    
+    # =========================================================================
+    # Figure 1: Bar chart comparing Base vs Link errors per dataset
+    # =========================================================================
+    fig, ax = plt.subplots(figsize=(14, 6))
+    
+    # Prepare data
+    plot_df = df.dropna(subset=['as_base_error_mean']).copy()
+    has_link_data = False
+    
+    if 'as_link_concurrent_error' in plot_df.columns and plot_df['as_link_concurrent_error'].notna().any():
+        has_link_data = True
+    
+    if not plot_df.empty:
+        x = np.arange(len(plot_df))
+        width = 0.25
+        
+        bars1 = ax.bar(x - width, plot_df['as_base_error_mean'], width, 
+                       label='As Base (in initial IRT)', color='#4f6ad7', alpha=0.8)
+        
+        if has_link_data:
+            concurrent_vals = plot_df['as_link_concurrent_error'].fillna(0)
+            bars2 = ax.bar(x, concurrent_vals, width,
+                           label='As Link (Concurrent)', color='#f4a259', alpha=0.8)
+        
+        if 'as_link_fixed_error' in plot_df.columns and plot_df['as_link_fixed_error'].notna().any():
+            fixed_vals = plot_df['as_link_fixed_error'].fillna(0)
+            bars3 = ax.bar(x + width, fixed_vals, width,
+                           label='As Link (Fixed-Anchor)', color='#5aa469', alpha=0.8)
+        
+        ax.set_xlabel('Dataset')
+        ax.set_ylabel('Mean gp-IRT Error')
+        ax.set_title('Prediction Error by Dataset Role\n(Base = initial IRT training, Link = calibrated later)')
+        ax.set_xticks(x)
+        ax.set_xticklabels([f"{row['dataset'][:15]}\n({row['skill'][:10]})" 
+                           for _, row in plot_df.iterrows()], rotation=45, ha='right')
+        ax.legend()
+        ax.grid(axis='y', alpha=0.3)
+        
+        fig.tight_layout()
+        path1 = figures_dir / "role_impact_comparison.png"
+        fig.savefig(path1, dpi=150)
+        plt.close(fig)
+        generated_figures.append(path1)
+        print(f"  ✓ Generated: {path1}")
+    
+    # =========================================================================
+    # Figure 2: Delta (Link - Base) showing calibration penalty
+    # =========================================================================
+    delta_df = df.dropna(subset=['delta_concurrent']).copy()
+    
+    if not delta_df.empty:
+        fig, ax = plt.subplots(figsize=(12, 5))
+        
+        x = np.arange(len(delta_df))
+        width = 0.35
+        
+        colors_c = ['#e74c3c' if d > 0 else '#27ae60' for d in delta_df['delta_concurrent']]
+        bars1 = ax.bar(x - width/2, delta_df['delta_concurrent'], width,
+                       label='Concurrent Calibration', color=colors_c, alpha=0.7)
+        
+        if 'delta_fixed' in delta_df.columns and delta_df['delta_fixed'].notna().any():
+            delta_f_vals = delta_df['delta_fixed'].fillna(0)
+            colors_f = ['#c0392b' if d > 0 else '#229954' for d in delta_f_vals]
+            bars2 = ax.bar(x + width/2, delta_f_vals, width,
+                           label='Fixed-Anchor Calibration', color=colors_f, alpha=0.7, hatch='//')
+        
+        ax.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+        ax.set_xlabel('Dataset')
+        ax.set_ylabel('Δ Error (Link - Base)')
+        ax.set_title('Calibration Penalty: Error Increase When Dataset is Link vs Base\n'
+                     '(Positive = Link worse, Negative = Link better)')
+        ax.set_xticks(x)
+        ax.set_xticklabels([f"{row['dataset'][:12]}" for _, row in delta_df.iterrows()], 
+                          rotation=45, ha='right')
+        ax.legend()
+        ax.grid(axis='y', alpha=0.3)
+        
+        fig.tight_layout()
+        path2 = figures_dir / "calibration_penalty.png"
+        fig.savefig(path2, dpi=150)
+        plt.close(fig)
+        generated_figures.append(path2)
+        print(f"  ✓ Generated: {path2}")
+    
+    # =========================================================================
+    # Figure 3: Per-skill summary boxplot
+    # =========================================================================
+    skills = df['skill'].unique()
+    if len(skills) > 1 and df['delta_concurrent'].notna().any():
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+        
+        # Concurrent deltas by skill
+        skill_data_c = [df[df['skill'] == skill]['delta_concurrent'].dropna() 
+                       for skill in skills]
+        skill_labels = [s[:15] for s in skills]
+        
+        valid_skill_data_c = [(d, l) for d, l in zip(skill_data_c, skill_labels) if len(d) > 0]
+        
+        if valid_skill_data_c:
+            bp1 = axes[0].boxplot([d.values for d, _ in valid_skill_data_c],
+                                  labels=[l for _, l in valid_skill_data_c],
+                                  patch_artist=True)
+            for patch in bp1['boxes']:
+                patch.set_facecolor('#f4a259')
+                patch.set_alpha(0.6)
+            axes[0].axhline(y=0, color='red', linestyle='--', alpha=0.5)
+            axes[0].set_ylabel('Δ Error (Link - Base)')
+            axes[0].set_title('Concurrent Calibration\nby Skill')
+            axes[0].tick_params(axis='x', rotation=45)
+        
+        # Fixed deltas by skill
+        if 'delta_fixed' in df.columns and df['delta_fixed'].notna().any():
+            skill_data_f = [df[df['skill'] == skill]['delta_fixed'].dropna() 
+                           for skill in skills]
+            valid_skill_data_f = [(d, l) for d, l in zip(skill_data_f, skill_labels) if len(d) > 0]
+            
+            if valid_skill_data_f:
+                bp2 = axes[1].boxplot([d.values for d, _ in valid_skill_data_f],
+                                      labels=[l for _, l in valid_skill_data_f],
+                                      patch_artist=True)
+                for patch in bp2['boxes']:
+                    patch.set_facecolor('#5aa469')
+                    patch.set_alpha(0.6)
+                axes[1].axhline(y=0, color='red', linestyle='--', alpha=0.5)
+                axes[1].set_ylabel('Δ Error (Link - Base)')
+                axes[1].set_title('Fixed-Anchor Calibration\nby Skill')
+                axes[1].tick_params(axis='x', rotation=45)
+        
+        fig.tight_layout()
+        path3 = figures_dir / "skill_comparison_boxplot.png"
+        fig.savefig(path3, dpi=150)
+        plt.close(fig)
+        generated_figures.append(path3)
+        print(f"  ✓ Generated: {path3}")
+    
+    return generated_figures
+
+
 def print_role_impact_analysis(output_dir: str | Path = None):
     """Print analysis of dataset role impact on prediction error."""
     if output_dir is None:
@@ -1530,11 +1723,75 @@ def print_role_impact_analysis(output_dir: str | Path = None):
     df.to_csv(output_path, index=False)
     print(f"\n✅ Results saved to: {output_path}")
     
+    # Generate plots
+    print("\n📊 Generating visualizations...")
+    try:
+        figures = plot_role_impact_analysis(output_dir, df)
+        if figures:
+            print(f"\n✅ Generated {len(figures)} figures in: {Path(output_dir) / 'figures'}")
+    except Exception as e:
+        print(f"\n⚠️  Could not generate plots: {e}")
+    
     return df
 
 
-def print_existing_results(output_dir: str | Path = None):
-    """Print summary of existing results without running experiments."""
+def rebuild_all_results_csv(output_dir: str | Path) -> pd.DataFrame:
+    """Rebuild all_results.csv from individual results.json files.
+    
+    This is useful if:
+    - The all_results.csv is empty or corrupted
+    - You want to aggregate results from experiments run at different times
+    - The experiment was interrupted
+    
+    Returns the aggregated DataFrame.
+    """
+    output_dir = Path(output_dir)
+    
+    print(f"Scanning {output_dir} for results.json files...")
+    
+    results = []
+    for skill_dir in output_dir.iterdir():
+        if not skill_dir.is_dir() or skill_dir.name in ('__pycache__', 'figures'):
+            continue
+        for link_dir in skill_dir.iterdir():
+            if not link_dir.is_dir():
+                continue
+            results_file = link_dir / "results.json"
+            if results_file.exists():
+                try:
+                    with open(results_file) as f:
+                        result = json.load(f)
+                    results.append(result)
+                    print(f"  ✓ {skill_dir.name}/{link_dir.name}")
+                except Exception as e:
+                    print(f"  ✗ {skill_dir.name}/{link_dir.name}: {e}")
+    
+    if not results:
+        print("No results found!")
+        return pd.DataFrame()
+    
+    results_df = pd.DataFrame(results)
+    
+    # Save to CSV
+    output_file = output_dir / "all_results.csv"
+    results_df.to_csv(output_file, index=False)
+    print(f"\n✅ Saved {len(results)} results to: {output_file}")
+    
+    # Print column summary
+    print(f"\nColumns in all_results.csv:")
+    for col in results_df.columns:
+        print(f"  - {col}")
+    
+    return results_df
+
+
+def print_existing_results(output_dir: str | Path = None, force_rebuild: bool = False):
+    """Print summary of existing results without running experiments.
+    
+    Args:
+        output_dir: Directory containing experiment results
+        force_rebuild: If True, rebuild all_results.csv from individual files
+    """
     if output_dir is None:
         output_dir = PROJECT_ROOT / "data/cross_dataset_equating"
     else:
@@ -1542,28 +1799,15 @@ def print_existing_results(output_dir: str | Path = None):
     
     all_results_file = output_dir / "all_results.csv"
     
-    if not all_results_file.exists():
-        print(f"No results file found at {all_results_file}")
-        print("Scanning individual result files...")
+    if force_rebuild or not all_results_file.exists():
+        if force_rebuild:
+            print("Force rebuilding all_results.csv...")
+        else:
+            print(f"No results file found at {all_results_file}")
         
-        # Scan for individual results.json files
-        results = []
-        for skill_dir in output_dir.iterdir():
-            if not skill_dir.is_dir():
-                continue
-            for link_dir in skill_dir.iterdir():
-                if not link_dir.is_dir():
-                    continue
-                results_file = link_dir / "results.json"
-                if results_file.exists():
-                    with open(results_file) as f:
-                        results.append(json.load(f))
-        
-        if not results:
-            print("No results found!")
+        results_df = rebuild_all_results_csv(output_dir)
+        if results_df.empty:
             return None
-        
-        results_df = pd.DataFrame(results)
     else:
         results_df = pd.read_csv(all_results_file)
     
@@ -1655,6 +1899,8 @@ if __name__ == "__main__":
     parser.add_argument("--dims", type=int, nargs="+", default=[2, 5], help="Dimensions to search")
     parser.add_argument("--epochs", type=int, default=2000, help="Training epochs")
     parser.add_argument("--print-only", action="store_true", help="Only print existing results, don't run")
+    parser.add_argument("--rebuild-csv", action="store_true", 
+                        help="Rebuild all_results.csv from individual results.json files")
     parser.add_argument("--analyze-role", action="store_true", 
                         help="Analyze impact of dataset role (Base vs Link) on prediction error")
     parser.add_argument("--all-datasets", action="store_true",
@@ -1662,10 +1908,12 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    if args.analyze_role:
+    if args.rebuild_csv:
+        rebuild_all_results_csv(args.output_dir or PROJECT_ROOT / "data/cross_dataset_equating")
+    elif args.analyze_role:
         print_role_impact_analysis(args.output_dir)
     elif args.print_only:
-        print_existing_results(args.output_dir)
+        print_existing_results(args.output_dir, force_rebuild=False)
     else:
         config = ExperimentConfig(
             n_anchors_per_dataset=args.n_anchors_per_dataset,
