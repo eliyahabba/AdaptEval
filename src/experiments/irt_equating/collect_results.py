@@ -170,7 +170,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Collect per-skill equating summaries.")
     parser.add_argument(
         "--skills-root",
-        default="/Users/ehabba/PycharmProjects/AdaptEval/data/processed/skills",
+        default=str(Path(__file__).resolve().parents[3] / "data" / "processed" / "skills"),
         help="Directory containing per-skill artifacts.",
     )
     parser.add_argument("--anchor-count", type=int, default=100, help="Anchor count to analyze.")

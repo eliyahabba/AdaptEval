@@ -343,7 +343,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skill", default=None, help="Skill name (directory under skills root). If omitted, run all skills.")
     parser.add_argument(
         "--skills-root",
-        default="/Users/ehabba/PycharmProjects/AdaptEval/data/processed/skills",
+        default=str(Path(__file__).resolve().parents[3] / "data" / "processed" / "skills"),
         help="Root directory containing per-skill artifacts",
     )
     parser.add_argument("--anchor-count", type=int, default=100, help="Anchor count used for evaluation artifacts")

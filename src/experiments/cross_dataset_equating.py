@@ -91,12 +91,24 @@ def load_skill_labels(csv_path: str) -> pd.DataFrame:
 
 
 def load_data_source_config(config_path: str | None = None) -> dict:
-    """Load the data source configuration file."""
+    """Load the data source configuration file and resolve relative paths."""
     if config_path is None:
         config_path = Path(__file__).parent / "data_source_config.json"
     
     with open(config_path) as f:
-        return json.load(f)
+        config = json.load(f)
+    
+    # Resolve relative paths to absolute (relative to project root)
+    project_root = Path(__file__).resolve().parents[2]  # src/experiments -> project root
+    if "paths" in config:
+        for key, value in config["paths"].items():
+            if key.startswith("_"):  # skip notes
+                continue
+            path = Path(value)
+            if not path.is_absolute():
+                config["paths"][key] = str(project_root / path)
+    
+    return config
 
 
 def load_pickle_data(pickle_path: str) -> dict:
