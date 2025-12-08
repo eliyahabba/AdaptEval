@@ -190,7 +190,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Path to aggregate metrics CSV (default: data/processed/equating/results/aggregate_metrics_100.csv).",
     )
-    parser.add_argument("--skills-root", default="/Users/ehabba/PycharmProjects/AdaptEval/data/processed/skills")
+    parser.add_argument("--skills-root", default=str(Path(__file__).resolve().parents[3] / "data" / "processed" / "skills"))
     parser.add_argument("--anchor-count", type=int, default=100)
     parser.add_argument(
         "--metrics",

@@ -1009,7 +1009,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", nargs="+", help="Paths to config files")
     parser.add_argument("--data-path", help="Path to HELM data parquet file")
     parser.add_argument("--output", help="Output directory for results")
-    parser.add_argument("--skills-csv", default=r'/Users/ehabba/PycharmProjects/AdaptEval/src/Datasets_with_inferred_skill.csv',
+    parser.add_argument("--skills-csv", default=str(Path(__file__).resolve().parent / "Datasets_with_inferred_skill.csv"),
                         help="CSV mapping with columns: dataset_name, skill")
 
     # Train/test split arguments
