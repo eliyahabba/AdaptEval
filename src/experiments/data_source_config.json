@@ -119,8 +119,9 @@
   },
   
   "paths": {
-    "tinybenchmarks_dir": "/Users/ehabba/PycharmProjects/AdaptEval/aggregated_data/tinybenchmarks",
-    "aggregated_dir": "/Users/ehabba/PycharmProjects/AdaptEval/aggregated_data/aggregated"
+    "_note": "Paths are relative to project root. Use load_data_source_config() which resolves them.",
+    "tinybenchmarks_dir": "aggregated_data/tinybenchmarks",
+    "aggregated_dir": "aggregated_data/aggregated"
   }
 }
 
