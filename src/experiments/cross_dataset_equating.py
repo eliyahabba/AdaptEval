@@ -1,0 +1,1580 @@
+"""
+Cross-Dataset Equating Experiment
+
+For each skill that contains 2+ datasets, run leave-one-out experiments:
+- Each dataset takes turns being the "Link" set
+- The rest are "Base" sets
+- Run IRT training, fixed-anchor calibration, and concurrent calibration
+- Compare Base→Base vs Base→Link prediction accuracy
+
+This validates the core hypothesis: can we predict performance on unseen datasets
+using only ability estimates from other datasets measuring the same skill?
+"""
+
+from __future__ import annotations
+
+import json
+import pickle
+from collections import defaultdict
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Optional
+
+import numpy as np
+import pandas as pd
+
+from llm_eval.selection.tinyBenchmarks.training import (
+    TrainingConfig,
+    fit_2pl_parameters,
+    compute_lambda_values,
+)
+from llm_eval.selection.tinyBenchmarks.estimation import run_estimation_validation
+from llm_eval.selection.tinyBenchmarks.anchors import find_anchor_items_clustering, AnchorConfig
+from llm_eval.training import train_item_parameters, save_item_parameters
+
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+@dataclass
+class ExperimentConfig:
+    """Configuration for cross-dataset equating experiments."""
+    # Data paths
+    tinybenchmarks_dir: str = "/Users/ehabba/PycharmProjects/AdaptEval/aggregated_data/tinybenchmarks"
+    skill_labels_csv: str = "/Users/ehabba/PycharmProjects/AdaptEval/src/dataset_skill_labels.csv"
+    output_dir: str = "/Users/ehabba/PycharmProjects/AdaptEval/data/cross_dataset_equating"
+    
+    # IRT training
+    dims_search: list = field(default_factory=lambda: [2, 5])
+    epochs: int = 2000
+    lr: float = 0.099
+    n_anchors_per_dataset: int = 100  # Anchors to select from EACH dataset
+    
+    # Split
+    test_ratio: float = 0.25
+    seed: int = 42
+    
+    # Caching
+    force_retrain: bool = False
+    
+
+# =============================================================================
+# Data Loading
+# =============================================================================
+
+def load_skill_labels(csv_path: str) -> pd.DataFrame:
+    """Load and parse skill labels CSV with multi-label support."""
+    df = pd.read_csv(csv_path)
+    
+    # Parse skills into lists
+    def parse_skills(row):
+        skills = set()
+        if pd.notna(row.get('Primary skills')):
+            skills.add(row['Primary skills'].strip())
+        if pd.notna(row.get('Secondary skills')):
+            for s in str(row['Secondary skills']).split(';'):
+                s = s.strip()
+                if s and s != 'nan':
+                    skills.add(s)
+        return list(skills)
+    
+    df['all_skills'] = df.apply(parse_skills, axis=1)
+    return df
+
+
+def load_data_source_config(config_path: str | None = None) -> dict:
+    """Load the data source configuration file."""
+    if config_path is None:
+        config_path = Path(__file__).parent / "data_source_config.json"
+    
+    with open(config_path) as f:
+        return json.load(f)
+
+
+def load_pickle_data(pickle_path: str) -> dict:
+    """Load data from a TinyBenchmarks pickle file."""
+    with open(pickle_path, 'rb') as f:
+        data = pickle.load(f)
+    return data
+
+
+def extract_from_pickle(
+    pickle_data: dict,
+    dataset_name: str,
+    keys: list[str] | None = None,
+    key_pattern: str | None = None,
+) -> pd.DataFrame:
+    """Extract a dataset from pickle data.
+    
+    Args:
+        pickle_data: Loaded pickle data dict
+        dataset_name: Clean dataset name
+        keys: Specific keys to extract, or None
+        key_pattern: Pattern to match keys (used if keys is None)
+    
+    Returns:
+        DataFrame with columns: model_name, question_id, dataset, normalized_score
+    """
+    models = np.array(pickle_data.get('models', []))
+    all_data = pickle_data.get('data', {})
+    
+    # Determine which keys to use
+    if keys:
+        keys_to_use = [k for k in keys if k in all_data]
+    elif key_pattern:
+        keys_to_use = [k for k in all_data.keys() if key_pattern in k]
+    else:
+        keys_to_use = list(all_data.keys())
+    
+    if not keys_to_use:
+        return pd.DataFrame()
+    
+    dfs = []
+    for key in keys_to_use:
+        data_item = all_data[key]
+        
+        # Extract scores matrix
+        if isinstance(data_item, dict):
+            scores = data_item.get('correctness', data_item.get('scores'))
+        else:
+            scores = data_item
+        
+        if scores is None:
+            continue
+            
+        scores = np.array(scores)
+        if len(scores.shape) != 2:
+            continue
+        
+        # Ensure shape is (n_questions, n_models)
+        if scores.shape[0] == len(models):
+            scores = scores.T
+        elif scores.shape[1] != len(models):
+            continue
+        
+        n_questions = scores.shape[0]
+        
+        # Build DataFrame efficiently
+        q_indices = np.arange(n_questions)
+        m_indices = np.arange(len(models))
+        q_grid, m_grid = np.meshgrid(q_indices, m_indices, indexing='ij')
+        
+        scores_flat = scores.flatten()
+        valid_mask = ~np.isnan(scores_flat)
+        
+        df = pd.DataFrame({
+            'model_name': models[m_grid.flatten()[valid_mask]],
+            'question_id': [f"{dataset_name}:{key}:{q}" for q in q_grid.flatten()[valid_mask]],
+            'dataset': dataset_name,
+            'sub_dataset': key,
+            'normalized_score': scores_flat[valid_mask],
+        })
+        dfs.append(df)
+    
+    if not dfs:
+        return pd.DataFrame()
+    
+    return pd.concat(dfs, ignore_index=True).drop_duplicates(subset=['model_name', 'question_id'])
+
+
+def extract_from_parquet(
+    parquet_path: str,
+    dataset_name: str,
+    filter_pattern: str,
+) -> pd.DataFrame:
+    """Extract a dataset from aggregated parquet file.
+    
+    Args:
+        parquet_path: Path to parquet file
+        dataset_name: Clean dataset name
+        filter_pattern: Pattern to filter dataset_name column
+    
+    Returns:
+        DataFrame with columns: model_name, question_id, dataset, normalized_score
+    """
+    df = pd.read_parquet(parquet_path)
+    
+    # Filter by dataset name pattern
+    mask = df['dataset_name'].str.contains(filter_pattern, case=False, na=False)
+    df = df[mask].copy()
+    
+    if df.empty:
+        return pd.DataFrame()
+    
+    # Build question_id from dataset_name + hf_split + hf_index
+    df['question_id'] = (
+        dataset_name + ":" + 
+        df['dataset_name'].astype(str) + ":" + 
+        df['hf_split'].astype(str) + ":" + 
+        df['hf_index'].astype(str)
+    )
+    
+    # Rename columns to match expected format
+    result = pd.DataFrame({
+        'model_name': df['model_name'],
+        'question_id': df['question_id'],
+        'dataset': dataset_name,
+        'sub_dataset': df['dataset_name'],
+        'normalized_score': df['evaluation_score'],
+    })
+    
+    return result.drop_duplicates(subset=['model_name', 'question_id'])
+
+
+def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
+    """Load all datasets using the data source configuration.
+    
+    Uses data_source_config.json to determine the best source for each dataset.
+    
+    Returns: dict mapping dataset_name -> DataFrame
+    """
+    # Load config
+    source_config = load_data_source_config()
+    datasets_config = source_config.get('datasets', {})
+    paths_config = source_config.get('paths', {})
+    
+    tinybenchmarks_dir = Path(paths_config.get('tinybenchmarks_dir', config.tinybenchmarks_dir))
+    aggregated_dir = Path(paths_config.get('aggregated_dir', 
+                          str(Path(config.tinybenchmarks_dir).parent / 'aggregated')))
+    
+    # Cache loaded pickle files
+    loaded_pickles = {}
+    
+    # Load skill labels to know which datasets we need
+    skill_labels = load_skill_labels(config.skill_labels_csv)
+    needed_datasets = set(skill_labels['Dataset'].unique())
+    
+    datasets = {}
+    
+    for dataset_name in needed_datasets:
+        if dataset_name not in datasets_config:
+            print(f"  Warning: No source config for {dataset_name}, skipping")
+            continue
+        
+        ds_config = datasets_config[dataset_name]
+        source_type = ds_config.get('source_type')
+        source_file = ds_config.get('source_file')
+        
+        try:
+            if source_type == 'tinybenchmarks':
+                # Load from pickle
+                pickle_path = tinybenchmarks_dir / source_file
+                
+                if source_file not in loaded_pickles:
+                    if pickle_path.exists():
+                        loaded_pickles[source_file] = load_pickle_data(str(pickle_path))
+                        print(f"  Loaded pickle: {source_file} "
+                              f"({len(loaded_pickles[source_file].get('models', []))} models)")
+                    else:
+                        print(f"  Warning: {pickle_path} not found, skipping {dataset_name}")
+                        continue
+                
+                pickle_data = loaded_pickles[source_file]
+                keys = ds_config.get('pickle_keys')
+                key_pattern = ds_config.get('pickle_key_pattern')
+                
+                df = extract_from_pickle(pickle_data, dataset_name, keys, key_pattern)
+                
+            elif source_type == 'aggregated':
+                # Load from parquet
+                parquet_path = aggregated_dir / source_file
+                
+                if not parquet_path.exists():
+                    print(f"  Warning: {parquet_path} not found, skipping {dataset_name}")
+                    continue
+                
+                filter_pattern = ds_config.get('parquet_filter', dataset_name)
+                df = extract_from_parquet(str(parquet_path), dataset_name, filter_pattern)
+            
+            else:
+                print(f"  Warning: Unknown source type '{source_type}' for {dataset_name}")
+                continue
+            
+            if not df.empty:
+                datasets[dataset_name] = df
+                print(f"  ✓ {dataset_name}: {df['question_id'].nunique()} questions, "
+                      f"{df['model_name'].nunique()} models from {source_type}/{source_file}")
+            else:
+                print(f"  Warning: No data extracted for {dataset_name}")
+                
+        except Exception as e:
+            print(f"  Error loading {dataset_name}: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    return datasets
+
+
+# =============================================================================
+# Skill Grouping
+# =============================================================================
+
+def get_dataset_source(dataset_name: str, source_config: dict) -> str:
+    """Get the source type for a dataset."""
+    ds_config = source_config.get('datasets', {}).get(dataset_name, {})
+    source_type = ds_config.get('source_type', 'unknown')
+    source_file = ds_config.get('source_file', 'unknown')
+    return f"{source_type}:{source_file}"
+
+
+def group_datasets_by_skill_and_source(
+    skill_labels: pd.DataFrame,
+    datasets: dict[str, pd.DataFrame],
+) -> dict[str, list[str]]:
+    """Group dataset names by skill, ensuring they share the same source.
+    
+    Since different data sources (TinyBenchmarks vs Aggregated) have completely
+    different model sets with no overlap, we can only run experiments within
+    datasets from the same source.
+    
+    Returns: dict mapping "skill|source" -> list of dataset names
+    """
+    source_config = load_data_source_config()
+    
+    # First, group by skill
+    skill_to_datasets = defaultdict(list)
+    for _, row in skill_labels.iterrows():
+        dataset_name = row['Dataset']
+        if dataset_name not in datasets:
+            continue
+        for skill in row['all_skills']:
+            skill_to_datasets[skill].append(dataset_name)
+    
+    # Now, sub-group by source within each skill
+    valid_groups = {}
+    
+    for skill, ds_list in skill_to_datasets.items():
+        if len(ds_list) < 2:
+            continue
+        
+        # Group by source
+        source_to_datasets = defaultdict(list)
+        for ds_name in ds_list:
+            source = get_dataset_source(ds_name, source_config)
+            source_to_datasets[source].append(ds_name)
+        
+        # Create experiment groups for sources with 2+ datasets
+        for source, source_ds_list in source_to_datasets.items():
+            if len(source_ds_list) >= 2:
+                group_key = f"{skill}|{source}"
+                valid_groups[group_key] = source_ds_list
+    
+    return valid_groups
+
+
+def group_datasets_by_skill(
+    skill_labels: pd.DataFrame,
+    datasets: dict[str, pd.DataFrame],
+) -> dict[str, list[str]]:
+    """Group dataset names by skill, only including datasets with common models.
+    
+    This is a smarter version that finds actual model overlap.
+    """
+    skill_to_datasets = defaultdict(list)
+    
+    for _, row in skill_labels.iterrows():
+        dataset_name = row['Dataset']
+        if dataset_name not in datasets:
+            continue
+        for skill in row['all_skills']:
+            skill_to_datasets[skill].append(dataset_name)
+    
+    # For each skill, find datasets that actually share models
+    valid_skills = {}
+    
+    for skill, ds_list in skill_to_datasets.items():
+        if len(ds_list) < 2:
+            continue
+        
+        # Get model sets for each dataset
+        model_sets = {
+            ds: set(datasets[ds]['model_name'].unique())
+            for ds in ds_list
+        }
+        
+        # Find the largest subset of datasets that share common models
+        # Start by trying all datasets, then remove one at a time
+        best_subset = []
+        
+        # Try all pairs first
+        for i, ds1 in enumerate(ds_list):
+            for ds2 in ds_list[i+1:]:
+                common = model_sets[ds1] & model_sets[ds2]
+                if len(common) >= 4:
+                    # Found a valid pair, try to extend it
+                    subset = [ds1, ds2]
+                    shared_models = common
+                    
+                    for ds3 in ds_list:
+                        if ds3 not in subset:
+                            new_common = shared_models & model_sets[ds3]
+                            if len(new_common) >= 4:
+                                subset.append(ds3)
+                                shared_models = new_common
+                    
+                    if len(subset) > len(best_subset):
+                        best_subset = subset
+        
+        if len(best_subset) >= 2:
+            valid_skills[skill] = best_subset
+    
+    return valid_skills
+
+
+# =============================================================================
+# Data Splitting
+# =============================================================================
+
+def split_models(
+    df: pd.DataFrame,
+    test_ratio: float = 0.25,
+    seed: int = 42,
+) -> tuple[set[str], set[str]]:
+    """Split models into train and test sets."""
+    np.random.seed(seed)
+    models = df['model_name'].unique()
+    n_test = max(1, int(len(models) * test_ratio))
+    test_models = set(np.random.choice(models, size=n_test, replace=False))
+    train_models = set(models) - test_models
+    return train_models, test_models
+
+
+def create_leave_one_out_splits(
+    skill: str,
+    datasets: dict[str, pd.DataFrame],
+    dataset_names: list[str],
+    test_ratio: float = 0.25,
+    seed: int = 42,
+) -> list[dict]:
+    """Create leave-one-out splits for a skill.
+    
+    For each dataset in the skill:
+    - That dataset becomes "Link"
+    - All other datasets become "Base"
+    - Models are split into train/test
+    
+    Returns list of split configs, each containing:
+    - link_dataset: name of the held-out dataset
+    - base_datasets: list of other dataset names
+    - train_base_df, test_base_df: DataFrames for base datasets
+    - train_link_df, test_link_df: DataFrames for link dataset
+    """
+    splits = []
+    
+    # Combine all datasets to find common models
+    all_dfs = [datasets[name] for name in dataset_names]
+    combined = pd.concat(all_dfs, ignore_index=True)
+    
+    # Get models that appear in ALL datasets
+    models_per_dataset = {
+        name: set(datasets[name]['model_name'].unique())
+        for name in dataset_names
+    }
+    common_models = set.intersection(*models_per_dataset.values())
+    
+    if len(common_models) < 4:
+        print(f"  Warning: Only {len(common_models)} common models for skill '{skill}', need at least 4")
+        return []
+    
+    # Split common models
+    train_models, test_models = split_models(
+        combined[combined['model_name'].isin(common_models)],
+        test_ratio=test_ratio,
+        seed=seed,
+    )
+    
+    # Create leave-one-out splits
+    for link_dataset in dataset_names:
+        base_datasets = [d for d in dataset_names if d != link_dataset]
+        
+        # Filter to common models only
+        link_df = datasets[link_dataset][
+            datasets[link_dataset]['model_name'].isin(common_models)
+        ].copy()
+        
+        base_dfs = [
+            datasets[d][datasets[d]['model_name'].isin(common_models)].copy()
+            for d in base_datasets
+        ]
+        base_df = pd.concat(base_dfs, ignore_index=True)
+        
+        # Split by train/test models
+        train_base_df = base_df[base_df['model_name'].isin(train_models)].copy()
+        test_base_df = base_df[base_df['model_name'].isin(test_models)].copy()
+        train_link_df = link_df[link_df['model_name'].isin(train_models)].copy()
+        test_link_df = link_df[link_df['model_name'].isin(test_models)].copy()
+        
+        splits.append({
+            'skill': skill,
+            'link_dataset': link_dataset,
+            'base_datasets': base_datasets,
+            'train_base_df': train_base_df,
+            'test_base_df': test_base_df,
+            'train_link_df': train_link_df,
+            'test_link_df': test_link_df,
+            'n_train_models': len(train_models),
+            'n_test_models': len(test_models),
+            'n_common_models': len(common_models),
+        })
+    
+    return splits
+
+
+# =============================================================================
+# IRT Training & Validation
+# =============================================================================
+
+def load_irt_params_from_cache(output_dir: Path) -> tuple[pd.DataFrame | None, np.ndarray | None, np.ndarray | None]:
+    """Try to load IRT parameters from cached files.
+    
+    Returns: (item_params, A_matrix, B_matrix) or (None, None, None) if not cached
+    """
+    # Check for item_params.parquet first (saved by save_item_parameters)
+    parquet_path = output_dir / "item_params.parquet"
+    meta_path = output_dir / "item_params.meta.json"
+    
+    # Also check for irt_dataset_final.jsonlines (created during training)
+    jsonlines_path = output_dir / "irt_dataset_final.jsonlines"
+    
+    if parquet_path.exists():
+        try:
+            item_params = pd.read_parquet(parquet_path)
+            
+            # Load metadata if exists
+            A_matrix = None
+            B_matrix = None
+            if meta_path.exists():
+                with open(meta_path) as f:
+                    meta = json.load(f)
+                item_params.attrs = meta
+                
+                if 'A_matrix' in meta and 'B_matrix' in meta:
+                    A_matrix = np.array(meta['A_matrix'])
+                    B_matrix = np.array(meta['B_matrix'])
+            
+            return item_params, A_matrix, B_matrix
+        except Exception as e:
+            print(f"      Warning: Failed to load cached params: {e}")
+    
+    return None, None, None
+
+
+def train_irt_on_base(
+    train_base_df: pd.DataFrame,
+    config: ExperimentConfig,
+    output_dir: Path,
+    force_retrain: bool = False,
+) -> tuple[pd.DataFrame, np.ndarray | None, np.ndarray | None]:
+    """Train IRT model on base datasets (with caching).
+    
+    Returns: (item_params, A_matrix, B_matrix)
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Try to load from cache first
+    if not force_retrain:
+        item_params, A_matrix, B_matrix = load_irt_params_from_cache(output_dir)
+        if item_params is not None:
+            print(f"      ✓ Loaded cached IRT params from {output_dir.name}")
+            return item_params, A_matrix, B_matrix
+    
+    # Train new IRT model
+    irt_config = TrainingConfig(
+        dims_search=config.dims_search,
+        epochs=config.epochs,
+        lr=config.lr,
+        number_item_per_scenario=config.n_anchors_per_dataset,
+        deterministic=True,
+    )
+    
+    item_params = fit_2pl_parameters(
+        train_base_df,
+        config=irt_config,
+        output_dir=str(output_dir),
+    )
+    
+    # Extract matrices
+    A_matrix = None
+    B_matrix = None
+    if hasattr(item_params, 'attrs') and item_params.attrs:
+        A_list = item_params.attrs.get('A_matrix')
+        B_list = item_params.attrs.get('B_matrix')
+        if A_list is not None and B_list is not None:
+            A_matrix = np.array(A_list)
+            B_matrix = np.array(B_list)
+    
+    # Save for future caching
+    save_item_parameters(item_params, str(output_dir / "item_params.parquet"))
+    
+    return item_params, A_matrix, B_matrix
+
+
+def build_anchor_items_for_fixed_calibration(
+    baseline_params: pd.DataFrame,
+    available_questions: set[str],
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+) -> list[dict]:
+    """Build anchor items from baseline parameters for Fixed-Anchor Calibration.
+    
+    These anchors are passed to train_item_parameters to FREEZE the Base item
+    parameters while training Link items on the same scale.
+    
+    Args:
+        baseline_params: DataFrame with IRT parameters indexed by question_id
+        available_questions: Set of question IDs available in the combined dataset
+        A_matrix: Full discrimination matrix, shape (1, D, n_items) or (D, n_items)
+        B_matrix: Full difficulty matrix, shape (1, D, n_items) or (D, n_items)
+    
+    Returns:
+        List of anchor item dicts with either vector or scalar parameters
+    """
+    baseline_params = baseline_params.copy()
+    baseline_params.index = baseline_params.index.astype(str)
+    subset = baseline_params.loc[baseline_params.index.intersection(available_questions)]
+    
+    if subset.empty:
+        raise ValueError("No overlap between baseline item params and current matrix for anchoring")
+    
+    baseline_qids = list(baseline_params.index)
+    anchors = []
+    
+    for item_id in subset.index:
+        anchor = {"item_id": item_id}
+        
+        # Try to use vector parameters if available (MIRT)
+        if A_matrix is not None and B_matrix is not None:
+            try:
+                base_idx = baseline_qids.index(item_id)
+                # Handle both (1, D, n_items) and (D, n_items) shapes
+                if A_matrix.ndim == 3:
+                    anchor["discrimination_vector"] = A_matrix[0, :, base_idx].tolist()
+                    anchor["difficulty_vector"] = B_matrix[0, :, base_idx].tolist()
+                else:
+                    anchor["discrimination_vector"] = A_matrix[:, base_idx].tolist()
+                    anchor["difficulty_vector"] = B_matrix[:, base_idx].tolist()
+            except (ValueError, IndexError):
+                # Fall back to scalar if vector extraction fails
+                anchor["difficulty"] = float(subset.loc[item_id, "b"])
+                anchor["discrimination"] = float(subset.loc[item_id, "a"])
+        else:
+            # Use scalar parameters
+            anchor["difficulty"] = float(subset.loc[item_id, "b"])
+            anchor["discrimination"] = float(subset.loc[item_id, "a"])
+        
+        anchors.append(anchor)
+    
+    return anchors
+
+
+def select_anchors(
+    item_params: pd.DataFrame,
+    n_anchors_per_dataset: int,
+    train_df: pd.DataFrame,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+) -> tuple[list[str], list[float]]:
+    """Select anchor items using clustering - n_anchors PER dataset.
+    
+    Args:
+        item_params: DataFrame with IRT parameters indexed by question_id
+        n_anchors_per_dataset: Number of anchors to select from EACH dataset
+        train_df: Training data to identify which questions belong to which dataset
+        A_matrix, B_matrix: MIRT matrices for clustering
+    
+    Returns:
+        Combined anchor_ids and weights from all datasets
+    """
+    # Get dataset for each question
+    question_to_dataset = train_df.groupby('question_id')['dataset'].first().to_dict()
+    
+    # Group item_params by dataset
+    item_params_with_dataset = item_params.copy()
+    item_params_with_dataset['dataset'] = item_params_with_dataset.index.map(
+        lambda q: question_to_dataset.get(q, 'unknown')
+    )
+    
+    datasets = item_params_with_dataset['dataset'].unique()
+    
+    all_anchor_ids = []
+    all_anchor_weights = []
+    
+    for dataset in datasets:
+        if dataset == 'unknown':
+            continue
+            
+        # Get items for this dataset
+        ds_mask = item_params_with_dataset['dataset'] == dataset
+        ds_items = item_params_with_dataset[ds_mask].drop(columns=['dataset'])
+        
+        if len(ds_items) == 0:
+            continue
+        
+        # How many anchors to select from this dataset
+        n_anchors = min(n_anchors_per_dataset, len(ds_items))
+        
+        if n_anchors < 5:
+            print(f"      Warning: {dataset} has only {len(ds_items)} items, skipping")
+            continue
+        
+        # Get indices for MIRT matrices
+        all_question_ids = list(item_params.index)
+        ds_indices = [all_question_ids.index(q) for q in ds_items.index if q in all_question_ids]
+        
+        # Extract sub-matrices for this dataset
+        ds_A = A_matrix[:, :, ds_indices] if A_matrix is not None else None
+        ds_B = B_matrix[:, :, ds_indices] if B_matrix is not None else None
+        
+        # Copy attrs to subset
+        ds_items_for_clustering = ds_items.copy()
+        if hasattr(item_params, 'attrs'):
+            ds_items_for_clustering.attrs = item_params.attrs.copy()
+            # Update balance weights for this subset
+            if 'balance_weights' in item_params.attrs:
+                orig_weights = np.array(item_params.attrs['balance_weights'])
+                ds_weights = orig_weights[ds_indices]
+                ds_items_for_clustering.attrs['balance_weights'] = ds_weights.tolist()
+        
+        balance_weights = None
+        if hasattr(ds_items_for_clustering, 'attrs'):
+            bw = ds_items_for_clustering.attrs.get('balance_weights')
+            if bw is not None:
+                balance_weights = np.array(bw)
+        
+        anchor_config = AnchorConfig(
+            number_items=n_anchors,
+            method="irt_clustering",
+            balance_weights=balance_weights,
+        )
+        
+        try:
+            anchor_ids, anchor_weights = find_anchor_items_clustering(
+                ds_items_for_clustering,
+                config=anchor_config,
+                A_matrix=ds_A,
+                B_matrix=ds_B,
+            )
+            
+            all_anchor_ids.extend(anchor_ids)
+            weights_list = anchor_weights.tolist() if hasattr(anchor_weights, 'tolist') else list(anchor_weights)
+            all_anchor_weights.extend(weights_list)
+            
+            print(f"      ✓ {dataset}: {len(anchor_ids)} anchors selected")
+            
+        except Exception as e:
+            print(f"      Warning: Failed to select anchors from {dataset}: {e}")
+    
+    return all_anchor_ids, all_anchor_weights
+
+
+def run_validation(
+    test_df: pd.DataFrame,
+    item_params: pd.DataFrame,
+    anchor_ids: list[str],
+    anchor_weights: list[float],
+    train_df: pd.DataFrame,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+) -> list[dict]:
+    """Run estimation validation."""
+    # Compute lambda values
+    attrs = getattr(item_params, 'attrs', {})
+    validation_errors = attrs.get('validation_errors', {})
+    best_dim = attrs.get('best_dimension', 5)
+    dims_search = attrs.get('config_dims_search', [5, 10])
+    best_dim_idx = dims_search.index(best_dim) if best_dim in dims_search else 0
+    
+    # Get unique datasets in test_df
+    datasets_in_test = test_df['dataset'].unique()
+    
+    # Build anchors and lambdas per dataset
+    anchors_by_dataset = {}
+    anchor_weights_by_dataset = {}
+    
+    for ds in datasets_in_test:
+        # Filter anchors to those in this dataset
+        ds_anchors = [a for a in anchor_ids if a.startswith(f"{ds}:")]
+        if ds_anchors:
+            anchors_by_dataset[ds] = ds_anchors
+            # Get corresponding weights
+            indices = [anchor_ids.index(a) for a in ds_anchors]
+            anchor_weights_by_dataset[ds] = [anchor_weights[i] for i in indices]
+        else:
+            # Use all anchors (cross-dataset prediction)
+            anchors_by_dataset[ds] = anchor_ids
+            anchor_weights_by_dataset[ds] = anchor_weights
+    
+    lambdas_by_dataset = compute_lambda_values(
+        original_matrix_df=train_df,
+        validation_errors=validation_errors,
+        best_dim_idx=best_dim_idx,
+        number_item=len(anchor_ids),
+    )
+    
+    question_ids_order = list(item_params.index) if hasattr(item_params, 'index') else None
+    
+    results = run_estimation_validation(
+        test_matrix=test_df,
+        item_params=item_params,
+        anchors_by_dataset=anchors_by_dataset,
+        lambdas_by_dataset=lambdas_by_dataset,
+        anchor_weights_by_dataset=anchor_weights_by_dataset,
+        A_matrix=A_matrix,
+        B_matrix=B_matrix,
+        question_ids_order=question_ids_order,
+    )
+    
+    return results
+
+
+# =============================================================================
+# Main Experiment
+# =============================================================================
+
+def run_single_split_experiment(
+    split: dict,
+    config: ExperimentConfig,
+    output_dir: Path,
+) -> dict:
+    """Run experiment on a single leave-one-out split.
+    
+    Returns dict with:
+    - Base→Base validation results
+    - Base→Link validation results (the key test!)
+    - Metadata
+    """
+    skill = split['skill']
+    link_dataset = split['link_dataset']
+    base_datasets = split['base_datasets']
+    
+    split_dir = output_dir / skill / f"link_{link_dataset.replace(' ', '_')}"
+    split_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Check cache - but only skip if results are COMPLETE
+    results_file = split_dir / "results.json"
+    if results_file.exists() and not config.force_retrain:
+        with open(results_file) as f:
+            cached_results = json.load(f)
+        
+        # Check if results have both concurrent AND fixed results
+        has_concurrent = 'link_concurrent_gp_irt_error_mean' in cached_results
+        has_fixed = 'link_fixed_gp_irt_error_mean' in cached_results
+        
+        if has_concurrent and has_fixed:
+            print(f"    Loading complete cached results for {link_dataset}")
+            return cached_results
+        else:
+            print(f"    Incomplete cached results for {link_dataset} - continuing...")
+            print(f"      (has_concurrent={has_concurrent}, has_fixed={has_fixed})")
+    
+    print(f"    Training IRT on Base datasets: {base_datasets}")
+    
+    # 1. Train IRT on Base
+    item_params, A_matrix, B_matrix = train_irt_on_base(
+        split['train_base_df'],
+        config,
+        split_dir / "irt",
+        force_retrain=config.force_retrain,
+    )
+    
+    print(f"      Trained {len(item_params)} items, best_dim={item_params.attrs.get('best_dimension', '?')}")
+    
+    # 2. Select anchors from Base items (n_anchors PER dataset)
+    print(f"    Selecting {config.n_anchors_per_dataset} anchors per dataset...")
+    anchor_ids, anchor_weights = select_anchors(
+        item_params, 
+        config.n_anchors_per_dataset, 
+        split['train_base_df'],
+        A_matrix, 
+        B_matrix
+    )
+    print(f"      Total anchors selected: {len(anchor_ids)}")
+    
+    # 3. Validate on Base (internal consistency)
+    print(f"    Validating Base→Base...")
+    base_results = run_validation(
+        test_df=split['test_base_df'],
+        item_params=item_params,
+        anchor_ids=anchor_ids,
+        anchor_weights=anchor_weights,
+        train_df=split['train_base_df'],
+        A_matrix=A_matrix,
+        B_matrix=B_matrix,
+    )
+    
+    # 4. Validate on Link (cross-dataset prediction - THE KEY TEST)
+    print(f"    Calibrating Link dataset: {link_dataset}")
+    
+    # Combine Base + Link for calibration training data
+    train_combined = pd.concat([split['train_base_df'], split['train_link_df']], ignore_index=True)
+    available_questions = set(train_combined['question_id'].astype(str).unique())
+    
+    # =========================================================================
+    # 4a. CONCURRENT CALIBRATION - Retrain everything from scratch
+    # =========================================================================
+    print(f"      Running Concurrent Calibration...")
+    item_params_concurrent, A_concurrent, B_concurrent = train_irt_on_base(
+        train_combined,
+        config,
+        split_dir / "irt_concurrent",
+        force_retrain=config.force_retrain,
+    )
+    
+    link_results_concurrent = run_validation(
+        test_df=split['test_link_df'],
+        item_params=item_params_concurrent,
+        anchor_ids=anchor_ids,  # Still use Base anchors for selection
+        anchor_weights=anchor_weights,
+        train_df=train_combined,
+        A_matrix=A_concurrent,
+        B_matrix=B_concurrent,
+    )
+    
+    # =========================================================================
+    # 4b. FIXED-ANCHOR CALIBRATION - Keep Base items fixed, train only Link
+    # =========================================================================
+    print(f"      Running Fixed-Anchor Calibration...")
+    
+    # Build anchor items from Base parameters to FREEZE them
+    anchor_items = build_anchor_items_for_fixed_calibration(
+        item_params,
+        available_questions,
+        A_matrix,
+        B_matrix,
+    )
+    print(f"        Using {len(anchor_items)} anchor items from Base (frozen)")
+    
+    # Train with fixed anchors
+    irt_config_fixed = TrainingConfig(
+        dims_search=config.dims_search,
+        epochs=config.epochs,
+        lr=config.lr,
+        number_item_per_scenario=config.n_anchors_per_dataset,
+        deterministic=True,
+    )
+    
+    item_params_fixed = train_item_parameters(
+        train_combined,
+        test_matrix_df=split['test_link_df'],
+        config=irt_config_fixed,
+        output_dir=str(split_dir / "irt_fixed_anchor"),
+        anchor_items=anchor_items,
+    )
+    
+    # Extract matrices from fixed-anchor results
+    A_fixed = None
+    B_fixed = None
+    if hasattr(item_params_fixed, 'attrs') and item_params_fixed.attrs:
+        A_list = item_params_fixed.attrs.get('A_matrix')
+        B_list = item_params_fixed.attrs.get('B_matrix')
+        if A_list is not None and B_list is not None:
+            A_fixed = np.array(A_list)
+            B_fixed = np.array(B_list)
+    
+    link_results_fixed = run_validation(
+        test_df=split['test_link_df'],
+        item_params=item_params_fixed,
+        anchor_ids=anchor_ids,
+        anchor_weights=anchor_weights,
+        train_df=train_combined,
+        A_matrix=A_fixed,
+        B_matrix=B_fixed,
+    )
+    
+    # Save fixed-anchor parameters
+    fixed_anchor_dir = split_dir / "irt_fixed_anchor"
+    fixed_anchor_dir.mkdir(parents=True, exist_ok=True)
+    save_item_parameters(item_params_fixed, str(fixed_anchor_dir / "item_params.parquet"))
+    
+    # =========================================================================
+    # Compile results
+    # =========================================================================
+    def summarize_results(results: list[dict], prefix: str) -> dict:
+        if not results:
+            return {}
+        df = pd.DataFrame(results)
+        return {
+            f'{prefix}_n_validations': len(df),
+            f'{prefix}_gp_irt_error_mean': float(df['gp_irt_error'].mean()),
+            f'{prefix}_gp_irt_error_std': float(df['gp_irt_error'].std()),
+            f'{prefix}_anchor_error_mean': float(df['anchor_error'].mean()),
+            f'{prefix}_pirt_error_mean': float(df['pirt_error'].mean()) if 'pirt_error' in df else None,
+        }
+    
+    result = {
+        'skill': skill,
+        'link_dataset': link_dataset,
+        'base_datasets': base_datasets,
+        'n_train_models': split['n_train_models'],
+        'n_test_models': split['n_test_models'],
+        'n_common_models': split['n_common_models'],
+        'n_base_items': len(item_params),
+        'n_combined_items_concurrent': len(item_params_concurrent),
+        'n_combined_items_fixed': len(item_params_fixed),
+        'n_anchors': len(anchor_ids),
+        'n_fixed_anchor_items': len(anchor_items),
+        **summarize_results(base_results, 'base'),
+        **summarize_results(link_results_concurrent, 'link_concurrent'),
+        **summarize_results(link_results_fixed, 'link_fixed'),
+    }
+    
+    # Save results
+    with open(results_file, 'w') as f:
+        json.dump(result, f, indent=2)
+    
+    # Save detailed results
+    if base_results:
+        pd.DataFrame(base_results).to_csv(split_dir / "base_validation.csv", index=False)
+    if link_results_concurrent:
+        pd.DataFrame(link_results_concurrent).to_csv(split_dir / "link_concurrent_validation.csv", index=False)
+    if link_results_fixed:
+        pd.DataFrame(link_results_fixed).to_csv(split_dir / "link_fixed_validation.csv", index=False)
+    
+    return result
+
+
+def run_cross_dataset_equating(config: Optional[ExperimentConfig] = None):
+    """Run the full cross-dataset equating experiment."""
+    if config is None:
+        config = ExperimentConfig()
+    
+    output_dir = Path(config.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    print("=" * 70)
+    print("Cross-Dataset Equating Experiment")
+    print("=" * 70)
+    
+    # 1. Load skill labels
+    print("\n1. Loading skill labels...")
+    skill_labels = load_skill_labels(config.skill_labels_csv)
+    print(f"   Loaded {len(skill_labels)} datasets")
+    
+    # 2. Load all datasets
+    print("\n2. Loading datasets from TinyBenchmarks...")
+    datasets = load_all_datasets(config)
+    print(f"   Loaded {len(datasets)} datasets")
+    
+    # 3. Group by skill (with model overlap analysis)
+    print("\n3. Analyzing model overlap between datasets...")
+    
+    # First show raw skill groupings
+    raw_skill_groups = defaultdict(list)
+    for _, row in skill_labels.iterrows():
+        dataset_name = row['Dataset']
+        if dataset_name not in datasets:
+            continue
+        for skill in row['all_skills']:
+            raw_skill_groups[skill].append(dataset_name)
+    
+    print(f"   Raw skill groupings (before model overlap check):")
+    for skill, ds_list in sorted(raw_skill_groups.items()):
+        if len(ds_list) >= 2:
+            print(f"     • {skill}: {ds_list}")
+    
+    # Analyze model overlap
+    print(f"\n   Analyzing model overlap...")
+    for skill, ds_list in sorted(raw_skill_groups.items()):
+        if len(ds_list) < 2:
+            continue
+        print(f"\n   Skill: {skill}")
+        for ds in ds_list:
+            n_models = datasets[ds]['model_name'].nunique()
+            sample_models = list(datasets[ds]['model_name'].unique()[:2])
+            print(f"     - {ds}: {n_models} models (e.g., {sample_models[0][:40]}...)")
+        
+        # Check pairwise overlap
+        for i, ds1 in enumerate(ds_list):
+            for ds2 in ds_list[i+1:]:
+                m1 = set(datasets[ds1]['model_name'].unique())
+                m2 = set(datasets[ds2]['model_name'].unique())
+                common = m1 & m2
+                print(f"     {ds1} ∩ {ds2}: {len(common)} common models")
+    
+    # Now do actual grouping
+    print(f"\n   Finding valid experiment groups...")
+    skill_to_datasets = group_datasets_by_skill(skill_labels, datasets)
+    
+    if skill_to_datasets:
+        print(f"   Found {len(skill_to_datasets)} valid skills with overlapping models:")
+        for skill, ds_list in sorted(skill_to_datasets.items()):
+            # Get common model count
+            model_sets = [set(datasets[ds]['model_name'].unique()) for ds in ds_list]
+            common = set.intersection(*model_sets)
+            print(f"     • {skill}: {ds_list} ({len(common)} common models)")
+    else:
+        print("   ⚠️  No skills found with overlapping models across datasets!")
+        print("   This usually happens when datasets come from different sources.")
+        print("\n   Trying source-aware grouping...")
+        
+        # Try source-aware grouping
+        skill_to_datasets = group_datasets_by_skill_and_source(skill_labels, datasets)
+        
+        if skill_to_datasets:
+            print(f"   Found {len(skill_to_datasets)} valid skill+source groups:")
+            for group_key, ds_list in sorted(skill_to_datasets.items()):
+                model_sets = [set(datasets[ds]['model_name'].unique()) for ds in ds_list]
+                common = set.intersection(*model_sets) if model_sets else set()
+                print(f"     • {group_key}: {ds_list} ({len(common)} common models)")
+    
+    # 4. Run experiments
+    print("\n4. Running leave-one-out experiments...")
+    all_results = []
+    
+    if not skill_to_datasets:
+        print("   No valid experiment groups found!")
+        return pd.DataFrame()
+    
+    for group_key, dataset_names in skill_to_datasets.items():
+        # Handle both "skill" and "skill|source" formats
+        skill = group_key.split('|')[0] if '|' in group_key else group_key
+        print(f"\n  Group: {group_key} ({len(dataset_names)} datasets)")
+        
+        # Create splits
+        splits = create_leave_one_out_splits(
+            skill, datasets, dataset_names,
+            test_ratio=config.test_ratio,
+            seed=config.seed,
+        )
+        
+        if not splits:
+            print(f"    Skipping - insufficient common models")
+            continue
+        
+        print(f"    Created {len(splits)} leave-one-out splits")
+        print(f"    Common models: {splits[0]['n_common_models']} "
+              f"(train: {splits[0]['n_train_models']}, test: {splits[0]['n_test_models']})")
+        
+        for split in splits:
+            try:
+                result = run_single_split_experiment(split, config, output_dir)
+                all_results.append(result)
+                
+                # Print summary
+                base_err = result.get('base_gp_irt_error_mean', float('nan'))
+                link_concurrent = result.get('link_concurrent_gp_irt_error_mean', float('nan'))
+                link_fixed = result.get('link_fixed_gp_irt_error_mean', float('nan'))
+                print(f"      Link={split['link_dataset']}: "
+                      f"Base={base_err:.4f}, Concurrent={link_concurrent:.4f}, Fixed={link_fixed:.4f}")
+                
+            except Exception as e:
+                print(f"      Error with Link={split['link_dataset']}: {e}")
+                import traceback
+                traceback.print_exc()
+    
+    # 5. Save summary
+    print("\n5. Saving summary...")
+    results_df = pd.DataFrame(all_results)
+    results_df.to_csv(output_dir / "all_results.csv", index=False)
+    
+    # 6. Print summary
+    print("\n" + "=" * 70)
+    print("SUMMARY")
+    print("=" * 70)
+    
+    if not results_df.empty:
+        print(f"\nTotal experiments: {len(results_df)}")
+        print(f"Skills tested: {results_df['skill'].nunique()}")
+        
+        # Per-skill summary - comparing both methods
+        print(f"\n{'Skill':<20} {'Base':<10} {'Concurrent':<12} {'Fixed':<10} {'Δ Conc.':<10} {'Δ Fixed':<10}")
+        print("-" * 80)
+        
+        for skill in results_df['skill'].unique():
+            skill_df = results_df[results_df['skill'] == skill]
+            base_mean = skill_df['base_gp_irt_error_mean'].mean()
+            concurrent_mean = skill_df['link_concurrent_gp_irt_error_mean'].mean()
+            fixed_mean = skill_df['link_fixed_gp_irt_error_mean'].mean()
+            delta_concurrent = concurrent_mean - base_mean
+            delta_fixed = fixed_mean - base_mean
+            
+            skill_short = skill[:19] if len(skill) > 19 else skill
+            print(f"{skill_short:<20} {base_mean:<10.4f} {concurrent_mean:<12.4f} {fixed_mean:<10.4f} "
+                  f"{delta_concurrent:+.4f}     {delta_fixed:+.4f}")
+        
+        # Overall
+        print("-" * 80)
+        overall_base = results_df['base_gp_irt_error_mean'].mean()
+        overall_concurrent = results_df['link_concurrent_gp_irt_error_mean'].mean()
+        overall_fixed = results_df['link_fixed_gp_irt_error_mean'].mean()
+        delta_concurrent = overall_concurrent - overall_base
+        delta_fixed = overall_fixed - overall_base
+        print(f"{'OVERALL':<20} {overall_base:<10.4f} {overall_concurrent:<12.4f} {overall_fixed:<10.4f} "
+              f"{delta_concurrent:+.4f}     {delta_fixed:+.4f}")
+        
+        # Method comparison
+        print(f"\n{'='*80}")
+        print("METHOD COMPARISON: Fixed-Anchor vs Concurrent")
+        print(f"{'='*80}")
+        
+        fixed_better = (results_df['link_fixed_gp_irt_error_mean'] < 
+                       results_df['link_concurrent_gp_irt_error_mean']).sum()
+        total = len(results_df)
+        avg_diff = (results_df['link_fixed_gp_irt_error_mean'] - 
+                   results_df['link_concurrent_gp_irt_error_mean']).mean()
+        
+        print(f"  Fixed-Anchor better in: {fixed_better}/{total} experiments ({100*fixed_better/total:.1f}%)")
+        print(f"  Average difference (Fixed - Concurrent): {avg_diff:+.4f}")
+        print(f"  Winner: {'Fixed-Anchor' if avg_diff < 0 else 'Concurrent'}")
+    
+    print(f"\nResults saved to: {output_dir}")
+    return results_df
+
+
+def analyze_dataset_role_impact(output_dir: str | Path) -> pd.DataFrame:
+    """Analyze the impact of dataset role (Base vs Link) on prediction error.
+    
+    For each dataset:
+    - Calculate average error when it was part of Base (across all experiments)
+    - Calculate error when it was the Link dataset
+    - Compare the two
+    
+    This reveals whether being in the initial IRT training (Base) vs being
+    calibrated later (Link) affects prediction accuracy.
+    
+    Returns DataFrame with columns:
+    - dataset: dataset name
+    - skill: skill group
+    - as_base_error_mean: average error when dataset was in Base
+    - as_base_error_std: std of error when dataset was in Base
+    - as_base_n_experiments: number of times it was in Base
+    - as_link_concurrent_error: error when dataset was Link (concurrent calibration)
+    - as_link_fixed_error: error when dataset was Link (fixed-anchor calibration)
+    - delta_concurrent: difference (link - base) for concurrent method
+    - delta_fixed: difference (link - base) for fixed method
+    """
+    output_dir = Path(output_dir)
+    
+    # Structure to collect results: dataset -> skill -> data
+    dataset_results = defaultdict(lambda: defaultdict(lambda: {
+        'as_base_errors': [],
+        'as_link_concurrent': None,
+        'as_link_fixed': None,
+    }))
+    
+    # Scan all experiment results
+    for skill_dir in output_dir.iterdir():
+        if not skill_dir.is_dir() or skill_dir.name == '__pycache__':
+            continue
+        
+        skill_name = skill_dir.name
+        
+        for link_dir in skill_dir.iterdir():
+            if not link_dir.is_dir():
+                continue
+            
+            # Load experiment metadata
+            results_file = link_dir / "results.json"
+            if not results_file.exists():
+                continue
+            
+            with open(results_file) as f:
+                metadata = json.load(f)
+            
+            link_dataset = metadata['link_dataset']
+            base_datasets = metadata['base_datasets']
+            
+            # Load detailed validation results
+            base_val_file = link_dir / "base_validation.csv"
+            link_concurrent_file = link_dir / "link_concurrent_validation.csv"
+            link_fixed_file = link_dir / "link_fixed_validation.csv"
+            
+            # Process base validation - calculate error per dataset
+            if base_val_file.exists():
+                base_val = pd.read_csv(base_val_file)
+                
+                # Group by scenario_name (which is the dataset name)
+                for scenario_name, group in base_val.groupby('scenario_name'):
+                    # Match scenario to base_datasets
+                    matching_base = [d for d in base_datasets if d.startswith(scenario_name) or scenario_name.startswith(d)]
+                    if matching_base:
+                        ds_name = matching_base[0]
+                    else:
+                        ds_name = scenario_name
+                    
+                    # Calculate mean error for this dataset in this experiment
+                    ds_error = group['gp_irt_error'].mean()
+                    dataset_results[ds_name][skill_name]['as_base_errors'].append(ds_error)
+            
+            # Process Link validation results
+            # Try CSV files first (newer format)
+            if link_concurrent_file.exists():
+                link_concurrent_val = pd.read_csv(link_concurrent_file)
+                concurrent_error = link_concurrent_val['gp_irt_error'].mean()
+                dataset_results[link_dataset][skill_name]['as_link_concurrent'] = concurrent_error
+            elif 'link_concurrent_gp_irt_error_mean' in metadata:
+                # Fallback to JSON for newer experiments
+                dataset_results[link_dataset][skill_name]['as_link_concurrent'] = metadata['link_concurrent_gp_irt_error_mean']
+            elif 'link_gp_irt_error_mean' in metadata:
+                # Fallback to JSON for older experiments (single link method)
+                dataset_results[link_dataset][skill_name]['as_link_concurrent'] = metadata['link_gp_irt_error_mean']
+            
+            if link_fixed_file.exists():
+                link_fixed_val = pd.read_csv(link_fixed_file)
+                fixed_error = link_fixed_val['gp_irt_error'].mean()
+                dataset_results[link_dataset][skill_name]['as_link_fixed'] = fixed_error
+            elif 'link_fixed_gp_irt_error_mean' in metadata:
+                # Fallback to JSON for newer experiments
+                dataset_results[link_dataset][skill_name]['as_link_fixed'] = metadata['link_fixed_gp_irt_error_mean']
+    
+    # Compile into DataFrame
+    rows = []
+    for dataset, skill_data in dataset_results.items():
+        for skill, data in skill_data.items():
+            base_errors = data['as_base_errors']
+            
+            if not base_errors and data['as_link_concurrent'] is None:
+                continue
+            
+            row = {
+                'dataset': dataset,
+                'skill': skill,
+                'as_base_error_mean': np.mean(base_errors) if base_errors else None,
+                'as_base_error_std': np.std(base_errors) if len(base_errors) > 1 else None,
+                'as_base_n_experiments': len(base_errors),
+                'as_link_concurrent_error': data['as_link_concurrent'],
+                'as_link_fixed_error': data['as_link_fixed'],
+            }
+            
+            # Calculate deltas (positive = Link is worse than Base)
+            if base_errors and data['as_link_concurrent'] is not None:
+                row['delta_concurrent'] = data['as_link_concurrent'] - row['as_base_error_mean']
+            else:
+                row['delta_concurrent'] = None
+            
+            if base_errors and data['as_link_fixed'] is not None:
+                row['delta_fixed'] = data['as_link_fixed'] - row['as_base_error_mean']
+            else:
+                row['delta_fixed'] = None
+            
+            rows.append(row)
+    
+    return pd.DataFrame(rows)
+
+
+def print_role_impact_analysis(output_dir: str | Path = None):
+    """Print analysis of dataset role impact on prediction error."""
+    if output_dir is None:
+        output_dir = Path("/Users/ehabba/PycharmProjects/AdaptEval/data/cross_dataset_equating")
+    
+    df = analyze_dataset_role_impact(output_dir)
+    
+    if df.empty:
+        print("No data found for role impact analysis")
+        return df
+    
+    print("=" * 90)
+    print("DATASET ROLE IMPACT ANALYSIS")
+    print("=" * 90)
+    print("\nComparing prediction error when dataset is in Base (initial IRT) vs Link (calibrated later)")
+    print("Positive delta = Link has higher error (worse) than Base")
+    print()
+    
+    # Overall summary
+    valid_concurrent = df['delta_concurrent'].dropna()
+    valid_fixed = df['delta_fixed'].dropna()
+    
+    print(f"{'Dataset':<20} {'Skill':<20} {'As Base':<10} {'As Link(C)':<12} {'As Link(F)':<12} {'Δ Conc.':<10} {'Δ Fixed':<10}")
+    print("-" * 94)
+    
+    for _, row in df.sort_values(['skill', 'dataset']).iterrows():
+        dataset_short = row['dataset'][:19] if len(row['dataset']) > 19 else row['dataset']
+        skill_short = row['skill'][:19] if len(row['skill']) > 19 else row['skill']
+        
+        base_str = f"{row['as_base_error_mean']:.4f}" if row['as_base_error_mean'] is not None else "N/A"
+        conc_str = f"{row['as_link_concurrent_error']:.4f}" if row['as_link_concurrent_error'] is not None else "N/A"
+        fixed_str = f"{row['as_link_fixed_error']:.4f}" if row['as_link_fixed_error'] is not None else "N/A"
+        delta_c_str = f"{row['delta_concurrent']:+.4f}" if row['delta_concurrent'] is not None else "N/A"
+        delta_f_str = f"{row['delta_fixed']:+.4f}" if row['delta_fixed'] is not None else "N/A"
+        
+        print(f"{dataset_short:<20} {skill_short:<20} {base_str:<10} {conc_str:<12} {fixed_str:<12} {delta_c_str:<10} {delta_f_str:<10}")
+    
+    print("-" * 94)
+    
+    # Summary statistics
+    print("\n📊 SUMMARY STATISTICS:")
+    
+    if len(valid_concurrent) > 0:
+        print(f"\n  Concurrent Calibration:")
+        print(f"    Mean Δ (Link - Base): {valid_concurrent.mean():+.4f}")
+        print(f"    Median Δ:             {valid_concurrent.median():+.4f}")
+        print(f"    Std Δ:                {valid_concurrent.std():.4f}")
+        print(f"    Link worse in:        {(valid_concurrent > 0).sum()}/{len(valid_concurrent)} cases ({100*(valid_concurrent > 0).mean():.1f}%)")
+    
+    if len(valid_fixed) > 0:
+        print(f"\n  Fixed-Anchor Calibration:")
+        print(f"    Mean Δ (Link - Base): {valid_fixed.mean():+.4f}")
+        print(f"    Median Δ:             {valid_fixed.median():+.4f}")
+        print(f"    Std Δ:                {valid_fixed.std():.4f}")
+        print(f"    Link worse in:        {(valid_fixed > 0).sum()}/{len(valid_fixed)} cases ({100*(valid_fixed > 0).mean():.1f}%)")
+    
+    # Per-skill summary
+    print("\n📈 PER-SKILL SUMMARY:")
+    for skill in df['skill'].unique():
+        skill_df = df[df['skill'] == skill]
+        skill_delta_c = skill_df['delta_concurrent'].dropna()
+        skill_delta_f = skill_df['delta_fixed'].dropna()
+        
+        if len(skill_delta_c) > 0 or len(skill_delta_f) > 0:
+            print(f"\n  {skill}:")
+            if len(skill_delta_c) > 0:
+                print(f"    Concurrent: mean Δ={skill_delta_c.mean():+.4f}, Link worse in {(skill_delta_c > 0).sum()}/{len(skill_delta_c)}")
+            if len(skill_delta_f) > 0:
+                print(f"    Fixed:      mean Δ={skill_delta_f.mean():+.4f}, Link worse in {(skill_delta_f > 0).sum()}/{len(skill_delta_f)}")
+    
+    # Save results
+    output_path = Path(output_dir) / "role_impact_analysis.csv"
+    df.to_csv(output_path, index=False)
+    print(f"\n✅ Results saved to: {output_path}")
+    
+    return df
+
+
+def print_existing_results(output_dir: str | Path = None):
+    """Print summary of existing results without running experiments."""
+    if output_dir is None:
+        output_dir = Path("/Users/ehabba/PycharmProjects/AdaptEval/data/cross_dataset_equating")
+    else:
+        output_dir = Path(output_dir)
+    
+    all_results_file = output_dir / "all_results.csv"
+    
+    if not all_results_file.exists():
+        print(f"No results file found at {all_results_file}")
+        print("Scanning individual result files...")
+        
+        # Scan for individual results.json files
+        results = []
+        for skill_dir in output_dir.iterdir():
+            if not skill_dir.is_dir():
+                continue
+            for link_dir in skill_dir.iterdir():
+                if not link_dir.is_dir():
+                    continue
+                results_file = link_dir / "results.json"
+                if results_file.exists():
+                    with open(results_file) as f:
+                        results.append(json.load(f))
+        
+        if not results:
+            print("No results found!")
+            return None
+        
+        results_df = pd.DataFrame(results)
+    else:
+        results_df = pd.read_csv(all_results_file)
+    
+    # Print summary
+    print("=" * 80)
+    print("EXISTING RESULTS SUMMARY")
+    print("=" * 80)
+    
+    print(f"\nTotal experiments: {len(results_df)}")
+    print(f"Skills: {results_df['skill'].unique().tolist()}")
+    
+    # Check what columns exist
+    has_concurrent = 'link_concurrent_gp_irt_error_mean' in results_df.columns
+    has_fixed = 'link_fixed_gp_irt_error_mean' in results_df.columns
+    has_link = 'link_gp_irt_error_mean' in results_df.columns
+    
+    print(f"\nResults completeness:")
+    print(f"  - Base results: ✅")
+    print(f"  - Concurrent results: {'✅' if has_concurrent else '❌'}")
+    print(f"  - Fixed-Anchor results: {'✅' if has_fixed else '❌'}")
+    
+    # Show what's available
+    if has_concurrent and has_fixed:
+        print(f"\n{'Skill':<20} {'Base':<10} {'Concurrent':<12} {'Fixed':<10}")
+        print("-" * 55)
+        
+        for skill in results_df['skill'].unique():
+            skill_df = results_df[results_df['skill'] == skill]
+            base = skill_df['base_gp_irt_error_mean'].mean()
+            conc = skill_df['link_concurrent_gp_irt_error_mean'].mean()
+            fixed = skill_df['link_fixed_gp_irt_error_mean'].mean()
+            skill_short = skill[:19] if len(skill) > 19 else skill
+            print(f"{skill_short:<20} {base:<10.4f} {conc:<12.4f} {fixed:<10.4f}")
+    elif has_link:
+        print(f"\n{'Skill':<20} {'Base':<10} {'Link':<10}")
+        print("-" * 42)
+        
+        for skill in results_df['skill'].unique():
+            skill_df = results_df[results_df['skill'] == skill]
+            base = skill_df['base_gp_irt_error_mean'].mean()
+            link = skill_df['link_gp_irt_error_mean'].mean()
+            skill_short = skill[:19] if len(skill) > 19 else skill
+            print(f"{skill_short:<20} {base:<10.4f} {link:<10.4f}")
+    else:
+        print(f"\n{'Skill':<20} {'Base':<10}")
+        print("-" * 32)
+        
+        for skill in results_df['skill'].unique():
+            skill_df = results_df[results_df['skill'] == skill]
+            base = skill_df['base_gp_irt_error_mean'].mean()
+            skill_short = skill[:19] if len(skill) > 19 else skill
+            print(f"{skill_short:<20} {base:<10.4f}")
+    
+    # List incomplete experiments
+    incomplete = []
+    for skill_dir in output_dir.iterdir():
+        if not skill_dir.is_dir() or skill_dir.name == '__pycache__':
+            continue
+        for link_dir in skill_dir.iterdir():
+            if not link_dir.is_dir():
+                continue
+            results_file = link_dir / "results.json"
+            if results_file.exists():
+                with open(results_file) as f:
+                    result = json.load(f)
+                if 'link_fixed_gp_irt_error_mean' not in result:
+                    incomplete.append(f"{skill_dir.name}/{link_dir.name}")
+    
+    if incomplete:
+        print(f"\n⚠️  Incomplete experiments ({len(incomplete)}):")
+        for exp in incomplete[:10]:
+            print(f"   - {exp}")
+        if len(incomplete) > 10:
+            print(f"   ... and {len(incomplete) - 10} more")
+    
+    return results_df
+
+
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Cross-Dataset Equating Experiment")
+    parser.add_argument("--output-dir", default=None, help="Output directory")
+    parser.add_argument("--n-anchors-per-dataset", type=int, default=100, 
+                        help="Number of anchors to select from EACH dataset")
+    parser.add_argument("--test-ratio", type=float, default=0.25, help="Test set ratio")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--force", action="store_true", help="Force retrain all")
+    parser.add_argument("--dims", type=int, nargs="+", default=[2, 5], help="Dimensions to search")
+    parser.add_argument("--epochs", type=int, default=2000, help="Training epochs")
+    parser.add_argument("--print-only", action="store_true", help="Only print existing results, don't run")
+    parser.add_argument("--analyze-role", action="store_true", 
+                        help="Analyze impact of dataset role (Base vs Link) on prediction error")
+    
+    args = parser.parse_args()
+    
+    if args.analyze_role:
+        print_role_impact_analysis(args.output_dir)
+    elif args.print_only:
+        print_existing_results(args.output_dir)
+    else:
+        config = ExperimentConfig(
+            n_anchors_per_dataset=args.n_anchors_per_dataset,
+            test_ratio=args.test_ratio,
+            seed=args.seed,
+            force_retrain=args.force,
+            dims_search=args.dims,
+            epochs=args.epochs,
+        )
+        
+        if args.output_dir:
+            config.output_dir = args.output_dir
+        
+        run_cross_dataset_equating(config)
+
