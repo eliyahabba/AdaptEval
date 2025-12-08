@@ -18,7 +18,7 @@ PROJECT_DIR="/cs/labs/gabis/eliyahabba/AdaptEval"
 cd $PROJECT_DIR
 echo "Current directory: $(pwd)"
 
-export PYTHONPATH=$PROJECT_DIR:$PYTHONPATH
+export PYTHONPATH=$PROJECT_DIR/src:$PROJECT_DIR:$PYTHONPATH
 echo "PYTHONPATH: $PYTHONPATH"
 # Load modules
 #module load cuda
