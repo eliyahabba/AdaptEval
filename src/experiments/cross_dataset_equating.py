@@ -37,13 +37,17 @@ from llm_eval.training import train_item_parameters, save_item_parameters
 # Configuration
 # =============================================================================
 
+# Project root (src/experiments/cross_dataset_equating.py -> project root)
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+
 @dataclass
 class ExperimentConfig:
     """Configuration for cross-dataset equating experiments."""
-    # Data paths
-    tinybenchmarks_dir: str = "/Users/ehabba/PycharmProjects/AdaptEval/aggregated_data/tinybenchmarks"
-    skill_labels_csv: str = "/Users/ehabba/PycharmProjects/AdaptEval/src/dataset_skill_labels.csv"
-    output_dir: str = "/Users/ehabba/PycharmProjects/AdaptEval/data/cross_dataset_equating"
+    # Data paths (relative to project root)
+    tinybenchmarks_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "aggregated_data/tinybenchmarks"))
+    skill_labels_csv: str = field(default_factory=lambda: str(PROJECT_ROOT / "src/dataset_skill_labels.csv"))
+    output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/cross_dataset_equating"))
     
     # IRT training
     dims_search: list = field(default_factory=lambda: [2, 5])
@@ -57,6 +61,9 @@ class ExperimentConfig:
     
     # Caching
     force_retrain: bool = False
+    
+    # Experiment mode
+    all_datasets_mode: bool = False  # If True, combine all datasets instead of grouping by skill
     
 
 # =============================================================================
@@ -420,6 +427,76 @@ def group_datasets_by_skill(
             valid_skills[skill] = best_subset
     
     return valid_skills
+
+
+def group_all_datasets_together(
+    datasets: dict[str, pd.DataFrame],
+    min_common_models: int = 4,
+) -> dict[str, list[str]]:
+    """Group ALL datasets together (ignoring skills) if they share common models.
+    
+    This finds the largest subset of all datasets that share at least min_common_models.
+    
+    Returns: dict with single key "All_Datasets" -> list of dataset names
+    """
+    all_ds_names = list(datasets.keys())
+    
+    if len(all_ds_names) < 2:
+        return {}
+    
+    # Get model sets for each dataset
+    model_sets = {
+        ds: set(datasets[ds]['model_name'].unique())
+        for ds in all_ds_names
+    }
+    
+    print(f"\n   Finding common models across {len(all_ds_names)} datasets...")
+    
+    # Start with all datasets and iteratively find the best subset
+    # First, try all datasets together
+    all_common = set.intersection(*model_sets.values()) if model_sets else set()
+    
+    if len(all_common) >= min_common_models:
+        print(f"   ✓ All {len(all_ds_names)} datasets share {len(all_common)} common models")
+        return {"All_Datasets": all_ds_names}
+    
+    # Find the largest subset that shares enough models
+    # Greedy approach: start with the pair with most common models
+    best_subset = []
+    best_common_count = 0
+    
+    # Try all pairs as starting points
+    for i, ds1 in enumerate(all_ds_names):
+        for ds2 in all_ds_names[i+1:]:
+            common = model_sets[ds1] & model_sets[ds2]
+            if len(common) < min_common_models:
+                continue
+            
+            # Try to extend this pair
+            subset = [ds1, ds2]
+            shared_models = common
+            
+            # Add datasets that maintain enough overlap
+            for ds3 in all_ds_names:
+                if ds3 not in subset:
+                    new_common = shared_models & model_sets[ds3]
+                    if len(new_common) >= min_common_models:
+                        subset.append(ds3)
+                        shared_models = new_common
+            
+            # Check if this is the best subset so far
+            if len(subset) > len(best_subset) or \
+               (len(subset) == len(best_subset) and len(shared_models) > best_common_count):
+                best_subset = subset
+                best_common_count = len(shared_models)
+    
+    if len(best_subset) >= 2:
+        print(f"   ✓ Found subset of {len(best_subset)} datasets with {best_common_count} common models")
+        print(f"   Datasets: {best_subset}")
+        return {"All_Datasets": best_subset}
+    
+    print(f"   ✗ No valid subset found with at least {min_common_models} common models")
+    return {}
 
 
 # =============================================================================
@@ -1057,67 +1134,79 @@ def run_cross_dataset_equating(config: Optional[ExperimentConfig] = None):
     datasets = load_all_datasets(config)
     print(f"   Loaded {len(datasets)} datasets")
     
-    # 3. Group by skill (with model overlap analysis)
-    print("\n3. Analyzing model overlap between datasets...")
-    
-    # First show raw skill groupings
-    raw_skill_groups = defaultdict(list)
-    for _, row in skill_labels.iterrows():
-        dataset_name = row['Dataset']
-        if dataset_name not in datasets:
-            continue
-        for skill in row['all_skills']:
-            raw_skill_groups[skill].append(dataset_name)
-    
-    print(f"   Raw skill groupings (before model overlap check):")
-    for skill, ds_list in sorted(raw_skill_groups.items()):
-        if len(ds_list) >= 2:
-            print(f"     • {skill}: {ds_list}")
-    
-    # Analyze model overlap
-    print(f"\n   Analyzing model overlap...")
-    for skill, ds_list in sorted(raw_skill_groups.items()):
-        if len(ds_list) < 2:
-            continue
-        print(f"\n   Skill: {skill}")
-        for ds in ds_list:
-            n_models = datasets[ds]['model_name'].nunique()
-            sample_models = list(datasets[ds]['model_name'].unique()[:2])
-            print(f"     - {ds}: {n_models} models (e.g., {sample_models[0][:40]}...)")
-        
-        # Check pairwise overlap
-        for i, ds1 in enumerate(ds_list):
-            for ds2 in ds_list[i+1:]:
-                m1 = set(datasets[ds1]['model_name'].unique())
-                m2 = set(datasets[ds2]['model_name'].unique())
-                common = m1 & m2
-                print(f"     {ds1} ∩ {ds2}: {len(common)} common models")
-    
-    # Now do actual grouping
-    print(f"\n   Finding valid experiment groups...")
-    skill_to_datasets = group_datasets_by_skill(skill_labels, datasets)
-    
-    if skill_to_datasets:
-        print(f"   Found {len(skill_to_datasets)} valid skills with overlapping models:")
-        for skill, ds_list in sorted(skill_to_datasets.items()):
-            # Get common model count
-            model_sets = [set(datasets[ds]['model_name'].unique()) for ds in ds_list]
-            common = set.intersection(*model_sets)
-            print(f"     • {skill}: {ds_list} ({len(common)} common models)")
-    else:
-        print("   ⚠️  No skills found with overlapping models across datasets!")
-        print("   This usually happens when datasets come from different sources.")
-        print("\n   Trying source-aware grouping...")
-        
-        # Try source-aware grouping
-        skill_to_datasets = group_datasets_by_skill_and_source(skill_labels, datasets)
+    # 3. Group datasets based on mode
+    if config.all_datasets_mode:
+        print("\n3. ALL DATASETS MODE - Combining all datasets together...")
+        skill_to_datasets = group_all_datasets_together(datasets, min_common_models=4)
         
         if skill_to_datasets:
-            print(f"   Found {len(skill_to_datasets)} valid skill+source groups:")
-            for group_key, ds_list in sorted(skill_to_datasets.items()):
+            for group_key, ds_list in skill_to_datasets.items():
                 model_sets = [set(datasets[ds]['model_name'].unique()) for ds in ds_list]
                 common = set.intersection(*model_sets) if model_sets else set()
-                print(f"     • {group_key}: {ds_list} ({len(common)} common models)")
+                print(f"   ✓ {group_key}: {len(ds_list)} datasets, {len(common)} common models")
+                for ds in ds_list:
+                    print(f"       - {ds}")
+    else:
+        print("\n3. Analyzing model overlap between datasets (by skill)...")
+        
+        # First show raw skill groupings
+        raw_skill_groups = defaultdict(list)
+        for _, row in skill_labels.iterrows():
+            dataset_name = row['Dataset']
+            if dataset_name not in datasets:
+                continue
+            for skill in row['all_skills']:
+                raw_skill_groups[skill].append(dataset_name)
+        
+        print(f"   Raw skill groupings (before model overlap check):")
+        for skill, ds_list in sorted(raw_skill_groups.items()):
+            if len(ds_list) >= 2:
+                print(f"     • {skill}: {ds_list}")
+        
+        # Analyze model overlap
+        print(f"\n   Analyzing model overlap...")
+        for skill, ds_list in sorted(raw_skill_groups.items()):
+            if len(ds_list) < 2:
+                continue
+            print(f"\n   Skill: {skill}")
+            for ds in ds_list:
+                n_models = datasets[ds]['model_name'].nunique()
+                sample_models = list(datasets[ds]['model_name'].unique()[:2])
+                print(f"     - {ds}: {n_models} models (e.g., {sample_models[0][:40]}...)")
+            
+            # Check pairwise overlap
+            for i, ds1 in enumerate(ds_list):
+                for ds2 in ds_list[i+1:]:
+                    m1 = set(datasets[ds1]['model_name'].unique())
+                    m2 = set(datasets[ds2]['model_name'].unique())
+                    common = m1 & m2
+                    print(f"     {ds1} ∩ {ds2}: {len(common)} common models")
+        
+        # Now do actual grouping
+        print(f"\n   Finding valid experiment groups...")
+        skill_to_datasets = group_datasets_by_skill(skill_labels, datasets)
+        
+        if skill_to_datasets:
+            print(f"   Found {len(skill_to_datasets)} valid skills with overlapping models:")
+            for skill, ds_list in sorted(skill_to_datasets.items()):
+                # Get common model count
+                model_sets = [set(datasets[ds]['model_name'].unique()) for ds in ds_list]
+                common = set.intersection(*model_sets)
+                print(f"     • {skill}: {ds_list} ({len(common)} common models)")
+        else:
+            print("   ⚠️  No skills found with overlapping models across datasets!")
+            print("   This usually happens when datasets come from different sources.")
+            print("\n   Trying source-aware grouping...")
+            
+            # Try source-aware grouping
+            skill_to_datasets = group_datasets_by_skill_and_source(skill_labels, datasets)
+            
+            if skill_to_datasets:
+                print(f"   Found {len(skill_to_datasets)} valid skill+source groups:")
+                for group_key, ds_list in sorted(skill_to_datasets.items()):
+                    model_sets = [set(datasets[ds]['model_name'].unique()) for ds in ds_list]
+                    common = set.intersection(*model_sets) if model_sets else set()
+                    print(f"     • {group_key}: {ds_list} ({len(common)} common models)")
     
     # 4. Run experiments
     print("\n4. Running leave-one-out experiments...")
@@ -1357,7 +1446,7 @@ def analyze_dataset_role_impact(output_dir: str | Path) -> pd.DataFrame:
 def print_role_impact_analysis(output_dir: str | Path = None):
     """Print analysis of dataset role impact on prediction error."""
     if output_dir is None:
-        output_dir = Path("/Users/ehabba/PycharmProjects/AdaptEval/data/cross_dataset_equating")
+        output_dir = PROJECT_ROOT / "data/cross_dataset_equating"
     
     df = analyze_dataset_role_impact(output_dir)
     
@@ -1435,7 +1524,7 @@ def print_role_impact_analysis(output_dir: str | Path = None):
 def print_existing_results(output_dir: str | Path = None):
     """Print summary of existing results without running experiments."""
     if output_dir is None:
-        output_dir = Path("/Users/ehabba/PycharmProjects/AdaptEval/data/cross_dataset_equating")
+        output_dir = PROJECT_ROOT / "data/cross_dataset_equating"
     else:
         output_dir = Path(output_dir)
     
@@ -1556,6 +1645,8 @@ if __name__ == "__main__":
     parser.add_argument("--print-only", action="store_true", help="Only print existing results, don't run")
     parser.add_argument("--analyze-role", action="store_true", 
                         help="Analyze impact of dataset role (Base vs Link) on prediction error")
+    parser.add_argument("--all-datasets", action="store_true",
+                        help="Combine ALL datasets together instead of grouping by skill")
     
     args = parser.parse_args()
     
@@ -1571,6 +1662,7 @@ if __name__ == "__main__":
             force_retrain=args.force,
             dims_search=args.dims,
             epochs=args.epochs,
+            all_datasets_mode=args.all_datasets,
         )
         
         if args.output_dir:
