@@ -39,8 +39,14 @@ echo "Task ID (for array jobs): ${SLURM_ARRAY_TASK_ID}"
 export UNITXT_ALLOW_UNVERIFIED_CODE="True"
 export CUDA_LAUNCH_BLOCKING=1
 
-# Output directory
-OUTPUT_DIR="${PROJECT_DIR}/data/cross_dataset_equating"
+# Output directory (use argument if provided, otherwise use default)
+if [ -n "$1" ]; then
+    OUTPUT_DIR="$1"
+    echo "Using custom output directory: ${OUTPUT_DIR}"
+else
+    OUTPUT_DIR="${PROJECT_DIR}/data/cross_dataset_equating"
+    echo "Using default output directory: ${OUTPUT_DIR}"
+fi
 
 # Run the experiment
 echo "Starting cross-dataset equating experiment..."
