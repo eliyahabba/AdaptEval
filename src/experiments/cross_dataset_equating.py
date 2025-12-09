@@ -28,7 +28,7 @@ from llm_eval.selection.tinyBenchmarks.training import (
     fit_2pl_parameters,
     compute_lambda_values,
 )
-from llm_eval.selection.tinyBenchmarks.estimation import run_estimation_validation
+from llm_eval.selection.tinyBenchmarks.estimation import run_estimation_validation, estimate_theta_from_anchors
 from llm_eval.selection.tinyBenchmarks.anchors import find_anchor_items_clustering, AnchorConfig
 from llm_eval.training import train_item_parameters, save_item_parameters
 
@@ -772,6 +772,153 @@ def build_anchor_items_for_fixed_calibration(
     return anchors
 
 
+def select_anchors_for_dataset(
+    item_params: pd.DataFrame,
+    n_anchors: int,
+    dataset_name: str,
+    train_df: pd.DataFrame,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+) -> tuple[list[str], list[float]]:
+    """Select anchor items from a SPECIFIC dataset.
+    
+    Args:
+        item_params: DataFrame with IRT parameters indexed by question_id
+        n_anchors: Number of anchors to select
+        dataset_name: Name of the dataset to select anchors from
+        train_df: Training data to identify which questions belong to which dataset
+        A_matrix, B_matrix: MIRT matrices for clustering
+    
+    Returns:
+        (anchor_ids, anchor_weights) for the specified dataset
+    """
+    # Get dataset for each question
+    question_to_dataset = train_df.groupby('question_id')['dataset'].first().to_dict()
+    
+    # Filter item_params to only the specified dataset
+    item_params_with_dataset = item_params.copy()
+    item_params_with_dataset['dataset'] = item_params_with_dataset.index.map(
+        lambda q: question_to_dataset.get(q, 'unknown')
+    )
+    
+    ds_mask = item_params_with_dataset['dataset'] == dataset_name
+    ds_items = item_params_with_dataset[ds_mask].drop(columns=['dataset'])
+    
+    if len(ds_items) == 0:
+        print(f"      Warning: No items found for dataset {dataset_name}")
+        return [], []
+    
+    n_anchors = min(n_anchors, len(ds_items))
+    
+    if n_anchors < 5:
+        print(f"      Warning: {dataset_name} has only {len(ds_items)} items, need at least 5")
+        return [], []
+    
+    # Get indices for MIRT matrices
+    all_question_ids = list(item_params.index)
+    ds_indices = [all_question_ids.index(q) for q in ds_items.index if q in all_question_ids]
+    
+    # Extract sub-matrices for this dataset
+    ds_A = A_matrix[:, :, ds_indices] if A_matrix is not None else None
+    ds_B = B_matrix[:, :, ds_indices] if B_matrix is not None else None
+    
+    # Copy attrs to subset
+    ds_items_for_clustering = ds_items.copy()
+    if hasattr(item_params, 'attrs'):
+        ds_items_for_clustering.attrs = item_params.attrs.copy()
+        if 'balance_weights' in item_params.attrs:
+            orig_weights = np.array(item_params.attrs['balance_weights'])
+            ds_weights = orig_weights[ds_indices]
+            ds_items_for_clustering.attrs['balance_weights'] = ds_weights.tolist()
+    
+    balance_weights = None
+    if hasattr(ds_items_for_clustering, 'attrs'):
+        bw = ds_items_for_clustering.attrs.get('balance_weights')
+        if bw is not None:
+            balance_weights = np.array(bw)
+    
+    anchor_config = AnchorConfig(
+        number_items=n_anchors,
+        method="irt_clustering",
+        balance_weights=balance_weights,
+    )
+    
+    try:
+        anchor_ids, anchor_weights = find_anchor_items_clustering(
+            ds_items_for_clustering,
+            config=anchor_config,
+            A_matrix=ds_A,
+            B_matrix=ds_B,
+        )
+        
+        weights_list = anchor_weights.tolist() if hasattr(anchor_weights, 'tolist') else list(anchor_weights)
+        print(f"      ✓ {dataset_name}: {len(anchor_ids)} anchors selected")
+        return anchor_ids, weights_list
+        
+    except Exception as e:
+        print(f"      Warning: Failed to select anchors from {dataset_name}: {e}")
+        return [], []
+
+
+def precompute_thetas_from_all_anchors(
+    test_df: pd.DataFrame,
+    item_params: pd.DataFrame,
+    anchor_ids: list[str],
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+) -> dict[str, float]:
+    """Precompute theta for each test model using ALL anchors across all datasets.
+    
+    This allows cross-dataset theta estimation: we use anchors from Base datasets
+    to estimate theta, then use that theta to predict on Link datasets.
+    
+    Args:
+        test_df: Test data containing responses for all models on all datasets
+        item_params: DataFrame with IRT parameters indexed by question_id
+        anchor_ids: List of anchor question IDs (can be from multiple datasets)
+        A_matrix, B_matrix: MIRT matrices
+    
+    Returns:
+        Dict mapping model_name -> estimated theta
+    """
+    models = test_df['model_name'].unique()
+    question_ids_order = list(item_params.index) if hasattr(item_params, 'index') else None
+    
+    precomputed_thetas = {}
+    n_success = 0
+    n_failed = 0
+    
+    for model_name in models:
+        # Get all responses for this model
+        model_responses = test_df[test_df['model_name'] == model_name].set_index('question_id')['normalized_score']
+        model_responses = model_responses[~model_responses.index.duplicated(keep='first')]
+        
+        # Find anchors that have responses
+        available_anchors = [a for a in anchor_ids if a in model_responses.index and a in item_params.index]
+        
+        if len(available_anchors) < 3:
+            n_failed += 1
+            continue
+        
+        anchor_responses = model_responses.loc[available_anchors]
+        
+        try:
+            theta = estimate_theta_from_anchors(
+                item_params,
+                anchor_responses,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                question_ids_order=question_ids_order,
+            )
+            precomputed_thetas[model_name] = theta
+            n_success += 1
+        except Exception as e:
+            n_failed += 1
+    
+    print(f"      Precomputed thetas: {n_success} success, {n_failed} failed")
+    return precomputed_thetas
+
+
 def select_anchors(
     item_params: pd.DataFrame,
     n_anchors_per_dataset: int,
@@ -880,8 +1027,21 @@ def run_validation(
     train_df: pd.DataFrame,
     A_matrix: np.ndarray | None = None,
     B_matrix: np.ndarray | None = None,
+    precomputed_thetas: dict[str, float] | None = None,
 ) -> list[dict]:
-    """Run estimation validation."""
+    """Run estimation validation.
+    
+    Args:
+        test_df: Test data to evaluate on
+        item_params: IRT item parameters
+        anchor_ids: List of anchor question IDs
+        anchor_weights: Weights for anchor questions
+        train_df: Training data (used for computing lambdas)
+        A_matrix, B_matrix: MIRT matrices
+        precomputed_thetas: Optional dict mapping model_name -> theta.
+            If provided, these thetas are used instead of estimating from local anchors.
+            This enables cross-dataset theta estimation.
+    """
     # Compute lambda values
     attrs = getattr(item_params, 'attrs', {})
     validation_errors = attrs.get('validation_errors', {})
@@ -924,6 +1084,7 @@ def run_validation(
         anchors_by_dataset=anchors_by_dataset,
         lambdas_by_dataset=lambdas_by_dataset,
         anchor_weights_by_dataset=anchor_weights_by_dataset,
+        precomputed_thetas=precomputed_thetas,
         A_matrix=A_matrix,
         B_matrix=B_matrix,
         question_ids_order=question_ids_order,
@@ -1025,14 +1186,44 @@ def run_single_split_experiment(
         force_retrain=config.force_retrain,
     )
     
+    # Select anchors from Link dataset (now calibrated)
+    print(f"      Selecting anchors from Link dataset ({link_dataset})...")
+    link_anchor_ids_conc, link_anchor_weights_conc = select_anchors_for_dataset(
+        item_params_concurrent,
+        config.n_anchors_per_dataset,
+        link_dataset,
+        train_combined,
+        A_concurrent,
+        B_concurrent,
+    )
+    
+    # Combine Base anchors + Link anchors for theta estimation
+    combined_anchor_ids_conc = anchor_ids + link_anchor_ids_conc
+    combined_anchor_weights_conc = anchor_weights + link_anchor_weights_conc
+    print(f"      Combined anchors: {len(anchor_ids)} (Base) + {len(link_anchor_ids_conc)} (Link) = {len(combined_anchor_ids_conc)}")
+    
+    # Combine test data from Base + Link for theta estimation
+    test_combined = pd.concat([split['test_base_df'], split['test_link_df']], ignore_index=True)
+    
+    # Precompute thetas using ALL anchors (Base + Link) from ALL test data
+    print(f"      Precomputing thetas from all anchors (Concurrent)...")
+    precomputed_thetas_conc = precompute_thetas_from_all_anchors(
+        test_df=test_combined,
+        item_params=item_params_concurrent,
+        anchor_ids=combined_anchor_ids_conc,
+        A_matrix=A_concurrent,
+        B_matrix=B_concurrent,
+    )
+    
     link_results_concurrent = run_validation(
         test_df=split['test_link_df'],
         item_params=item_params_concurrent,
-        anchor_ids=anchor_ids,  # Still use Base anchors for selection
-        anchor_weights=anchor_weights,
+        anchor_ids=combined_anchor_ids_conc,  # Use Base + Link anchors
+        anchor_weights=combined_anchor_weights_conc,
         train_df=train_combined,
         A_matrix=A_concurrent,
         B_matrix=B_concurrent,
+        precomputed_thetas=precomputed_thetas_conc,
     )
     
     # =========================================================================
@@ -1089,14 +1280,41 @@ def run_single_split_experiment(
             A_fixed = np.array(A_list)
             B_fixed = np.array(B_list)
     
+    # Select anchors from Link dataset (now calibrated via fixed-anchor)
+    print(f"      Selecting anchors from Link dataset ({link_dataset}) for Fixed-Anchor...")
+    link_anchor_ids_fixed, link_anchor_weights_fixed = select_anchors_for_dataset(
+        item_params_fixed,
+        config.n_anchors_per_dataset,
+        link_dataset,
+        train_combined,
+        A_fixed,
+        B_fixed,
+    )
+    
+    # Combine Base anchors + Link anchors for theta estimation
+    combined_anchor_ids_fixed = anchor_ids + link_anchor_ids_fixed
+    combined_anchor_weights_fixed = anchor_weights + link_anchor_weights_fixed
+    print(f"      Combined anchors: {len(anchor_ids)} (Base) + {len(link_anchor_ids_fixed)} (Link) = {len(combined_anchor_ids_fixed)}")
+    
+    # Precompute thetas using ALL anchors (Base + Link) from ALL test data
+    print(f"      Precomputing thetas from all anchors (Fixed-Anchor)...")
+    precomputed_thetas_fixed = precompute_thetas_from_all_anchors(
+        test_df=test_combined,  # Reuse the combined test data
+        item_params=item_params_fixed,
+        anchor_ids=combined_anchor_ids_fixed,
+        A_matrix=A_fixed,
+        B_matrix=B_fixed,
+    )
+    
     link_results_fixed = run_validation(
         test_df=split['test_link_df'],
         item_params=item_params_fixed,
-        anchor_ids=anchor_ids,
-        anchor_weights=anchor_weights,
+        anchor_ids=combined_anchor_ids_fixed,  # Use Base + Link anchors
+        anchor_weights=combined_anchor_weights_fixed,
         train_df=train_combined,
         A_matrix=A_fixed,
         B_matrix=B_fixed,
+        precomputed_thetas=precomputed_thetas_fixed,
     )
     
     # Note: item_params are saved automatically by fit_2pl_parameters() when output_dir is provided
@@ -1149,7 +1367,11 @@ def run_single_split_experiment(
         'n_base_items': len(item_params),
         'n_combined_items_concurrent': len(item_params_concurrent),
         'n_combined_items_fixed': len(item_params_fixed),
-        'n_anchors': len(anchor_ids),
+        'n_base_anchors': len(anchor_ids),
+        'n_link_anchors_concurrent': len(link_anchor_ids_conc),
+        'n_link_anchors_fixed': len(link_anchor_ids_fixed),
+        'n_total_anchors_concurrent': len(combined_anchor_ids_conc),
+        'n_total_anchors_fixed': len(combined_anchor_ids_fixed),
         'n_fixed_anchor_items': len(anchor_items),
         **summarize_results(base_results, 'base'),
         **summarize_results(link_results_concurrent, 'link_concurrent'),
