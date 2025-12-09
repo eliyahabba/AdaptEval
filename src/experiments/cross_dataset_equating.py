@@ -52,7 +52,7 @@ class ExperimentConfig:
     # IRT training
     dims_search: list = field(default_factory=lambda: [2, 5])
     epochs: int = 2000
-    lr: float = 0.099
+    lr: float = 0.1
     n_anchors_per_dataset: int = 100  # Anchors to select from EACH dataset
     
     # Split
