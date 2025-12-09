@@ -1053,9 +1053,18 @@ def run_single_split_experiment(
     mode_str = "selected anchors only" if config.anchor_only_fixed else "all Base items"
     print(f"        Using {len(anchor_items)} anchor items from Base (frozen, {mode_str})")
     
+    # Determine dimension - MUST match anchor vectors from Base training
+    if A_matrix is not None:
+        base_dim = A_matrix.shape[1] if A_matrix.ndim == 3 else A_matrix.shape[0]
+        fixed_dims_search = [base_dim]
+        print(f"        Using dimension {base_dim} from Base A_matrix (no search)")
+    else:
+        fixed_dims_search = config.dims_search
+        print(f"        ⚠ No A_matrix, using dims_search={fixed_dims_search}")
+    
     # Train with fixed anchors
     irt_config_fixed = TrainingConfig(
-        dims_search=config.dims_search,
+        dims_search=fixed_dims_search,
         epochs=config.epochs,
         lr=config.lr,
         number_item_per_scenario=config.n_anchors_per_dataset,

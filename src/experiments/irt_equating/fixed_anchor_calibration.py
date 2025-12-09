@@ -126,17 +126,22 @@ def run_fixed_anchor_calibration(
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Try to infer dimension from baseline metadata to skip unnecessary search
+    # Determine target dimension - MUST match anchor vectors if using vector anchors
     target_dims = [int(d.strip()) for d in dims_search.split(",") if d.strip()]
     
-    if hasattr(baseline_params, "attrs") and "best_dimension" in baseline_params.attrs:
-        baseline_dim = int(baseline_params.attrs["best_dimension"])
-        print(f"   ℹ Detected baseline dimension: {baseline_dim}. Overriding search.")
+    # Priority 1: Get dimension directly from A_baseline matrix shape (most reliable)
+    if A_baseline is not None:
+        baseline_dim = A_baseline.shape[1] if A_baseline.ndim == 3 else A_baseline.shape[0]
         target_dims = [baseline_dim]
+        print(f"   ✓ Using dimension {baseline_dim} from baseline A_matrix shape")
+    # Priority 2: Fallback to attrs if available
+    elif hasattr(baseline_params, "attrs") and "best_dimension" in baseline_params.attrs:
+        baseline_dim = int(baseline_params.attrs["best_dimension"])
+        target_dims = [baseline_dim]
+        print(f"   ✓ Using dimension {baseline_dim} from baseline attrs")
     elif len(target_dims) > 1:
-        print(f"   ⚠ Warning: Running dimension search {target_dims} for Fixed Anchor.")
-        print(f"     This is computationally expensive and logically questionable if baseline dim is known.")
-        print(f"     Consider passing --dims-search=N to match baseline.")
+        print(f"   ⚠ Warning: No baseline dimension found, running search {target_dims}.")
+        print(f"     This may fail if anchor vectors have a different dimension!")
 
     # Build config kwargs, omitting device if None to use auto-detection
     config_kwargs = {
