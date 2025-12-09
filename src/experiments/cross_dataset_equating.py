@@ -65,6 +65,9 @@ class ExperimentConfig:
     # Experiment mode
     all_datasets_mode: bool = False  # If True, combine all datasets instead of grouping by skill
     
+    # Fixed-anchor calibration mode
+    anchor_only_fixed: bool = True  # If True, only freeze selected anchors (faster). If False, freeze all Base items.
+    
 
 # =============================================================================
 # Data Loading
@@ -705,6 +708,7 @@ def build_anchor_items_for_fixed_calibration(
     available_questions: set[str],
     A_matrix: np.ndarray | None = None,
     B_matrix: np.ndarray | None = None,
+    selected_anchor_ids: list[str] | None = None,
 ) -> list[dict]:
     """Build anchor items from baseline parameters for Fixed-Anchor Calibration.
     
@@ -716,13 +720,23 @@ def build_anchor_items_for_fixed_calibration(
         available_questions: Set of question IDs available in the combined dataset
         A_matrix: Full discrimination matrix, shape (1, D, n_items) or (D, n_items)
         B_matrix: Full difficulty matrix, shape (1, D, n_items) or (D, n_items)
+        selected_anchor_ids: If provided, only freeze these specific items (faster training).
+                            If None, freeze all items in baseline_params (original behavior).
     
     Returns:
         List of anchor item dicts with either vector or scalar parameters
     """
     baseline_params = baseline_params.copy()
     baseline_params.index = baseline_params.index.astype(str)
-    subset = baseline_params.loc[baseline_params.index.intersection(available_questions)]
+    
+    # Filter to selected anchors if provided
+    if selected_anchor_ids is not None:
+        selected_set = set(str(a) for a in selected_anchor_ids)
+        filter_to = available_questions & selected_set
+    else:
+        filter_to = available_questions
+    
+    subset = baseline_params.loc[baseline_params.index.intersection(filter_to)]
     
     if subset.empty:
         raise ValueError("No overlap between baseline item params and current matrix for anchoring")
@@ -1027,13 +1041,17 @@ def run_single_split_experiment(
     print(f"      Running Fixed-Anchor Calibration...")
     
     # Build anchor items from Base parameters to FREEZE them
+    # If anchor_only_fixed=True, only freeze selected anchors (faster training)
+    # If anchor_only_fixed=False, freeze all Base items (original behavior)
     anchor_items = build_anchor_items_for_fixed_calibration(
         item_params,
         available_questions,
         A_matrix,
         B_matrix,
+        selected_anchor_ids=anchor_ids if config.anchor_only_fixed else None,
     )
-    print(f"        Using {len(anchor_items)} anchor items from Base (frozen)")
+    mode_str = "selected anchors only" if config.anchor_only_fixed else "all Base items"
+    print(f"        Using {len(anchor_items)} anchor items from Base (frozen, {mode_str})")
     
     # Train with fixed anchors
     irt_config_fixed = TrainingConfig(
@@ -1905,6 +1923,10 @@ if __name__ == "__main__":
                         help="Analyze impact of dataset role (Base vs Link) on prediction error")
     parser.add_argument("--all-datasets", action="store_true",
                         help="Combine ALL datasets together instead of grouping by skill")
+    parser.add_argument("--anchor-only-fixed", action="store_true", default=True,
+                        help="Only freeze selected anchors in fixed-anchor calibration (faster, default)")
+    parser.add_argument("--freeze-all-base", action="store_true",
+                        help="Freeze ALL Base items in fixed-anchor calibration (slower, original behavior)")
     
     args = parser.parse_args()
     
@@ -1915,6 +1937,9 @@ if __name__ == "__main__":
     elif args.print_only:
         print_existing_results(args.output_dir, force_rebuild=False)
     else:
+        # --freeze-all-base overrides --anchor-only-fixed
+        anchor_only = not args.freeze_all_base
+        
         config = ExperimentConfig(
             n_anchors_per_dataset=args.n_anchors_per_dataset,
             test_ratio=args.test_ratio,
@@ -1923,6 +1948,7 @@ if __name__ == "__main__":
             dims_search=args.dims,
             epochs=args.epochs,
             all_datasets_mode=args.all_datasets,
+            anchor_only_fixed=anchor_only,
         )
         
         if args.output_dir:
