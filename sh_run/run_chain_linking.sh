@@ -36,14 +36,28 @@ echo "Task ID (for array jobs): ${SLURM_ARRAY_TASK_ID}"
 export UNITXT_ALLOW_UNVERIFIED_CODE="True"
 export CUDA_LAUNCH_BLOCKING=1
 
-# Output directory (use argument if provided, otherwise use default)
+# Parse arguments:
+#   $1 = output directory (optional, default: data/chain_linking_experiment)
+#   $2 = seed for Base dataset selection (optional, default: 42)
+
+# Output directory base
 if [ -n "$1" ]; then
-    OUTPUT_DIR="$1"
-    echo "Using custom output directory: ${OUTPUT_DIR}"
+    OUTPUT_DIR_BASE="$1"
 else
-    OUTPUT_DIR="${PROJECT_DIR}/data/chain_linking_experiment"
-    echo "Using default output directory: ${OUTPUT_DIR}"
+    OUTPUT_DIR_BASE="${PROJECT_DIR}/data/chain_linking_experiment"
 fi
+
+# Seed for dataset shuffling (controls which datasets are in Base)
+if [ -n "$2" ]; then
+    SHUFFLE_SEED="$2"
+else
+    SHUFFLE_SEED=${SHUFFLE_SEED:-42}
+fi
+
+# Append seed to output directory for reproducibility tracking
+OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}"
+echo "Output directory: ${OUTPUT_DIR}"
+echo "Shuffle seed: ${SHUFFLE_SEED}"
 
 # Configuration parameters
 N_BASE=${N_BASE:-4}           # Number of datasets in Base
@@ -56,6 +70,7 @@ echo "  N_BASE: ${N_BASE}"
 echo "  MAX_CHAIN: ${MAX_CHAIN}"
 echo "  N_ANCHORS: ${N_ANCHORS}"
 echo "  EPOCHS: ${EPOCHS}"
+echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
 
 # Run the chain linking experiment
 echo "Starting chain linking experiment..."
@@ -66,6 +81,7 @@ python src/experiments/chain_linking_experiment.py \
     --n-anchors-per-dataset ${N_ANCHORS} \
     --test-ratio 0.25 \
     --seed 42 \
+    --shuffle-seed ${SHUFFLE_SEED} \
     --dims 2 5 \
     --epochs ${EPOCHS}
 

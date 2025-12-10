@@ -59,6 +59,10 @@ class ChainExperimentConfig(ExperimentConfig):
     # Maximum chain length to test (distance from Base)
     max_chain_length: int = 3
     
+    # Seed for shuffling datasets (controls which datasets are in Base)
+    # Different from `seed` which controls train/test split
+    shuffle_seed: int = 42
+    
     # Output directory for this experiment
     output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/chain_linking_experiment"))
 
@@ -442,6 +446,8 @@ def run_chain_scenario(
         'base_datasets': base_datasets,
         'chain_datasets': chain_datasets,
         'distance': distance,
+        'shuffle_seed': config.shuffle_seed,
+        'train_test_seed': config.seed,
         'n_common_models': splits['n_common_models'],
         'n_train_models': len(splits['train_models']),
         'n_test_models': len(splits['test_models']),
@@ -595,6 +601,8 @@ def run_chain_linking_experiment(config: ChainExperimentConfig | None = None):
     print("=" * 70)
     print(f"  Base size: {config.n_base_datasets} datasets")
     print(f"  Max chain length: {config.max_chain_length}")
+    print(f"  Shuffle seed: {config.shuffle_seed}")
+    print(f"  Train/test seed: {config.seed}")
     
     # 1. Load datasets
     print("\n1. Loading datasets...")
@@ -610,7 +618,38 @@ def run_chain_linking_experiment(config: ChainExperimentConfig | None = None):
         return pd.DataFrame()
     
     all_dataset_names = list(skill_to_datasets.values())[0]
-    print(f"   Using {len(all_dataset_names)} datasets: {all_dataset_names}")
+    
+    # 3. Shuffle datasets deterministically based on shuffle_seed
+    # This controls which datasets are in Base vs. remaining
+    np.random.seed(config.shuffle_seed)
+    shuffled_dataset_names = list(all_dataset_names)
+    np.random.shuffle(shuffled_dataset_names)
+    
+    print(f"   Original order: {all_dataset_names}")
+    print(f"   Shuffled order (seed={config.shuffle_seed}): {shuffled_dataset_names}")
+    print(f"   Base datasets: {shuffled_dataset_names[:config.n_base_datasets]}")
+    print(f"   Remaining datasets: {shuffled_dataset_names[config.n_base_datasets:]}")
+    
+    all_dataset_names = shuffled_dataset_names
+    
+    # Save configuration for reproducibility
+    config_file = output_dir / "config.json"
+    config_dict = {
+        'n_base_datasets': config.n_base_datasets,
+        'max_chain_length': config.max_chain_length,
+        'shuffle_seed': config.shuffle_seed,
+        'train_test_seed': config.seed,
+        'n_anchors_per_dataset': config.n_anchors_per_dataset,
+        'test_ratio': config.test_ratio,
+        'epochs': config.epochs,
+        'dims_search': config.dims_search,
+        'base_datasets': shuffled_dataset_names[:config.n_base_datasets],
+        'remaining_datasets': shuffled_dataset_names[config.n_base_datasets:],
+        'all_datasets_shuffled': shuffled_dataset_names,
+    }
+    with open(config_file, 'w') as f:
+        json.dump(config_dict, f, indent=2)
+    print(f"   Saved config to: {config_file}")
     
     if len(all_dataset_names) < config.n_base_datasets + 1:
         print(f"   ⚠️ Need at least {config.n_base_datasets + 1} datasets!")
@@ -685,7 +724,9 @@ if __name__ == "__main__":
     parser.add_argument("--max-chain", type=int, default=3, help="Maximum chain length")
     parser.add_argument("--n-anchors-per-dataset", type=int, default=100, help="Anchors per dataset")
     parser.add_argument("--test-ratio", type=float, default=0.25, help="Test set ratio")
-    parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for train/test split")
+    parser.add_argument("--shuffle-seed", type=int, default=42, 
+                        help="Seed for shuffling datasets (controls which datasets are in Base)")
     parser.add_argument("--force", action="store_true", help="Force retrain all")
     parser.add_argument("--dims", type=int, nargs="+", default=[2, 5], help="Dimensions to search")
     parser.add_argument("--epochs", type=int, default=2000, help="Training epochs")
@@ -698,6 +739,7 @@ if __name__ == "__main__":
         n_anchors_per_dataset=args.n_anchors_per_dataset,
         test_ratio=args.test_ratio,
         seed=args.seed,
+        shuffle_seed=args.shuffle_seed,
         force_retrain=args.force,
         dims_search=args.dims,
         epochs=args.epochs,
