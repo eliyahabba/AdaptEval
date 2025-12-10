@@ -1,0 +1,27 @@
+{
+  "target_dataset": "NaturalQA",
+  "base_datasets": [
+    "LegalBench",
+    "NarrativeQA",
+    "WMT-14 Translation",
+    "OpenBookQA"
+  ],
+  "chain_datasets": [],
+  "distance": 0,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 500,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.07528335728561286,
+  "target_anchor_error_std": 0.03877892256324031,
+  "target_irt_error_mean": 0.04511884456651927,
+  "target_irt_error_std": 0.03416657840749564,
+  "target_gp_irt_error_mean": 0.07226323304850264,
+  "target_gp_irt_error_std": 0.037705908968178464,
+  "target_pirt_error_mean": 0.04381103024391104,
+  "target_pirt_error_std": 0.034233818032349275,
+  "baseline_gp_irt_error_mean": 0.05812928798488758,
+  "delta_from_baseline": 0.01413394506361506
+}

@@ -1,0 +1,29 @@
+{
+  "target_dataset": "MATH Competition",
+  "base_datasets": [
+    "LegalBench",
+    "NarrativeQA",
+    "WMT-14 Translation",
+    "OpenBookQA"
+  ],
+  "chain_datasets": [
+    "NaturalQA"
+  ],
+  "distance": 1,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 600,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.03474911396415395,
+  "target_anchor_error_std": 0.02813461003568326,
+  "target_irt_error_mean": 0.11287603327822855,
+  "target_irt_error_std": 0.06650496086697519,
+  "target_gp_irt_error_mean": 0.0277075081412157,
+  "target_gp_irt_error_std": 0.027355932344660567,
+  "target_pirt_error_mean": 0.09306128335667606,
+  "target_pirt_error_std": 0.05129259767390348,
+  "baseline_gp_irt_error_mean": 0.03400082694433087,
+  "delta_from_baseline": -0.006293318803115167
+}

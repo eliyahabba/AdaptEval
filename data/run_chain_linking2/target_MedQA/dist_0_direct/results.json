@@ -1,0 +1,29 @@
+{
+  "target_dataset": "MedQA",
+  "base_datasets": [
+    "MATH Competition",
+    "NaturalQA",
+    "OpenBookQA",
+    "WMT-14 Translation"
+  ],
+  "chain_datasets": [],
+  "distance": 0,
+  "shuffle_seed": 42,
+  "train_test_seed": 42,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 500,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.02505292402987788,
+  "target_anchor_error_std": 0.022074014185880498,
+  "target_irt_error_mean": 0.13163332112049655,
+  "target_irt_error_std": 0.06641835023670388,
+  "target_gp_irt_error_mean": 0.025524352136681642,
+  "target_gp_irt_error_std": 0.021964438646937506,
+  "target_pirt_error_mean": 0.1195882157927889,
+  "target_pirt_error_std": 0.06109356851900358,
+  "baseline_gp_irt_error_mean": 0.020575861242490924,
+  "delta_from_baseline": 0.004948490894190718
+}
