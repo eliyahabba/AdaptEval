@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-linking
-#SBATCH --mem=24g
-#SBATCH --time=24:0:0
+#SBATCH --mem=12g
+#SBATCH --time=12:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --gres=gpu:rtx2080:1
