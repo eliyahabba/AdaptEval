@@ -1,0 +1,46 @@
+{
+  "OpenBookQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.015867917653488776,
+    "anchor_error_std": 0.011465354927010446,
+    "irt_error_mean": 0.042753412093090006,
+    "irt_error_std": 0.04892656158139904,
+    "gp_irt_error_mean": 0.014469747992261528,
+    "gp_irt_error_std": 0.010565595863380253,
+    "pirt_error_mean": 0.03597224252366294,
+    "pirt_error_std": 0.03779244863052711
+  },
+  "NaturalQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.07175404493755445,
+    "anchor_error_std": 0.031822986315046174,
+    "irt_error_mean": 0.13631679696548044,
+    "irt_error_std": 0.06698784981172301,
+    "gp_irt_error_mean": 0.07556730314921066,
+    "gp_irt_error_std": 0.032691845677655054,
+    "pirt_error_mean": 0.1361331449380954,
+    "pirt_error_std": 0.06258813543392927
+  },
+  "LegalBench": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.023388604871553566,
+    "anchor_error_std": 0.014267470027625238,
+    "irt_error_mean": 0.04274148427494367,
+    "irt_error_std": 0.038826395149531845,
+    "gp_irt_error_mean": 0.0219246530600046,
+    "gp_irt_error_std": 0.014459256546813846,
+    "pirt_error_mean": 0.04092552819400251,
+    "pirt_error_std": 0.03779478840186151
+  },
+  "MedQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.033289214793222825,
+    "anchor_error_std": 0.02998734451849394,
+    "irt_error_mean": 0.06779322840586267,
+    "irt_error_std": 0.05999146891828828,
+    "gp_irt_error_mean": 0.0271019057305642,
+    "gp_irt_error_std": 0.02620146074670408,
+    "pirt_error_mean": 0.06531874172220156,
+    "pirt_error_std": 0.05569303639218229
+  }
+}

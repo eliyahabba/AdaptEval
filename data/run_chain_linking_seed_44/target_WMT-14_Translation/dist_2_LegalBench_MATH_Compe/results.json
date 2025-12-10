@@ -1,0 +1,32 @@
+{
+  "target_dataset": "WMT-14 Translation",
+  "base_datasets": [
+    "MedQA",
+    "NarrativeQA",
+    "NaturalQA",
+    "OpenBookQA"
+  ],
+  "chain_datasets": [
+    "LegalBench",
+    "MATH Competition"
+  ],
+  "distance": 2,
+  "shuffle_seed": 44,
+  "train_test_seed": 42,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 700,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.06795978095558115,
+  "target_anchor_error_std": 0.02675408251726241,
+  "target_irt_error_mean": 0.26883717531091694,
+  "target_irt_error_std": 0.03709042960625065,
+  "target_gp_irt_error_mean": 0.06851611897132232,
+  "target_gp_irt_error_std": 0.026687955831863213,
+  "target_pirt_error_mean": 0.26347060829701796,
+  "target_pirt_error_std": 0.03648776708375251,
+  "baseline_gp_irt_error_mean": 0.08808085446894193,
+  "delta_from_baseline": -0.019564735497619612
+}

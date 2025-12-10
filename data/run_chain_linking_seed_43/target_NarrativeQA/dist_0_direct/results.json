@@ -1,0 +1,29 @@
+{
+  "target_dataset": "NarrativeQA",
+  "base_datasets": [
+    "LegalBench",
+    "MATH Competition",
+    "OpenBookQA",
+    "NaturalQA"
+  ],
+  "chain_datasets": [],
+  "distance": 0,
+  "shuffle_seed": 43,
+  "train_test_seed": 42,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 500,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.016265957775415958,
+  "target_anchor_error_std": 0.013335046213825034,
+  "target_irt_error_mean": 0.0463478239101917,
+  "target_irt_error_std": 0.046433103614114395,
+  "target_gp_irt_error_mean": 0.016272765036908266,
+  "target_gp_irt_error_std": 0.013280316458250006,
+  "target_pirt_error_mean": 0.03734775739900547,
+  "target_pirt_error_std": 0.03752378469857985,
+  "baseline_gp_irt_error_mean": 0.02081857769784086,
+  "delta_from_baseline": -0.004545812660932593
+}

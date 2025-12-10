@@ -1,0 +1,29 @@
+{
+  "target_dataset": "LegalBench",
+  "base_datasets": [
+    "MedQA",
+    "NarrativeQA",
+    "NaturalQA",
+    "OpenBookQA"
+  ],
+  "chain_datasets": [
+    "MATH Competition"
+  ],
+  "distance": 1,
+  "shuffle_seed": 44,
+  "train_test_seed": 42,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 600,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.029756986120991136,
+  "target_anchor_error_std": 0.017525182665663604,
+  "target_irt_error_mean": 0.07074867494863012,
+  "target_irt_error_std": 0.05353165886308703,
+  "target_gp_irt_error_mean": 0.01884195991282362,
+  "target_gp_irt_error_std": 0.015515280602882134,
+  "target_pirt_error_mean": 0.06728314854444842,
+  "target_pirt_error_std": 0.05108136897522591
+}
