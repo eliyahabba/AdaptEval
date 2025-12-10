@@ -414,8 +414,10 @@ def run_chain_scenario(
     all_anchor_weights = current_anchor_weights + target_weights
     print(f"      Total anchors: {len(all_anchor_ids)}")
     
-    # Step 4: Validate on target dataset
-    print(f"    Step 4: Validating target {target_dataset}...")
+    # Step 4: Validate on target dataset AND Base datasets
+    print(f"    Step 4: Validating target {target_dataset} and Base datasets...")
+    
+    ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
     
     # Precompute thetas using ALL anchors
     precomputed_thetas = precompute_thetas_from_all_anchors(
@@ -438,9 +440,38 @@ def run_chain_scenario(
         precomputed_thetas=precomputed_thetas,
     )
     
-    # Compile results
-    ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
+    # Also validate on Base datasets to ensure no degradation
+    base_validation_results = {}
+    for base_ds in base_datasets:
+        base_ds_test = splits['test_base_df'][splits['test_base_df']['dataset'] == base_ds]
+        if len(base_ds_test) == 0:
+            continue
+        
+        base_ds_results = run_validation(
+            test_df=base_ds_test,
+            item_params=target_item_params,
+            anchor_ids=all_anchor_ids,
+            anchor_weights=all_anchor_weights,
+            train_df=train_final,
+            A_matrix=A_target,
+            B_matrix=B_target,
+            precomputed_thetas=precomputed_thetas,
+        )
+        
+        if base_ds_results:
+            df_base = pd.DataFrame(base_ds_results)
+            base_validation_results[base_ds] = {
+                'n_validations': len(df_base),
+            }
+            for metric in ERROR_METRICS:
+                if metric in df_base.columns:
+                    vals = df_base[metric].dropna()
+                    if len(vals) > 0:
+                        base_validation_results[base_ds][f'{metric}_mean'] = float(vals.mean())
+                        base_validation_results[base_ds][f'{metric}_std'] = float(vals.std())
+            print(f"      Base {base_ds}: gp_irt_error = {base_validation_results[base_ds].get('gp_irt_error_mean', 'N/A'):.4f}")
     
+    # Compile results
     result = {
         'target_dataset': target_dataset,
         'base_datasets': base_datasets,
@@ -456,7 +487,7 @@ def run_chain_scenario(
         'n_target_validations': len(target_results),
     }
     
-    # Add error metrics
+    # Add error metrics for target
     if target_results:
         df = pd.DataFrame(target_results)
         for metric in ERROR_METRICS:
@@ -465,6 +496,16 @@ def run_chain_scenario(
                 if len(vals) > 0:
                     result[f'target_{metric}_mean'] = float(vals.mean())
                     result[f'target_{metric}_std'] = float(vals.std())
+    
+    # Add Base dataset validation results (to verify no degradation)
+    result['base_validation'] = base_validation_results
+    
+    # Compute average Base error across all Base datasets
+    base_gp_errors = [v.get('gp_irt_error_mean', np.nan) for v in base_validation_results.values()]
+    base_gp_errors = [e for e in base_gp_errors if not np.isnan(e)]
+    if base_gp_errors:
+        result['base_avg_gp_irt_error_mean'] = float(np.mean(base_gp_errors))
+        result['base_avg_gp_irt_error_std'] = float(np.std(base_gp_errors))
     
     # Add baseline comparison if available
     if baseline_results and target_dataset in baseline_results:
@@ -481,7 +522,13 @@ def run_chain_scenario(
     if target_results:
         pd.DataFrame(target_results).to_csv(scenario_dir / "target_validation.csv", index=False)
     
+    # Save Base validation details
+    if base_validation_results:
+        with open(scenario_dir / "base_validation.json", 'w') as f:
+            json.dump(base_validation_results, f, indent=2)
+    
     print(f"      ✓ Target error: {result.get('target_gp_irt_error_mean', 'N/A'):.4f}")
+    print(f"      ✓ Avg Base error: {result.get('base_avg_gp_irt_error_mean', 'N/A'):.4f}")
     
     return result
 
