@@ -11,23 +11,23 @@
     5
   ],
   "base_datasets": [
+    "MedQA",
     "NaturalQA",
-    "LegalBench",
-    "MATH Competition",
-    "NarrativeQA"
+    "OpenBookQA",
+    "WMT-14 Translation"
   ],
   "remaining_datasets": [
-    "OpenBookQA",
-    "MedQA",
-    "WMT-14 Translation"
-  ],
-  "all_datasets_shuffled": [
-    "NaturalQA",
-    "LegalBench",
     "MATH Competition",
     "NarrativeQA",
-    "OpenBookQA",
+    "LegalBench"
+  ],
+  "all_datasets_shuffled": [
     "MedQA",
-    "WMT-14 Translation"
+    "NaturalQA",
+    "OpenBookQA",
+    "WMT-14 Translation",
+    "MATH Competition",
+    "NarrativeQA",
+    "LegalBench"
   ]
 }
