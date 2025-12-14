@@ -1,0 +1,79 @@
+{
+  "NaturalQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.07017144772135486,
+    "anchor_error_std": 0.03443375341143773,
+    "irt_error_mean": 0.10053492780888149,
+    "irt_error_std": 0.05292776351006358,
+    "gp_irt_error_mean": 0.07330131751192033,
+    "gp_irt_error_std": 0.03090641518431681,
+    "pirt_error_mean": 0.09861853298215935,
+    "pirt_error_std": 0.0479853182549252
+  },
+  "LegalBench": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.019105887827362108,
+    "anchor_error_std": 0.015822183030004332,
+    "irt_error_mean": 0.041313112772089274,
+    "irt_error_std": 0.03262810388588077,
+    "gp_irt_error_mean": 0.023008348563302104,
+    "gp_irt_error_std": 0.015053644901268978,
+    "pirt_error_mean": 0.03943825243309132,
+    "pirt_error_std": 0.03108267181021541
+  },
+  "MedQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.02849936236108578,
+    "anchor_error_std": 0.02732400548422639,
+    "irt_error_mean": 0.03463308789155966,
+    "irt_error_std": 0.04892768607249253,
+    "gp_irt_error_mean": 0.027737609045690923,
+    "gp_irt_error_std": 0.026057435480457025,
+    "pirt_error_mean": 0.032012926885101003,
+    "pirt_error_std": 0.04469699566827659
+  },
+  "WMT-14 Translation": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.08786250940503605,
+    "anchor_error_std": 0.030694847391198533,
+    "irt_error_mean": 0.17152253786583313,
+    "irt_error_std": 0.06161531677659933,
+    "gp_irt_error_mean": 0.08806235177921969,
+    "gp_irt_error_std": 0.030670603944709687,
+    "pirt_error_mean": 0.16905845070308756,
+    "pirt_error_std": 0.0611436531912922
+  },
+  "NarrativeQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.011327736466650291,
+    "anchor_error_std": 0.0076999133350875324,
+    "irt_error_mean": 0.08809032726746079,
+    "irt_error_std": 0.04955638479672444,
+    "gp_irt_error_mean": 0.011860971684677434,
+    "gp_irt_error_std": 0.007650279020369863,
+    "pirt_error_mean": 0.06846042590580638,
+    "pirt_error_std": 0.04186242343494548
+  },
+  "OpenBookQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.010746622855056598,
+    "anchor_error_std": 0.007173015834499674,
+    "irt_error_mean": 0.05316582987353558,
+    "irt_error_std": 0.05353874843123282,
+    "gp_irt_error_mean": 0.010343109476064215,
+    "gp_irt_error_std": 0.006429473285497112,
+    "pirt_error_mean": 0.04346042727356637,
+    "pirt_error_std": 0.04255145853796405
+  },
+  "MATH Competition": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.03230094491404927,
+    "anchor_error_std": 0.02708512030912479,
+    "irt_error_mean": 0.07307125202671476,
+    "irt_error_std": 0.06595754526227939,
+    "gp_irt_error_mean": 0.02949427688137688,
+    "gp_irt_error_std": 0.027636204377103492,
+    "pirt_error_mean": 0.06039676393192763,
+    "pirt_error_std": 0.052933566158676844
+  }
+}
