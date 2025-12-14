@@ -759,6 +759,16 @@ def run_chain_linking_experiment(config: ChainExperimentConfig | None = None):
                 print(f"    Distance {dist}: {err:.4f}")
     
     print(f"\nResults saved to: {output_dir}")
+    
+    # 8. Generate visualizations
+    print("\n6. Generating visualizations...")
+    try:
+        from visualize_chain_linking import visualize_chain_linking
+        visualize_chain_linking(output_dir)
+    except Exception as e:
+        print(f"   ⚠️ Failed to generate visualizations: {e}")
+        print("   You can run manually: python src/experiments/visualize_chain_linking.py <output_dir>")
+    
     return results_df
 
 
