@@ -265,7 +265,9 @@ def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
     
     # Load skill labels to know which datasets we need
     skill_labels = load_skill_labels(config.skill_labels_csv)
-    needed_datasets = set(skill_labels['Dataset'].unique())
+    # IMPORTANT: Sort to ensure deterministic order across runs
+    # Sets don't guarantee order, which breaks reproducibility with seeds
+    needed_datasets = sorted(set(skill_labels['Dataset'].unique()))
     
     datasets = {}
     
@@ -454,7 +456,8 @@ def group_all_datasets_together(
     
     Returns: dict with single key "All_Datasets" -> list of dataset names
     """
-    all_ds_names = list(datasets.keys())
+    # IMPORTANT: Sort for deterministic order across runs
+    all_ds_names = sorted(datasets.keys())
     
     if len(all_ds_names) < 2:
         return {}
@@ -506,6 +509,8 @@ def group_all_datasets_together(
                 best_common_count = len(shared_models)
     
     if len(best_subset) >= 2:
+        # IMPORTANT: Sort for deterministic order across runs
+        best_subset = sorted(best_subset)
         print(f"   ✓ Found subset of {len(best_subset)} datasets with {best_common_count} common models")
         print(f"   Datasets: {best_subset}")
         return {"All_Datasets": best_subset}
@@ -525,7 +530,9 @@ def split_models(
 ) -> tuple[set[str], set[str]]:
     """Split models into train and test sets."""
     np.random.seed(seed)
-    models = df['model_name'].unique()
+    # IMPORTANT: Sort models to ensure deterministic order across runs
+    # Without sorting, different DataFrame row orders lead to different splits
+    models = sorted(df['model_name'].unique())
     n_test = max(1, int(len(models) * test_ratio))
     test_models = set(np.random.choice(models, size=n_test, replace=False))
     train_models = set(models) - test_models
@@ -946,7 +953,8 @@ def select_anchors(
         lambda q: question_to_dataset.get(q, 'unknown')
     )
     
-    datasets = item_params_with_dataset['dataset'].unique()
+    # IMPORTANT: Sort for deterministic order across runs
+    datasets = sorted(item_params_with_dataset['dataset'].unique())
     
     all_anchor_ids = []
     all_anchor_weights = []

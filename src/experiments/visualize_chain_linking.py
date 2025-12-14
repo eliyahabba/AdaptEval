@@ -165,12 +165,15 @@ def plot_dataset_variance(
     fig, ax = plt.subplots(figsize=figsize)
     
     target_col = f'target_{metric}_mean'
+    std_col = f'target_{metric}_std'
     baseline_col = f'{metric}_mean'
     metric_name = ESTIMATION_METHODS.get(metric, metric)
     
     if target_col not in results_df.columns:
         print(f"  ⚠️ Column {target_col} not found")
         return None
+    
+    has_std = std_col in results_df.columns
     
     # Get unique datasets
     datasets = results_df['target_dataset'].unique()
@@ -183,10 +186,13 @@ def plot_dataset_variance(
         
         distances = ds_data['distance'].values
         errors = ds_data[target_col].values
+        stds = ds_data[std_col].values if has_std else None
         
-        # Plot line for this dataset
-        ax.plot(distances, errors, marker='o', markersize=6, 
-               color=colors[idx], linewidth=2, label=dataset[:15])
+        # Plot line with error bars for this dataset
+        ax.errorbar(distances, errors, yerr=stds,
+                   marker='o', markersize=8, capsize=6, capthick=1.5,
+                   color=colors[idx], linewidth=2, elinewidth=1.5, 
+                   label=dataset[:15])
         
         # Add baseline point at distance -0.3 (visual separation)
         if baseline and dataset in baseline:
@@ -248,14 +254,17 @@ def plot_all_methods_per_dataset(
         
         for metric_key, metric_name in ESTIMATION_METHODS.items():
             target_col = f'target_{metric_key}_mean'
+            std_col = f'target_{metric_key}_std'
             if target_col not in ds_data.columns:
                 continue
             
             errors = ds_data[target_col].values
+            stds = ds_data[std_col].values if std_col in ds_data.columns else None
             color = METHOD_COLORS[metric_key]
             
-            ax.plot(distances, errors, marker='o', markersize=5,
-                   color=color, linewidth=1.5, label=metric_name)
+            ax.errorbar(distances, errors, yerr=stds,
+                       marker='o', markersize=6, capsize=5, capthick=1.5,
+                       color=color, linewidth=1.5, elinewidth=1.5, label=metric_name)
             
             # Add baseline
             baseline_col = f'{metric_key}_mean'
