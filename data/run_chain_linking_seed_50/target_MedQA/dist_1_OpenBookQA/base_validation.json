@@ -1,0 +1,35 @@
+{
+  "NarrativeQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.016663328189890476,
+    "anchor_error_std": 0.014358441425827081,
+    "irt_error_mean": 0.039972150765867485,
+    "irt_error_std": 0.021206620042907368,
+    "gp_irt_error_mean": 0.016693658567301345,
+    "gp_irt_error_std": 0.014256296740500279,
+    "pirt_error_mean": 0.030077580300148506,
+    "pirt_error_std": 0.01919584188547564
+  },
+  "MATH Competition": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.023808455940591233,
+    "anchor_error_std": 0.0196699719285098,
+    "irt_error_mean": 0.03212952348938986,
+    "irt_error_std": 0.021545221104072677,
+    "gp_irt_error_mean": 0.023815440343915816,
+    "gp_irt_error_std": 0.018833508254837535,
+    "pirt_error_mean": 0.03178111671240063,
+    "pirt_error_std": 0.021200289350121027
+  },
+  "NaturalQA": {
+    "n_validations": 22,
+    "anchor_error_mean": 0.05665966937263368,
+    "anchor_error_std": 0.0323957367012713,
+    "irt_error_mean": 0.030107814905816096,
+    "irt_error_std": 0.02190201341143067,
+    "gp_irt_error_mean": 0.05565066769190243,
+    "gp_irt_error_std": 0.03222351332154628,
+    "pirt_error_mean": 0.03073201328330004,
+    "pirt_error_std": 0.022612181670628305
+  }
+}

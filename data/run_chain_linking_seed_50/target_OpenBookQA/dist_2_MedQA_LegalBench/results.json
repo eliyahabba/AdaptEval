@@ -1,0 +1,80 @@
+{
+  "target_dataset": "OpenBookQA",
+  "base_datasets": [
+    "NarrativeQA",
+    "WMT-14 Translation",
+    "MATH Competition",
+    "NaturalQA"
+  ],
+  "chain_datasets": [
+    "MedQA",
+    "LegalBench"
+  ],
+  "distance": 2,
+  "shuffle_seed": 50,
+  "train_test_seed": 42,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 700,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.01994188376753511,
+  "target_anchor_error_std": 0.015945541443804934,
+  "target_irt_error_mean": 0.06552970063401366,
+  "target_irt_error_std": 0.06682672425420169,
+  "target_gp_irt_error_mean": 0.021045465771951686,
+  "target_gp_irt_error_std": 0.016876228886223643,
+  "target_pirt_error_mean": 0.05259519396183807,
+  "target_pirt_error_std": 0.05579169864375822,
+  "base_validation": {
+    "NarrativeQA": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.01536145654244145,
+      "anchor_error_std": 0.014050719021094305,
+      "irt_error_mean": 0.11091663171619161,
+      "irt_error_std": 0.09031662345495825,
+      "gp_irt_error_mean": 0.014870175356567945,
+      "gp_irt_error_std": 0.013483433332519681,
+      "pirt_error_mean": 0.09632739078932837,
+      "pirt_error_std": 0.06858903540366239
+    },
+    "WMT-14 Translation": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.0889275352169286,
+      "anchor_error_std": 0.026924024422330113,
+      "irt_error_mean": 0.1228759066248824,
+      "irt_error_std": 0.05470705304492471,
+      "gp_irt_error_mean": 0.0890751490943272,
+      "gp_irt_error_std": 0.026813985793067527,
+      "pirt_error_mean": 0.11820697173596023,
+      "pirt_error_std": 0.053430660016711026
+    },
+    "MATH Competition": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.027318484320457737,
+      "anchor_error_std": 0.018439579969470266,
+      "irt_error_mean": 0.10344904293878138,
+      "irt_error_std": 0.06071120872355306,
+      "gp_irt_error_mean": 0.026158450227420117,
+      "gp_irt_error_std": 0.018485758644137908,
+      "pirt_error_mean": 0.09282058910782152,
+      "pirt_error_std": 0.05551536866701263
+    },
+    "NaturalQA": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.07726968147938358,
+      "anchor_error_std": 0.04597998367048806,
+      "irt_error_mean": 0.08474455353393262,
+      "irt_error_std": 0.07014349581530177,
+      "gp_irt_error_mean": 0.07529813536229671,
+      "gp_irt_error_std": 0.043425778426071135,
+      "pirt_error_mean": 0.07390856289205265,
+      "pirt_error_std": 0.05985236344569007
+    }
+  },
+  "base_avg_gp_irt_error_mean": 0.051350477510152995,
+  "base_avg_gp_irt_error_std": 0.03147257475393442,
+  "baseline_gp_irt_error_mean": 0.030827306636929844,
+  "delta_from_baseline": -0.009781840864978159
+}

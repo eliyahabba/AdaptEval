@@ -1,0 +1,79 @@
+{
+  "target_dataset": "LegalBench",
+  "base_datasets": [
+    "MATH Competition",
+    "WMT-14 Translation",
+    "NarrativeQA",
+    "MedQA"
+  ],
+  "chain_datasets": [
+    "NaturalQA"
+  ],
+  "distance": 1,
+  "shuffle_seed": 56,
+  "train_test_seed": 42,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 600,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.028800366205944953,
+  "target_anchor_error_std": 0.018605959779910954,
+  "target_irt_error_mean": 0.13769470788490917,
+  "target_irt_error_std": 0.06044924312671947,
+  "target_gp_irt_error_mean": 0.04530982993042932,
+  "target_gp_irt_error_std": 0.03072624896580202,
+  "target_pirt_error_mean": 0.13197716335106857,
+  "target_pirt_error_std": 0.05887453239561566,
+  "base_validation": {
+    "MATH Competition": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.031318766783150716,
+      "anchor_error_std": 0.021506834065127968,
+      "irt_error_mean": 0.10747735356799538,
+      "irt_error_std": 0.05901847141732216,
+      "gp_irt_error_mean": 0.0304765246572889,
+      "gp_irt_error_std": 0.01950768215008232,
+      "pirt_error_mean": 0.09285613203203774,
+      "pirt_error_std": 0.05292589718004224
+    },
+    "WMT-14 Translation": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.09294505147193745,
+      "anchor_error_std": 0.038645172696302944,
+      "irt_error_mean": 0.3723261420370754,
+      "irt_error_std": 0.07139749151651145,
+      "gp_irt_error_mean": 0.09429511870588354,
+      "gp_irt_error_std": 0.03859539268552879,
+      "pirt_error_mean": 0.36358343896746786,
+      "pirt_error_std": 0.06998967169255733
+    },
+    "NarrativeQA": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.016788296222179224,
+      "anchor_error_std": 0.010841834007048152,
+      "irt_error_mean": 0.39366010211136726,
+      "irt_error_std": 0.09636047254574558,
+      "gp_irt_error_mean": 0.013160233386818843,
+      "gp_irt_error_std": 0.00883904635121133,
+      "pirt_error_mean": 0.3540326555211224,
+      "pirt_error_std": 0.08935744539514295
+    },
+    "MedQA": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.033070869010748745,
+      "anchor_error_std": 0.026085515572662005,
+      "irt_error_mean": 0.16489799047221104,
+      "irt_error_std": 0.07508133939734694,
+      "gp_irt_error_mean": 0.02992207825420482,
+      "gp_irt_error_std": 0.022710508411138444,
+      "pirt_error_mean": 0.1592683551980253,
+      "pirt_error_std": 0.06844397940863389
+    }
+  },
+  "base_avg_gp_irt_error_mean": 0.04196348875104902,
+  "base_avg_gp_irt_error_std": 0.031004729172142566,
+  "baseline_gp_irt_error_mean": 0.03048817173729129,
+  "delta_from_baseline": 0.014821658193138031
+}

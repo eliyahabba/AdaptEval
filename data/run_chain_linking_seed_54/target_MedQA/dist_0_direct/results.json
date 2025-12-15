@@ -1,0 +1,77 @@
+{
+  "target_dataset": "MedQA",
+  "base_datasets": [
+    "WMT-14 Translation",
+    "NaturalQA",
+    "NarrativeQA",
+    "LegalBench"
+  ],
+  "chain_datasets": [],
+  "distance": 0,
+  "shuffle_seed": 54,
+  "train_test_seed": 42,
+  "n_common_models": 91,
+  "n_train_models": 69,
+  "n_test_models": 22,
+  "n_base_anchors": 400,
+  "n_total_anchors": 500,
+  "n_target_validations": 22,
+  "target_anchor_error_mean": 0.027413007833849538,
+  "target_anchor_error_std": 0.02491854913652624,
+  "target_irt_error_mean": 0.05430533357867768,
+  "target_irt_error_std": 0.056902010041139595,
+  "target_gp_irt_error_mean": 0.025953424780563474,
+  "target_gp_irt_error_std": 0.0202452841420673,
+  "target_pirt_error_mean": 0.04883630649154782,
+  "target_pirt_error_std": 0.052160078329176414,
+  "base_validation": {
+    "WMT-14 Translation": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.09103280705565249,
+      "anchor_error_std": 0.03541277833482222,
+      "irt_error_mean": 0.3306974077279306,
+      "irt_error_std": 0.09341801373191587,
+      "gp_irt_error_mean": 0.09221286436915622,
+      "gp_irt_error_std": 0.035406492312182805,
+      "pirt_error_mean": 0.3284312588907725,
+      "pirt_error_std": 0.09413123761850625
+    },
+    "NaturalQA": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.06374834463470376,
+      "anchor_error_std": 0.03511739950142741,
+      "irt_error_mean": 0.20624079450881083,
+      "irt_error_std": 0.06627722215366282,
+      "gp_irt_error_mean": 0.0740949605440497,
+      "gp_irt_error_std": 0.033061624363618716,
+      "pirt_error_mean": 0.19284537621892434,
+      "pirt_error_std": 0.05761921940061823
+    },
+    "NarrativeQA": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.024595896783112005,
+      "anchor_error_std": 0.016263822152066662,
+      "irt_error_mean": 0.06259788216600043,
+      "irt_error_std": 0.12885210938856795,
+      "gp_irt_error_mean": 0.024095517567485167,
+      "gp_irt_error_std": 0.01600089707123341,
+      "pirt_error_mean": 0.050429527402252525,
+      "pirt_error_std": 0.1031386715411949
+    },
+    "LegalBench": {
+      "n_validations": 22,
+      "anchor_error_mean": 0.03827016460070283,
+      "anchor_error_std": 0.024150358929256235,
+      "irt_error_mean": 0.17354633093120012,
+      "irt_error_std": 0.08712151653422646,
+      "gp_irt_error_mean": 0.08013340997917161,
+      "gp_irt_error_std": 0.049689467727555926,
+      "pirt_error_mean": 0.16870791511959854,
+      "pirt_error_std": 0.0841549995642006
+    }
+  },
+  "base_avg_gp_irt_error_mean": 0.06763418811496567,
+  "base_avg_gp_irt_error_std": 0.025969690444061003,
+  "baseline_gp_irt_error_mean": 0.027744838161341843,
+  "delta_from_baseline": -0.0017914133807783693
+}
