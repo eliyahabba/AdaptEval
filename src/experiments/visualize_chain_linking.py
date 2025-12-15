@@ -42,6 +42,127 @@ METHOD_COLORS = {
 # Colors for distance
 DISTANCE_COLORS = ['#1a5276', '#2980b9', '#5dade2', '#85c1e9', '#aed6f1']
 
+# Colors for efficiency methods
+EFFICIENCY_COLORS = {
+    'full': '#7f8c8d',       # Gray
+    'concurrent': '#e74c3c', # Red
+    'fixed_anchor': '#2ecc71', # Green
+}
+
+
+def calculate_costs(
+    results_df: pd.DataFrame,
+    baseline: dict,
+    config: dict,
+    total_items_per_dataset: int = 1000,
+) -> pd.DataFrame:
+    """Calculate API call costs for different evaluation methods.
+    
+    Cost model:
+    - Full evaluation: Evaluate all items for each dataset
+    - Concurrent calibration: Re-run anchors from ALL datasets when adding one
+    - Fixed-Anchor: Only run anchors for the NEW dataset
+    
+    Args:
+        results_df: Chain linking results
+        baseline: Baseline results dict
+        config: Experiment configuration
+        total_items_per_dataset: Average items per dataset (for full eval cost)
+    
+    Returns:
+        DataFrame with columns:
+        - target_dataset, distance
+        - cost_full, cost_concurrent, cost_fixed_anchor (per-addition)
+        - cost_cumulative_full, cost_cumulative_concurrent, cost_cumulative_fixed (cumulative)
+        - error_delta_full, error_delta_concurrent, error_delta_fixed
+    """
+    n_anchors = config.get('n_anchors_per_dataset', 100)
+    
+    # Get total number of datasets from baseline
+    n_total_datasets = len(baseline) if baseline else len(results_df['target_dataset'].unique())
+    
+    # Estimate total items from baseline if available
+    if baseline:
+        # Sum up n_items from each dataset in baseline if available
+        total_items = sum(
+            ds_data.get('n_items', total_items_per_dataset) 
+            for ds_data in baseline.values()
+        )
+        avg_items_per_dataset = total_items / len(baseline)
+    else:
+        avg_items_per_dataset = total_items_per_dataset
+        total_items = total_items_per_dataset * n_total_datasets
+    
+    rows = []
+    
+    for _, row in results_df.iterrows():
+        dataset = row['target_dataset']
+        distance = row['distance']
+        
+        # Number of datasets at this point in the chain
+        # distance=1 means 1 dataset was linked, so total = n_base + 1
+        # We need to infer n_base from the experiment structure
+        n_datasets_in_chain = n_total_datasets - distance + 1  # Base datasets + linked so far
+        
+        # === Per-Addition Costs ===
+        # Full evaluation: evaluate all items in the new dataset
+        cost_full = avg_items_per_dataset
+        
+        # Concurrent: need to re-run anchors from ALL datasets (to re-estimate theta)
+        # When adding dataset at distance d, we have (n_total - d) base + d linked = n_total datasets
+        cost_concurrent = n_anchors * n_datasets_in_chain
+        
+        # Fixed-Anchor: only need anchors from the NEW dataset
+        cost_fixed_anchor = n_anchors
+        
+        # === Cumulative Costs (total calls so far in the chain) ===
+        # Full: each dataset addition costs avg_items_per_dataset
+        cost_cumulative_full = avg_items_per_dataset * distance
+        
+        # Concurrent: at each step i, cost was n_anchors * (n_base + i)
+        # Sum from i=1 to distance: n_anchors * sum(n_base + i) = n_anchors * (distance * n_base + distance*(distance+1)/2)
+        n_base = n_total_datasets - distance
+        cost_cumulative_concurrent = n_anchors * (distance * n_base + distance * (distance + 1) // 2)
+        
+        # Fixed-Anchor: each addition costs just n_anchors
+        cost_cumulative_fixed = n_anchors * distance
+        
+        # === Error Deltas (vs full evaluation baseline) ===
+        baseline_col = 'gp_irt_error_mean'
+        target_col = 'target_gp_irt_error_mean'
+        
+        baseline_err = baseline.get(dataset, {}).get(baseline_col, np.nan) if baseline else np.nan
+        target_err = row.get(target_col, np.nan)
+        
+        # Full evaluation error = 0 (reference)
+        error_delta_full = 0.0
+        
+        # Concurrent/Fixed error = target_err - baseline_err
+        # (baseline represents "all trained together" which is our reference)
+        error_delta = target_err - baseline_err if not np.isnan(baseline_err) and not np.isnan(target_err) else np.nan
+        
+        rows.append({
+            'target_dataset': dataset,
+            'distance': distance,
+            # Per-addition costs
+            'cost_full': cost_full,
+            'cost_concurrent': cost_concurrent,
+            'cost_fixed_anchor': cost_fixed_anchor,
+            # Cumulative costs
+            'cost_cumulative_full': cost_cumulative_full,
+            'cost_cumulative_concurrent': cost_cumulative_concurrent,
+            'cost_cumulative_fixed': cost_cumulative_fixed,
+            # Error deltas
+            'error_delta_full': error_delta_full,
+            'error_delta_linked': error_delta,
+            # Raw values for reference
+            'baseline_error': baseline_err,
+            'target_error': target_err,
+            'n_datasets_in_chain': n_datasets_in_chain,
+        })
+    
+    return pd.DataFrame(rows)
+
 
 def load_results(output_dir: Path) -> tuple[pd.DataFrame, dict, dict]:
     """Load experiment results.
@@ -615,6 +736,239 @@ def plot_base_stability(
     return save_path
 
 
+def plot_efficiency_tradeoff(
+    results_df: pd.DataFrame,
+    baseline: dict,
+    config: dict,
+    output_dir: Path,
+    figsize: tuple = (12, 8),
+):
+    """Create Graph: Per-addition cost vs error delta.
+    
+    Shows the trade-off between computational cost (API calls) and prediction
+    accuracy when adding a new dataset.
+    
+    X-axis: Number of API calls needed when adding ONE dataset
+    Y-axis: Error delta compared to full evaluation (baseline)
+    """
+    # Calculate costs
+    costs_df = calculate_costs(results_df, baseline, config)
+    
+    if costs_df.empty:
+        print("  ⚠️ No cost data available")
+        return None
+    
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Group by distance for cleaner visualization
+    distances = sorted(costs_df['distance'].unique())
+    
+    # Prepare data for each method
+    methods = {
+        'Full Evaluation': {
+            'cost_col': 'cost_full',
+            'error': 0.0,  # Reference point
+            'color': EFFICIENCY_COLORS['full'],
+            'marker': 's',
+        },
+        'Concurrent': {
+            'cost_col': 'cost_concurrent',
+            'error_col': 'error_delta_linked',
+            'color': EFFICIENCY_COLORS['concurrent'],
+            'marker': 'o',
+        },
+        'Fixed-Anchor': {
+            'cost_col': 'cost_fixed_anchor',
+            'error_col': 'error_delta_linked',
+            'color': EFFICIENCY_COLORS['fixed_anchor'],
+            'marker': '^',
+        },
+    }
+    
+    # Plot each method
+    for method_name, method_info in methods.items():
+        cost_col = method_info['cost_col']
+        color = method_info['color']
+        marker = method_info['marker']
+        
+        if method_name == 'Full Evaluation':
+            # Full evaluation is a single reference point (average cost, 0 error)
+            avg_cost = costs_df[cost_col].mean()
+            ax.scatter([avg_cost], [0], s=200, marker=marker, color=color,
+                      label=f'{method_name} (reference)', zorder=5, edgecolor='black', linewidth=2)
+            ax.annotate(f'{method_name}\n(0 error)', (avg_cost, 0),
+                       textcoords='offset points', xytext=(10, 10), fontsize=9)
+        else:
+            # For IRT methods, plot per distance with error bars
+            error_col = method_info['error_col']
+            
+            grouped = costs_df.groupby('distance').agg({
+                cost_col: 'mean',
+                error_col: ['mean', 'std'],
+            })
+            
+            costs = grouped[cost_col]['mean'].values
+            errors = grouped[(error_col, 'mean')].values
+            error_stds = grouped[(error_col, 'std')].fillna(0).values
+            
+            # Plot with error bars
+            ax.errorbar(costs, errors, yerr=error_stds,
+                       marker=marker, markersize=12, capsize=8, capthick=2,
+                       color=color, linewidth=2, elinewidth=2,
+                       label=method_name, zorder=3)
+            
+            # Add distance labels
+            for i, (cost, err, dist) in enumerate(zip(costs, errors, distances)):
+                ax.annotate(f'd={int(dist)}', (cost, err),
+                           textcoords='offset points', xytext=(5, 5), fontsize=8, alpha=0.7)
+    
+    # Formatting
+    ax.axhline(y=0, color='gray', linestyle='--', linewidth=1, alpha=0.5)
+    ax.set_xlabel('API Calls per Dataset Addition', fontsize=12)
+    ax.set_ylabel('Error Delta (vs Full Evaluation)', fontsize=12)
+    ax.set_title('Efficiency Trade-off: Cost vs Accuracy\n'
+                 '(Lower-left is better: fewer calls, lower error)', 
+                 fontsize=13, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=10)
+    ax.grid(True, alpha=0.3)
+    
+    # Set axis limits with some padding
+    ax.set_xlim(left=0)
+    
+    plt.tight_layout()
+    
+    save_path = output_dir / "figures" / "efficiency_per_addition.png"
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close(fig)
+    print(f"  ✓ Saved: {save_path}")
+    
+    return save_path
+
+
+def plot_cumulative_efficiency(
+    results_df: pd.DataFrame,
+    baseline: dict,
+    config: dict,
+    output_dir: Path,
+    figsize: tuple = (14, 6),
+):
+    """Create Graph: Cumulative cost comparison as chain grows.
+    
+    Shows how total API calls accumulate as more datasets are added,
+    highlighting the dramatic savings of Fixed-Anchor over Concurrent.
+    
+    Left: Cumulative cost vs number of datasets
+    Right: Cost per error reduction (efficiency metric)
+    """
+    # Calculate costs
+    costs_df = calculate_costs(results_df, baseline, config)
+    
+    if costs_df.empty:
+        print("  ⚠️ No cost data available")
+        return None
+    
+    fig, axes = plt.subplots(1, 2, figsize=figsize)
+    
+    # === Left Panel: Cumulative Cost vs Distance ===
+    ax1 = axes[0]
+    
+    distances = sorted(costs_df['distance'].unique())
+    
+    # Aggregate by distance
+    grouped = costs_df.groupby('distance').agg({
+        'cost_cumulative_full': 'mean',
+        'cost_cumulative_concurrent': 'mean',
+        'cost_cumulative_fixed': 'mean',
+        'error_delta_linked': 'mean',
+    })
+    
+    cumul_full = grouped['cost_cumulative_full'].values
+    cumul_concurrent = grouped['cost_cumulative_concurrent'].values
+    cumul_fixed = grouped['cost_cumulative_fixed'].values
+    
+    # Plot cumulative costs
+    ax1.plot(distances, cumul_full, marker='s', markersize=10, linewidth=2,
+            color=EFFICIENCY_COLORS['full'], label='Full Evaluation')
+    ax1.plot(distances, cumul_concurrent, marker='o', markersize=10, linewidth=2,
+            color=EFFICIENCY_COLORS['concurrent'], label='Concurrent (O(N²))')
+    ax1.plot(distances, cumul_fixed, marker='^', markersize=10, linewidth=2,
+            color=EFFICIENCY_COLORS['fixed_anchor'], label='Fixed-Anchor (O(N))')
+    
+    # Add savings annotation at max distance
+    max_dist_idx = len(distances) - 1
+    savings = cumul_concurrent[max_dist_idx] - cumul_fixed[max_dist_idx]
+    savings_pct = 100 * savings / cumul_concurrent[max_dist_idx] if cumul_concurrent[max_dist_idx] > 0 else 0
+    
+    ax1.annotate(f'Savings: {savings:.0f} calls\n({savings_pct:.1f}%)',
+                xy=(distances[max_dist_idx], cumul_fixed[max_dist_idx]),
+                xytext=(distances[max_dist_idx] - 0.5, (cumul_concurrent[max_dist_idx] + cumul_fixed[max_dist_idx]) / 2),
+                fontsize=10, ha='right',
+                arrowprops=dict(arrowstyle='->', color='gray', lw=1.5))
+    
+    ax1.set_xlabel('Datasets Added (Distance)', fontsize=11)
+    ax1.set_ylabel('Cumulative API Calls', fontsize=11)
+    ax1.set_title('Cumulative Cost as Chain Grows\n(Fixed-Anchor scales linearly)', fontsize=12)
+    ax1.legend(loc='upper left', fontsize=9)
+    ax1.grid(True, alpha=0.3)
+    ax1.set_xticks(distances)
+    
+    # === Right Panel: Error vs Cost (Pareto view) ===
+    ax2 = axes[1]
+    
+    # For each distance, plot cost vs error for each method
+    error_deltas = grouped['error_delta_linked'].values
+    
+    # Full evaluation: cumulative cost with 0 error
+    ax2.scatter(cumul_full, [0] * len(cumul_full), s=100, marker='s',
+               color=EFFICIENCY_COLORS['full'], label='Full Evaluation', alpha=0.7)
+    
+    # Concurrent and Fixed-Anchor with actual errors
+    ax2.scatter(cumul_concurrent, error_deltas, s=100, marker='o',
+               color=EFFICIENCY_COLORS['concurrent'], label='Concurrent', alpha=0.7)
+    ax2.scatter(cumul_fixed, error_deltas, s=100, marker='^',
+               color=EFFICIENCY_COLORS['fixed_anchor'], label='Fixed-Anchor', alpha=0.7)
+    
+    # Connect points to show progression
+    for i in range(len(distances) - 1):
+        # Connect concurrent points
+        ax2.plot([cumul_concurrent[i], cumul_concurrent[i+1]], 
+                [error_deltas[i], error_deltas[i+1]],
+                color=EFFICIENCY_COLORS['concurrent'], alpha=0.3, linestyle='--')
+        # Connect fixed points
+        ax2.plot([cumul_fixed[i], cumul_fixed[i+1]], 
+                [error_deltas[i], error_deltas[i+1]],
+                color=EFFICIENCY_COLORS['fixed_anchor'], alpha=0.3, linestyle='--')
+    
+    # Add distance labels
+    for i, dist in enumerate(distances):
+        ax2.annotate(f'd={int(dist)}', (cumul_fixed[i], error_deltas[i]),
+                    textcoords='offset points', xytext=(5, 5), fontsize=8, alpha=0.7)
+    
+    ax2.axhline(y=0, color='gray', linestyle='--', linewidth=1, alpha=0.5)
+    ax2.set_xlabel('Cumulative API Calls', fontsize=11)
+    ax2.set_ylabel('Error Delta (vs Full Evaluation)', fontsize=11)
+    ax2.set_title('Pareto View: Cost vs Accuracy\n(Lower-left = most efficient)', fontsize=12)
+    ax2.legend(loc='upper right', fontsize=9)
+    ax2.grid(True, alpha=0.3)
+    ax2.set_xlim(left=0)
+    
+    plt.tight_layout()
+    
+    save_path = output_dir / "figures" / "efficiency_cumulative.png"
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close(fig)
+    print(f"  ✓ Saved: {save_path}")
+    
+    # Also save the cost data as CSV for reference
+    csv_path = output_dir / "figures" / "efficiency_costs.csv"
+    costs_df.to_csv(csv_path, index=False)
+    print(f"  ✓ Saved: {csv_path}")
+    
+    return save_path
+
+
 def visualize_chain_linking(output_dir: str | Path):
     """Main visualization function."""
     output_dir = Path(output_dir)
@@ -662,9 +1016,17 @@ def visualize_chain_linking(output_dir: str | Path):
     print("\n  Summary Table...")
     plot_summary_table(results_df, baseline, output_dir)
     
-    # Graph 5: Base stability
-    print("\n  Graph 5: Base Stability...")
+    # Graph 6: Base stability
+    print("\n  Graph 6: Base Stability...")
     plot_base_stability(results_df, baseline, output_dir)
+    
+    # Graph 7: Efficiency Trade-off (per-addition cost vs error)
+    print("\n  Graph 7: Efficiency Trade-off (per-addition)...")
+    plot_efficiency_tradeoff(results_df, baseline, config, output_dir)
+    
+    # Graph 8: Cumulative Efficiency (cost scaling)
+    print("\n  Graph 8: Cumulative Efficiency...")
+    plot_cumulative_efficiency(results_df, baseline, config, output_dir)
     
     print(f"\n✅ All visualizations saved to: {output_dir / 'figures'}")
 
