@@ -72,6 +72,9 @@ class ChainExperimentConfig(ExperimentConfig):
     
     # Zero-variance filtering for IRT training
     filter_zero_variance: bool = False  # If True, remove zero-variance questions (uninformative for IRT)
+    
+    # Sparse matrix mode
+    use_sparse_matrix: bool = False  # If True, include models that didn't do ALL datasets (requires sparse matrix handling)
 
 
 # =============================================================================
@@ -214,6 +217,95 @@ def prepare_data_splits(
     }
 
 
+def prepare_data_splits_sparse(
+    datasets: dict[str, pd.DataFrame],
+    base_datasets: list[str],
+    chain_datasets: list[str],
+    target_dataset: str,
+    test_ratio: float = 0.25,
+    seed: int = 42,
+) -> dict:
+    """Prepare train/test splits for a chain linking scenario (Sparse Matrix Mode).
+    
+    Instead of requiring models to be in ALL datasets, we are more flexible:
+    - Train set: Union of all available models (IRT handles missing data)
+    - Test set: Only models present in both Base and Target (intersection)
+    
+    This allows using many more models when the matrix is sparse (e.g. helm_classic).
+    """
+    all_dataset_names = base_datasets + chain_datasets + [target_dataset]
+    
+    # 1. Identify all available models across relevant datasets
+    all_models = set()
+    models_per_dataset = {}
+    for name in all_dataset_names:
+        ds_models = set(datasets[name]['model_name'].unique())
+        models_per_dataset[name] = ds_models
+        all_models.update(ds_models)
+    
+    # 2. Identify models valid for TESTING
+    # A test model must be in at least one Base dataset AND the Target dataset
+    models_in_base = set()
+    for base_ds in base_datasets:
+        models_in_base.update(models_per_dataset[base_ds])
+        
+    models_in_target = models_per_dataset[target_dataset]
+    
+    # Candidates for test set: Models present in Base AND Target
+    test_candidates = sorted(list(models_in_base & models_in_target))
+    
+    if len(test_candidates) < 4:
+        raise ValueError(f"Only {len(test_candidates)} models in Base ∩ Target intersection (need 4+ for testing)")
+    
+    # 3. Split Test/Train
+    np.random.seed(seed)
+    n_test = max(1, int(len(test_candidates) * test_ratio))
+    test_models = set(np.random.choice(test_candidates, size=n_test, replace=False))
+    
+    # Train models are ALL other models (including those only in Base or only in Target)
+    # This maximizes information for calibration
+    train_models = all_models - test_models
+    
+    # 4. Prepare DataFrames (filter by model lists)
+    def filter_df(df, models):
+        return df[df['model_name'].isin(models)].copy()
+    
+    # Prepare Base data
+    base_dfs = [datasets[d] for d in base_datasets]
+    base_df = pd.concat(base_dfs, ignore_index=True)
+    train_base_df = filter_df(base_df, train_models)
+    test_base_df = filter_df(base_df, test_models)
+    
+    # Prepare Chain data
+    train_chain_dfs = []
+    test_chain_dfs = []
+    for chain_ds in chain_datasets:
+        chain_df = datasets[chain_ds]
+        train_chain_dfs.append(filter_df(chain_df, train_models))
+        test_chain_dfs.append(filter_df(chain_df, test_models))
+    
+    # Prepare Target data
+    target_df = datasets[target_dataset]
+    train_target_df = filter_df(target_df, train_models)
+    test_target_df = filter_df(target_df, test_models)
+    
+    return {
+        'base_datasets': base_datasets,
+        'chain_datasets': chain_datasets,
+        'target_dataset': target_dataset,
+        'train_base_df': train_base_df,
+        'test_base_df': test_base_df,
+        'train_chain_dfs': train_chain_dfs,
+        'test_chain_dfs': test_chain_dfs,
+        'train_target_df': train_target_df,
+        'test_target_df': test_target_df,
+        'train_models': train_models,
+        'test_models': test_models,
+        'n_common_models': len(test_candidates), # Approximated by test candidates
+        'n_total_models': len(all_models),
+    }
+
+
 # =============================================================================
 # Main Experiment
 # =============================================================================
@@ -261,10 +353,17 @@ def run_chain_scenario(
     
     # Prepare data splits
     try:
-        splits = prepare_data_splits(
-            datasets, base_datasets, chain_datasets, target_dataset,
-            test_ratio=config.test_ratio, seed=config.seed,
-        )
+        if config.use_sparse_matrix:
+            print(f"    Using Sparse Matrix Mode (Train: Union, Test: Intersection)")
+            splits = prepare_data_splits_sparse(
+                datasets, base_datasets, chain_datasets, target_dataset,
+                test_ratio=config.test_ratio, seed=config.seed,
+            )
+        else:
+            splits = prepare_data_splits(
+                datasets, base_datasets, chain_datasets, target_dataset,
+                test_ratio=config.test_ratio, seed=config.seed,
+            )
     except ValueError as e:
         print(f"    ⚠️ Skipping: {e}")
         return {'error': str(e)}
@@ -575,21 +674,36 @@ def compute_baseline(
     all_dfs = [datasets[name] for name in all_dataset_names]
     combined = pd.concat(all_dfs, ignore_index=True)
     
-    # Get common models
-    models_per_dataset = {name: set(datasets[name]['model_name'].unique()) for name in all_dataset_names}
-    common_models = set.intersection(*models_per_dataset.values())
-    
-    if len(common_models) < 4:
-        print(f"⚠️ Only {len(common_models)} common models, baseline may be unreliable")
-    
-    # Filter to common models and split
-    combined = combined[combined['model_name'].isin(common_models)]
-    train_models, test_models = split_models(combined, config.test_ratio, config.seed)
+    if config.use_sparse_matrix:
+        print("  Using Sparse Matrix Mode for Baseline")
+        # In sparse mode, we use ALL models for training, but only evaluate on test models per dataset
+        all_models = set(combined['model_name'].unique())
+        
+        # We need a consistent train/test split across all datasets
+        # A model is "Test" if it appears in enough datasets to be useful for evaluation
+        # For simplicity, we just split ALL models randomly
+        np.random.seed(config.seed)
+        n_test = max(1, int(len(all_models) * config.test_ratio))
+        test_models = set(np.random.choice(sorted(list(all_models)), size=n_test, replace=False))
+        train_models = all_models - test_models
+        
+        common_models = all_models # Just for logging
+    else:
+        # Get common models (strict intersection)
+        models_per_dataset = {name: set(datasets[name]['model_name'].unique()) for name in all_dataset_names}
+        common_models = set.intersection(*models_per_dataset.values())
+        
+        if len(common_models) < 4:
+            print(f"⚠️ Only {len(common_models)} common models, baseline may be unreliable")
+        
+        # Filter to common models and split
+        combined = combined[combined['model_name'].isin(common_models)]
+        train_models, test_models = split_models(combined, config.test_ratio, config.seed)
     
     train_df = combined[combined['model_name'].isin(train_models)]
     test_df = combined[combined['model_name'].isin(test_models)]
     
-    print(f"  Training on {len(all_dataset_names)} datasets, {len(common_models)} common models")
+    print(f"  Training on {len(all_dataset_names)} datasets, {len(common_models)} available models")
     print(f"  Train: {len(train_models)} models, Test: {len(test_models)} models")
     
     # Train IRT on all datasets
@@ -811,12 +925,20 @@ if __name__ == "__main__":
                              "'lb_only' (395 models, 6 datasets)")
     parser.add_argument("--filter-zero-variance", action="store_true",
                         help="Enable filtering of zero-variance questions during IRT training")
+    parser.add_argument("--use-sparse-matrix", action="store_true",
+                        help="Use sparse matrix mode (include models not present in all datasets). "
+                             "Recommended for helm_classic.")
     
     args = parser.parse_args()
     
     # Debug: print the data source mode from args
     print(f"DEBUG: args.data_source_mode = '{args.data_source_mode}'")
     print(f"DEBUG: all args = {vars(args)}")
+    
+    # Auto-enable sparse matrix for helm_classic if not specified
+    if args.data_source_mode == 'helm_classic' and not args.use_sparse_matrix:
+        print("NOTE: Auto-enabling --use-sparse-matrix for helm_classic mode")
+        args.use_sparse_matrix = True
     
     config = ChainExperimentConfig(
         n_base_datasets=args.n_base,
@@ -830,6 +952,7 @@ if __name__ == "__main__":
         epochs=args.epochs,
         data_source_mode=args.data_source_mode,
         filter_zero_variance=args.filter_zero_variance,
+        use_sparse_matrix=args.use_sparse_matrix,
     )
     
     if args.output_dir:
