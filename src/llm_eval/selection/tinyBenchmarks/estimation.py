@@ -105,14 +105,51 @@ def estimate_theta_from_anchors(
         init_theta_val = np.zeros(D) if init_theta == 0.0 else np.full(D, init_theta)
     else:
         # Fallback: use scalar parameters from item_params
+        # Filter common items to ensure valid data
+        valid_common = []
+        for q in common:
+            val_a = item_params.loc[q, "a"]
+            val_b = item_params.loc[q, "b"]
+            # Check for NaN or None
+            if pd.isna(val_a) if np.isscalar(val_a) else False:
+                continue
+            if pd.isna(val_b) if np.isscalar(val_b) else False:
+                continue
+            valid_common.append(q)
+            
+        if not valid_common:
+            raise ValueError("No valid anchor parameters (all NaN/None)")
+            
+        common = valid_common
         first_a = item_params.loc[common[0], "a"]
         is_multidim = isinstance(first_a, (list, np.ndarray, tuple))
         
         if is_multidim:
             a_list = item_params.loc[common, "a"].tolist()
             b_list = item_params.loc[common, "b"].tolist()
-            a_values = np.array(a_list).T
-            b_values = np.array(b_list).T
+            
+            # Verify homogeneity manually before numpy conversion
+            try:
+                a_values = np.array(a_list).T
+                b_values = np.array(b_list).T
+            except Exception as e:
+                # Fallback for inhomogeneous lists - try to fix or raise clear error
+                if len(a_list) > 0:
+                    expected_len = len(a_list[0])
+                    # Filter only valid length items
+                    valid_indices = [i for i, x in enumerate(a_list) if len(x) == expected_len]
+                    if len(valid_indices) < len(a_list):
+                        # Update lists and common keys
+                        a_list = [a_list[i] for i in valid_indices]
+                        b_list = [b_list[i] for i in valid_indices]
+                        common = [common[i] for i in valid_indices]
+                        a_values = np.array(a_list).T
+                        b_values = np.array(b_list).T
+                    else:
+                        raise ValueError(f"Inhomogeneous parameter shapes: {e}")
+                else:
+                    raise e
+
             A = a_values[None, :, :]
             B = b_values[None, :, :]
         else:
@@ -121,6 +158,7 @@ def estimate_theta_from_anchors(
             A = a_values.reshape(1, 1, -1)  # (1, 1, n_items) for 1D case
             B = b_values.reshape(1, 1, -1)
         
+        # Ensure y_values matches the filtered common list
         y_values = anchor_responses.loc[common].astype(float).values
         D = A.shape[1]
         init_theta_val = np.zeros(D) if init_theta == 0.0 else np.full(D, init_theta)
@@ -364,7 +402,8 @@ def run_estimation_validation(
                         question_ids_order=question_ids_order,
                     )
                 except Exception as e:
-                    warnings.warn(f"Theta estimation failed for {model_name}: {e}")
+                    n_anchors = len(anchor_responses) if anchor_responses is not None else 0
+                    warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
                     stats["theta_estimation_failures"] += 1
                     continue
             else:
