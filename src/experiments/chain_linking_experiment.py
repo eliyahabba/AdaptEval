@@ -65,6 +65,10 @@ class ChainExperimentConfig(ExperimentConfig):
     
     # Output directory for this experiment
     output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/chain_linking_experiment"))
+    
+    # Data source mode (override default from parent)
+    # Options: "helm_lite" (default for chain), "helm_classic", "mixed", "lb_only"
+    data_source_mode: str = "helm_lite"
 
 
 # =============================================================================
