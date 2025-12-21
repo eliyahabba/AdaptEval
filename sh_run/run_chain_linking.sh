@@ -86,6 +86,13 @@ echo "  EPOCHS: ${EPOCHS}"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
 echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
 
+# Auto-enable sparse matrix for data sources that need it
+SPARSE_FLAG=""
+if [[ "${DATA_SOURCE_MODE}" == "helm_classic" ]] || [[ "${DATA_SOURCE_MODE}" == "reeval" ]]; then
+    SPARSE_FLAG="--use-sparse-matrix"
+    echo "  SPARSE_MATRIX: auto-enabled for ${DATA_SOURCE_MODE}"
+fi
+
 # Run the chain linking experiment
 echo "Starting chain linking experiment..."
 python src/experiments/chain_linking_experiment.py \
@@ -98,7 +105,8 @@ python src/experiments/chain_linking_experiment.py \
     --shuffle-seed ${SHUFFLE_SEED} \
     --dims 2 5 \
     --epochs ${EPOCHS} \
-    --data-source-mode ${DATA_SOURCE_MODE}
+    --data-source-mode ${DATA_SOURCE_MODE} \
+    ${SPARSE_FLAG}
 
 # Print resource usage at the end
 echo "Job resource usage:"

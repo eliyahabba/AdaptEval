@@ -283,12 +283,19 @@ def build_reeval_config() -> dict:
     
     # Load metadata to get list of scenarios
     metadata_file = reeval_dir / "reeval_metadata.json"
+    scenario_names = []
+    
     if metadata_file.exists():
         with open(metadata_file) as f:
             metadata = json.load(f)
-        scenario_names = list(metadata.get('datasets', {}).keys())
-    else:
-        # Fallback to loading the data to get scenarios
+        # The metadata has datasets -> n_questions -> {scenario: count}
+        # We need to extract the scenario names
+        datasets_info = metadata.get('datasets', {})
+        if 'n_questions' in datasets_info:
+            scenario_names = list(datasets_info['n_questions'].keys())
+    
+    # Fallback to loading the data to get scenarios
+    if not scenario_names:
         if reeval_file.exists():
             df = pd.read_parquet(reeval_file)
             scenario_names = sorted(df['dataset'].unique())
