@@ -272,14 +272,20 @@ def build_reeval_config() -> dict:
     - 183 models
     - 22 scenarios (datasets)
     - ~5.7M rows total
-    - Pre-converted to our format and saved as parquet
+    - Pre-converted to our format and saved as parquet (split into 2 parts)
     
     Returns:
         Configuration dict with all reeval scenarios
     """
     project_root = Path(__file__).resolve().parents[2]
     reeval_dir = project_root / "aggregated_data" / "reeval"
-    reeval_file = reeval_dir / "reeval_formatted.parquet"
+    
+    # Check for split files (preferred)
+    part1_file = reeval_dir / "reeval_formatted_part1.parquet"
+    part2_file = reeval_dir / "reeval_formatted_part2.parquet"
+    
+    # Also check for single file (backward compatibility)
+    single_file = reeval_dir / "reeval_formatted.parquet"
     
     # Load metadata to get list of scenarios
     metadata_file = reeval_dir / "reeval_metadata.json"
@@ -296,12 +302,16 @@ def build_reeval_config() -> dict:
     
     # Fallback to loading the data to get scenarios
     if not scenario_names:
-        if reeval_file.exists():
-            df = pd.read_parquet(reeval_file)
+        if part1_file.exists() and part2_file.exists():
+            df1 = pd.read_parquet(part1_file)
+            df2 = pd.read_parquet(part2_file)
+            scenario_names = sorted(set(df1['dataset'].unique()) | set(df2['dataset'].unique()))
+        elif single_file.exists():
+            df = pd.read_parquet(single_file)
             scenario_names = sorted(df['dataset'].unique())
         else:
             raise FileNotFoundError(
-                f"reeval dataset not found at {reeval_file}. "
+                f"reeval dataset not found. "
                 f"Please run: python src/experiments/prepare_reeval_dataset.py"
             )
     
@@ -310,7 +320,7 @@ def build_reeval_config() -> dict:
     for scenario in scenario_names:
         datasets_config[scenario] = {
             "source_type": "reeval",
-            "source_file": "reeval_formatted.parquet",
+            "source_file": "reeval_formatted",  # Will load both parts
             "scenario_name": scenario,
         }
     
@@ -502,10 +512,6 @@ def extract_from_reeval(
     # Select required columns (already in correct format)
     result = df[['model_name', 'question_id', 'dataset', 'normalized_score']].copy()
     
-    # Add sub_dataset if it exists
-    if 'sub_dataset' in df.columns:
-        result['sub_dataset'] = df['sub_dataset']
-    
     return result.drop_duplicates(subset=['model_name', 'question_id'])
 
 
@@ -589,30 +595,42 @@ def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
                 df = extract_from_parquet(str(parquet_path), dataset_name, filter_pattern)
             
             elif source_type == 'reeval':
-                # Load from reeval parquet (load once and cache)
-                reeval_path = reeval_dir / source_file
+                # Load from reeval parquet (load once and cache, supports split files)
+                reeval_dir_path = Path(reeval_dir)
+                part1_path = reeval_dir_path / "reeval_formatted_part1.parquet"
+                part2_path = reeval_dir_path / "reeval_formatted_part2.parquet"
+                single_path = reeval_dir_path / "reeval_formatted.parquet"
                 
-                if not reeval_path.exists():
-                    print(f"  Warning: {reeval_path} not found, skipping {dataset_name}")
+                # Check which files exist
+                has_split = part1_path.exists() and part2_path.exists()
+                has_single = single_path.exists()
+                
+                if not has_split and not has_single:
+                    print(f"  Warning: reeval data not found, skipping {dataset_name}")
                     print(f"  Please run: python src/experiments/prepare_reeval_dataset.py")
                     continue
                 
-                # Load the scenario data
                 scenario_name = ds_config.get('scenario_name', dataset_name)
                 
-                # For reeval, we can load just once since it's already formatted
+                # Load reeval data once and cache
                 if reeval_data is None:
-                    print(f"  Loading reeval data from {source_file}...")
-                    reeval_data = pd.read_parquet(reeval_path)
-                    print(f"  Loaded reeval: {reeval_data['model_name'].nunique()} models, "
-                          f"{reeval_data['dataset'].nunique()} scenarios")
+                    if has_split:
+                        print(f"  Loading reeval data from split files...")
+                        df1 = pd.read_parquet(part1_path)
+                        df2 = pd.read_parquet(part2_path)
+                        reeval_data = pd.concat([df1, df2], ignore_index=True)
+                        print(f"  Loaded reeval: {reeval_data['model_name'].nunique()} models, "
+                              f"{reeval_data['dataset'].nunique()} scenarios")
+                    else:
+                        print(f"  Loading reeval data from single file...")
+                        reeval_data = pd.read_parquet(single_path)
+                        print(f"  Loaded reeval: {reeval_data['model_name'].nunique()} models, "
+                              f"{reeval_data['dataset'].nunique()} scenarios")
                 
-                # Extract this scenario
+                # Extract this scenario (already in correct format)
                 df = reeval_data[reeval_data['dataset'] == scenario_name].copy()
                 if not df.empty:
                     df = df[['model_name', 'question_id', 'dataset', 'normalized_score']].copy()
-                    if 'sub_dataset' in reeval_data.columns:
-                        df['sub_dataset'] = reeval_data[reeval_data['dataset'] == scenario_name]['sub_dataset'].values
                     df = df.drop_duplicates(subset=['model_name', 'question_id'])
             
             else:
