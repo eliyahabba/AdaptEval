@@ -73,7 +73,7 @@ class ExperimentConfig:
     anchor_only_fixed: bool = True  # If True, only freeze selected anchors (faster). If False, freeze all Base items.
     
     # Zero-variance filtering for IRT training
-    filter_zero_variance: bool = True  # If False, skip removing zero-variance questions
+    filter_zero_variance: bool = False  # If True, remove zero-variance questions (uninformative for IRT)
 
 
 # =============================================================================

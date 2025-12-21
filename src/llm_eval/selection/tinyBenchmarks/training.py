@@ -77,7 +77,7 @@ class TrainingConfig:
     log_every: int = 200
     
     # Zero-variance filtering
-    filter_zero_variance: bool = True  # If False, skip removing zero-variance questions
+    filter_zero_variance: bool = False  # If True, remove zero-variance questions (uninformative for IRT)
 
 
 def compute_balance_weights(matrix_df: pd.DataFrame) -> np.ndarray:

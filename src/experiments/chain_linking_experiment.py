@@ -71,7 +71,7 @@ class ChainExperimentConfig(ExperimentConfig):
     data_source_mode: str = "helm_lite"
     
     # Zero-variance filtering for IRT training
-    filter_zero_variance: bool = True  # If False, skip removing zero-variance questions
+    filter_zero_variance: bool = False  # If True, remove zero-variance questions (uninformative for IRT)
 
 
 # =============================================================================
@@ -809,8 +809,8 @@ if __name__ == "__main__":
                              "'helm_classic' (70 models, 30 datasets), "
                              "'mixed' (uses data_source_config.json), "
                              "'lb_only' (395 models, 6 datasets)")
-    parser.add_argument("--no-filter-zero-variance", action="store_true",
-                        help="Disable filtering of zero-variance questions during IRT training")
+    parser.add_argument("--filter-zero-variance", action="store_true",
+                        help="Enable filtering of zero-variance questions during IRT training")
     
     args = parser.parse_args()
     
@@ -829,7 +829,7 @@ if __name__ == "__main__":
         dims_search=args.dims,
         epochs=args.epochs,
         data_source_mode=args.data_source_mode,
-        filter_zero_variance=not args.no_filter_zero_variance,
+        filter_zero_variance=args.filter_zero_variance,
     )
     
     if args.output_dir:
