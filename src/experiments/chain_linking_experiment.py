@@ -654,9 +654,12 @@ def run_chain_linking_experiment(config: ChainExperimentConfig | None = None):
     print(f"  Max chain length: {config.max_chain_length}")
     print(f"  Shuffle seed: {config.shuffle_seed}")
     print(f"  Train/test seed: {config.seed}")
+    print(f"  Data source mode: {config.data_source_mode}")
     
     # 1. Load datasets
-    print("\n1. Loading datasets...")
+    print(f"\n1. Loading datasets...")
+    print(f"   DEBUG: config.data_source_mode = '{config.data_source_mode}'")
+    print(f"   DEBUG: config type = {type(config).__name__}")
     datasets = load_all_datasets(config)
     print(f"   Loaded {len(datasets)} datasets")
     
@@ -799,6 +802,10 @@ if __name__ == "__main__":
                              "'lb_only' (395 models, 6 datasets)")
     
     args = parser.parse_args()
+    
+    # Debug: print the data source mode from args
+    print(f"DEBUG: args.data_source_mode = '{args.data_source_mode}'")
+    print(f"DEBUG: all args = {vars(args)}")
     
     config = ChainExperimentConfig(
         n_base_datasets=args.n_base,

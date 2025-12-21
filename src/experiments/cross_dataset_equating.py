@@ -49,6 +49,10 @@ class ExperimentConfig:
     skill_labels_csv: str = field(default_factory=lambda: str(PROJECT_ROOT / "src/dataset_skill_labels.csv"))
     output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/cross_dataset_equating"))
     
+    # Data source mode - determines which datasets to use
+    # Options: "mixed" (current default), "helm_lite", "helm_classic", "lb_only"
+    data_source_mode: str = "mixed"
+    
     # IRT training
     dims_search: list = field(default_factory=lambda: [2, 5])
     epochs: int = 2000
@@ -112,6 +116,171 @@ def load_data_source_config(config_path: str | None = None) -> dict:
                 config["paths"][key] = str(project_root / path)
     
     return config
+
+
+def build_helm_classic_config() -> dict:
+    """Build data source config for HELM Classic datasets only (70 models, 30 datasets)."""
+    project_root = Path(__file__).resolve().parents[2]
+    
+    # Dataset patterns in helm_classic_aggregated.parquet
+    classic_datasets = {
+        "BabiQA": "babiqascenario",
+        "BBQ": "bbqscenario",
+        "BLiMP": "blimpscenario",
+        "BOLD": "boldscenario",
+        "BoolQ": "boolqscenario",
+        "CivilComments": "civilcommentsscenario",
+        "Code": "codescenario",
+        "CommonSense": "commonsensescenario",
+        "Copyright": "copyrightscenario",
+        "Disinformation": "disinformationscenario",
+        "DyckLanguage": "dycklanguagescenario",
+        "EntityDataImputation": "entitydataimputationscenario",
+        "EntityMatching": "entitymatchingscenario",
+        "GSM8K-Classic": "gsm8kscenario",
+        "IMDB": "imdbscenario",
+        "LegalSupport": "legalsupportscenario",
+        "LSAT": "lsatscenario",
+        "MATH-Classic": "mathscenario",
+        "MMLU-Classic": "mmluscenario",
+        "MS MARCO": "msmarcoscenario",
+        "NarrativeQA-Classic": "narrativeqascenario",
+        "NaturalQA-Classic": "naturalqascenario",
+        "QuAC": "quacscenario",
+        "RAFT": "raftscenario",
+        "RealToxicityPrompts": "realtoxicityprompts",
+        "SRN": "srnscenario",
+        "Summarization": "summarizationscenario",
+        "SyntheticReasoning": "syntheticreasoningscenario",
+        "TruthfulQA-Classic": "truthfulqascenario",
+        "WikiFact": "wikifactscenario",
+    }
+    
+    datasets_config = {}
+    for name, pattern in classic_datasets.items():
+        datasets_config[name] = {
+            "source_type": "aggregated",
+            "source_file": "helm_classic_aggregated.parquet",
+            "parquet_filter": pattern,
+            "models": 70,
+        }
+    
+    return {
+        "datasets": datasets_config,
+        "paths": {
+            "tinybenchmarks_dir": str(project_root / "aggregated_data/tinybenchmarks"),
+            "aggregated_dir": str(project_root / "aggregated_data/aggregated"),
+        }
+    }
+
+
+def build_helm_lite_config() -> dict:
+    """Build data source config for HELM Lite datasets only (91 models, 9 datasets)."""
+    project_root = Path(__file__).resolve().parents[2]
+    
+    lite_datasets = {
+        "GSM8K-Lite": "gsm8kscenario",
+        "LegalBench": "legalbench",
+        "MATH Competition": "mathscenario",
+        "MedQA": "medqascenario",
+        "MMLU-Lite": "mmluscenario",
+        "NarrativeQA": "narrativeqascenario",
+        "NaturalQA": "naturalqascenario",
+        "OpenBookQA": "openbookqa",
+        "WMT-14 Translation": "wmt14scenario",
+    }
+    
+    datasets_config = {}
+    for name, pattern in lite_datasets.items():
+        datasets_config[name] = {
+            "source_type": "aggregated",
+            "source_file": "helm_lite_aggregated.parquet",
+            "parquet_filter": pattern,
+            "models": 91,
+        }
+    
+    return {
+        "datasets": datasets_config,
+        "paths": {
+            "tinybenchmarks_dir": str(project_root / "aggregated_data/tinybenchmarks"),
+            "aggregated_dir": str(project_root / "aggregated_data/aggregated"),
+        }
+    }
+
+
+def build_lb_only_config() -> dict:
+    """Build data source config for Open LLM Leaderboard datasets only (395 models, 6 datasets)."""
+    project_root = Path(__file__).resolve().parents[2]
+    
+    datasets_config = {
+        "ARC Challenge": {
+            "source_type": "tinybenchmarks",
+            "source_file": "lb.pickle",
+            "pickle_keys": ["harness_arc_challenge_25"],
+            "models": 395,
+        },
+        "GSM8K": {
+            "source_type": "tinybenchmarks",
+            "source_file": "lb.pickle",
+            "pickle_keys": ["harness_gsm8k_5"],
+            "models": 395,
+        },
+        "HellaSwag": {
+            "source_type": "tinybenchmarks",
+            "source_file": "lb.pickle",
+            "pickle_keys": ["harness_hellaswag_10"],
+            "models": 395,
+        },
+        "MMLU": {
+            "source_type": "tinybenchmarks",
+            "source_file": "mmlu_fields.pickle",
+            "pickle_keys": None,
+            "pickle_key_pattern": "hendrycksTest",
+            "models": 428,
+        },
+        "TruthfulQA": {
+            "source_type": "tinybenchmarks",
+            "source_file": "lb.pickle",
+            "pickle_keys": ["harness_truthfulqa_mc_0"],
+            "models": 395,
+        },
+        "Winogrande": {
+            "source_type": "tinybenchmarks",
+            "source_file": "lb.pickle",
+            "pickle_keys": ["harness_winogrande_5"],
+            "models": 395,
+        },
+    }
+    
+    return {
+        "datasets": datasets_config,
+        "paths": {
+            "tinybenchmarks_dir": str(project_root / "aggregated_data/tinybenchmarks"),
+            "aggregated_dir": str(project_root / "aggregated_data/aggregated"),
+        }
+    }
+
+
+def get_data_source_config(mode: str) -> dict:
+    """Get data source configuration based on mode.
+    
+    Args:
+        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only"
+    
+    Returns:
+        Data source configuration dict
+    """
+    if mode == "mixed":
+        return load_data_source_config()
+    elif mode == "helm_lite":
+        return build_helm_lite_config()
+    elif mode == "helm_classic":
+        return build_helm_classic_config()
+    elif mode == "lb_only":
+        return build_lb_only_config()
+    else:
+        raise ValueError(f"Unknown data source mode: {mode}. "
+                        f"Options: mixed, helm_lite, helm_classic, lb_only")
 
 
 def load_pickle_data(pickle_path: str) -> dict:
@@ -247,14 +416,20 @@ def extract_from_parquet(
 def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
     """Load all datasets using the data source configuration.
     
-    Uses data_source_config.json to determine the best source for each dataset.
+    Uses data_source_config.json or mode-specific config to determine the best source.
+    
+    Args:
+        config: ExperimentConfig with data_source_mode field
     
     Returns: dict mapping dataset_name -> DataFrame
     """
-    # Load config
-    source_config = load_data_source_config()
+    # Load config based on mode
+    source_config = get_data_source_config(config.data_source_mode)
     datasets_config = source_config.get('datasets', {})
     paths_config = source_config.get('paths', {})
+    
+    print(f"   Data source mode: {config.data_source_mode}")
+    print(f"   Available datasets in config: {len(datasets_config)}")
     
     tinybenchmarks_dir = Path(paths_config.get('tinybenchmarks_dir', config.tinybenchmarks_dir))
     aggregated_dir = Path(paths_config.get('aggregated_dir', 
@@ -263,11 +438,14 @@ def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
     # Cache loaded pickle files
     loaded_pickles = {}
     
-    # Load skill labels to know which datasets we need
-    skill_labels = load_skill_labels(config.skill_labels_csv)
-    # IMPORTANT: Sort to ensure deterministic order across runs
-    # Sets don't guarantee order, which breaks reproducibility with seeds
-    needed_datasets = sorted(set(skill_labels['Dataset'].unique()))
+    # Determine which datasets to load
+    if config.data_source_mode == "mixed":
+        # For mixed mode, filter by skill_labels.csv
+        skill_labels = load_skill_labels(config.skill_labels_csv)
+        needed_datasets = sorted(set(skill_labels['Dataset'].unique()))
+    else:
+        # For specific modes, load ALL datasets from the config
+        needed_datasets = sorted(datasets_config.keys())
     
     datasets = {}
     
@@ -1416,29 +1594,48 @@ def run_cross_dataset_equating(config: Optional[ExperimentConfig] = None):
     print("=" * 70)
     print("Cross-Dataset Equating Experiment")
     print("=" * 70)
+    print(f"Data Source Mode: {config.data_source_mode}")
     
-    # 1. Load skill labels
-    print("\n1. Loading skill labels...")
-    skill_labels = load_skill_labels(config.skill_labels_csv)
-    print(f"   Loaded {len(skill_labels)} datasets")
+    # Print mode-specific info
+    mode_info = {
+        "mixed": "Using data_source_config.json (various sources)",
+        "helm_lite": "HELM Lite only (91 models, 9 datasets)",
+        "helm_classic": "HELM Classic only (70 models, 30 datasets)",
+        "lb_only": "Open LLM Leaderboard only (395 models, 6 datasets)",
+    }
+    print(f"   {mode_info.get(config.data_source_mode, 'Unknown mode')}")
+    
+    # 1. Load skill labels (only needed for mixed mode)
+    if config.data_source_mode == "mixed":
+        print("\n1. Loading skill labels...")
+        skill_labels = load_skill_labels(config.skill_labels_csv)
+        print(f"   Loaded {len(skill_labels)} datasets from skill labels")
+    else:
+        print("\n1. Skipping skill labels (using predefined datasets for mode)")
+        skill_labels = None
     
     # 2. Load all datasets
-    print("\n2. Loading datasets from TinyBenchmarks...")
+    print(f"\n2. Loading datasets (mode: {config.data_source_mode})...")
     datasets = load_all_datasets(config)
     print(f"   Loaded {len(datasets)} datasets")
     
     # 3. Group datasets based on mode
-    if config.all_datasets_mode:
-        print("\n3. ALL DATASETS MODE - Combining all datasets together...")
+    if config.all_datasets_mode or config.data_source_mode != "mixed":
+        # For non-mixed modes or all_datasets_mode, combine all datasets together
+        mode_name = config.data_source_mode if config.data_source_mode != "mixed" else "ALL_DATASETS"
+        print(f"\n3. {mode_name.upper()} MODE - Combining all datasets together...")
         skill_to_datasets = group_all_datasets_together(datasets, min_common_models=4)
         
         if skill_to_datasets:
             for group_key, ds_list in skill_to_datasets.items():
                 model_sets = [set(datasets[ds]['model_name'].unique()) for ds in ds_list]
                 common = set.intersection(*model_sets) if model_sets else set()
-                print(f"   ✓ {group_key}: {len(ds_list)} datasets, {len(common)} common models")
+                # Rename group to include mode name
+                print(f"   ✓ {mode_name}: {len(ds_list)} datasets, {len(common)} common models")
                 for ds in ds_list:
                     print(f"       - {ds}")
+            # Rename the group key to the mode name
+            skill_to_datasets = {mode_name: list(skill_to_datasets.values())[0]}
     else:
         print("\n3. Analyzing model overlap between datasets (by skill)...")
         
@@ -2166,6 +2363,12 @@ if __name__ == "__main__":
                         help="Only freeze selected anchors in fixed-anchor calibration (faster, default)")
     parser.add_argument("--freeze-all-base", action="store_true",
                         help="Freeze ALL Base items in fixed-anchor calibration (slower, original behavior)")
+    parser.add_argument("--data-source-mode", type=str, default="mixed",
+                        choices=["mixed", "helm_lite", "helm_classic", "lb_only"],
+                        help="Data source mode: 'mixed' (default, uses data_source_config.json), "
+                             "'helm_lite' (91 models, 9 datasets), "
+                             "'helm_classic' (70 models, 30 datasets), "
+                             "'lb_only' (395 models, 6 datasets from Open LLM Leaderboard)")
     
     args = parser.parse_args()
     
@@ -2188,6 +2391,7 @@ if __name__ == "__main__":
             epochs=args.epochs,
             all_datasets_mode=args.all_datasets,
             anchor_only_fixed=anchor_only,
+            data_source_mode=args.data_source_mode,
         )
         
         if args.output_dir:
