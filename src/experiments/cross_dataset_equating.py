@@ -50,7 +50,7 @@ class ExperimentConfig:
     output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/cross_dataset_equating"))
     
     # Data source mode - determines which datasets to use
-    # Options: "mixed" (current default), "helm_lite", "helm_classic", "lb_only"
+    # Options: "mixed" (current default), "helm_lite", "helm_classic", "lb_only", "reeval"
     data_source_mode: str = "mixed"
     
     # IRT training
@@ -264,11 +264,62 @@ def build_lb_only_config() -> dict:
     }
 
 
+def build_reeval_config() -> dict:
+    """
+    Build configuration for reeval dataset (stair-lab/reeval).
+    
+    This dataset contains:
+    - 183 models
+    - 22 scenarios (datasets)
+    - ~5.7M rows total
+    - Pre-converted to our format and saved as parquet
+    
+    Returns:
+        Configuration dict with all reeval scenarios
+    """
+    project_root = Path(__file__).resolve().parents[2]
+    reeval_dir = project_root / "aggregated_data" / "reeval"
+    reeval_file = reeval_dir / "reeval_formatted.parquet"
+    
+    # Load metadata to get list of scenarios
+    metadata_file = reeval_dir / "reeval_metadata.json"
+    if metadata_file.exists():
+        with open(metadata_file) as f:
+            metadata = json.load(f)
+        scenario_names = list(metadata.get('datasets', {}).keys())
+    else:
+        # Fallback to loading the data to get scenarios
+        if reeval_file.exists():
+            df = pd.read_parquet(reeval_file)
+            scenario_names = sorted(df['dataset'].unique())
+        else:
+            raise FileNotFoundError(
+                f"reeval dataset not found at {reeval_file}. "
+                f"Please run: python src/experiments/prepare_reeval_dataset.py"
+            )
+    
+    # Build config with all scenarios
+    datasets_config = {}
+    for scenario in scenario_names:
+        datasets_config[scenario] = {
+            "source_type": "reeval",
+            "source_file": "reeval_formatted.parquet",
+            "scenario_name": scenario,
+        }
+    
+    return {
+        "paths": {
+            "reeval_dir": str(reeval_dir),
+        },
+        "datasets": datasets_config,
+    }
+
+
 def get_data_source_config(mode: str) -> dict:
     """Get data source configuration based on mode.
     
     Args:
-        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only"
+        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only", "reeval"
     
     Returns:
         Data source configuration dict
@@ -281,9 +332,11 @@ def get_data_source_config(mode: str) -> dict:
         return build_helm_classic_config()
     elif mode == "lb_only":
         return build_lb_only_config()
+    elif mode == "reeval":
+        return build_reeval_config()
     else:
         raise ValueError(f"Unknown data source mode: {mode}. "
-                        f"Options: mixed, helm_lite, helm_classic, lb_only")
+                        f"Options: mixed, helm_lite, helm_classic, lb_only, reeval")
 
 
 def load_pickle_data(pickle_path: str) -> dict:
@@ -416,6 +469,39 @@ def extract_from_parquet(
     return result.drop_duplicates(subset=['model_name', 'question_id'])
 
 
+def extract_from_reeval(
+    reeval_path: str,
+    scenario_name: str,
+) -> pd.DataFrame:
+    """Extract a scenario from reeval formatted parquet file.
+    
+    The reeval data is already in our format, just filter by scenario.
+    
+    Args:
+        reeval_path: Path to reeval_formatted.parquet
+        scenario_name: Scenario name to filter
+    
+    Returns:
+        DataFrame with columns: model_name, question_id, dataset, normalized_score
+    """
+    df = pd.read_parquet(reeval_path)
+    
+    # Filter by scenario name
+    df = df[df['dataset'] == scenario_name].copy()
+    
+    if df.empty:
+        return pd.DataFrame()
+    
+    # Select required columns (already in correct format)
+    result = df[['model_name', 'question_id', 'dataset', 'normalized_score']].copy()
+    
+    # Add sub_dataset if it exists
+    if 'sub_dataset' in df.columns:
+        result['sub_dataset'] = df['sub_dataset']
+    
+    return result.drop_duplicates(subset=['model_name', 'question_id'])
+
+
 def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
     """Load all datasets using the data source configuration.
     
@@ -437,9 +523,12 @@ def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
     tinybenchmarks_dir = Path(paths_config.get('tinybenchmarks_dir', config.tinybenchmarks_dir))
     aggregated_dir = Path(paths_config.get('aggregated_dir', 
                           str(Path(config.tinybenchmarks_dir).parent / 'aggregated')))
+    reeval_dir = Path(paths_config.get('reeval_dir', 
+                      str(Path(config.tinybenchmarks_dir).parent / 'reeval')))
     
-    # Cache loaded pickle files
+    # Cache loaded pickle files and reeval data
     loaded_pickles = {}
+    reeval_data = None
     
     # Determine which datasets to load
     if config.data_source_mode == "mixed":
@@ -491,6 +580,33 @@ def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
                 
                 filter_pattern = ds_config.get('parquet_filter', dataset_name)
                 df = extract_from_parquet(str(parquet_path), dataset_name, filter_pattern)
+            
+            elif source_type == 'reeval':
+                # Load from reeval parquet (load once and cache)
+                reeval_path = reeval_dir / source_file
+                
+                if not reeval_path.exists():
+                    print(f"  Warning: {reeval_path} not found, skipping {dataset_name}")
+                    print(f"  Please run: python src/experiments/prepare_reeval_dataset.py")
+                    continue
+                
+                # Load the scenario data
+                scenario_name = ds_config.get('scenario_name', dataset_name)
+                
+                # For reeval, we can load just once since it's already formatted
+                if reeval_data is None:
+                    print(f"  Loading reeval data from {source_file}...")
+                    reeval_data = pd.read_parquet(reeval_path)
+                    print(f"  Loaded reeval: {reeval_data['model_name'].nunique()} models, "
+                          f"{reeval_data['dataset'].nunique()} scenarios")
+                
+                # Extract this scenario
+                df = reeval_data[reeval_data['dataset'] == scenario_name].copy()
+                if not df.empty:
+                    df = df[['model_name', 'question_id', 'dataset', 'normalized_score']].copy()
+                    if 'sub_dataset' in reeval_data.columns:
+                        df['sub_dataset'] = reeval_data[reeval_data['dataset'] == scenario_name]['sub_dataset'].values
+                    df = df.drop_duplicates(subset=['model_name', 'question_id'])
             
             else:
                 print(f"  Warning: Unknown source type '{source_type}' for {dataset_name}")
@@ -1606,6 +1722,7 @@ def run_cross_dataset_equating(config: Optional[ExperimentConfig] = None):
         "helm_lite": "HELM Lite only (91 models, 9 datasets)",
         "helm_classic": "HELM Classic only (70 models, 30 datasets)",
         "lb_only": "Open LLM Leaderboard only (395 models, 6 datasets)",
+        "reeval": "reeval dataset (183 models, 22 scenarios)",
     }
     print(f"   {mode_info.get(config.data_source_mode, 'Unknown mode')}")
     

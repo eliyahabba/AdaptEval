@@ -67,7 +67,7 @@ class ChainExperimentConfig(ExperimentConfig):
     output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/chain_linking_experiment"))
     
     # Data source mode (override default from parent)
-    # Options: "helm_lite" (default for chain), "helm_classic", "mixed", "lb_only"
+    # Options: "helm_lite" (default for chain), "helm_classic", "mixed", "lb_only", "reeval"
     data_source_mode: str = "helm_lite"
     
     # Zero-variance filtering for IRT training
@@ -918,11 +918,12 @@ if __name__ == "__main__":
     parser.add_argument("--dims", type=int, nargs="+", default=[2, 5], help="Dimensions to search")
     parser.add_argument("--epochs", type=int, default=2000, help="Training epochs")
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
-                        choices=["mixed", "helm_lite", "helm_classic", "lb_only"],
+                        choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval"],
                         help="Data source mode: 'helm_lite' (default, 91 models, 9 datasets), "
                              "'helm_classic' (70 models, 30 datasets), "
                              "'mixed' (uses data_source_config.json), "
-                             "'lb_only' (395 models, 6 datasets)")
+                             "'lb_only' (395 models, 6 datasets), "
+                             "'reeval' (183 models, 22 scenarios)")
     parser.add_argument("--filter-zero-variance", action="store_true",
                         help="Enable filtering of zero-variance questions during IRT training")
     parser.add_argument("--use-sparse-matrix", action="store_true",
@@ -939,6 +940,12 @@ if __name__ == "__main__":
     if args.data_source_mode == 'helm_classic' and not args.use_sparse_matrix:
         print("NOTE: Auto-enabling --use-sparse-matrix for helm_classic mode")
         args.use_sparse_matrix = True
+    
+    # Suggest sparse matrix for reeval due to incomplete coverage
+    if args.data_source_mode == 'reeval' and not args.use_sparse_matrix:
+        print("NOTE: reeval has incomplete model coverage across scenarios.")
+        print("      Consider using --use-sparse-matrix for better model utilization.")
+        print("      (Training with sparse matrix, testing on intersection)")
     
     config = ChainExperimentConfig(
         n_base_datasets=args.n_base,

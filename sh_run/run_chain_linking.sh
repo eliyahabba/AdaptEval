@@ -40,7 +40,10 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $1 = output directory (optional, default: data/chain_linking_experiment)
 #   $2 = seed for Base dataset selection (optional, default: 42)
 #   $3 = data source mode (optional, default: helm_lite)
-#        Options: helm_lite (91 models, 9 datasets), helm_classic (70 models, 30 datasets)
+#        Options: helm_lite (91 models, 9 datasets), 
+#                 helm_classic (70 models, 30 datasets),
+#                 reeval (183 models, 22 scenarios),
+#                 lb_only (395 models, 6 datasets)
 
 # Output directory base
 if [ -n "$1" ]; then
