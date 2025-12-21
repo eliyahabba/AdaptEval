@@ -74,6 +74,7 @@ N_BASE=${N_BASE:-6}           # Number of datasets in Base
 MAX_CHAIN=${MAX_CHAIN:-3}     # Maximum chain length (distance)
 N_ANCHORS=${N_ANCHORS:-100}   # Anchors per dataset
 EPOCHS=${EPOCHS:-2000}        # Training epochs
+NO_FILTER_ZERO_VAR=${NO_FILTER_ZERO_VAR:-false}  # Set to "true" to disable zero-variance filtering
 
 echo "Configuration:"
 echo "  N_BASE: ${N_BASE}"
@@ -82,11 +83,11 @@ echo "  N_ANCHORS: ${N_ANCHORS}"
 echo "  EPOCHS: ${EPOCHS}"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
 echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
+echo "  NO_FILTER_ZERO_VAR: ${NO_FILTER_ZERO_VAR}"
 
-# Run the chain linking experiment
-echo "Starting chain linking experiment..."
-python src/experiments/chain_linking_experiment.py \
-    --output-dir "${OUTPUT_DIR}" \
+# Build the command
+CMD="python src/experiments/chain_linking_experiment.py \
+    --output-dir ${OUTPUT_DIR} \
     --n-base ${N_BASE} \
     --max-chain ${MAX_CHAIN} \
     --n-anchors-per-dataset ${N_ANCHORS} \
@@ -95,7 +96,16 @@ python src/experiments/chain_linking_experiment.py \
     --shuffle-seed ${SHUFFLE_SEED} \
     --dims 2 5 \
     --epochs ${EPOCHS} \
-    --data-source-mode ${DATA_SOURCE_MODE}
+    --data-source-mode ${DATA_SOURCE_MODE}"
+
+# Add optional flags
+if [ "${NO_FILTER_ZERO_VAR}" = "true" ]; then
+    CMD="${CMD} --no-filter-zero-variance"
+fi
+
+# Run the chain linking experiment
+echo "Starting chain linking experiment..."
+eval ${CMD}
 
 # Print resource usage at the end
 echo "Job resource usage:"

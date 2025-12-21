@@ -69,6 +69,9 @@ class ChainExperimentConfig(ExperimentConfig):
     # Data source mode (override default from parent)
     # Options: "helm_lite" (default for chain), "helm_classic", "mixed", "lb_only"
     data_source_mode: str = "helm_lite"
+    
+    # Zero-variance filtering for IRT training
+    filter_zero_variance: bool = True  # If False, skip removing zero-variance questions
 
 
 # =============================================================================
@@ -320,6 +323,7 @@ def run_chain_scenario(
             lr=config.lr,
             number_item_per_scenario=config.n_anchors_per_dataset,
             deterministic=True,
+            filter_zero_variance=config.filter_zero_variance,
         )
         
         chain_irt_dir = scenario_dir / f"irt_chain_{chain_idx}"
@@ -386,6 +390,7 @@ def run_chain_scenario(
         lr=config.lr,
         number_item_per_scenario=config.n_anchors_per_dataset,
         deterministic=True,
+        filter_zero_variance=config.filter_zero_variance,
     )
     
     target_irt_dir = scenario_dir / "irt_target"
@@ -473,7 +478,8 @@ def run_chain_scenario(
                     if len(vals) > 0:
                         base_validation_results[base_ds][f'{metric}_mean'] = float(vals.mean())
                         base_validation_results[base_ds][f'{metric}_std'] = float(vals.std())
-            print(f"      Base {base_ds}: gp_irt_error = {base_validation_results[base_ds].get('gp_irt_error_mean', 'N/A'):.4f}")
+            base_err = base_validation_results[base_ds].get('gp_irt_error_mean')
+            print(f"      Base {base_ds}: gp_irt_error = {base_err:.4f}" if base_err is not None else f"      Base {base_ds}: gp_irt_error = N/A")
     
     # Compile results
     result = {
@@ -531,8 +537,10 @@ def run_chain_scenario(
         with open(scenario_dir / "base_validation.json", 'w') as f:
             json.dump(base_validation_results, f, indent=2)
     
-    print(f"      ✓ Target error: {result.get('target_gp_irt_error_mean', 'N/A'):.4f}")
-    print(f"      ✓ Avg Base error: {result.get('base_avg_gp_irt_error_mean', 'N/A'):.4f}")
+    target_err = result.get('target_gp_irt_error_mean')
+    base_err = result.get('base_avg_gp_irt_error_mean')
+    print(f"      ✓ Target error: {target_err:.4f}" if target_err is not None else "      ✓ Target error: N/A")
+    print(f"      ✓ Avg Base error: {base_err:.4f}" if base_err is not None else "      ✓ Avg Base error: N/A")
     
     return result
 
@@ -630,7 +638,8 @@ def compute_baseline(
                         ds_result[f'{metric}_mean'] = float(vals.mean())
                         ds_result[f'{metric}_std'] = float(vals.std())
             baseline_results[ds_name] = ds_result
-            print(f"    {ds_name}: gp_irt_error = {ds_result.get('gp_irt_error_mean', 'N/A'):.4f}")
+            ds_err = ds_result.get('gp_irt_error_mean')
+            print(f"    {ds_name}: gp_irt_error = {ds_err:.4f}" if ds_err is not None else f"    {ds_name}: gp_irt_error = N/A")
     
     # Save baseline
     with open(baseline_file, 'w') as f:
@@ -800,6 +809,8 @@ if __name__ == "__main__":
                              "'helm_classic' (70 models, 30 datasets), "
                              "'mixed' (uses data_source_config.json), "
                              "'lb_only' (395 models, 6 datasets)")
+    parser.add_argument("--no-filter-zero-variance", action="store_true",
+                        help="Disable filtering of zero-variance questions during IRT training")
     
     args = parser.parse_args()
     
@@ -818,6 +829,7 @@ if __name__ == "__main__":
         dims_search=args.dims,
         epochs=args.epochs,
         data_source_mode=args.data_source_mode,
+        filter_zero_variance=not args.no_filter_zero_variance,
     )
     
     if args.output_dir:

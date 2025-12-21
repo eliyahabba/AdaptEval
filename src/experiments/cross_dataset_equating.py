@@ -72,6 +72,9 @@ class ExperimentConfig:
     # Fixed-anchor calibration mode
     anchor_only_fixed: bool = True  # If True, only freeze selected anchors (faster). If False, freeze all Base items.
     
+    # Zero-variance filtering for IRT training
+    filter_zero_variance: bool = True  # If False, skip removing zero-variance questions
+
 
 # =============================================================================
 # Data Loading
@@ -864,6 +867,7 @@ def train_irt_on_base(
         lr=config.lr,
         number_item_per_scenario=config.n_anchors_per_dataset,
         deterministic=True,
+        filter_zero_variance=getattr(config, 'filter_zero_variance', True),
     )
     
     item_params = fit_2pl_parameters(

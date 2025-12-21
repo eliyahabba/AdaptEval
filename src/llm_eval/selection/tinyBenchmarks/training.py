@@ -75,6 +75,9 @@ class TrainingConfig:
     # priors: str = "hierarchical"
     deterministic: bool = True
     log_every: int = 200
+    
+    # Zero-variance filtering
+    filter_zero_variance: bool = True  # If False, skip removing zero-variance questions
 
 
 def compute_balance_weights(matrix_df: pd.DataFrame) -> np.ndarray:
@@ -703,21 +706,24 @@ def fit_2pl_parameters(
     
     # Step 2b: Filter out zero-variance questions (uninformative for IRT)
     # These questions have identical responses from all models and provide no discriminative information
-    print("Step 2b: Filtering zero-variance questions...")
-    variance_per_question = binary_matrix_df.groupby("question_id")["normalized_score"].var()
-    zero_var_questions = set(variance_per_question[variance_per_question == 0].index)
-    if zero_var_questions:
-        original_count = binary_matrix_df["question_id"].nunique()
-        binary_matrix_df = binary_matrix_df[~binary_matrix_df["question_id"].isin(zero_var_questions)].copy()
-        # Also filter matrix_df for consistency in validation steps (use copy to avoid modifying input)
-        matrix_df = matrix_df[~matrix_df["question_id"].isin(zero_var_questions)].copy()
-        filtered_count = binary_matrix_df["question_id"].nunique()
-        print(f"   ⚠️  Removed {len(zero_var_questions)} zero-variance questions ({original_count} → {filtered_count})")
-        # Recompute balance weights for filtered data
-        balance_weights = compute_balance_weights(matrix_df)
-        print(f"   ✓ Recomputed balance weights for {len(balance_weights)} questions")
+    if cfg.filter_zero_variance:
+        print("Step 2b: Filtering zero-variance questions...")
+        variance_per_question = binary_matrix_df.groupby("question_id")["normalized_score"].var()
+        zero_var_questions = set(variance_per_question[variance_per_question == 0].index)
+        if zero_var_questions:
+            original_count = binary_matrix_df["question_id"].nunique()
+            binary_matrix_df = binary_matrix_df[~binary_matrix_df["question_id"].isin(zero_var_questions)].copy()
+            # Also filter matrix_df for consistency in validation steps (use copy to avoid modifying input)
+            matrix_df = matrix_df[~matrix_df["question_id"].isin(zero_var_questions)].copy()
+            filtered_count = binary_matrix_df["question_id"].nunique()
+            print(f"   ⚠️  Removed {len(zero_var_questions)} zero-variance questions ({original_count} → {filtered_count})")
+            # Recompute balance weights for filtered data
+            balance_weights = compute_balance_weights(matrix_df)
+            print(f"   ✓ Recomputed balance weights for {len(balance_weights)} questions")
+        else:
+            print("   ✓ No zero-variance questions found")
     else:
-        print("   ✓ No zero-variance questions found")
+        print("Step 2b: Skipping zero-variance filtering (disabled)")
     
     # Step 3: Validate dimensions using cross-validation
     print("Step 3: Validating dimensions...")
