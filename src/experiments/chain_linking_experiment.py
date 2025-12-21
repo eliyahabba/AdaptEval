@@ -782,7 +782,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Chain Linking Experiment")
     parser.add_argument("--output-dir", default=None, help="Output directory")
     parser.add_argument("--n-base", type=int, default=6, help="Number of datasets in Base")
-    parser.add_argument("--max-chain", type=int, default=3, help="Maximum chain length")
+    parser.add_argument("--max-chain", type=int, default=12, help="Maximum chain length")
     parser.add_argument("--n-anchors-per-dataset", type=int, default=100, help="Anchors per dataset")
     parser.add_argument("--test-ratio", type=float, default=0.25, help="Test set ratio")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for train/test split")
