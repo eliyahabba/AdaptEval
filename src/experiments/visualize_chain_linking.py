@@ -67,7 +67,7 @@ def calculate_costs(
         results_df: Chain linking results
         baseline: Baseline results dict
         config: Experiment configuration
-        total_items_per_dataset: Average items per dataset (for full eval cost)
+        total_items_per_dataset: Default items per dataset (if config not available)
     
     Returns:
         DataFrame with columns:
@@ -75,23 +75,44 @@ def calculate_costs(
         - cost_full, cost_concurrent, cost_fixed_anchor (per-addition)
         - cost_cumulative_full, cost_cumulative_concurrent, cost_cumulative_fixed (cumulative)
         - error_delta_full, error_delta_concurrent, error_delta_fixed
+        - n_items (number of items in dataset)
     """
     n_anchors = config.get('n_anchors_per_dataset', 100)
     
     # Get total number of datasets from baseline
     n_total_datasets = len(baseline) if baseline else len(results_df['target_dataset'].unique())
     
-    # Estimate total items from baseline if available
-    if baseline:
-        # Sum up n_items from each dataset in baseline if available
-        total_items = sum(
-            ds_data.get('n_items', total_items_per_dataset) 
-            for ds_data in baseline.values()
-        )
-        avg_items_per_dataset = total_items / len(baseline)
+    # Load dataset sizes from data_source_config.json
+    dataset_sizes = {}
+    try:
+        import json
+        from pathlib import Path as P
+        # Try to find data_source_config.json
+        config_path = P(__file__).parent / "data_source_config.json"
+        if config_path.exists():
+            with open(config_path) as f:
+                source_config = json.load(f)
+            datasets_config = source_config.get('datasets', {})
+            for ds_name, ds_info in datasets_config.items():
+                dataset_sizes[ds_name] = ds_info.get('items', total_items_per_dataset)
+        else:
+            print(f"  Warning: data_source_config.json not found at {config_path}")
+    except Exception as e:
+        print(f"  Warning: Could not load dataset sizes: {e}")
+        dataset_sizes = {}
+    
+    # Calculate average items per dataset
+    if dataset_sizes:
+        # Only consider datasets that are in the results
+        relevant_datasets = set(results_df['target_dataset'].unique())
+        relevant_sizes = [dataset_sizes.get(ds, total_items_per_dataset) for ds in relevant_datasets]
+        avg_items_per_dataset = sum(relevant_sizes) / len(relevant_sizes) if relevant_sizes else total_items_per_dataset
     else:
         avg_items_per_dataset = total_items_per_dataset
-        total_items = total_items_per_dataset * n_total_datasets
+    
+    # First pass: find max distance to calculate n_base
+    max_distance = results_df['distance'].max() if not results_df.empty else 1
+    n_base = n_total_datasets - max_distance  # Base datasets before any linking
     
     rows = []
     
@@ -99,32 +120,37 @@ def calculate_costs(
         dataset = row['target_dataset']
         distance = row['distance']
         
-        # Number of datasets at this point in the chain
-        # distance=1 means 1 dataset was linked, so total = n_base + 1
-        # We need to infer n_base from the experiment structure
-        n_datasets_in_chain = n_total_datasets - distance + 1  # Base datasets + linked so far
+        # Get actual number of items for this dataset
+        n_items_this_dataset = dataset_sizes.get(dataset, avg_items_per_dataset)
+        
+        # Number of datasets at this point in the chain:
+        # At distance d, we have: base datasets + d linked datasets
+        n_datasets_in_chain = n_base + distance
         
         # === Per-Addition Costs ===
         # Full evaluation: evaluate all items in the new dataset
-        cost_full = avg_items_per_dataset
+        cost_full = n_items_this_dataset
         
-        # Concurrent: need to re-run anchors from ALL datasets (to re-estimate theta)
-        # When adding dataset at distance d, we have (n_total - d) base + d linked = n_total datasets
+        # Concurrent: need to re-run anchors from ALL datasets (Base + all linked so far)
+        # At distance d, total datasets = n_base + d
+        # Cost INCREASES with distance (more datasets = more anchors to run)
         cost_concurrent = n_anchors * n_datasets_in_chain
         
-        # Fixed-Anchor: only need anchors from the NEW dataset
+        # Fixed-Anchor: only need anchors from the NEW dataset (constant!)
         cost_fixed_anchor = n_anchors
         
-        # === Cumulative Costs (total calls so far in the chain) ===
-        # Full: each dataset addition costs avg_items_per_dataset
+        # === Cumulative Costs (total calls needed to build chain up to this point) ===
+        # Full: each dataset addition costs its actual number of items
+        # For cumulative, we need to sum across all datasets added so far
+        # This is approximate - we use avg_items_per_dataset for simplicity
         cost_cumulative_full = avg_items_per_dataset * distance
         
-        # Concurrent: at each step i, cost was n_anchors * (n_base + i)
-        # Sum from i=1 to distance: n_anchors * sum(n_base + i) = n_anchors * (distance * n_base + distance*(distance+1)/2)
-        n_base = n_total_datasets - distance
+        # Concurrent: at each step i (from 1 to distance), cost was n_anchors * (n_base + i)
+        # Sum = n_anchors * [sum from i=1 to d of (n_base + i)]
+        #     = n_anchors * [d * n_base + d*(d+1)/2]
         cost_cumulative_concurrent = n_anchors * (distance * n_base + distance * (distance + 1) // 2)
         
-        # Fixed-Anchor: each addition costs just n_anchors
+        # Fixed-Anchor: each addition costs just n_anchors (constant per step)
         cost_cumulative_fixed = n_anchors * distance
         
         # === Error Deltas (vs full evaluation baseline) ===
@@ -134,11 +160,15 @@ def calculate_costs(
         baseline_err = baseline.get(dataset, {}).get(baseline_col, np.nan) if baseline else np.nan
         target_err = row.get(target_col, np.nan)
         
-        # Full evaluation error = 0 (reference)
-        error_delta_full = 0.0
+        # Full evaluation error = baseline error (what we get when trained on all data together)
+        # This is NOT zero - it's the actual prediction error!
+        error_full = baseline_err
         
-        # Concurrent/Fixed error = target_err - baseline_err
-        # (baseline represents "all trained together" which is our reference)
+        # Concurrent/Fixed error = target_err (what we get with chain linking)
+        error_concurrent = target_err
+        error_fixed = target_err  # Same as concurrent for GP-IRT
+        
+        # Error delta = how much worse than baseline
         error_delta = target_err - baseline_err if not np.isnan(baseline_err) and not np.isnan(target_err) else np.nan
         
         rows.append({
@@ -152,9 +182,14 @@ def calculate_costs(
             'cost_cumulative_full': cost_cumulative_full,
             'cost_cumulative_concurrent': cost_cumulative_concurrent,
             'cost_cumulative_fixed': cost_cumulative_fixed,
-            # Error deltas
-            'error_delta_full': error_delta_full,
-            'error_delta_linked': error_delta,
+            # Actual errors (not deltas!)
+            'error_full': error_full,
+            'error_concurrent': error_concurrent,
+            'error_fixed': error_fixed,
+            # Error delta (for compatibility)
+            'error_delta': error_delta,
+            # Dataset metadata
+            'n_items': n_items_this_dataset,
             # Raw values for reference
             'baseline_error': baseline_err,
             'target_error': target_err,
@@ -200,9 +235,11 @@ def plot_method_comparison(
     output_dir: Path,
     figsize: tuple = (14, 10),
 ):
-    """Create Graph 1: Error vs Distance for all estimation methods.
+    """Create Graph 1: Error vs Iteration for all estimation methods.
     
     Shows how prediction error changes as datasets are linked further from Base.
+    Iteration 0 = dataset was in Base (baseline)
+    Iteration 1+ = when dataset was added to the chain
     """
     fig, axes = plt.subplots(2, 2, figsize=figsize)
     axes = axes.flatten()
@@ -223,43 +260,56 @@ def plot_method_comparison(
         grouped = results_df.groupby('distance')[target_col].agg(['mean', 'std', 'count'])
         
         distances = grouped.index.values
+        # Convert to iterations (iteration = distance + 1)
+        iterations = distances + 1
         means = grouped['mean'].values
         stds = grouped['std'].values
         
-        # Plot error vs distance with clear error bars
-        color = METHOD_COLORS[metric_key]
-        ax.errorbar(distances, means, yerr=stds, 
-                   marker='o', markersize=10, capsize=8, capthick=2,
-                   color=color, linewidth=2, elinewidth=2, 
-                   label='Chain Linking')
-        
-        # Add baseline reference (distance = -0.2 for visual separation)
+        # Add baseline at iteration 0
         if baseline:
             baseline_means = [baseline.get(ds, {}).get(baseline_col, np.nan) 
                             for ds in results_df['target_dataset'].unique()]
             baseline_mean = np.nanmean(baseline_means)
             baseline_std = np.nanstd(baseline_means)
             
-            ax.axhline(y=baseline_mean, color='gray', linestyle='--', 
-                      linewidth=1.5, label=f'Baseline (all together): {baseline_mean:.4f}')
-            ax.axhspan(baseline_mean - baseline_std, baseline_mean + baseline_std, 
-                      alpha=0.2, color='gray')
+            # Prepend iteration 0 with baseline
+            iterations = np.concatenate([[0], iterations])
+            means = np.concatenate([[baseline_mean], means])
+            stds = np.concatenate([[baseline_std], stds])
         
-        # Pessimistic reference line (linear increase)
-        if len(distances) > 1:
-            slope = (means[-1] - means[0]) / (distances[-1] - distances[0]) * 1.5
-            pessimistic = means[0] + slope * distances
-            ax.plot(distances, pessimistic, 'r:', linewidth=1.5, 
+        # Plot error vs iteration with clear error bars
+        color = METHOD_COLORS[metric_key]
+        ax.errorbar(iterations, means, yerr=stds, 
+                   marker='o', markersize=10, capsize=8, capthick=2,
+                   color=color, linewidth=2, elinewidth=2, 
+                   label='Chain Linking')
+        
+        # Mark iteration 0 specially
+        if baseline:
+            ax.scatter([0], [baseline_mean], s=200, marker='*', color='gold', 
+                      edgecolor='black', linewidth=2, zorder=6, label='In Base (iter 0)')
+        
+        # Pessimistic reference line (linear increase from iteration 1)
+        if len(iterations) > 2:
+            slope = (means[-1] - means[1]) / (iterations[-1] - iterations[1]) * 1.5
+            pessimistic_iters = iterations[1:]
+            pessimistic = means[1] + slope * (pessimistic_iters - iterations[1])
+            ax.plot(pessimistic_iters, pessimistic, 'r:', linewidth=1.5, 
                    alpha=0.5, label='Pessimistic (linear)')
         
-        ax.set_xlabel('Distance from Base', fontsize=11)
+        # Add vertical line separating "in Base" from "linked"
+        ax.axvline(x=0.5, color='gray', linewidth=1, alpha=0.5, linestyle='--')
+        
+        ax.set_xlabel('Iteration (0 = in Base)', fontsize=11)
         ax.set_ylabel('Prediction Error (MAE)', fontsize=11)
         ax.set_title(f'{metric_name}', fontsize=13, fontweight='bold')
         ax.legend(loc='upper left', fontsize=9)
         ax.grid(True, alpha=0.3)
-        ax.set_xticks(distances)
+        ax.set_xticks(iterations)
+        ax.set_xticklabels(['Base'] + [str(int(i)) for i in iterations[1:]])
     
-    fig.suptitle('Chain Linking: Error vs Distance by Estimation Method', 
+    fig.suptitle('Chain Linking: Error vs Iteration by Estimation Method\n'
+                 '(Iteration 0 = dataset was in Base)', 
                  fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     
@@ -279,9 +329,11 @@ def plot_dataset_variance(
     metric: str = 'gp_irt_error',
     figsize: tuple = (12, 8),
 ):
-    """Create Graph 2: Error vs Distance per dataset.
+    """Create Graph 2: Error vs Iteration per dataset.
     
     Shows how different datasets behave in the linking process.
+    Iteration 0 = dataset was in Base (baseline)
+    Iteration 1+ = when dataset was added to the chain
     """
     fig, ax = plt.subplots(figsize=figsize)
     
@@ -305,36 +357,42 @@ def plot_dataset_variance(
     for idx, dataset in enumerate(datasets):
         ds_data = results_df[results_df['target_dataset'] == dataset].sort_values('distance')
         
-        distances = ds_data['distance'].values
+        # Convert distance to iteration: iteration = distance + 1
+        iterations = ds_data['distance'].values + 1
         errors = ds_data[target_col].values
         stds = ds_data[std_col].values if has_std else None
         
-        # Plot line with error bars for this dataset
-        ax.errorbar(distances, errors, yerr=stds,
-                   marker='o', markersize=8, capsize=6, capthick=1.5,
-                   color=colors[idx], linewidth=2, elinewidth=1.5, 
-                   label=dataset[:15])
-        
-        # Add baseline point at distance -0.3 (visual separation)
+        # Add baseline point at iteration 0 (dataset was in Base)
         if baseline and dataset in baseline:
             baseline_err = baseline[dataset].get(baseline_col, np.nan)
             if not np.isnan(baseline_err):
-                ax.scatter([-0.3], [baseline_err], marker='s', s=50, 
-                          color=colors[idx], alpha=0.7)
+                # Prepend baseline to arrays
+                iterations = np.concatenate([[0], iterations])
+                errors = np.concatenate([[baseline_err], errors])
+                if stds is not None:
+                    baseline_std = baseline[dataset].get(f'{metric}_std', 0)
+                    stds = np.concatenate([[baseline_std], stds])
+        
+        # Plot line with error bars for this dataset
+        ax.errorbar(iterations, errors, yerr=stds,
+                   marker='o', markersize=8, capsize=6, capthick=1.5,
+                   color=colors[idx], linewidth=2, elinewidth=1.5, 
+                   label=dataset[:15])
     
     # Formatting
-    ax.axvline(x=0, color='gray', linestyle='--', alpha=0.5)
-    ax.set_xlabel('Distance from Base', fontsize=12)
+    ax.axvline(x=0.5, color='gray', linewidth=1.5, alpha=0.5, linestyle='--')
+    ax.set_xlabel('Iteration (0 = in Base, 1+ = when added to chain)', fontsize=12)
     ax.set_ylabel(f'Prediction Error ({metric_name})', fontsize=12)
-    ax.set_title(f'Dataset Variance: {metric_name} Error vs Distance\n'
-                 f'(Squares at -0.3 = Baseline when in Base)', fontsize=13, fontweight='bold')
+    ax.set_title(f'Dataset Variance: {metric_name} Error vs Iteration\n'
+                 f'(Iteration 0 = dataset was in Base)', fontsize=13, fontweight='bold')
     ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1), fontsize=9)
     ax.grid(True, alpha=0.3)
     
     # Set x-ticks
     all_distances = sorted(results_df['distance'].unique())
-    ax.set_xticks([-0.3] + all_distances)
-    ax.set_xticklabels(['Base'] + [str(d) for d in all_distances])
+    all_iterations = [0] + [d + 1 for d in all_distances]
+    ax.set_xticks(all_iterations)
+    ax.set_xticklabels(['In Base'] + [str(i) for i in all_iterations[1:]])
     
     plt.tight_layout()
     
@@ -353,7 +411,11 @@ def plot_all_methods_per_dataset(
     output_dir: Path,
     figsize: tuple = (16, 12),
 ):
-    """Create a grid showing all methods for each dataset."""
+    """Create a grid showing all methods for each dataset.
+    
+    Iteration 0 = dataset was in Base (baseline)
+    Iteration 1+ = when dataset was added to the chain
+    """
     datasets = results_df['target_dataset'].unique()
     n_datasets = len(datasets)
     
@@ -371,11 +433,13 @@ def plot_all_methods_per_dataset(
         ax = axes[row, col]
         
         ds_data = results_df[results_df['target_dataset'] == dataset].sort_values('distance')
-        distances = ds_data['distance'].values
+        # Convert distance to iteration: iteration = distance + 1
+        iterations = ds_data['distance'].values + 1
         
         for metric_key, metric_name in ESTIMATION_METHODS.items():
             target_col = f'target_{metric_key}_mean'
             std_col = f'target_{metric_key}_std'
+            baseline_col = f'{metric_key}_mean'
             if target_col not in ds_data.columns:
                 continue
             
@@ -383,22 +447,36 @@ def plot_all_methods_per_dataset(
             stds = ds_data[std_col].values if std_col in ds_data.columns else None
             color = METHOD_COLORS[metric_key]
             
-            ax.errorbar(distances, errors, yerr=stds,
-                       marker='o', markersize=6, capsize=5, capthick=1.5,
-                       color=color, linewidth=1.5, elinewidth=1.5, label=metric_name)
+            # Add baseline at iteration 0
+            plot_iterations = iterations.copy()
+            plot_errors = errors.copy()
+            plot_stds = stds.copy() if stds is not None else None
             
-            # Add baseline
-            baseline_col = f'{metric_key}_mean'
             if baseline and dataset in baseline:
                 baseline_err = baseline[dataset].get(baseline_col, np.nan)
                 if not np.isnan(baseline_err):
-                    ax.axhline(y=baseline_err, color=color, linestyle=':', alpha=0.5)
+                    plot_iterations = np.concatenate([[0], plot_iterations])
+                    plot_errors = np.concatenate([[baseline_err], plot_errors])
+                    if plot_stds is not None:
+                        baseline_std = baseline[dataset].get(f'{metric_key}_std', 0)
+                        plot_stds = np.concatenate([[baseline_std], plot_stds])
+            
+            ax.errorbar(plot_iterations, plot_errors, yerr=plot_stds,
+                       marker='o', markersize=6, capsize=5, capthick=1.5,
+                       color=color, linewidth=1.5, elinewidth=1.5, label=metric_name)
         
-        ax.set_xlabel('Distance', fontsize=10)
+        # Add vertical line separating "in Base" from "linked"
+        ax.axvline(x=0.5, color='gray', linewidth=1, alpha=0.5, linestyle='--')
+        
+        ax.set_xlabel('Iteration', fontsize=10)
         ax.set_ylabel('Error', fontsize=10)
         ax.set_title(dataset[:20], fontsize=11, fontweight='bold')
         ax.grid(True, alpha=0.3)
-        ax.set_xticks(distances)
+        
+        # Set x-ticks to show iteration 0 as "In Base"
+        all_iterations = [0] + list(iterations)
+        ax.set_xticks(all_iterations)
+        ax.set_xticklabels(['Base'] + [str(i) for i in iterations])
         
         if idx == 0:
             ax.legend(loc='upper left', fontsize=8)
@@ -408,7 +486,8 @@ def plot_all_methods_per_dataset(
         row, col = idx // n_cols, idx % n_cols
         axes[row, col].set_visible(False)
     
-    fig.suptitle('All Estimation Methods by Dataset', fontsize=14, fontweight='bold', y=1.02)
+    fig.suptitle('All Estimation Methods by Dataset\n(Iteration 0 = in Base, 1+ = when added)', 
+                 fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     
     save_path = output_dir / "figures" / "all_methods_per_dataset.png"
@@ -426,10 +505,14 @@ def plot_delta_from_baseline(
     output_dir: Path,
     figsize: tuple = (14, 6),
 ):
-    """Plot the delta (degradation) from baseline for each method."""
+    """Plot the delta (degradation) from baseline for each method.
+    
+    Iteration 0 = dataset was in Base (0 delta by definition)
+    Iteration 1+ = when dataset was added to the chain
+    """
     fig, axes = plt.subplots(1, 2, figsize=figsize)
     
-    # Left: Delta vs Distance (aggregated)
+    # Left: Delta vs Iteration (aggregated)
     ax1 = axes[0]
     
     for metric_key, metric_name in ESTIMATION_METHODS.items():
@@ -441,7 +524,7 @@ def plot_delta_from_baseline(
         
         # Compute delta for each row
         deltas = []
-        distances = []
+        iterations = []
         
         for _, row in results_df.iterrows():
             dataset = row['target_dataset']
@@ -450,25 +533,35 @@ def plot_delta_from_baseline(
                 target_err = row[target_col]
                 if not np.isnan(baseline_err) and not np.isnan(target_err):
                     deltas.append(target_err - baseline_err)
-                    distances.append(row['distance'])
+                    iterations.append(row['distance'] + 1)  # Convert to iteration
         
         if deltas:
-            df_delta = pd.DataFrame({'distance': distances, 'delta': deltas})
-            grouped = df_delta.groupby('distance')['delta'].agg(['mean', 'std'])
+            df_delta = pd.DataFrame({'iteration': iterations, 'delta': deltas})
+            grouped = df_delta.groupby('iteration')['delta'].agg(['mean', 'std'])
+            
+            # Add iteration 0 with 0 delta
+            plot_iterations = np.concatenate([[0], grouped.index.values])
+            plot_means = np.concatenate([[0], grouped['mean'].values])
+            plot_stds = np.concatenate([[0], grouped['std'].values])
             
             color = METHOD_COLORS[metric_key]
-            ax1.errorbar(grouped.index, grouped['mean'], yerr=grouped['std'],
+            ax1.errorbar(plot_iterations, plot_means, yerr=plot_stds,
                         marker='o', markersize=8, capsize=8, capthick=2,
                         color=color, linewidth=2, elinewidth=2, label=metric_name)
     
+    # Mark iteration 0
+    ax1.scatter([0], [0], s=200, marker='*', color='gold', 
+               edgecolor='black', linewidth=2, zorder=6)
+    
     ax1.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
-    ax1.set_xlabel('Distance from Base', fontsize=11)
-    ax1.set_ylabel('Δ Error (Linked - Baseline)', fontsize=11)
-    ax1.set_title('Degradation from Baseline\n(Positive = worse after linking)', fontsize=12)
+    ax1.axvline(x=0.5, color='gray', linewidth=1, alpha=0.5, linestyle='--')
+    ax1.set_xlabel('Iteration (0 = in Base)', fontsize=11)
+    ax1.set_ylabel('Δ Error (Linked - In Base)', fontsize=11)
+    ax1.set_title('Degradation from In-Base Performance\n(Positive = worse after linking)', fontsize=12)
     ax1.legend(loc='upper left', fontsize=9)
     ax1.grid(True, alpha=0.3)
     
-    # Right: Boxplot of deltas per distance
+    # Right: Boxplot of deltas per iteration
     ax2 = axes[1]
     
     # Use GP-IRT as primary metric for boxplot
@@ -476,31 +569,35 @@ def plot_delta_from_baseline(
     target_col = f'target_{metric_key}_mean'
     baseline_col = f'{metric_key}_mean'
     
-    deltas_by_distance = {}
+    deltas_by_iteration = {0: [0]}  # Iteration 0 always has 0 delta
     for _, row in results_df.iterrows():
         dataset = row['target_dataset']
         if baseline and dataset in baseline:
             baseline_err = baseline[dataset].get(baseline_col, np.nan)
             target_err = row[target_col]
             if not np.isnan(baseline_err) and not np.isnan(target_err):
-                dist = row['distance']
-                if dist not in deltas_by_distance:
-                    deltas_by_distance[dist] = []
-                deltas_by_distance[dist].append(target_err - baseline_err)
+                iteration = row['distance'] + 1
+                if iteration not in deltas_by_iteration:
+                    deltas_by_iteration[iteration] = []
+                deltas_by_iteration[iteration].append(target_err - baseline_err)
     
-    if deltas_by_distance:
-        distances = sorted(deltas_by_distance.keys())
-        data = [deltas_by_distance[d] for d in distances]
+    if deltas_by_iteration:
+        iterations = sorted(deltas_by_iteration.keys())
+        data = [deltas_by_iteration[i] for i in iterations]
         
-        bp = ax2.boxplot(data, positions=distances, patch_artist=True)
-        for patch in bp['boxes']:
-            patch.set_facecolor(METHOD_COLORS['gp_irt_error'])
+        bp = ax2.boxplot(data, positions=iterations, patch_artist=True)
+        for i, patch in enumerate(bp['boxes']):
+            if iterations[i] == 0:
+                patch.set_facecolor('gold')
+            else:
+                patch.set_facecolor(METHOD_COLORS['gp_irt_error'])
             patch.set_alpha(0.6)
     
     ax2.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
-    ax2.set_xlabel('Distance from Base', fontsize=11)
+    ax2.axvline(x=0.5, color='gray', linewidth=1, alpha=0.5, linestyle='--')
+    ax2.set_xlabel('Iteration (0 = in Base)', fontsize=11)
     ax2.set_ylabel('Δ GP-IRT Error', fontsize=11)
-    ax2.set_title('Distribution of Degradation (GP-IRT)', fontsize=12)
+    ax2.set_title('Distribution of Degradation (GP-IRT)\n(Iteration 0 = 0 by definition)', fontsize=12)
     ax2.grid(True, alpha=0.3)
     
     plt.tight_layout()
@@ -523,6 +620,7 @@ def plot_base_degradation(
     """Plot Base dataset performance over chain linking steps.
     
     This verifies that we haven't degraded performance on the original Base datasets.
+    Iteration 1+ = when target datasets were added to the chain
     """
     fig, axes = plt.subplots(1, 2, figsize=figsize)
     
@@ -532,7 +630,7 @@ def plot_base_degradation(
         plt.close(fig)
         return None
     
-    # Left: Average Base error vs Distance
+    # Left: Average Base error vs Iteration
     ax1 = axes[0]
     
     grouped = results_df.groupby('distance').agg({
@@ -541,6 +639,8 @@ def plot_base_degradation(
     })
     
     distances = grouped.index.values
+    # Convert to iterations
+    iterations = distances + 1
     
     # Base error
     base_means = grouped[('base_avg_gp_irt_error_mean', 'mean')].values
@@ -550,19 +650,19 @@ def plot_base_degradation(
     target_means = grouped[('target_gp_irt_error_mean', 'mean')].values
     target_stds = grouped[('target_gp_irt_error_mean', 'std')].fillna(0).values
     
-    ax1.errorbar(distances, base_means, yerr=base_stds,
+    ax1.errorbar(iterations, base_means, yerr=base_stds,
                 marker='s', markersize=10, capsize=8, capthick=2,
                 color='#3498db', linewidth=2, elinewidth=2, label='Base Datasets (avg)')
-    ax1.errorbar(distances, target_means, yerr=target_stds,
+    ax1.errorbar(iterations, target_means, yerr=target_stds,
                 marker='o', markersize=10, capsize=8, capthick=2,
                 color='#e74c3c', linewidth=2, elinewidth=2, label='Target Dataset')
     
-    ax1.set_xlabel('Distance from Base', fontsize=11)
+    ax1.set_xlabel('Iteration (when target was added)', fontsize=11)
     ax1.set_ylabel('GP-IRT Error', fontsize=11)
     ax1.set_title('Base vs Target Performance\n(Base should stay stable)', fontsize=12)
     ax1.legend(loc='upper left', fontsize=10)
     ax1.grid(True, alpha=0.3)
-    ax1.set_xticks(distances)
+    ax1.set_xticks(iterations)
     
     # Right: Delta from baseline for Base datasets
     ax2 = axes[1]
@@ -591,13 +691,13 @@ def plot_base_degradation(
             deltas = base_means - baseline_base_mean
             
             colors = ['#27ae60' if d <= 0 else '#e74c3c' for d in deltas]
-            ax2.bar(distances, deltas, color=colors, alpha=0.7, edgecolor='black')
+            ax2.bar(iterations, deltas, color=colors, alpha=0.7, edgecolor='black')
             ax2.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
-            ax2.set_xlabel('Distance from Base', fontsize=11)
+            ax2.set_xlabel('Iteration (when target was added)', fontsize=11)
             ax2.set_ylabel('Δ Base Error (Current - Baseline)', fontsize=11)
             ax2.set_title('Base Dataset Degradation\n(Green=improved, Red=degraded)', fontsize=12)
             ax2.grid(True, alpha=0.3, axis='y')
-            ax2.set_xticks(distances)
+            ax2.set_xticks(iterations)
     
     plt.tight_layout()
     
@@ -657,9 +757,10 @@ def plot_base_stability(
     output_dir: Path,
     figsize: tuple = (12, 6),
 ):
-    """Plot Base dataset performance at each distance to verify no degradation.
+    """Plot Base dataset performance at each iteration to verify no degradation.
     
     Shows that adding new datasets doesn't hurt performance on Base datasets.
+    Iteration 1+ = when target datasets were added to the chain
     """
     # Check if base_avg columns exist
     if 'base_avg_gp_irt_error_mean' not in results_df.columns:
@@ -668,15 +769,17 @@ def plot_base_stability(
     
     fig, axes = plt.subplots(1, 2, figsize=figsize)
     
-    # Left: Base avg error vs distance
+    # Left: Base avg error vs iteration
     ax1 = axes[0]
     
     grouped = results_df.groupby('distance')['base_avg_gp_irt_error_mean'].agg(['mean', 'std'])
     distances = grouped.index.values
+    # Convert to iterations
+    iterations = distances + 1
     means = grouped['mean'].values
     stds = grouped['std'].fillna(0).values
     
-    ax1.errorbar(distances, means, yerr=stds, 
+    ax1.errorbar(iterations, means, yerr=stds, 
                 marker='s', markersize=10, capsize=8, capthick=2,
                 color='#2ecc71', linewidth=2, elinewidth=2, label='Avg Base Error')
     
@@ -692,15 +795,15 @@ def plot_base_stability(
                                for ds in base_datasets if ds in baseline]
         if base_baseline_errors:
             baseline_mean = np.nanmean(base_baseline_errors)
-            ax1.axhline(y=baseline_mean, color='gray', linestyle='--',
-                       linewidth=1.5, label=f'Baseline: {baseline_mean:.4f}')
+            ax1.axhline(y=baseline_mean, color='gray', linewidth=2,
+                       label=f'Baseline: {baseline_mean:.4f}')
     
-    ax1.set_xlabel('Distance from Base', fontsize=11)
+    ax1.set_xlabel('Iteration (when target was added)', fontsize=11)
     ax1.set_ylabel('GP-IRT Error on Base Datasets', fontsize=11)
     ax1.set_title('Base Dataset Stability\n(Should remain stable as chain grows)', fontsize=12)
     ax1.legend(loc='upper left', fontsize=9)
     ax1.grid(True, alpha=0.3)
-    ax1.set_xticks(distances)
+    ax1.set_xticks(iterations)
     
     # Right: Target vs Base comparison
     ax2 = axes[1]
@@ -710,20 +813,20 @@ def plot_base_stability(
     target_means = target_grouped['mean'].values
     target_stds = target_grouped['std'].fillna(0).values
     
-    ax2.errorbar(distances, target_means, yerr=target_stds,
+    ax2.errorbar(iterations, target_means, yerr=target_stds,
                 marker='o', markersize=10, capsize=8, capthick=2,
                 color='#e74c3c', linewidth=2, elinewidth=2, label='Target Error')
     
-    ax2.errorbar(distances, means, yerr=stds,
+    ax2.errorbar(iterations, means, yerr=stds,
                 marker='s', markersize=10, capsize=8, capthick=2,
                 color='#2ecc71', linewidth=2, elinewidth=2, label='Base Avg Error')
     
-    ax2.set_xlabel('Distance from Base', fontsize=11)
+    ax2.set_xlabel('Iteration (when target was added)', fontsize=11)
     ax2.set_ylabel('GP-IRT Error', fontsize=11)
     ax2.set_title('Target vs Base Error\n(Base should stay low, Target may increase)', fontsize=12)
     ax2.legend(loc='upper left', fontsize=9)
     ax2.grid(True, alpha=0.3)
-    ax2.set_xticks(distances)
+    ax2.set_xticks(iterations)
     
     plt.tight_layout()
     
@@ -736,20 +839,147 @@ def plot_base_stability(
     return save_path
 
 
-def plot_efficiency_tradeoff(
+def plot_efficiency_per_dataset(
+    results_df: pd.DataFrame,
+    baseline: dict,
+    config: dict,
+    output_dir: Path,
+    figsize: tuple = (14, 10),
+):
+    """Create Graph: API calls needed per dataset at each iteration.
+    
+    Similar to dataset_variance_*.png but shows computational cost instead of error.
+    Each line represents a different dataset, showing how cost varies with iteration.
+    
+    Iteration 0 = dataset was in Base (0 cost)
+    Iteration 1+ = when dataset was added to the chain
+    """
+    # Calculate costs
+    costs_df = calculate_costs(results_df, baseline, config)
+    
+    if costs_df.empty:
+        print("  ⚠️ No cost data available")
+        return None
+    
+    fig, axes = plt.subplots(2, 2, figsize=figsize)
+    
+    # Get unique datasets and distances
+    datasets = costs_df['target_dataset'].unique()
+    distances = sorted(costs_df['distance'].unique())
+    # Convert to iterations
+    iterations = [d + 1 for d in distances]
+    all_iterations = [0] + iterations
+    
+    # Color palette for datasets
+    colors = plt.cm.tab10(np.linspace(0, 1, len(datasets)))
+    
+    # === Panel 1: Full Evaluation cost per dataset ===
+    ax1 = axes[0, 0]
+    for idx, dataset in enumerate(datasets):
+        ds_data = costs_df[costs_df['target_dataset'] == dataset].sort_values('distance')
+        ds_iterations = ds_data['distance'].values + 1
+        # Add iteration 0 with cost 0
+        ax1.plot([0] + list(ds_iterations), [0] + list(ds_data['cost_full'].values), 
+                marker='o', markersize=8, linewidth=2,
+                color=colors[idx], label=dataset[:12])
+    
+    ax1.scatter([0], [0], s=150, marker='*', color='gold', edgecolor='black', linewidth=2, zorder=6)
+    ax1.set_xlabel('Iteration (0 = in Base)', fontsize=11)
+    ax1.set_ylabel('API Calls', fontsize=11)
+    ax1.set_title('Full Evaluation\n(All items per dataset)', fontsize=12, fontweight='bold')
+    ax1.legend(loc='upper left', bbox_to_anchor=(1.02, 1), fontsize=8)
+    ax1.grid(True, alpha=0.3)
+    ax1.set_xticks(all_iterations)
+    
+    # === Panel 2: Concurrent cost per dataset ===
+    ax2 = axes[0, 1]
+    for idx, dataset in enumerate(datasets):
+        ds_data = costs_df[costs_df['target_dataset'] == dataset].sort_values('distance')
+        ds_iterations = ds_data['distance'].values + 1
+        ax2.plot([0] + list(ds_iterations), [0] + list(ds_data['cost_concurrent'].values), 
+                marker='o', markersize=8, linewidth=2,
+                color=colors[idx], label=dataset[:12])
+    
+    ax2.scatter([0], [0], s=150, marker='*', color='gold', edgecolor='black', linewidth=2, zorder=6)
+    ax2.set_xlabel('Iteration (0 = in Base)', fontsize=11)
+    ax2.set_ylabel('API Calls', fontsize=11)
+    ax2.set_title('Concurrent Calibration\n(Anchors × All datasets)', fontsize=12, fontweight='bold')
+    ax2.grid(True, alpha=0.3)
+    ax2.set_xticks(all_iterations)
+    
+    # === Panel 3: Fixed-Anchor cost per dataset ===
+    ax3 = axes[1, 0]
+    for idx, dataset in enumerate(datasets):
+        ds_data = costs_df[costs_df['target_dataset'] == dataset].sort_values('distance')
+        ds_iterations = ds_data['distance'].values + 1
+        ax3.plot([0] + list(ds_iterations), [0] + list(ds_data['cost_fixed_anchor'].values), 
+                marker='o', markersize=8, linewidth=2,
+                color=colors[idx], label=dataset[:12])
+    
+    ax3.scatter([0], [0], s=150, marker='*', color='gold', edgecolor='black', linewidth=2, zorder=6)
+    ax3.set_xlabel('Iteration (0 = in Base)', fontsize=11)
+    ax3.set_ylabel('API Calls', fontsize=11)
+    ax3.set_title('Fixed-Anchor Calibration\n(Anchors × 1 new dataset only)', fontsize=12, fontweight='bold')
+    ax3.grid(True, alpha=0.3)
+    ax3.set_xticks(all_iterations)
+    
+    # === Panel 4: Comparison - all methods aggregated ===
+    ax4 = axes[1, 1]
+    
+    # Aggregate by distance
+    grouped = costs_df.groupby('distance').agg({
+        'cost_full': 'mean',
+        'cost_concurrent': 'mean',
+        'cost_fixed_anchor': 'mean',
+    })
+    
+    # Add iteration 0 with 0 cost
+    ax4.plot(all_iterations, [0] + list(grouped['cost_full'].values), marker='s', markersize=10, linewidth=2,
+            color=EFFICIENCY_COLORS['full'], label='Full Evaluation')
+    ax4.plot(all_iterations, [0] + list(grouped['cost_concurrent'].values), marker='o', markersize=10, linewidth=2,
+            color=EFFICIENCY_COLORS['concurrent'], label='Concurrent')
+    ax4.plot(all_iterations, [0] + list(grouped['cost_fixed_anchor'].values), marker='^', markersize=10, linewidth=2,
+            color=EFFICIENCY_COLORS['fixed_anchor'], label='Fixed-Anchor')
+    
+    ax4.scatter([0], [0], s=150, marker='*', color='gold', edgecolor='black', linewidth=2, zorder=6)
+    ax4.set_xlabel('Iteration (0 = in Base)', fontsize=11)
+    ax4.set_ylabel('API Calls (avg)', fontsize=11)
+    ax4.set_title('Method Comparison\n(Average across all datasets)', fontsize=12, fontweight='bold')
+    ax4.legend(loc='upper left', fontsize=9)
+    ax4.grid(True, alpha=0.3)
+    ax4.set_xticks(all_iterations)
+    
+    fig.suptitle('API Calls Required per Dataset Addition\n(Iteration 0 = in Base, 1+ = when added)', 
+                 fontsize=14, fontweight='bold', y=1.02)
+    plt.tight_layout()
+    
+    save_path = output_dir / "figures" / "efficiency_per_dataset.png"
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close(fig)
+    print(f"  ✓ Saved: {save_path}")
+    
+    return save_path
+
+
+def plot_efficiency_pareto(
     results_df: pd.DataFrame,
     baseline: dict,
     config: dict,
     output_dir: Path,
     figsize: tuple = (12, 8),
 ):
-    """Create Graph: Per-addition cost vs error delta.
+    """Create Pareto Graph: Cost vs Error trade-off.
     
-    Shows the trade-off between computational cost (API calls) and prediction
-    accuracy when adding a new dataset.
+    X-axis: API Calls (Cost)
+    Y-axis: Absolute Error (MAE)
     
-    X-axis: Number of API calls needed when adding ONE dataset
-    Y-axis: Error delta compared to full evaluation (baseline)
+    Shows:
+    - Iteration 0 (In Base): reference point at (0, baseline_error)
+    - Full Evaluation: single point at (high_cost, baseline_error)
+    - Concurrent/Fixed-Anchor: points for each iteration i=1, i=2, i=3...
+    
+    Key insight: Fixed-Anchor is in the "sweet spot" (low cost, similar error to Concurrent)
     """
     # Calculate costs
     costs_df = calculate_costs(results_df, baseline, config)
@@ -760,84 +990,95 @@ def plot_efficiency_tradeoff(
     
     fig, ax = plt.subplots(figsize=figsize)
     
-    # Group by distance for cleaner visualization
     distances = sorted(costs_df['distance'].unique())
+    # Convert to iterations (iteration = distance + 1)
+    iterations = [d + 1 for d in distances]
     
-    # Prepare data for each method
-    methods = {
-        'Full Evaluation': {
-            'cost_col': 'cost_full',
-            'error': 0.0,  # Reference point
-            'color': EFFICIENCY_COLORS['full'],
-            'marker': 's',
-        },
-        'Concurrent': {
-            'cost_col': 'cost_concurrent',
-            'error_col': 'error_delta_linked',
-            'color': EFFICIENCY_COLORS['concurrent'],
-            'marker': 'o',
-        },
-        'Fixed-Anchor': {
-            'cost_col': 'cost_fixed_anchor',
-            'error_col': 'error_delta_linked',
-            'color': EFFICIENCY_COLORS['fixed_anchor'],
-            'marker': '^',
-        },
-    }
+    # Aggregate by distance - use actual error values, not deltas
+    grouped = costs_df.groupby('distance').agg({
+        'cost_full': 'mean',
+        'cost_concurrent': 'mean',
+        'cost_fixed_anchor': 'mean',
+        'target_error': ['mean', 'std'],
+        'baseline_error': 'mean',
+        'n_items': 'mean',  # Average items per dataset
+    })
     
-    # Plot each method
-    for method_name, method_info in methods.items():
-        cost_col = method_info['cost_col']
-        color = method_info['color']
-        marker = method_info['marker']
-        
-        if method_name == 'Full Evaluation':
-            # Full evaluation is a single reference point (average cost, 0 error)
-            avg_cost = costs_df[cost_col].mean()
-            ax.scatter([avg_cost], [0], s=200, marker=marker, color=color,
-                      label=f'{method_name} (reference)', zorder=5, edgecolor='black', linewidth=2)
-            ax.annotate(f'{method_name}\n(0 error)', (avg_cost, 0),
-                       textcoords='offset points', xytext=(10, 10), fontsize=9)
-        else:
-            # For IRT methods, plot per distance with error bars
-            error_col = method_info['error_col']
-            
-            grouped = costs_df.groupby('distance').agg({
-                cost_col: 'mean',
-                error_col: ['mean', 'std'],
-            })
-            
-            costs = grouped[cost_col]['mean'].values
-            errors = grouped[(error_col, 'mean')].values
-            error_stds = grouped[(error_col, 'std')].fillna(0).values
-            
-            # Plot with error bars
-            ax.errorbar(costs, errors, yerr=error_stds,
-                       marker=marker, markersize=12, capsize=8, capthick=2,
-                       color=color, linewidth=2, elinewidth=2,
-                       label=method_name, zorder=3)
-            
-            # Add distance labels
-            for i, (cost, err, dist) in enumerate(zip(costs, errors, distances)):
-                ax.annotate(f'd={int(dist)}', (cost, err),
-                           textcoords='offset points', xytext=(5, 5), fontsize=8, alpha=0.7)
+    # Get baseline error (error when dataset was in Base)
+    baseline_error = grouped['baseline_error']['mean'].mean()
+    baseline_error = baseline_error if not np.isnan(baseline_error) else 0
     
-    # Formatting
-    ax.axhline(y=0, color='gray', linestyle='--', linewidth=1, alpha=0.5)
-    ax.set_xlabel('API Calls per Dataset Addition', fontsize=12)
-    ax.set_ylabel('Error Delta (vs Full Evaluation)', fontsize=12)
-    ax.set_title('Efficiency Trade-off: Cost vs Accuracy\n'
-                 '(Lower-left is better: fewer calls, lower error)', 
-                 fontsize=13, fontweight='bold')
+    # Get average number of items per dataset
+    avg_n_items = grouped['n_items']['mean'].mean()
+    avg_n_items = avg_n_items if not np.isnan(avg_n_items) else 1000
+    
+    # === Iteration 0 (In Base): Reference point - no cost, baseline error ===
+    ax.scatter([0], [baseline_error], s=400, marker='*', 
+              color='gold', edgecolor='black', linewidth=2,
+              label='In Base (iter 0)', zorder=6)
+    
+    # === Full Evaluation: All items (not just anchors) ===
+    # Full evaluation costs the actual number of items in each dataset
+    # For visualization, show it once at the average cost
+    full_cost_display = avg_n_items
+    # Full evaluation achieves baseline error (best possible with all data)
+    ax.scatter([full_cost_display], [baseline_error], s=250, marker='s', 
+              color=EFFICIENCY_COLORS['full'], edgecolor='black', linewidth=2,
+              label=f'Full Evaluation (~{int(avg_n_items)} items)', zorder=5, alpha=0.8)
+    
+    # === Concurrent: Points at each iteration ===
+    concurrent_costs = grouped['cost_concurrent']['mean'].values
+    concurrent_errors = grouped[('target_error', 'mean')].values
+    concurrent_error_stds = grouped[('target_error', 'std')].fillna(0).values
+    
+    # Plot line connecting points (starting from baseline at iteration 0)
+    ax.plot([0] + list(concurrent_costs), [baseline_error] + list(concurrent_errors), 
+           color=EFFICIENCY_COLORS['concurrent'], linewidth=2, alpha=0.5, linestyle='--')
+    # Plot points with error bars
+    ax.errorbar(concurrent_costs, concurrent_errors, yerr=concurrent_error_stds,
+               marker='o', markersize=14, capsize=6, capthick=2,
+               color=EFFICIENCY_COLORS['concurrent'], linewidth=0, elinewidth=2,
+               label='Concurrent', zorder=4)
+    # Add iteration labels
+    for i, (cost, err, iter_num) in enumerate(zip(concurrent_costs, concurrent_errors, iterations)):
+        ax.annotate(f'{int(iter_num)}', (cost, err),
+                   textcoords='offset points', xytext=(8, 8), fontsize=9,
+                   color=EFFICIENCY_COLORS['concurrent'], fontweight='bold')
+    
+    # === Fixed-Anchor: Points at each iteration ===
+    fixed_costs = grouped['cost_fixed_anchor']['mean'].values
+    fixed_errors = grouped[('target_error', 'mean')].values
+    fixed_error_stds = grouped[('target_error', 'std')].fillna(0).values
+    
+    # Plot line connecting points (starting from baseline at iteration 0)
+    ax.plot([0] + list(fixed_costs), [baseline_error] + list(fixed_errors), 
+           color=EFFICIENCY_COLORS['fixed_anchor'], linewidth=2, alpha=0.5, linestyle='--')
+    # Plot points with error bars
+    ax.errorbar(fixed_costs, fixed_errors, yerr=fixed_error_stds,
+               marker='^', markersize=14, capsize=6, capthick=2,
+               color=EFFICIENCY_COLORS['fixed_anchor'], linewidth=0, elinewidth=2,
+               label='Fixed-Anchor', zorder=4)
+    # Add iteration labels
+    for i, (cost, err, iter_num) in enumerate(zip(fixed_costs, fixed_errors, iterations)):
+        ax.annotate(f'{int(iter_num)}', (cost, err),
+                   textcoords='offset points', xytext=(-20, -15), fontsize=9,
+                   color=EFFICIENCY_COLORS['fixed_anchor'], fontweight='bold')
+    
+    # === Formatting ===
+    ax.axhline(y=baseline_error, color='gray', linestyle='--', linewidth=1, alpha=0.5)
+    ax.set_xlabel('API Calls (per dataset addition)', fontsize=13)
+    ax.set_ylabel('Prediction Error (MAE) - GP-IRT method', fontsize=13)
+    ax.set_title('Pareto Trade-off: Cost vs Accuracy (GP-IRT)\n'
+                 'Lower = better | Iteration 0 = dataset was in Base',
+                 fontsize=14, fontweight='bold')
     ax.legend(loc='upper right', fontsize=10)
     ax.grid(True, alpha=0.3)
-    
-    # Set axis limits with some padding
-    ax.set_xlim(left=0)
+    ax.set_xlim(left=-10)
+    ax.set_ylim(bottom=0)  # Error is always positive
     
     plt.tight_layout()
     
-    save_path = output_dir / "figures" / "efficiency_per_addition.png"
+    save_path = output_dir / "figures" / "efficiency_pareto.png"
     save_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
@@ -846,20 +1087,21 @@ def plot_efficiency_tradeoff(
     return save_path
 
 
-def plot_cumulative_efficiency(
+def plot_efficiency_by_iteration(
     results_df: pd.DataFrame,
     baseline: dict,
     config: dict,
     output_dir: Path,
     figsize: tuple = (14, 6),
 ):
-    """Create Graph: Cumulative cost comparison as chain grows.
+    """Create Iteration Evolution Graph: How cost and error evolve as chain grows.
     
-    Shows how total API calls accumulate as more datasets are added,
-    highlighting the dramatic savings of Fixed-Anchor over Concurrent.
+    Two side-by-side panels:
+    - Left: Error vs Iteration (shows individual datasets + mean)
+    - Right: Cost vs Iteration (shows the 3 methods with savings)
     
-    Left: Cumulative cost vs number of datasets
-    Right: Cost per error reduction (efficiency metric)
+    Iteration 0 = dataset was in Base (baseline)
+    Iteration 1+ = when dataset was added to the chain
     """
     # Calculate costs
     costs_df = calculate_costs(results_df, baseline, config)
@@ -870,98 +1112,145 @@ def plot_cumulative_efficiency(
     
     fig, axes = plt.subplots(1, 2, figsize=figsize)
     
-    # === Left Panel: Cumulative Cost vs Distance ===
+    distances = sorted(costs_df['distance'].unique())
+    # Convert to iterations (iteration = distance + 1)
+    iterations = [d + 1 for d in distances]
+    all_iterations = [0] + iterations  # Include iteration 0 for baseline
+    
+    datasets = costs_df['target_dataset'].unique()
+    n_anchors = config.get('n_anchors_per_dataset', 100)
+    
+    # === Left Panel: Error vs Iteration (per dataset) ===
     ax1 = axes[0]
     
-    distances = sorted(costs_df['distance'].unique())
+    # Plot each dataset as a separate faint line (starting from iteration 0 with baseline)
+    colors = plt.cm.Set2(np.linspace(0, 1, len(datasets)))
+    baseline_errors_list = []
     
-    # Aggregate by distance
-    grouped = costs_df.groupby('distance').agg({
-        'cost_cumulative_full': 'mean',
-        'cost_cumulative_concurrent': 'mean',
-        'cost_cumulative_fixed': 'mean',
-        'error_delta_linked': 'mean',
-    })
+    for idx, dataset in enumerate(datasets):
+        ds_data = costs_df[costs_df['target_dataset'] == dataset].sort_values('distance')
+        if not ds_data['target_error'].isna().all():
+            # Convert distance to iteration and add iteration 0 with baseline
+            ds_iterations = ds_data['distance'].values + 1
+            ds_errors = ds_data['target_error'].values
+            ds_baseline = ds_data['baseline_error'].iloc[0] if not ds_data['baseline_error'].isna().all() else np.nan
+            
+            if not np.isnan(ds_baseline):
+                baseline_errors_list.append(ds_baseline)
+                # Prepend iteration 0 with baseline error
+                ds_iterations = np.concatenate([[0], ds_iterations])
+                ds_errors = np.concatenate([[ds_baseline], ds_errors])
+            
+            ax1.plot(ds_iterations, ds_errors,
+                    marker='o', markersize=6, linewidth=1.5, alpha=0.5,
+                    color=colors[idx], label=dataset[:12] if idx < 5 else None)
     
-    cumul_full = grouped['cost_cumulative_full'].values
-    cumul_concurrent = grouped['cost_cumulative_concurrent'].values
-    cumul_fixed = grouped['cost_cumulative_fixed'].values
+    # Calculate mean baseline error
+    mean_baseline = np.nanmean(baseline_errors_list) if baseline_errors_list else 0
     
-    # Plot cumulative costs
-    ax1.plot(distances, cumul_full, marker='s', markersize=10, linewidth=2,
-            color=EFFICIENCY_COLORS['full'], label='Full Evaluation')
-    ax1.plot(distances, cumul_concurrent, marker='o', markersize=10, linewidth=2,
-            color=EFFICIENCY_COLORS['concurrent'], label='Concurrent (O(N²))')
-    ax1.plot(distances, cumul_fixed, marker='^', markersize=10, linewidth=2,
-            color=EFFICIENCY_COLORS['fixed_anchor'], label='Fixed-Anchor (O(N))')
+    # Plot iteration 0 point (In Base)
+    ax1.scatter([0], [mean_baseline], s=200, marker='*', color='gold', edgecolor='black', 
+               linewidth=2, label=f'In Base (iter 0): {mean_baseline:.4f}', zorder=6)
     
-    # Add savings annotation at max distance
-    max_dist_idx = len(distances) - 1
-    savings = cumul_concurrent[max_dist_idx] - cumul_fixed[max_dist_idx]
-    savings_pct = 100 * savings / cumul_concurrent[max_dist_idx] if cumul_concurrent[max_dist_idx] > 0 else 0
+    # Baseline reference line
+    ax1.axhline(y=mean_baseline, color='gray', linestyle='--', linewidth=2, 
+               alpha=0.5, label=f'Baseline: {mean_baseline:.4f}')
     
-    ax1.annotate(f'Savings: {savings:.0f} calls\n({savings_pct:.1f}%)',
-                xy=(distances[max_dist_idx], cumul_fixed[max_dist_idx]),
-                xytext=(distances[max_dist_idx] - 0.5, (cumul_concurrent[max_dist_idx] + cumul_fixed[max_dist_idx]) / 2),
-                fontsize=10, ha='right',
-                arrowprops=dict(arrowstyle='->', color='gray', lw=1.5))
+    # Plot mean with error bars (thick line) - starting from iteration 0
+    grouped = costs_df.groupby('distance')['target_error'].agg(['mean', 'std'])
+    mean_iterations = grouped.index.values + 1
+    mean_errors = grouped['mean'].values
+    mean_stds = grouped['std'].fillna(0).values
     
-    ax1.set_xlabel('Datasets Added (Distance)', fontsize=11)
-    ax1.set_ylabel('Cumulative API Calls', fontsize=11)
-    ax1.set_title('Cumulative Cost as Chain Grows\n(Fixed-Anchor scales linearly)', fontsize=12)
-    ax1.legend(loc='upper left', fontsize=9)
+    # Prepend iteration 0 with baseline
+    mean_iterations = np.concatenate([[0], mean_iterations])
+    mean_errors = np.concatenate([[mean_baseline], mean_errors])
+    mean_stds = np.concatenate([[0], mean_stds])
+    
+    ax1.errorbar(mean_iterations, mean_errors, yerr=mean_stds,
+                marker='s', markersize=10, capsize=6, capthick=2,
+                color='black', linewidth=3, elinewidth=2,
+                label='Mean (all datasets)', zorder=5)
+    
+    ax1.set_xlabel('Iteration (0 = in Base, 1+ = when added)', fontsize=12)
+    ax1.set_ylabel('Prediction Error (MAE)', fontsize=12)
+    ax1.set_title('Prediction Accuracy by Iteration\n(Each line = one target dataset)', 
+                  fontsize=13, fontweight='bold')
+    ax1.legend(loc='upper left', fontsize=8, ncol=2)
     ax1.grid(True, alpha=0.3)
-    ax1.set_xticks(distances)
+    ax1.set_xticks(all_iterations)
+    ax1.set_xticklabels(['Base'] + [str(i) for i in iterations])
+    ax1.set_ylim(bottom=0)  # Error is always positive
     
-    # === Right Panel: Error vs Cost (Pareto view) ===
+    # === Right Panel: Cost vs Iteration (methods comparison) ===
     ax2 = axes[1]
     
-    # For each distance, plot cost vs error for each method
-    error_deltas = grouped['error_delta_linked'].values
+    # Aggregate by distance
+    cost_grouped = costs_df.groupby('distance').agg({
+        'cost_full': 'mean',
+        'cost_concurrent': 'mean',
+        'cost_fixed_anchor': 'mean',
+        'n_datasets_in_chain': 'mean',
+    })
     
-    # Full evaluation: cumulative cost with 0 error
-    ax2.scatter(cumul_full, [0] * len(cumul_full), s=100, marker='s',
-               color=EFFICIENCY_COLORS['full'], label='Full Evaluation', alpha=0.7)
+    cost_full = cost_grouped['cost_full'].values
+    cost_concurrent = cost_grouped['cost_concurrent'].values
+    cost_fixed = cost_grouped['cost_fixed_anchor'].values
+    n_datasets = cost_grouped['n_datasets_in_chain'].values
     
-    # Concurrent and Fixed-Anchor with actual errors
-    ax2.scatter(cumul_concurrent, error_deltas, s=100, marker='o',
-               color=EFFICIENCY_COLORS['concurrent'], label='Concurrent', alpha=0.7)
-    ax2.scatter(cumul_fixed, error_deltas, s=100, marker='^',
-               color=EFFICIENCY_COLORS['fixed_anchor'], label='Fixed-Anchor', alpha=0.7)
+    # Add iteration 0 (cost = 0 when in Base)
+    plot_iterations = [0] + iterations
+    cost_full_with_0 = np.concatenate([[0], cost_full])
+    cost_concurrent_with_0 = np.concatenate([[0], cost_concurrent])
+    cost_fixed_with_0 = np.concatenate([[0], cost_fixed])
     
-    # Connect points to show progression
-    for i in range(len(distances) - 1):
-        # Connect concurrent points
-        ax2.plot([cumul_concurrent[i], cumul_concurrent[i+1]], 
-                [error_deltas[i], error_deltas[i+1]],
-                color=EFFICIENCY_COLORS['concurrent'], alpha=0.3, linestyle='--')
-        # Connect fixed points
-        ax2.plot([cumul_fixed[i], cumul_fixed[i+1]], 
-                [error_deltas[i], error_deltas[i+1]],
-                color=EFFICIENCY_COLORS['fixed_anchor'], alpha=0.3, linestyle='--')
+    # Plot all 3 methods
+    ax2.plot(plot_iterations, cost_full_with_0, marker='s', markersize=12, linewidth=3,
+            color=EFFICIENCY_COLORS['full'], label=f'Full Eval (~{cost_full[0]:.0f} items)')
+    ax2.plot(plot_iterations, cost_concurrent_with_0, marker='o', markersize=12, linewidth=3,
+            color=EFFICIENCY_COLORS['concurrent'], 
+            label=f'Concurrent ({n_anchors} × N datasets)')
+    ax2.plot(plot_iterations, cost_fixed_with_0, marker='^', markersize=12, linewidth=3,
+            color=EFFICIENCY_COLORS['fixed_anchor'], 
+            label=f'Fixed-Anchor ({n_anchors} × 1)')
     
-    # Add distance labels
-    for i, dist in enumerate(distances):
-        ax2.annotate(f'd={int(dist)}', (cumul_fixed[i], error_deltas[i]),
-                    textcoords='offset points', xytext=(5, 5), fontsize=8, alpha=0.7)
+    # Fill between Concurrent and Fixed to highlight savings
+    ax2.fill_between(plot_iterations, cost_concurrent_with_0, cost_fixed_with_0,
+                    alpha=0.3, color='#2ecc71')
     
-    ax2.axhline(y=0, color='gray', linestyle='--', linewidth=1, alpha=0.5)
-    ax2.set_xlabel('Cumulative API Calls', fontsize=11)
-    ax2.set_ylabel('Error Delta (vs Full Evaluation)', fontsize=11)
-    ax2.set_title('Pareto View: Cost vs Accuracy\n(Lower-left = most efficient)', fontsize=12)
-    ax2.legend(loc='upper right', fontsize=9)
+    # Add iteration 0 marker
+    ax2.scatter([0], [0], s=200, marker='*', color='gold', edgecolor='black', 
+               linewidth=2, zorder=6)
+    
+    # Add annotations showing number of datasets at each iteration
+    for i, (iter_num, n_ds) in enumerate(zip(iterations, n_datasets)):
+        ax2.annotate(f'{n_ds:.0f} ds', (iter_num, cost_concurrent[i]),
+                    textcoords='offset points', xytext=(0, 10), fontsize=8,
+                    ha='center', color=EFFICIENCY_COLORS['concurrent'])
+    
+    ax2.set_xlabel('Iteration (0 = in Base, 1+ = when added)', fontsize=12)
+    ax2.set_ylabel('API Calls (per addition)', fontsize=12)
+    ax2.set_title('Computational Cost by Method\n(Concurrent grows, Fixed-Anchor stays constant)', 
+                  fontsize=13, fontweight='bold')
+    ax2.legend(loc='upper left', fontsize=9)
     ax2.grid(True, alpha=0.3)
-    ax2.set_xlim(left=0)
+    ax2.set_xticks(all_iterations)
+    ax2.set_xticklabels(['Base'] + [str(i) for i in iterations])
+    
+    # Add summary text
+    fig.suptitle('Efficiency Analysis: Error (left) and Cost (right) as Chain Grows\n'
+                 '(Iteration 0 = dataset was in Base, showing actual error values)',
+                 fontsize=14, fontweight='bold', y=1.02)
     
     plt.tight_layout()
     
-    save_path = output_dir / "figures" / "efficiency_cumulative.png"
+    save_path = output_dir / "figures" / "efficiency_by_iteration.png"
     save_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     print(f"  ✓ Saved: {save_path}")
     
-    # Also save the cost data as CSV for reference
+    # Save cost data as CSV
     csv_path = output_dir / "figures" / "efficiency_costs.csv"
     costs_df.to_csv(csv_path, index=False)
     print(f"  ✓ Saved: {csv_path}")
@@ -1020,13 +1309,17 @@ def visualize_chain_linking(output_dir: str | Path):
     print("\n  Graph 6: Base Stability...")
     plot_base_stability(results_df, baseline, output_dir)
     
-    # Graph 7: Efficiency Trade-off (per-addition cost vs error)
-    print("\n  Graph 7: Efficiency Trade-off (per-addition)...")
-    plot_efficiency_tradeoff(results_df, baseline, config, output_dir)
+    # Graph 7: Efficiency per dataset (API calls vs distance, like dataset_variance)
+    print("\n  Graph 7: Efficiency per Dataset...")
+    plot_efficiency_per_dataset(results_df, baseline, config, output_dir)
     
-    # Graph 8: Cumulative Efficiency (cost scaling)
-    print("\n  Graph 8: Cumulative Efficiency...")
-    plot_cumulative_efficiency(results_df, baseline, config, output_dir)
+    # Graph 8: Pareto Trade-off (Cost vs Error)
+    print("\n  Graph 8: Pareto Trade-off (Cost vs Error)...")
+    plot_efficiency_pareto(results_df, baseline, config, output_dir)
+    
+    # Graph 9: Efficiency by Iteration (Error and Cost vs Iteration)
+    print("\n  Graph 9: Efficiency by Iteration...")
+    plot_efficiency_by_iteration(results_df, baseline, config, output_dir)
     
     print(f"\n✅ All visualizations saved to: {output_dir / 'figures'}")
 

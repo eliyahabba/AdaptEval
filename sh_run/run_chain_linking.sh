@@ -39,6 +39,8 @@ export CUDA_LAUNCH_BLOCKING=1
 # Parse arguments:
 #   $1 = output directory (optional, default: data/chain_linking_experiment)
 #   $2 = seed for Base dataset selection (optional, default: 42)
+#   $3 = data source mode (optional, default: helm_lite)
+#        Options: helm_lite (91 models, 9 datasets), helm_classic (70 models, 30 datasets)
 
 # Output directory base
 if [ -n "$1" ]; then
@@ -54,13 +56,21 @@ else
     SHUFFLE_SEED=${SHUFFLE_SEED:-42}
 fi
 
-# Append seed to output directory for reproducibility tracking
-OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}"
+# Data source mode
+if [ -n "$3" ]; then
+    DATA_SOURCE_MODE="$3"
+else
+    DATA_SOURCE_MODE=${DATA_SOURCE_MODE:-helm_lite}
+fi
+
+# Append seed and data source mode to output directory for reproducibility tracking
+OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}"
 echo "Output directory: ${OUTPUT_DIR}"
 echo "Shuffle seed: ${SHUFFLE_SEED}"
+echo "Data source mode: ${DATA_SOURCE_MODE}"
 
 # Configuration parameters
-N_BASE=${N_BASE:-4}           # Number of datasets in Base
+N_BASE=${N_BASE:-6}           # Number of datasets in Base
 MAX_CHAIN=${MAX_CHAIN:-3}     # Maximum chain length (distance)
 N_ANCHORS=${N_ANCHORS:-100}   # Anchors per dataset
 EPOCHS=${EPOCHS:-2000}        # Training epochs
@@ -71,6 +81,7 @@ echo "  MAX_CHAIN: ${MAX_CHAIN}"
 echo "  N_ANCHORS: ${N_ANCHORS}"
 echo "  EPOCHS: ${EPOCHS}"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
+echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
 
 # Run the chain linking experiment
 echo "Starting chain linking experiment..."
@@ -83,7 +94,8 @@ python src/experiments/chain_linking_experiment.py \
     --seed 42 \
     --shuffle-seed ${SHUFFLE_SEED} \
     --dims 2 5 \
-    --epochs ${EPOCHS}
+    --epochs ${EPOCHS} \
+    --data-source-mode ${DATA_SOURCE_MODE}
 
 # Print resource usage at the end
 echo "Job resource usage:"

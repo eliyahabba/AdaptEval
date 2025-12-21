@@ -54,7 +54,7 @@ from llm_eval.training import train_item_parameters, save_item_parameters
 class ChainExperimentConfig(ExperimentConfig):
     """Configuration for chain linking experiments."""
     # Number of datasets in the fixed Base
-    n_base_datasets: int = 4
+    n_base_datasets: int = 6
     
     # Maximum chain length to test (distance from Base)
     max_chain_length: int = 3
@@ -777,7 +777,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Chain Linking Experiment")
     parser.add_argument("--output-dir", default=None, help="Output directory")
-    parser.add_argument("--n-base", type=int, default=4, help="Number of datasets in Base")
+    parser.add_argument("--n-base", type=int, default=6, help="Number of datasets in Base")
     parser.add_argument("--max-chain", type=int, default=3, help="Maximum chain length")
     parser.add_argument("--n-anchors-per-dataset", type=int, default=100, help="Anchors per dataset")
     parser.add_argument("--test-ratio", type=float, default=0.25, help="Test set ratio")
@@ -787,6 +787,12 @@ if __name__ == "__main__":
     parser.add_argument("--force", action="store_true", help="Force retrain all")
     parser.add_argument("--dims", type=int, nargs="+", default=[2, 5], help="Dimensions to search")
     parser.add_argument("--epochs", type=int, default=2000, help="Training epochs")
+    parser.add_argument("--data-source-mode", type=str, default="helm_lite",
+                        choices=["mixed", "helm_lite", "helm_classic", "lb_only"],
+                        help="Data source mode: 'helm_lite' (default, 91 models, 9 datasets), "
+                             "'helm_classic' (70 models, 30 datasets), "
+                             "'mixed' (uses data_source_config.json), "
+                             "'lb_only' (395 models, 6 datasets)")
     
     args = parser.parse_args()
     
@@ -800,6 +806,7 @@ if __name__ == "__main__":
         force_retrain=args.force,
         dims_search=args.dims,
         epochs=args.epochs,
+        data_source_mode=args.data_source_mode,
     )
     
     if args.output_dir:
