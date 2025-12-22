@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #SBATCH --job-name=git-push-chain
-#SBATCH --mem=4g
+#SBATCH --mem=2g
 #SBATCH --time=1:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=1
 #SBATCH --killable
 #SBATCH --requeue
 
