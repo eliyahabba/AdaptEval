@@ -74,7 +74,7 @@ echo "Data source mode: ${DATA_SOURCE_MODE}"
 
 # Configuration parameters
 N_BASE=${N_BASE:-6}           # Number of datasets in Base
-MAX_CHAIN=${MAX_CHAIN:-3}     # Maximum chain length (distance)
+MAX_CHAIN=${MAX_CHAIN:-10}    # Maximum chain length (distance)
 N_ANCHORS=${N_ANCHORS:-100}   # Anchors per dataset
 EPOCHS=${EPOCHS:-2000}        # Training epochs
 
@@ -86,11 +86,13 @@ echo "  EPOCHS: ${EPOCHS}"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
 echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
 
-# Auto-enable sparse matrix for data sources that need it
+# Sparse matrix is now enabled by default
+# Only disable for specific cases where dense matrix is preferred
 SPARSE_FLAG=""
-if [[ "${DATA_SOURCE_MODE}" == "helm_classic" ]] || [[ "${DATA_SOURCE_MODE}" == "reeval" ]]; then
-    SPARSE_FLAG="--use-sparse-matrix"
-    echo "  SPARSE_MATRIX: auto-enabled for ${DATA_SOURCE_MODE}"
+if [[ "${DATA_SOURCE_MODE}" == "helm_lite" ]]; then
+    # For helm_lite, suggest using dense matrix since coverage is good
+    SPARSE_FLAG="--no-sparse-matrix"
+    echo "  SPARSE_MATRIX: disabled for ${DATA_SOURCE_MODE} (good model coverage)"
 fi
 
 # Run the chain linking experiment

@@ -79,10 +79,10 @@ def calculate_costs(
     """
     n_anchors = config.get('n_anchors_per_dataset', 100)
     
-    # Get total number of datasets from baseline
-    n_total_datasets = len(baseline) if baseline else len(results_df['target_dataset'].unique())
+    # Get number of BASE datasets from config (this is critical for cost calculation!)
+    n_base_datasets = config.get('n_base_datasets', 6)  # Default to 6 if not specified
     
-    # Load dataset sizes - first try from baseline (most accurate), then from config
+    # Load dataset sizes - first try from baseline (most accurate), then from config files
     dataset_sizes = {}
     
     # 1. Try to get n_items from baseline results (preferred - actual data)
@@ -91,7 +91,27 @@ def calculate_costs(
             if 'n_items' in ds_data:
                 dataset_sizes[ds_name] = ds_data['n_items']
     
-    # 2. If not in baseline, try data_source_config.json
+    # 2. If not in baseline, try dataset_items_config.json (comprehensive config)
+    if not dataset_sizes:
+        try:
+            import json
+            from pathlib import Path as P
+            items_config_path = P(__file__).parent / "dataset_items_config.json"
+            if items_config_path.exists():
+                with open(items_config_path) as f:
+                    items_config = json.load(f)
+                # Try each source (helm_classic, reeval, etc.)
+                for source_name, source_data in items_config.items():
+                    if source_name.startswith('_'):
+                        continue
+                    datasets_dict = source_data.get('datasets', {})
+                    for ds_name, n_items in datasets_dict.items():
+                        if ds_name not in dataset_sizes and isinstance(n_items, int):
+                            dataset_sizes[ds_name] = n_items
+        except Exception as e:
+            pass  # Silently ignore
+    
+    # 3. Fallback to data_source_config.json (HELM Lite specific)
     if not dataset_sizes:
         try:
             import json
@@ -102,7 +122,7 @@ def calculate_costs(
                     source_config = json.load(f)
                 datasets_config = source_config.get('datasets', {})
                 for ds_name, ds_info in datasets_config.items():
-                    if ds_name not in dataset_sizes:  # Don't override baseline values
+                    if ds_name not in dataset_sizes:
                         dataset_sizes[ds_name] = ds_info.get('items', total_items_per_dataset)
         except Exception as e:
             pass  # Silently ignore - will use default
@@ -115,10 +135,6 @@ def calculate_costs(
     else:
         avg_items_per_dataset = total_items_per_dataset
         print(f"  Note: Using default n_items={total_items_per_dataset} (no actual data available)")
-    
-    # First pass: find max distance to calculate n_base
-    max_distance = results_df['distance'].max() if not results_df.empty else 1
-    n_base = n_total_datasets - max_distance  # Base datasets before any linking
     
     rows = []
     
@@ -136,15 +152,18 @@ def calculate_costs(
                 n_items_this_dataset = avg_items_per_dataset
         
         # Number of datasets at this point in the chain:
-        # At distance d, we have: base datasets + d linked datasets
-        n_datasets_in_chain = n_base + distance
+        # At distance d, we have: base datasets + d linked datasets + 1 (the target)
+        # iteration 1 (distance 0): n_base + 1 datasets
+        # iteration 2 (distance 1): n_base + 2 datasets
+        # etc.
+        n_datasets_in_chain = n_base_datasets + distance + 1
         
         # === Per-Addition Costs ===
         # Full evaluation: evaluate all items in the new dataset
         cost_full = n_items_this_dataset
         
-        # Concurrent: need to re-run anchors from ALL datasets (Base + all linked so far)
-        # At distance d, total datasets = n_base + d
+        # Concurrent: need to re-run anchors from ALL datasets (Base + target + previous links)
+        # At distance d: n_base_datasets + d + 1 (includes target)
         # Cost INCREASES with distance (more datasets = more anchors to run)
         cost_concurrent = n_anchors * n_datasets_in_chain
         
@@ -157,10 +176,10 @@ def calculate_costs(
         # This is approximate - we use avg_items_per_dataset for simplicity
         cost_cumulative_full = avg_items_per_dataset * distance
         
-        # Concurrent: at each step i (from 1 to distance), cost was n_anchors * (n_base + i)
-        # Sum = n_anchors * [sum from i=1 to d of (n_base + i)]
-        #     = n_anchors * [d * n_base + d*(d+1)/2]
-        cost_cumulative_concurrent = n_anchors * (distance * n_base + distance * (distance + 1) // 2)
+        # Concurrent: at each step i (from 0 to distance), cost was n_anchors * (n_base_datasets + i + 1)
+        # Sum = n_anchors * [sum from i=0 to d of (n_base_datasets + i + 1)]
+        #     = n_anchors * [(d+1) * (n_base_datasets + 1) + d*(d+1)/2]
+        cost_cumulative_concurrent = n_anchors * ((distance + 1) * (n_base_datasets + 1) + distance * (distance + 1) // 2)
         
         # Fixed-Anchor: each addition costs just n_anchors (constant per step)
         cost_cumulative_fixed = n_anchors * distance
@@ -1107,6 +1126,213 @@ def plot_efficiency_pareto(
     return save_path
 
 
+def plot_pareto_per_dataset(
+    results_df: pd.DataFrame,
+    baseline: dict,
+    config: dict,
+    output_dir: Path,
+    figsize: tuple = (10, 6),
+):
+    """Create separate Pareto Graph for EACH dataset.
+    
+    For each target dataset, shows:
+    - X-axis: API Calls (Cost)
+    - Y-axis: Prediction Error (MAE)
+    - Points for each iteration (1, 2, 3...)
+    - Full Evaluation point (all items, error=0)
+    - In Base point (iteration 0, baseline error)
+    
+    This allows clear comparison of each dataset's trade-off.
+    """
+    # Calculate costs
+    costs_df = calculate_costs(results_df, baseline, config)
+    
+    if costs_df.empty:
+        print("  ⚠️ No cost data available for per-dataset Pareto")
+        return None
+    
+    # Get unique target datasets
+    datasets = sorted(costs_df['target_dataset'].unique())
+    n_datasets = len(datasets)
+    
+    if n_datasets == 0:
+        print("  ⚠️ No datasets found")
+        return None
+    
+    # Create output directory for individual plots
+    pareto_dir = output_dir / "figures" / "pareto_per_dataset"
+    pareto_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Create individual plot for each dataset
+    saved_paths = []
+    
+    for dataset in datasets:
+        ds_data = costs_df[costs_df['target_dataset'] == dataset].sort_values('distance')
+        
+        if ds_data.empty:
+            continue
+        
+        fig, ax = plt.subplots(figsize=figsize)
+        
+        # Get dataset-specific values
+        n_items = int(ds_data['n_items'].iloc[0])
+        baseline_error = ds_data['baseline_error'].iloc[0]
+        baseline_error = baseline_error if not np.isnan(baseline_error) else 0
+        
+        distances = ds_data['distance'].values
+        iterations = distances + 1
+        
+        # === 1. Full Evaluation: All items, error = 0 ===
+        ax.scatter([n_items], [0], s=300, marker='s', 
+                  color=EFFICIENCY_COLORS['full'], edgecolor='black', linewidth=2,
+                  label=f'Full Evaluation ({n_items} items)', zorder=5)
+        
+        # === 2. In Base (Iteration 0): no cost, baseline error ===
+        ax.scatter([0], [baseline_error], s=400, marker='*', 
+                  color='gold', edgecolor='black', linewidth=2,
+                  label=f'In Base (error={baseline_error:.3f})', zorder=6)
+        
+        # === 3. Concurrent: Points at each iteration ===
+        concurrent_costs = ds_data['cost_concurrent'].values
+        concurrent_errors = ds_data['target_error'].values
+        
+        # Line from baseline
+        ax.plot([0] + list(concurrent_costs), [baseline_error] + list(concurrent_errors), 
+               color=EFFICIENCY_COLORS['concurrent'], linewidth=2, alpha=0.5, linestyle='--')
+        ax.scatter(concurrent_costs, concurrent_errors, s=150, marker='o',
+                  color=EFFICIENCY_COLORS['concurrent'], edgecolor='black', linewidth=1.5,
+                  label='Concurrent Calibration', zorder=4)
+        # Add iteration labels
+        for cost, err, iter_num in zip(concurrent_costs, concurrent_errors, iterations):
+            ax.annotate(f'{int(iter_num)}', (cost, err),
+                       textcoords='offset points', xytext=(8, 8), fontsize=10,
+                       color=EFFICIENCY_COLORS['concurrent'], fontweight='bold')
+        
+        # === 4. Fixed-Anchor: Points at each iteration ===
+        fixed_costs = ds_data['cost_fixed_anchor'].values
+        fixed_errors = ds_data['target_error'].values
+        
+        # Line from baseline
+        ax.plot([0] + list(fixed_costs), [baseline_error] + list(fixed_errors), 
+               color=EFFICIENCY_COLORS['fixed_anchor'], linewidth=2, alpha=0.5, linestyle='--')
+        ax.scatter(fixed_costs, fixed_errors, s=150, marker='^',
+                  color=EFFICIENCY_COLORS['fixed_anchor'], edgecolor='black', linewidth=1.5,
+                  label='Fixed-Anchor Calibration', zorder=4)
+        # Add iteration labels
+        for cost, err, iter_num in zip(fixed_costs, fixed_errors, iterations):
+            ax.annotate(f'{int(iter_num)}', (cost, err),
+                       textcoords='offset points', xytext=(-15, -15), fontsize=10,
+                       color=EFFICIENCY_COLORS['fixed_anchor'], fontweight='bold')
+        
+        # === Formatting ===
+        ax.set_xlabel('API Calls (per dataset addition)', fontsize=12)
+        ax.set_ylabel('Prediction Error (MAE) - GP-IRT', fontsize=12)
+        ax.set_title(f'Pareto Trade-off: {dataset}\n'
+                     f'Items: {n_items} | Anchors: {config.get("n_anchors_per_dataset", 100)}',
+                     fontsize=13, fontweight='bold')
+        ax.legend(loc='upper right', fontsize=9)
+        ax.grid(True, alpha=0.3)
+        ax.set_xlim(left=-10)
+        ax.set_ylim(bottom=0)
+        
+        plt.tight_layout()
+        
+        # Save
+        safe_name = dataset.replace(' ', '_').replace('/', '_')
+        save_path = pareto_dir / f"pareto_{safe_name}.png"
+        fig.savefig(save_path, dpi=150, bbox_inches='tight')
+        plt.close(fig)
+        saved_paths.append(save_path)
+    
+    print(f"  ✓ Saved {len(saved_paths)} individual Pareto plots to: {pareto_dir}")
+    
+    # Create a combined figure with all datasets in a grid (each in its own subplot)
+    if n_datasets >= 1:
+        n_cols = min(3, n_datasets)
+        n_rows = (n_datasets + n_cols - 1) // n_cols
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(6 * n_cols, 5 * n_rows))
+        if n_datasets == 1:
+            axes = np.array([axes])
+        axes = axes.flatten()
+        
+        for idx, dataset in enumerate(datasets):
+            ax = axes[idx]
+            ds_data = costs_df[costs_df['target_dataset'] == dataset].sort_values('distance')
+            
+            if ds_data.empty:
+                ax.set_visible(False)
+                continue
+            
+            n_items = int(ds_data['n_items'].iloc[0])
+            baseline_error = ds_data['baseline_error'].iloc[0]
+            baseline_error = baseline_error if not np.isnan(baseline_error) else 0
+            
+            distances = ds_data['distance'].values
+            iterations = distances + 1
+            
+            # Full Evaluation (all items, error = 0)
+            ax.scatter([n_items], [0], s=200, marker='s', 
+                      color=EFFICIENCY_COLORS['full'], edgecolor='black', linewidth=2,
+                      label=f'Full Eval ({n_items})', zorder=5)
+            
+            # In Base (iteration 0)
+            ax.scatter([0], [baseline_error], s=250, marker='*', 
+                      color='gold', edgecolor='black', linewidth=2,
+                      label=f'In Base ({baseline_error:.3f})', zorder=6)
+            
+            # Concurrent
+            concurrent_costs = ds_data['cost_concurrent'].values
+            concurrent_errors = ds_data['target_error'].values
+            ax.plot([0] + list(concurrent_costs), [baseline_error] + list(concurrent_errors), 
+                   color=EFFICIENCY_COLORS['concurrent'], linewidth=2, alpha=0.5, linestyle='--')
+            ax.scatter(concurrent_costs, concurrent_errors, s=100, marker='o',
+                      color=EFFICIENCY_COLORS['concurrent'], edgecolor='black', linewidth=1.5,
+                      label='Concurrent', zorder=4)
+            # Add iteration numbers
+            for cost, err, it in zip(concurrent_costs, concurrent_errors, iterations):
+                ax.annotate(f'{int(it)}', (cost, err), textcoords='offset points', 
+                           xytext=(6, 6), fontsize=9, color=EFFICIENCY_COLORS['concurrent'])
+            
+            # Fixed-Anchor
+            fixed_costs = ds_data['cost_fixed_anchor'].values
+            fixed_errors = ds_data['target_error'].values
+            ax.plot([0] + list(fixed_costs), [baseline_error] + list(fixed_errors), 
+                   color=EFFICIENCY_COLORS['fixed_anchor'], linewidth=2, alpha=0.5, linestyle='--')
+            ax.scatter(fixed_costs, fixed_errors, s=100, marker='^',
+                      color=EFFICIENCY_COLORS['fixed_anchor'], edgecolor='black', linewidth=1.5,
+                      label='Fixed-Anchor', zorder=4)
+            # Add iteration numbers for Fixed-Anchor
+            for cost, err, it in zip(fixed_costs, fixed_errors, iterations):
+                ax.annotate(f'{int(it)}', (cost, err), textcoords='offset points', 
+                           xytext=(-8, -12), fontsize=9, color=EFFICIENCY_COLORS['fixed_anchor'])
+            
+            # Formatting
+            ax.set_title(f'{dataset}\n({n_items} items)', fontsize=12, fontweight='bold')
+            ax.set_xlabel('API Calls', fontsize=10)
+            ax.set_ylabel('Error (MAE)', fontsize=10)
+            ax.legend(loc='upper right', fontsize=8)
+            ax.grid(True, alpha=0.3)
+            ax.set_xlim(left=-20)
+            ax.set_ylim(bottom=0)
+        
+        # Hide empty subplots
+        for idx in range(n_datasets, len(axes)):
+            axes[idx].set_visible(False)
+        
+        fig.suptitle('Pareto Trade-off per Dataset (GP-IRT)\n'
+                     '★=In Base | ●=Concurrent | △=Fixed-Anchor | ■=Full Eval', 
+                     fontsize=14, fontweight='bold', y=1.02)
+        plt.tight_layout()
+        
+        combined_path = output_dir / "figures" / "pareto_all_datasets.png"
+        fig.savefig(combined_path, dpi=150, bbox_inches='tight')
+        plt.close(fig)
+        print(f"  ✓ Saved combined grid plot: {combined_path}")
+        saved_paths.append(combined_path)
+    
+    return saved_paths
+
+
 def plot_efficiency_by_iteration(
     results_df: pd.DataFrame,
     baseline: dict,
@@ -1337,9 +1563,22 @@ def visualize_chain_linking(output_dir: str | Path):
     print("\n  Graph 8: Pareto Trade-off (Cost vs Error)...")
     plot_efficiency_pareto(results_df, baseline, config, output_dir)
     
+    # Graph 8b: Pareto per Dataset (individual plots for each dataset)
+    print("\n  Graph 8b: Pareto per Dataset...")
+    plot_pareto_per_dataset(results_df, baseline, config, output_dir)
+    
     # Graph 9: Efficiency by Iteration (Error and Cost vs Iteration)
     print("\n  Graph 9: Efficiency by Iteration...")
     plot_efficiency_by_iteration(results_df, baseline, config, output_dir)
+    
+    # New simple visualizations
+    print("\n  Graph 10: Simple Visualizations...")
+    try:
+        from visualize_simple import create_simple_visualizations
+        create_simple_visualizations(output_dir)
+    except Exception as e:
+        print(f"   ⚠️ Could not create simple visualizations: {e}")
+        print("   Run manually: python src/experiments/visualize_simple.py <output_dir>")
     
     print(f"\n✅ All visualizations saved to: {output_dir / 'figures'}")
 

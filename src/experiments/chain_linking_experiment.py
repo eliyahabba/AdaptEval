@@ -57,26 +57,26 @@ class ChainExperimentConfig(ExperimentConfig):
     """Configuration for chain linking experiments."""
     # Number of datasets in the fixed Base
     n_base_datasets: int = 6
-    
+
     # Maximum chain length to test (distance from Base)
     max_chain_length: int = 10
-    
+
     # Seed for shuffling datasets (controls which datasets are in Base)
     # Different from `seed` which controls train/test split
     shuffle_seed: int = 42
-    
+
     # Output directory for this experiment
     output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/chain_linking_experiment"))
-    
+
     # Data source mode (override default from parent)
     # Options: "helm_lite" (default for chain), "helm_classic", "mixed", "lb_only", "reeval"
     data_source_mode: str = "helm_lite"
-    
+
     # Zero-variance filtering for IRT training
     filter_zero_variance: bool = False  # If True, remove zero-variance questions (uninformative for IRT)
-    
-    # Sparse matrix mode
-    use_sparse_matrix: bool = False  # If True, include models that didn't do ALL datasets (requires sparse matrix handling)
+
+    # Sparse matrix mode (default True for better model utilization)
+    use_sparse_matrix: bool = True  # If True, include models that didn't do ALL datasets (requires sparse matrix handling)
 
 
 # =============================================================================
@@ -1034,9 +1034,9 @@ if __name__ == "__main__":
                              "'reeval' (183 models, 22 scenarios)")
     parser.add_argument("--filter-zero-variance", action="store_true",
                         help="Enable filtering of zero-variance questions during IRT training")
-    parser.add_argument("--use-sparse-matrix", action="store_true",
-                        help="Use sparse matrix mode (include models not present in all datasets). "
-                             "Recommended for helm_classic.")
+    parser.add_argument("--no-sparse-matrix", action="store_true",
+                        help="Disable sparse matrix mode (require models present in ALL datasets). "
+                             "Use this for strict intersection mode.")
     parser.add_argument("--recover", action="store_true",
                         help="Recover mode: rebuild all_results.csv from cached results.json files. "
                              "Useful after a crash to generate summary without re-running.")
@@ -1047,17 +1047,17 @@ if __name__ == "__main__":
     print(f"DEBUG: args.data_source_mode = '{args.data_source_mode}'")
     print(f"DEBUG: all args = {vars(args)}")
     
-    # Auto-enable sparse matrix for helm_classic if not specified
-    if args.data_source_mode == 'helm_classic' and not args.use_sparse_matrix:
-        print("NOTE: Auto-enabling --use-sparse-matrix for helm_classic mode")
-        args.use_sparse_matrix = True
-    
-    # Suggest sparse matrix for reeval due to incomplete coverage
-    if args.data_source_mode == 'reeval' and not args.use_sparse_matrix:
-        print("NOTE: reeval has incomplete model coverage across scenarios.")
-        print("      Consider using --use-sparse-matrix for better model utilization.")
-        print("      (Training with sparse matrix, testing on intersection)")
-    
+    # Handle sparse matrix mode (default True, can be disabled with --no-sparse-matrix)
+    use_sparse_matrix = True
+    if args.no_sparse_matrix:
+        use_sparse_matrix = False
+        print("NOTE: Using dense matrix mode (--no-sparse-matrix specified)")
+
+    # Suggest using dense matrix for specific cases if needed
+    if not use_sparse_matrix and args.data_source_mode == 'helm_classic':
+        print("WARNING: Using dense matrix with helm_classic may result in very few common models")
+        print("         Consider removing --no-sparse-matrix for better model utilization")
+
     config = ChainExperimentConfig(
         n_base_datasets=args.n_base,
         max_chain_length=args.max_chain,
@@ -1070,7 +1070,7 @@ if __name__ == "__main__":
         epochs=args.epochs,
         data_source_mode=args.data_source_mode,
         filter_zero_variance=args.filter_zero_variance,
-        use_sparse_matrix=args.use_sparse_matrix,
+        use_sparse_matrix=use_sparse_matrix,
     )
     
     if args.output_dir:
