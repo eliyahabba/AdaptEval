@@ -1,0 +1,68 @@
+{
+  "legal_support": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.027672558922558935,
+    "anchor_error_std": 0.020818944911757484,
+    "irt_error_mean": 0.08798305665174411,
+    "irt_error_std": 0.08608282528872817,
+    "gp_irt_error_mean": 0.030446457447150528,
+    "gp_irt_error_std": 0.021003938138763084,
+    "pirt_error_mean": 0.0728327953107963,
+    "pirt_error_std": 0.07566963131063034
+  },
+  "math": {
+    "n_validations": 5,
+    "anchor_error_mean": 0.01327231121281463,
+    "anchor_error_std": 0.01495314348073642,
+    "irt_error_mean": 0.1245146928218063,
+    "irt_error_std": 0.09303232957475074,
+    "gp_irt_error_mean": 0.013016744271432155,
+    "gp_irt_error_std": 0.017001384277945408,
+    "pirt_error_mean": 0.09903739610184756,
+    "pirt_error_std": 0.0708421214210825
+  },
+  "truthful_qa": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.02786582144743793,
+    "anchor_error_std": 0.022313677583810292,
+    "irt_error_mean": 0.397746687494028,
+    "irt_error_std": 0.12239889177301999,
+    "gp_irt_error_mean": 0.05301364800336079,
+    "gp_irt_error_std": 0.02202346468584639,
+    "pirt_error_mean": 0.379714223088803,
+    "pirt_error_std": 0.11575971814582967
+  },
+  "commonsense": {
+    "n_validations": 5,
+    "anchor_error_mean": 0.019678714859437674,
+    "anchor_error_std": 0.013274292273926491,
+    "irt_error_mean": 0.053879122393027626,
+    "irt_error_std": 0.05143158152512147,
+    "gp_irt_error_mean": 0.022117140155880465,
+    "gp_irt_error_std": 0.011921668653492723,
+    "pirt_error_mean": 0.05131481802868754,
+    "pirt_error_std": 0.04718991980242728
+  },
+  "med_qa": {
+    "n_validations": 5,
+    "anchor_error_mean": 0.019399999999999983,
+    "anchor_error_std": 0.014432601983010614,
+    "irt_error_mean": 0.07531376463822607,
+    "irt_error_std": 0.05383380203748528,
+    "gp_irt_error_mean": 0.01900830054429988,
+    "gp_irt_error_std": 0.013395066327468995,
+    "pirt_error_mean": 0.06916135323734962,
+    "pirt_error_std": 0.04931134377685403
+  },
+  "boolq": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.01677786160597092,
+    "anchor_error_std": 0.01539270070539037,
+    "irt_error_mean": 0.3986200302934731,
+    "irt_error_std": 0.13572562265019708,
+    "gp_irt_error_mean": 0.08944640473393696,
+    "gp_irt_error_std": 0.03478542370264096,
+    "pirt_error_mean": 0.3891865303420443,
+    "pirt_error_std": 0.13290433942648763
+  }
+}
