@@ -1,0 +1,68 @@
+{
+  "LSAT": {
+    "n_validations": 11,
+    "anchor_error_mean": 0.029185564977322023,
+    "anchor_error_std": 0.030078620750667313,
+    "irt_error_mean": 0.051342627546347594,
+    "irt_error_std": 0.05945882429405365,
+    "gp_irt_error_mean": 0.029218621349281902,
+    "gp_irt_error_std": 0.02831070116920464,
+    "pirt_error_mean": 0.04266462841924092,
+    "pirt_error_std": 0.03995071040106128
+  },
+  "DyckLanguage": {
+    "n_validations": 11,
+    "anchor_error_mean": 0.047272727272727265,
+    "anchor_error_std": 0.025460129257688036,
+    "irt_error_mean": 0.09146550801983243,
+    "irt_error_std": 0.06389333879416169,
+    "gp_irt_error_mean": 0.04708050322457927,
+    "gp_irt_error_std": 0.0266141987717164,
+    "pirt_error_mean": 0.08211889756014124,
+    "pirt_error_std": 0.051661370482913666
+  },
+  "MATH-Classic": {
+    "n_validations": 11,
+    "anchor_error_mean": 0.012597102666386733,
+    "anchor_error_std": 0.008936399192594473,
+    "irt_error_mean": 0.06812412406769167,
+    "irt_error_std": 0.06993509046286896,
+    "gp_irt_error_mean": 0.014047331300748962,
+    "gp_irt_error_std": 0.010161690546313136,
+    "pirt_error_mean": 0.06171652484599262,
+    "pirt_error_std": 0.06552576995056142
+  },
+  "NarrativeQA-Classic": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.019657117579716017,
+    "anchor_error_std": 0.019855030581147362,
+    "irt_error_mean": 0.08758695710031136,
+    "irt_error_std": 0.0509916263299525,
+    "gp_irt_error_mean": 0.017429977671322528,
+    "gp_irt_error_std": 0.019560739254639505,
+    "pirt_error_mean": 0.07150432899683197,
+    "pirt_error_std": 0.041009631424784324
+  },
+  "TruthfulQA-Classic": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.037614678899082585,
+    "anchor_error_std": 0.03122994846435728,
+    "irt_error_mean": 0.0323173142000298,
+    "irt_error_std": 0.04148120202500133,
+    "gp_irt_error_mean": 0.03708945866821414,
+    "gp_irt_error_std": 0.02948353469883146,
+    "pirt_error_mean": 0.03130538293251235,
+    "pirt_error_std": 0.03533639111138245
+  },
+  "LegalSupport": {
+    "n_validations": 11,
+    "anchor_error_mean": 0.011454545454545521,
+    "anchor_error_std": 0.011911033845671354,
+    "irt_error_mean": 0.12199431673991609,
+    "irt_error_std": 0.15860489748362339,
+    "gp_irt_error_mean": 0.012757766139983527,
+    "gp_irt_error_std": 0.009979216537905086,
+    "pirt_error_mean": 0.11243962348312514,
+    "pirt_error_std": 0.14551474668926379
+  }
+}

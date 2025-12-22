@@ -1,0 +1,57 @@
+{
+  "n_base_datasets": 6,
+  "max_chain_length": 3,
+  "shuffle_seed": 48,
+  "train_test_seed": 42,
+  "n_anchors_per_dataset": 100,
+  "test_ratio": 0.25,
+  "epochs": 2000,
+  "dims_search": [
+    2,
+    5
+  ],
+  "base_datasets": [
+    "bbq",
+    "synthetic_reasoning",
+    "legal_support",
+    "dyck_language_np=3",
+    "civil_comments",
+    "imdb"
+  ],
+  "remaining_datasets": [
+    "entity_matching",
+    "gsm",
+    "raft",
+    "math",
+    "boolq",
+    "lsat_qa",
+    "entity_data_imputation",
+    "med_qa",
+    "wikifact",
+    "legalbench",
+    "commonsense",
+    "truthful_qa",
+    "babi_qa"
+  ],
+  "all_datasets_shuffled": [
+    "bbq",
+    "synthetic_reasoning",
+    "legal_support",
+    "dyck_language_np=3",
+    "civil_comments",
+    "imdb",
+    "entity_matching",
+    "gsm",
+    "raft",
+    "math",
+    "boolq",
+    "lsat_qa",
+    "entity_data_imputation",
+    "med_qa",
+    "wikifact",
+    "legalbench",
+    "commonsense",
+    "truthful_qa",
+    "babi_qa"
+  ]
+}

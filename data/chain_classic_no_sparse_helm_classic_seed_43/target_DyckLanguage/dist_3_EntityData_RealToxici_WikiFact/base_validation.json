@@ -1,0 +1,57 @@
+{
+  "GSM8K-Classic": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.013764705882352934,
+    "anchor_error_std": 0.010034499313398155,
+    "irt_error_mean": 0.057476330859805684,
+    "irt_error_std": 0.06177452652300939,
+    "gp_irt_error_mean": 0.014914669681894,
+    "gp_irt_error_std": 0.011302526614146281,
+    "pirt_error_mean": 0.05727116811896386,
+    "pirt_error_std": 0.06173940722731786
+  },
+  "IMDB": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.2156885330237161,
+    "anchor_error_std": 0.07293143555401929,
+    "irt_error_mean": 0.4815836409950687,
+    "irt_error_std": 0.19859437488058848,
+    "gp_irt_error_mean": 0.31507755442251095,
+    "gp_irt_error_std": 0.08734884923835864,
+    "pirt_error_mean": 0.47900803365906436,
+    "pirt_error_std": 0.20006457130262773
+  },
+  "CommonSense": {
+    "n_validations": 12,
+    "anchor_error_mean": 0.032333333333333304,
+    "anchor_error_std": 0.024436270442342742,
+    "irt_error_mean": 0.09381684650011242,
+    "irt_error_std": 0.07149393038451426,
+    "gp_irt_error_mean": 0.03807099910508553,
+    "gp_irt_error_std": 0.031164526746641885,
+    "pirt_error_mean": 0.09378658687029766,
+    "pirt_error_std": 0.07147064743561488
+  },
+  "Copyright": {
+    "n_validations": 14,
+    "anchor_error_mean": 0.00024132098685770016,
+    "anchor_error_std": 4.690559505766079e-05,
+    "irt_error_mean": 0.014072776830292913,
+    "irt_error_std": 0.02101102177825253,
+    "gp_irt_error_mean": 0.00018106877022097236,
+    "gp_irt_error_std": 5.793076447743545e-05,
+    "pirt_error_mean": 0.014071786931339465,
+    "pirt_error_std": 0.021011025574713692
+  },
+  "Disinformation": {
+    "n_validations": 14,
+    "anchor_error_mean": 2.4781763942525814e-19,
+    "anchor_error_std": 6.29941445536855e-19,
+    "irt_error_mean": 0.00012923282937352498,
+    "irt_error_std": 0.00025640929758357966,
+    "gp_irt_error_mean": 2.4781763942525814e-19,
+    "gp_irt_error_std": 6.29941445536855e-19,
+    "pirt_error_mean": 0.0,
+    "pirt_error_std": 0.0
+  }
+}

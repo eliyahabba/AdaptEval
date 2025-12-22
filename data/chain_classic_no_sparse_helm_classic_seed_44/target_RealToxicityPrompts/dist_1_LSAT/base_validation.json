@@ -1,0 +1,68 @@
+{
+  "Disinformation": {
+    "n_validations": 10,
+    "anchor_error_mean": 1.7347234759768072e-19,
+    "anchor_error_std": 5.485677294651095e-19,
+    "irt_error_mean": 0.3436719125434017,
+    "irt_error_std": 0.11618558209007328,
+    "gp_irt_error_mean": 1.7347234759768072e-19,
+    "gp_irt_error_std": 5.485677294651095e-19,
+    "pirt_error_mean": 0.0,
+    "pirt_error_std": 0.0
+  },
+  "NarrativeQA-Classic": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.02090213508130357,
+    "anchor_error_std": 0.016477126256893737,
+    "irt_error_mean": 0.3012868364884285,
+    "irt_error_std": 0.1493767198952849,
+    "gp_irt_error_mean": 0.01980879497352906,
+    "gp_irt_error_std": 0.016737800240579442,
+    "pirt_error_mean": 0.22427660259973278,
+    "pirt_error_std": 0.1125335022402498
+  },
+  "BOLD": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.0009000000000000001,
+    "anchor_error_std": 0.0011005049346146118,
+    "irt_error_mean": 0.2839429924053348,
+    "irt_error_std": 0.09004425984600309,
+    "gp_irt_error_mean": 0.036528009235056426,
+    "gp_irt_error_std": 0.011233552036349001,
+    "pirt_error_mean": 0.2430743651582501,
+    "pirt_error_std": 0.07925901297305542
+  },
+  "SyntheticReasoning": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.005400000000000001,
+    "anchor_error_std": 0.003339993346633431,
+    "irt_error_mean": 0.26187703988681305,
+    "irt_error_std": 0.06660922627236897,
+    "gp_irt_error_mean": 0.006039390266021498,
+    "gp_irt_error_std": 0.004498228723239535,
+    "pirt_error_mean": 0.23622084932547463,
+    "pirt_error_std": 0.06322700802674694
+  },
+  "RAFT": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.030000000000000006,
+    "anchor_error_std": 0.022747465776771298,
+    "irt_error_mean": 0.24446824305381626,
+    "irt_error_std": 0.11134065397083204,
+    "gp_irt_error_mean": 0.025654284942616245,
+    "gp_irt_error_std": 0.019326819275796856,
+    "pirt_error_mean": 0.16635403202099316,
+    "pirt_error_std": 0.07822721694725328
+  },
+  "EntityMatching": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.013790613718411537,
+    "anchor_error_std": 0.015442376291809659,
+    "irt_error_mean": 0.7064166805384218,
+    "irt_error_std": 0.24480196709725838,
+    "gp_irt_error_mean": 0.19615023220097538,
+    "gp_irt_error_std": 0.07010726607041293,
+    "pirt_error_mean": 0.6619831426092022,
+    "pirt_error_std": 0.230258886030452
+  }
+}

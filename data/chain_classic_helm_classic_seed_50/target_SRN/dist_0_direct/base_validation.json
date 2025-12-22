@@ -1,0 +1,68 @@
+{
+  "WikiFact": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.027791763563965375,
+    "anchor_error_std": 0.015531436797385207,
+    "irt_error_mean": 0.03820119629765828,
+    "irt_error_std": 0.022747370896662004,
+    "gp_irt_error_mean": 0.023492325760296986,
+    "gp_irt_error_std": 0.01541618494632558,
+    "pirt_error_mean": 0.0374736298444499,
+    "pirt_error_std": 0.02252748321599508
+  },
+  "Disinformation": {
+    "n_validations": 14,
+    "anchor_error_mean": 2.4781763942525814e-19,
+    "anchor_error_std": 6.29941445536855e-19,
+    "irt_error_mean": 0.016835996816788903,
+    "irt_error_std": 0.019711368280042066,
+    "gp_irt_error_mean": 2.4781763942525814e-19,
+    "gp_irt_error_std": 6.29941445536855e-19,
+    "pirt_error_mean": 0.0,
+    "pirt_error_std": 0.0
+  },
+  "TruthfulQA-Classic": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.027163158841518268,
+    "anchor_error_std": 0.024752994075193196,
+    "irt_error_mean": 0.07005832982120448,
+    "irt_error_std": 0.04141438654121807,
+    "gp_irt_error_mean": 0.02711298013799071,
+    "gp_irt_error_std": 0.024646278736817517,
+    "pirt_error_mean": 0.06148741731253435,
+    "pirt_error_std": 0.036268006024063854
+  },
+  "DyckLanguage": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.042823529411764705,
+    "anchor_error_std": 0.02906938960082767,
+    "irt_error_mean": 0.061430539076947566,
+    "irt_error_std": 0.04253274982423989,
+    "gp_irt_error_mean": 0.04124618665042421,
+    "gp_irt_error_std": 0.02729456918265698,
+    "pirt_error_mean": 0.05106924289211616,
+    "pirt_error_std": 0.03130595731641406
+  },
+  "MMLU-Classic": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.038696960265587714,
+    "anchor_error_std": 0.0357195686440161,
+    "irt_error_mean": 0.039863636346973666,
+    "irt_error_std": 0.02081350523049692,
+    "gp_irt_error_mean": 0.03848908370683265,
+    "gp_irt_error_std": 0.03552756038546151,
+    "pirt_error_mean": 0.033163231179421354,
+    "pirt_error_std": 0.020778534407604913
+  },
+  "MS MARCO": {
+    "n_validations": 12,
+    "anchor_error_mean": 0.027844545825278216,
+    "anchor_error_std": 0.018447973073868137,
+    "irt_error_mean": 0.0995349377533224,
+    "irt_error_std": 0.06501897806080156,
+    "gp_irt_error_mean": 0.02807375268441123,
+    "gp_irt_error_std": 0.0179597772672784,
+    "pirt_error_mean": 0.09259353969528639,
+    "pirt_error_std": 0.059110501026436085
+  }
+}

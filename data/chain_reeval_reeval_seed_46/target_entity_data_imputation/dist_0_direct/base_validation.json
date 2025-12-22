@@ -1,0 +1,68 @@
+{
+  "bbq": {
+    "n_validations": 11,
+    "anchor_error_mean": 0.03157703157703157,
+    "anchor_error_std": 0.02415863039326237,
+    "irt_error_mean": 0.36620828069386085,
+    "irt_error_std": 0.11553059145541436,
+    "gp_irt_error_mean": 0.02803240665176596,
+    "gp_irt_error_std": 0.024886365459296112,
+    "pirt_error_mean": 0.3627526318764173,
+    "pirt_error_std": 0.12646198762718674
+  },
+  "imdb": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.15069268229970548,
+    "anchor_error_std": 0.18826538014959293,
+    "irt_error_mean": 0.1835248189678668,
+    "irt_error_std": 0.11772360770809734,
+    "gp_irt_error_mean": 0.1635463124028229,
+    "gp_irt_error_std": 0.13505310075997073,
+    "pirt_error_mean": 0.18121192372127148,
+    "pirt_error_std": 0.11710360769547601
+  },
+  "wikifact": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.017812606046501544,
+    "anchor_error_std": 0.013160837825222316,
+    "irt_error_mean": 0.5721166264584787,
+    "irt_error_std": 0.14524020642530366,
+    "gp_irt_error_mean": 0.34867526653449976,
+    "gp_irt_error_std": 0.08795536009011935,
+    "pirt_error_mean": 0.5707705566165331,
+    "pirt_error_std": 0.14552221559582254
+  },
+  "commonsense": {
+    "n_validations": 5,
+    "anchor_error_mean": 0.03012048192771085,
+    "anchor_error_std": 0.041225833669975516,
+    "irt_error_mean": 0.22911990198940718,
+    "irt_error_std": 0.23474577992735812,
+    "gp_irt_error_mean": 0.04418056173753706,
+    "gp_irt_error_std": 0.06270090706895429,
+    "pirt_error_mean": 0.19417245200040914,
+    "pirt_error_std": 0.21113500866851995
+  },
+  "civil_comments": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.03258405172413796,
+    "anchor_error_std": 0.03130183050153346,
+    "irt_error_mean": 0.14533486483709368,
+    "irt_error_std": 0.14405217974983514,
+    "gp_irt_error_mean": 0.09732545230802958,
+    "gp_irt_error_std": 0.09894939981972788,
+    "pirt_error_mean": 0.14528961278761082,
+    "pirt_error_std": 0.14406746670926976
+  },
+  "legal_support": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.04050925925925923,
+    "anchor_error_std": 0.030585222725629916,
+    "irt_error_mean": 0.18035175097643147,
+    "irt_error_std": 0.08605938647343034,
+    "gp_irt_error_mean": 0.03981656449191432,
+    "gp_irt_error_std": 0.027986466003507796,
+    "pirt_error_mean": 0.16892321796862875,
+    "pirt_error_std": 0.07451622095662581
+  }
+}

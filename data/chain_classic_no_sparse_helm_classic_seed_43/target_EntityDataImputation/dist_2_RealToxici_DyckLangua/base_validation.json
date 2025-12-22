@@ -1,0 +1,68 @@
+{
+  "SRN": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.01988541666666664,
+    "anchor_error_std": 0.020624483719688672,
+    "irt_error_mean": 0.1169203818294018,
+    "irt_error_std": 0.12276899272558779,
+    "gp_irt_error_mean": 0.030270719684198488,
+    "gp_irt_error_std": 0.034867485627612875,
+    "pirt_error_mean": 0.10663268024732854,
+    "pirt_error_std": 0.11186976763621126
+  },
+  "GSM8K-Classic": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.02637500000000002,
+    "anchor_error_std": 0.023644238198766328,
+    "irt_error_mean": 0.11678123853990477,
+    "irt_error_std": 0.1055278016476301,
+    "gp_irt_error_mean": 0.03236055655760328,
+    "gp_irt_error_std": 0.03206287310676605,
+    "pirt_error_mean": 0.10402908368517164,
+    "pirt_error_std": 0.09647908779925028
+  },
+  "IMDB": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.22914814273107814,
+    "anchor_error_std": 0.10793346062791359,
+    "irt_error_mean": 0.3692181359378114,
+    "irt_error_std": 0.09889705839263516,
+    "gp_irt_error_mean": 0.25696194159783803,
+    "gp_irt_error_std": 0.07864332516005716,
+    "pirt_error_mean": 0.35752524508769307,
+    "pirt_error_std": 0.09516003659850886
+  },
+  "CommonSense": {
+    "n_validations": 7,
+    "anchor_error_mean": 0.022761904761904768,
+    "anchor_error_std": 0.015441303780246713,
+    "irt_error_mean": 0.12116675131571185,
+    "irt_error_std": 0.1223609124224392,
+    "gp_irt_error_mean": 0.022307302694041926,
+    "gp_irt_error_std": 0.0193718135516022,
+    "pirt_error_mean": 0.11444643180502515,
+    "pirt_error_std": 0.11608872135634732
+  },
+  "Copyright": {
+    "n_validations": 11,
+    "anchor_error_mean": 0.00018187735018848178,
+    "anchor_error_std": 9.562577162797363e-05,
+    "irt_error_mean": 0.4456910915088793,
+    "irt_error_std": 0.23124040062736753,
+    "gp_irt_error_mean": 0.0013312061859440776,
+    "gp_irt_error_std": 0.000716029883837664,
+    "pirt_error_mean": 0.4220036256758979,
+    "pirt_error_std": 0.21789377944159477
+  },
+  "Disinformation": {
+    "n_validations": 11,
+    "anchor_error_mean": 4.731064025391292e-19,
+    "anchor_error_std": 8.102882366760908e-19,
+    "irt_error_mean": 0.3711324304692378,
+    "irt_error_std": 0.23267149021102482,
+    "gp_irt_error_mean": 4.731064025391292e-19,
+    "gp_irt_error_std": 8.102882366760908e-19,
+    "pirt_error_mean": 0.0,
+    "pirt_error_std": 0.0
+  }
+}

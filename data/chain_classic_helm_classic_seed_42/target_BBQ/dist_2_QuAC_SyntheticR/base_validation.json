@@ -1,0 +1,68 @@
+{
+  "TruthfulQA-Classic": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.025076452599388364,
+    "anchor_error_std": 0.017629467684730244,
+    "irt_error_mean": 0.10567253279257191,
+    "irt_error_std": 0.054753828915542466,
+    "gp_irt_error_mean": 0.016672689422776953,
+    "gp_irt_error_std": 0.014685679820070765,
+    "pirt_error_mean": 0.09802792622334935,
+    "pirt_error_std": 0.046972846852412
+  },
+  "MATH-Classic": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.020092378752886837,
+    "anchor_error_std": 0.019377530682127518,
+    "irt_error_mean": 0.15390586744845147,
+    "irt_error_std": 0.056663999445152234,
+    "gp_irt_error_mean": 0.047391709379649906,
+    "gp_irt_error_std": 0.029461676669558536,
+    "pirt_error_mean": 0.14058497318593027,
+    "pirt_error_std": 0.055051448723514654
+  },
+  "GSM8K-Classic": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.02370000000000002,
+    "anchor_error_std": 0.027162269582803485,
+    "irt_error_mean": 0.12670469247556357,
+    "irt_error_std": 0.05810782995747875,
+    "gp_irt_error_mean": 0.027925238760088657,
+    "gp_irt_error_std": 0.02859111232686509,
+    "pirt_error_mean": 0.11532723187829803,
+    "pirt_error_std": 0.05096090730064546
+  },
+  "RAFT": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.026136363636363687,
+    "anchor_error_std": 0.02196316517321849,
+    "irt_error_mean": 0.287729387341134,
+    "irt_error_std": 0.03451241747272759,
+    "gp_irt_error_mean": 0.02736642407320113,
+    "gp_irt_error_std": 0.026014802917071464,
+    "pirt_error_mean": 0.21830454251756856,
+    "pirt_error_std": 0.027689547991355375
+  },
+  "Disinformation": {
+    "n_validations": 10,
+    "anchor_error_mean": 1.7347234759768072e-19,
+    "anchor_error_std": 5.485677294651095e-19,
+    "irt_error_mean": 0.2495975855791778,
+    "irt_error_std": 0.130896276097394,
+    "gp_irt_error_mean": 1.7347234759768072e-19,
+    "gp_irt_error_std": 5.485677294651095e-19,
+    "pirt_error_mean": 0.0,
+    "pirt_error_std": 0.0
+  },
+  "DyckLanguage": {
+    "n_validations": 10,
+    "anchor_error_mean": 0.038200000000000046,
+    "anchor_error_std": 0.03250230761038357,
+    "irt_error_mean": 0.17862636562294232,
+    "irt_error_std": 0.1099857291061103,
+    "gp_irt_error_mean": 0.036918139690660115,
+    "gp_irt_error_std": 0.03510940090877409,
+    "pirt_error_mean": 0.13833537578025226,
+    "pirt_error_std": 0.08319788172718719
+  }
+}

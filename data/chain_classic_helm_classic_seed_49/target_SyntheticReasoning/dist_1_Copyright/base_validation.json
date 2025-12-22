@@ -1,0 +1,57 @@
+{
+  "LSAT": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.05422993492407808,
+    "anchor_error_std": 0.027352538422816673,
+    "irt_error_mean": 0.044221558171260555,
+    "irt_error_std": 0.019214836610924966,
+    "gp_irt_error_mean": 0.05382974474725029,
+    "gp_irt_error_std": 0.027123741210108576,
+    "pirt_error_mean": 0.044944479960351044,
+    "pirt_error_std": 0.01901223421637513
+  },
+  "DyckLanguage": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.03788235294117649,
+    "anchor_error_std": 0.031124512753096183,
+    "irt_error_mean": 0.03476774723034264,
+    "irt_error_std": 0.036475777528176725,
+    "gp_irt_error_mean": 0.037712353471606855,
+    "gp_irt_error_std": 0.03107455396182013,
+    "pirt_error_mean": 0.034694452749355946,
+    "pirt_error_std": 0.03639702538221775
+  },
+  "NarrativeQA-Classic": {
+    "n_validations": 16,
+    "anchor_error_mean": 0.01892724701916128,
+    "anchor_error_std": 0.01410083708878937,
+    "irt_error_mean": 0.02793492553463026,
+    "irt_error_std": 0.010841151381174698,
+    "gp_irt_error_mean": 0.018795751264977786,
+    "gp_irt_error_std": 0.013948329866956391,
+    "pirt_error_mean": 0.027718918921376956,
+    "pirt_error_std": 0.010892367715918902
+  },
+  "TruthfulQA-Classic": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.03211009174311927,
+    "anchor_error_std": 0.018789305393646035,
+    "irt_error_mean": 0.03225413659954607,
+    "irt_error_std": 0.016866552346685208,
+    "gp_irt_error_mean": 0.03196941829054218,
+    "gp_irt_error_std": 0.018468739313462094,
+    "pirt_error_mean": 0.03214461613862487,
+    "pirt_error_std": 0.01705415226518188
+  },
+  "LegalSupport": {
+    "n_validations": 17,
+    "anchor_error_mean": 0.021000000000000088,
+    "anchor_error_std": 0.023632604596192965,
+    "irt_error_mean": 0.01946052767294371,
+    "irt_error_std": 0.018385800157332877,
+    "gp_irt_error_mean": 0.020726173817581964,
+    "gp_irt_error_std": 0.023047765729284388,
+    "pirt_error_mean": 0.01952431721862569,
+    "pirt_error_std": 0.018471434655807965
+  }
+}
