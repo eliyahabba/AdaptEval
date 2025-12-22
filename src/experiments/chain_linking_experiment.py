@@ -59,7 +59,7 @@ class ChainExperimentConfig(ExperimentConfig):
     n_base_datasets: int = 6
     
     # Maximum chain length to test (distance from Base)
-    max_chain_length: int = 3
+    max_chain_length: int = 10
     
     # Seed for shuffling datasets (controls which datasets are in Base)
     # Different from `seed` which controls train/test split
