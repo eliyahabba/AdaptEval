@@ -21,9 +21,13 @@ echo "Node: $SLURMD_NODENAME"
 # Git operations
 echo "Adding chain_* files..."
 git add chain_* -f
-
-echo "Committing changes..."
+PROJECT_DIR="/cs/labs/gabis/eliyahabba/AdaptEval/"
+cd $PROJECT_DIR
+echo "Current directory: $(pwd)"echo "Committing changes..."
 git commit -m "add output" data
+
+#echo "Committing changes..."
+#git commit -m "add output" data
 
 echo "Pushing to remote..."
 git push
