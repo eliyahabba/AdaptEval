@@ -1,0 +1,1713 @@
+Current directory: /cs/labs/gabis/eliyahabba/AdaptEval
+PYTHONPATH: /cs/labs/gabis/eliyahabba/AdaptEval/src:/cs/labs/gabis/eliyahabba/AdaptEval:/cs/labs/gabis/eliyahabba/LLM-Evaluation/
+Python: /cs/snapless/gabis/eliyahabba/venvs/AdaptEval/bin/python
+Python version: Python 3.11.2
+Job ID: 28931097
+Node: dumfries-001
+Task ID (for array jobs): 
+Output directory: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42
+Shuffle seed: 42
+Data source mode: helm_classic
+Configuration:
+  N_BASE: 6
+  MAX_CHAIN: 3
+  N_ANCHORS: 100
+  EPOCHS: 2000
+  SHUFFLE_SEED: 42
+  DATA_SOURCE_MODE: helm_classic
+  SPARSE_MATRIX: auto-enabled for helm_classic
+Starting chain linking experiment...
+DEBUG: args.data_source_mode = 'helm_classic'
+DEBUG: all args = {'output_dir': '/cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42', 'n_base': 6, 'max_chain': 3, 'n_anchors_per_dataset': 100, 'test_ratio': 0.25, 'seed': 42, 'shuffle_seed': 42, 'force': False, 'dims': [2, 5], 'epochs': 2000, 'data_source_mode': 'helm_classic', 'filter_zero_variance': False, 'use_sparse_matrix': True}
+======================================================================
+Chain Linking Experiment
+======================================================================
+  Base size: 6 datasets
+  Max chain length: 3
+  Shuffle seed: 42
+  Train/test seed: 42
+  Data source mode: helm_classic
+
+1. Loading datasets...
+   DEBUG: config.data_source_mode = 'helm_classic'
+   DEBUG: config type = ChainExperimentConfig
+   Data source mode: helm_classic
+   Available datasets in config: 30
+  ✓ BBQ: 1000 questions, 42 models from aggregated/helm_classic_aggregated.parquet
+  ✓ BLiMP: 2956 questions, 32 models from aggregated/helm_classic_aggregated.parquet
+  ✓ BOLD: 1000 questions, 42 models from aggregated/helm_classic_aggregated.parquet
+  ✓ BabiQA: 1960 questions, 70 models from aggregated/helm_classic_aggregated.parquet
+  ✓ BoolQ: 1044 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ CivilComments: 8480 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ Code: 1164 questions, 2 models from aggregated/helm_classic_aggregated.parquet
+  ✓ CommonSense: 1500 questions, 32 models from aggregated/helm_classic_aggregated.parquet
+  ✓ Copyright: 1652 questions, 44 models from aggregated/helm_classic_aggregated.parquet
+  ✓ Disinformation: 48 questions, 42 models from aggregated/helm_classic_aggregated.parquet
+  ✓ DyckLanguage: 500 questions, 69 models from aggregated/helm_classic_aggregated.parquet
+  ✓ EntityDataImputation: 424 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ EntityMatching: 1385 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ GSM8K-Classic: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
+  ✓ IMDB: 1698 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ LSAT: 461 questions, 69 models from aggregated/helm_classic_aggregated.parquet
+  ✓ LegalSupport: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
+  ✓ MATH-Classic: 866 questions, 69 models from aggregated/helm_classic_aggregated.parquet
+  ✓ MMLU-Classic: 567 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ MS MARCO: 1032 questions, 31 models from aggregated/helm_classic_aggregated.parquet
+  ✓ NarrativeQA-Classic: 470 questions, 66 models from aggregated/helm_classic_aggregated.parquet
+  ✓ NaturalQA-Classic: 1000 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ QuAC: 1000 questions, 66 models from aggregated/helm_classic_aggregated.parquet
+  ✓ RAFT: 440 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ RealToxicityPrompts: 1000 questions, 42 models from aggregated/helm_classic_aggregated.parquet
+  ✓ SRN: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
+  ✓ Summarization: 1962 questions, 42 models from aggregated/helm_classic_aggregated.parquet
+  ✓ SyntheticReasoning: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
+  ✓ TruthfulQA-Classic: 654 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+  ✓ WikiFact: 7927 questions, 67 models from aggregated/helm_classic_aggregated.parquet
+   Loaded 30 datasets
+
+2. Finding datasets with common models...
+
+   Finding common models across 30 datasets...
+   ✓ Found subset of 29 datasets with 30 common models
+   Datasets: ['BBQ', 'BLiMP', 'BOLD', 'BabiQA', 'BoolQ', 'CivilComments', 'CommonSense', 'Copyright', 'Disinformation', 'DyckLanguage', 'EntityDataImputation', 'EntityMatching', 'GSM8K-Classic', 'IMDB', 'LSAT', 'LegalSupport', 'MATH-Classic', 'MMLU-Classic', 'MS MARCO', 'NarrativeQA-Classic', 'NaturalQA-Classic', 'QuAC', 'RAFT', 'RealToxicityPrompts', 'SRN', 'Summarization', 'SyntheticReasoning', 'TruthfulQA-Classic', 'WikiFact']
+   Original order: ['BBQ', 'BLiMP', 'BOLD', 'BabiQA', 'BoolQ', 'CivilComments', 'CommonSense', 'Copyright', 'Disinformation', 'DyckLanguage', 'EntityDataImputation', 'EntityMatching', 'GSM8K-Classic', 'IMDB', 'LSAT', 'LegalSupport', 'MATH-Classic', 'MMLU-Classic', 'MS MARCO', 'NarrativeQA-Classic', 'NaturalQA-Classic', 'QuAC', 'RAFT', 'RealToxicityPrompts', 'SRN', 'Summarization', 'SyntheticReasoning', 'TruthfulQA-Classic', 'WikiFact']
+   Shuffled order (seed=42): ['TruthfulQA-Classic', 'MATH-Classic', 'GSM8K-Classic', 'RAFT', 'Disinformation', 'DyckLanguage', 'QuAC', 'BBQ', 'SyntheticReasoning', 'IMDB', 'LegalSupport', 'EntityMatching', 'MMLU-Classic', 'BLiMP', 'BoolQ', 'CivilComments', 'BOLD', 'SRN', 'BabiQA', 'RealToxicityPrompts', 'Summarization', 'MS MARCO', 'WikiFact', 'NaturalQA-Classic', 'Copyright', 'EntityDataImputation', 'LSAT', 'NarrativeQA-Classic', 'CommonSense']
+   Base datasets: ['TruthfulQA-Classic', 'MATH-Classic', 'GSM8K-Classic', 'RAFT', 'Disinformation', 'DyckLanguage']
+   Remaining datasets: ['QuAC', 'BBQ', 'SyntheticReasoning', 'IMDB', 'LegalSupport', 'EntityMatching', 'MMLU-Classic', 'BLiMP', 'BoolQ', 'CivilComments', 'BOLD', 'SRN', 'BabiQA', 'RealToxicityPrompts', 'Summarization', 'MS MARCO', 'WikiFact', 'NaturalQA-Classic', 'Copyright', 'EntityDataImputation', 'LSAT', 'NarrativeQA-Classic', 'CommonSense']
+   Saved config to: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/config.json
+
+3. Creating chain scenarios...
+   Created 92 scenarios
+
+4. Running chain scenarios...
+
+[1/92]    ✓ Cached: target=QuAC, distance=0
+
+[2/92]    ✓ Cached: target=QuAC, distance=1
+
+[3/92]    ✓ Cached: target=QuAC, distance=2
+
+[4/92]    ✓ Cached: target=QuAC, distance=3
+
+[5/92]    ✓ Cached: target=BBQ, distance=0
+
+[6/92]    ✓ Cached: target=BBQ, distance=1
+
+[7/92]    ✓ Cached: target=BBQ, distance=2
+
+[8/92]    ✓ Cached: target=BBQ, distance=3
+
+[9/92]    ✓ Cached: target=SyntheticReasoning, distance=0
+
+[10/92]    ✓ Cached: target=SyntheticReasoning, distance=1
+
+[11/92]    ✓ Cached: target=SyntheticReasoning, distance=2
+
+[12/92]    ✓ Cached: target=SyntheticReasoning, distance=3
+
+[13/92]    ✓ Cached: target=IMDB, distance=0
+
+[14/92]    ✓ Cached: target=IMDB, distance=1
+
+[15/92]    ✓ Cached: target=IMDB, distance=2
+
+[16/92]
+  Running: target=IMDB, distance=3, chain=['QuAC', 'BBQ', 'SyntheticReasoning']
+    Using Sparse Matrix Mode (Train: Union, Test: Intersection)
+    Step 1: Training IRT on Base (6 datasets)...
+      ✓ Loaded cached IRT params from irt_base
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ Disinformation: 48 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ DyckLanguage: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ GSM8K-Classic: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ MATH-Classic: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ RAFT: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ TruthfulQA-Classic: 100 anchors selected
+      Base anchors: 548
+    Step 2.1: Linking chain dataset QuAC...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 4508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 1143 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/7 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  29%|██▊       | 2/7 [00:00<00:00,  8.34it/s]Finding optimal thresholds per dataset:  43%|████▎     | 3/7 [00:00<00:00,  7.34it/s]Finding optimal thresholds per dataset:  57%|█████▋    | 4/7 [00:00<00:00,  7.28it/s]Finding optimal thresholds per dataset:  71%|███████▏  | 5/7 [00:00<00:00,  6.70it/s]Finding optimal thresholds per dataset: 100%|██████████| 7/7 [00:00<00:00,  8.13it/s]Finding optimal thresholds per dataset: 100%|██████████| 7/7 [00:00<00:00,  7.75it/s]
+     📊 Disinformation: threshold=0.406, error=0.0051
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 QuAC: threshold=0.406, error=0.0145
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_0/irt_val_dataset_dim2.jsonlines
+[08:32:17] amortized: False                                       dataset.py:212
+[08:32:17] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
+           'num_subjects': 42}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           4508, 'num_subjects': 42, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[08:32:18] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss         ┃ Best Loss    ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 8269762.5258 │ 8269762.5258 │ 0.1000 │
+│ 201   │ 88894.8204   │ 85293.4796   │ 0.0980 │
+│ 401   │ 87156.3000   │ 84162.9234   │ 0.0961 │
+│ 601   │ 90384.5244   │ 83550.5918   │ 0.0942 │
+│ 801   │ 86193.9549   │ 83340.9680   │ 0.0923 │
+│ 1001  │ 83939.3381   │ 83338.5373   │ 0.0905 │
+│ 1201  │ 86418.7904   │ 82974.2053   │ 0.0887 │
+│ 1401  │ 85845.7682   │ 82974.2053   │ 0.0869 │
+│ 1601  │ 83723.1710   │ 82748.7523   │ 0.0852 │
+│ 1801  │ 84935.8996   │ 82748.7523   │ 0.0835 │
+│ 2000  │ 85458.0202   │ 82666.4885   │ 0.0819 │
+└───────┴──────────────┴──────────────┴────────┘
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 14%|█▍        | 1/7 [00:00<00:05,  1.05it/s][A
+ 29%|██▊       | 2/7 [00:02<00:06,  1.30s/it][A
+ 43%|████▎     | 3/7 [00:04<00:06,  1.50s/it][A
+ 57%|█████▋    | 4/7 [00:06<00:04,  1.65s/it][A
+ 71%|███████▏  | 5/7 [00:08<00:03,  1.77s/it][A
+ 86%|████████▌ | 6/7 [00:09<00:01,  1.80s/it][A
+100%|██████████| 7/7 [00:11<00:00,  1.83s/it][A100%|██████████| 7/7 [00:11<00:00,  1.69s/it]
+Validating dimensions: 100%|██████████| 1/1 [01:51<00:00, 111.85s/it]Validating dimensions: 100%|██████████| 1/1 [01:51<00:00, 111.85s/it]
+Best dimension: 2
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_0/irt_dataset_final.jsonlines
+[08:34:09] amortized: False                                       dataset.py:212
+   🔗 Mapped 548/548 anchor items to IRT dataset
+           Added 548 anchor items                                 dataset.py:165
+[08:34:09] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
+           'num_subjects': 53}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           4508, 'num_subjects': 53, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[08:34:09] Initializing 548 anchor items:                    initializers.py:139
+[08:34:09] AnchorGradientZeroer initialized with 548 anchor   anchor_utils.py:73
+           items                                                                
+           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
+           'scale_diff', 'loc_slope', 'scale_slope',                            
+           'loc_disc', 'scale_disc', 'loc_guess',                               
+           'scale_guess', 'loc_slip', 'scale_slip']                             
+           Registering gradient hooks for anchor items           training.py:207
+           Registered gradient hook for loc_diff (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_diff (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for loc_disc (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_disc (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 137094016.8151 │ 137094016.8151 │ 0.1000 │
+│ 201   │ 146670.2292    │ 143171.3777    │ 0.0980 │
+│ 401   │ 144767.3172    │ 141207.9567    │ 0.0961 │
+│ 601   │ 143869.8920    │ 140545.7726    │ 0.0942 │
+│ 801   │ 140986.0958    │ 140481.4589    │ 0.0923 │
+│ 1001  │ 143633.5167    │ 139971.8639    │ 0.0905 │
+│ 1201  │ 142730.8237    │ 139971.8639    │ 0.0887 │
+│ 1401  │ 143404.5872    │ 139751.9985    │ 0.0869 │
+│ 1601  │ 144514.2437    │ 139751.9985    │ 0.0852 │
+│ 1801  │ 141772.1717    │ 139604.2820    │ 0.0835 │
+│ 2000  │ 141048.1876    │ 139470.3841    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 7 datasets: {'Disinformation': 0.6456945494405938, 'DyckLanguage': 0.5622452072247537, 'GSM8K-Classic': 0.5755841775009295, 'MATH-Classic': 0.8201540296598624, 'QuAC': 0.673574497843008, 'RAFT': 0.8172152239933622, 'TruthfulQA-Classic': 0.7154192160215505}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_0/item_params.parquet
+IRT training completed successfully. Parameters for 4508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ QuAC: 100 anchors selected
+      Chain QuAC linked, total anchors: 648
+    Step 2.2: Linking chain dataset BBQ...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 5508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 1143 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/8 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  25%|██▌       | 2/8 [00:00<00:00, 18.54it/s]Finding optimal thresholds per dataset:  50%|█████     | 4/8 [00:00<00:00, 10.54it/s]Finding optimal thresholds per dataset:  75%|███████▌  | 6/8 [00:00<00:00,  8.09it/s]Finding optimal thresholds per dataset: 100%|██████████| 8/8 [00:00<00:00,  8.66it/s]Finding optimal thresholds per dataset: 100%|██████████| 8/8 [00:00<00:00,  9.12it/s]
+     📊 BBQ: threshold=0.010, error=0.0000
+     📊 Disinformation: threshold=0.406, error=0.0051
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 QuAC: threshold=0.406, error=0.0145
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_1/irt_val_dataset_dim2.jsonlines
+[08:45:10] amortized: False                                       dataset.py:212
+[08:45:10] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 5508,           training.py:155
+           'num_subjects': 42}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           5508, 'num_subjects': 42, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[08:45:10] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss          ┃ Best Loss     ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 16635094.6755 │ 16635094.6755 │ 0.1000 │
+│ 201   │ 136502.1673   │ 108659.1972   │ 0.0980 │
+│ 401   │ 109787.9865   │ 107505.9912   │ 0.0961 │
+│ 601   │ 109091.8324   │ 107237.4397   │ 0.0942 │
+│ 801   │ 109120.6021   │ 106803.4415   │ 0.0923 │
+│ 1001  │ 106491.7300   │ 106479.4038   │ 0.0905 │
+│ 1201  │ 108352.2839   │ 106310.3453   │ 0.0887 │
+│ 1401  │ 107887.4334   │ 106067.8328   │ 0.0869 │
+│ 1601  │ 105843.3273   │ 105617.7163   │ 0.0852 │
+│ 1801  │ 107209.5699   │ 105422.5760   │ 0.0835 │
+│ 2000  │ 108263.4549   │ 105286.9588   │ 0.0819 │
+└───────┴───────────────┴───────────────┴────────┘
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 12%|█▎        | 1/8 [00:01<00:09,  1.35s/it][A
+ 25%|██▌       | 2/8 [00:02<00:07,  1.32s/it][A
+ 38%|███▊      | 3/8 [00:04<00:08,  1.68s/it][A
+ 50%|█████     | 4/8 [00:07<00:07,  1.96s/it][A
+ 62%|██████▎   | 5/8 [00:09<00:06,  2.11s/it][A
+ 75%|███████▌  | 6/8 [00:12<00:04,  2.27s/it][A
+ 88%|████████▊ | 7/8 [00:14<00:02,  2.25s/it][A
+100%|██████████| 8/8 [00:16<00:00,  2.33s/it][A100%|██████████| 8/8 [00:16<00:00,  2.10s/it]
+Validating dimensions: 100%|██████████| 1/1 [01:50<00:00, 110.76s/it]Validating dimensions: 100%|██████████| 1/1 [01:50<00:00, 110.76s/it]
+Best dimension: 2
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_1/irt_dataset_final.jsonlines
+[08:47:00] amortized: False                                       dataset.py:212
+   🔗 Mapped 648/648 anchor items to IRT dataset
+[08:47:01] Added 648 anchor items                                 dataset.py:165
+[08:47:01] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 5508,           training.py:155
+           'num_subjects': 53}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           5508, 'num_subjects': 53, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[08:47:01] Initializing 648 anchor items:                    initializers.py:139
+[08:47:01] AnchorGradientZeroer initialized with 648 anchor   anchor_utils.py:73
+           items                                                                
+           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
+           'scale_diff', 'loc_slope', 'scale_slope',                            
+           'loc_disc', 'scale_disc', 'loc_guess',                               
+           'scale_guess', 'loc_slip', 'scale_slip']                             
+           Registering gradient hooks for anchor items           training.py:207
+           Registered gradient hook for loc_diff (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_diff (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for loc_disc (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_disc (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 433775641.0943 │ 433775641.0943 │ 0.1000 │
+│ 201   │ 213300.7079    │ 184867.0541    │ 0.0980 │
+│ 401   │ 182202.5269    │ 182155.7573    │ 0.0961 │
+│ 601   │ 186019.7704    │ 179858.1045    │ 0.0942 │
+│ 801   │ 187762.1487    │ 178923.1224    │ 0.0923 │
+│ 1001  │ 179310.1145    │ 178666.2909    │ 0.0905 │
+│ 1201  │ 178919.0884    │ 178149.3917    │ 0.0887 │
+│ 1401  │ 178637.2332    │ 178052.1841    │ 0.0869 │
+│ 1601  │ 179628.1006    │ 177911.1672    │ 0.0852 │
+│ 1801  │ 179413.4609    │ 177845.8749    │ 0.0835 │
+│ 2000  │ 178548.8403    │ 177845.8749    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 8 datasets: {'BBQ': 0.4936770630532838, 'Disinformation': 0.6456923241458095, 'DyckLanguage': 0.9581353378674382, 'GSM8K-Classic': 0.6913326148253571, 'MATH-Classic': 0.8815710228738184, 'QuAC': 0.9273128655153795, 'RAFT': 0.9653726995477224, 'TruthfulQA-Classic': 0.7399628101457614}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_1/item_params.parquet
+IRT training completed successfully. Parameters for 5508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ BBQ: 100 anchors selected
+      Chain BBQ linked, total anchors: 748
+    Step 2.3: Linking chain dataset SyntheticReasoning...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 6508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 1143 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/9 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  22%|██▏       | 2/9 [00:00<00:00, 18.78it/s]Finding optimal thresholds per dataset:  44%|████▍     | 4/9 [00:00<00:00, 10.70it/s]Finding optimal thresholds per dataset:  67%|██████▋   | 6/9 [00:00<00:00,  8.12it/s]Finding optimal thresholds per dataset:  89%|████████▉ | 8/9 [00:00<00:00,  8.03it/s]Finding optimal thresholds per dataset: 100%|██████████| 9/9 [00:01<00:00,  8.20it/s]Finding optimal thresholds per dataset: 100%|██████████| 9/9 [00:01<00:00,  8.71it/s]
+     📊 BBQ: threshold=0.010, error=0.0000
+     📊 Disinformation: threshold=0.406, error=0.0051
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 QuAC: threshold=0.406, error=0.0145
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 SyntheticReasoning: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_2/irt_val_dataset_dim2.jsonlines
+[08:59:42] amortized: False                                       dataset.py:212
+[08:59:43] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 6508,           training.py:155
+           'num_subjects': 42}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           6508, 'num_subjects': 42, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[08:59:43] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 289663676.2329 │ 289663676.2329 │ 0.1000 │
+│ 201   │ 130053.4632    │ 115810.2001    │ 0.0980 │
+│ 401   │ 125350.2728    │ 114626.2811    │ 0.0961 │
+│ 601   │ 125770.3544    │ 113943.2490    │ 0.0942 │
+│ 801   │ 115187.7529    │ 113511.6904    │ 0.0923 │
+│ 1001  │ 114300.5347    │ 113032.9071    │ 0.0905 │
+│ 1201  │ 114307.9488    │ 112875.9637    │ 0.0887 │
+│ 1401  │ 118143.8043    │ 112653.9174    │ 0.0869 │
+│ 1601  │ 116242.4474    │ 112519.3717    │ 0.0852 │
+│ 1801  │ 113560.6011    │ 112519.3717    │ 0.0835 │
+│ 2000  │ 113045.3514    │ 112366.0090    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘
+  0%|          | 0/9 [00:00<?, ?it/s][A
+ 11%|█         | 1/9 [00:01<00:15,  1.90s/it][A
+ 22%|██▏       | 2/9 [00:03<00:12,  1.84s/it][A
+ 33%|███▎      | 3/9 [00:06<00:13,  2.31s/it][A
+ 44%|████▍     | 4/9 [00:09<00:13,  2.65s/it][A
+ 56%|█████▌    | 5/9 [00:12<00:11,  2.84s/it][A
+ 67%|██████▋   | 6/9 [00:16<00:09,  3.06s/it][A
+ 78%|███████▊  | 7/9 [00:19<00:06,  3.08s/it][A
+ 89%|████████▉ | 8/9 [00:23<00:03,  3.26s/it][A
+100%|██████████| 9/9 [00:26<00:00,  3.35s/it][A100%|██████████| 9/9 [00:26<00:00,  2.97s/it]
+Validating dimensions: 100%|██████████| 1/1 [02:02<00:00, 122.17s/it]Validating dimensions: 100%|██████████| 1/1 [02:02<00:00, 122.17s/it]
+Best dimension: 2
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_2/irt_dataset_final.jsonlines
+[09:01:45] amortized: False                                       dataset.py:212
+   🔗 Mapped 748/748 anchor items to IRT dataset
+           Added 748 anchor items                                 dataset.py:165
+[09:01:45] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 6508,           training.py:155
+           'num_subjects': 53}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           6508, 'num_subjects': 53, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:01:45] Initializing 748 anchor items:                    initializers.py:139
+[09:01:45] AnchorGradientZeroer initialized with 748 anchor   anchor_utils.py:73
+           items                                                                
+           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
+           'scale_diff', 'loc_slope', 'scale_slope',                            
+           'loc_disc', 'scale_disc', 'loc_guess',                               
+           'scale_guess', 'loc_slip', 'scale_slip']                             
+           Registering gradient hooks for anchor items           training.py:207
+           Registered gradient hook for loc_diff (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_diff (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for loc_disc (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_disc (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 342636223.1370 │ 342636223.1370 │ 0.1000 │
+│ 201   │ 207961.6289    │ 197935.9734    │ 0.0980 │
+│ 401   │ 206805.6606    │ 194525.6415    │ 0.0961 │
+│ 601   │ 195998.7550    │ 192604.8061    │ 0.0942 │
+│ 801   │ 193266.5506    │ 192569.6161    │ 0.0923 │
+│ 1001  │ 192586.9722    │ 192020.2231    │ 0.0905 │
+│ 1201  │ 195834.3699    │ 192020.2231    │ 0.0887 │
+│ 1401  │ 192068.7130    │ 192005.3533    │ 0.0869 │
+│ 1601  │ 192841.4222    │ 191693.5437    │ 0.0852 │
+│ 1801  │ 193256.3608    │ 191693.5437    │ 0.0835 │
+│ 2000  │ 192770.9173    │ 191590.8508    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 9 datasets: {'BBQ': 0.23051150751149682, 'Disinformation': 0.6456878657130921, 'DyckLanguage': 0.3692181422440326, 'GSM8K-Classic': 0.581530865025874, 'MATH-Classic': 0.7483455648464359, 'QuAC': 0.691065853045066, 'RAFT': 0.5782199539655707, 'SyntheticReasoning': 0.9502373785958489, 'TruthfulQA-Classic': 0.5456077362207599}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_chain_2/item_params.parquet
+IRT training completed successfully. Parameters for 6508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ SyntheticReasoning: 100 anchors selected
+      Chain SyntheticReasoning linked, total anchors: 848
+    Step 3: Linking target dataset IMDB...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 8206 questions
+Step 2: Binarizing responses...
+   🔄 Data has 1143 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/10 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  10%|█         | 1/10 [00:00<00:00,  9.57it/s]Finding optimal thresholds per dataset:  30%|███       | 3/10 [00:00<00:00, 14.89it/s]Finding optimal thresholds per dataset:  50%|█████     | 5/10 [00:00<00:00,  7.21it/s]Finding optimal thresholds per dataset:  70%|███████   | 7/10 [00:00<00:00,  6.46it/s]Finding optimal thresholds per dataset:  90%|█████████ | 9/10 [00:01<00:00,  6.75it/s]Finding optimal thresholds per dataset: 100%|██████████| 10/10 [00:01<00:00,  6.97it/s]Finding optimal thresholds per dataset: 100%|██████████| 10/10 [00:01<00:00,  7.25it/s]
+     📊 BBQ: threshold=0.010, error=0.0000
+     📊 Disinformation: threshold=0.406, error=0.0051
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 IMDB: threshold=0.010, error=0.2572
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 QuAC: threshold=0.406, error=0.0145
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 SyntheticReasoning: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_target/irt_val_dataset_dim2.jsonlines
+[09:17:13] amortized: False                                       dataset.py:212
+[09:17:13] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 8206,           training.py:155
+           'num_subjects': 42}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           8206, 'num_subjects': 42, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:17:13] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 895524236.5011 │ 895524236.5011 │ 0.1000 │
+│ 201   │ 156744.1669    │ 142582.5134    │ 0.0980 │
+│ 401   │ 141677.9513    │ 136716.8822    │ 0.0961 │
+│ 601   │ 144705.2326    │ 136004.5822    │ 0.0942 │
+│ 801   │ 138434.3462    │ 135947.3512    │ 0.0923 │
+│ 1001  │ 143318.5050    │ 135485.8384    │ 0.0905 │
+│ 1201  │ 136446.5760    │ 135203.9735    │ 0.0887 │
+│ 1401  │ 136941.1185    │ 135057.2774    │ 0.0869 │
+│ 1601  │ 138364.1351    │ 135057.2774    │ 0.0852 │
+│ 1801  │ 138122.8847    │ 135057.2774    │ 0.0835 │
+│ 2000  │ 137524.2536    │ 134669.2619    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘
+  0%|          | 0/10 [00:00<?, ?it/s][A
+ 10%|█         | 1/10 [00:03<00:28,  3.18s/it][A
+ 20%|██        | 2/10 [00:06<00:25,  3.21s/it][A
+ 30%|███       | 3/10 [00:11<00:29,  4.18s/it][A
+ 40%|████      | 4/10 [00:17<00:28,  4.71s/it][A
+ 50%|█████     | 5/10 [00:22<00:24,  4.93s/it][A
+ 60%|██████    | 6/10 [00:27<00:20,  5.08s/it][A
+ 70%|███████   | 7/10 [00:33<00:16,  5.33s/it][A
+ 80%|████████  | 8/10 [00:39<00:10,  5.41s/it][A
+ 90%|█████████ | 9/10 [00:45<00:05,  5.72s/it][A
+100%|██████████| 10/10 [00:51<00:00,  5.79s/it][A100%|██████████| 10/10 [00:51<00:00,  5.17s/it]
+Validating dimensions: 100%|██████████| 1/1 [02:34<00:00, 154.88s/it]Validating dimensions: 100%|██████████| 1/1 [02:34<00:00, 154.88s/it]
+Best dimension: 2
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_target/irt_dataset_final.jsonlines
+[09:19:48] amortized: False                                       dataset.py:212
+   🔗 Mapped 848/848 anchor items to IRT dataset
+[09:19:49] Added 848 anchor items                                 dataset.py:165
+[09:19:49] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 8206,           training.py:155
+           'num_subjects': 53}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           8206, 'num_subjects': 53, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:19:49] Initializing 848 anchor items:                    initializers.py:139
+[09:19:49] AnchorGradientZeroer initialized with 848 anchor   anchor_utils.py:73
+           items                                                                
+           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
+           'scale_diff', 'loc_slope', 'scale_slope',                            
+           'loc_disc', 'scale_disc', 'loc_guess',                               
+           'scale_guess', 'loc_slip', 'scale_slip']                             
+           Registering gradient hooks for anchor items           training.py:207
+           Registered gradient hook for loc_diff (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_diff (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for loc_disc (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_disc (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 259380620.8452 │ 259380620.8452 │ 0.1000 │
+│ 201   │ 253019.7275    │ 247786.7975    │ 0.0980 │
+│ 401   │ 244339.3854    │ 238975.3456    │ 0.0961 │
+│ 601   │ 238033.9365    │ 237236.0469    │ 0.0942 │
+│ 801   │ 241624.7976    │ 236250.3179    │ 0.0923 │
+│ 1001  │ 237359.6349    │ 235445.5527    │ 0.0905 │
+│ 1201  │ 236550.8875    │ 235425.5861    │ 0.0887 │
+│ 1401  │ 237284.4219    │ 234907.9306    │ 0.0869 │
+│ 1601  │ 238016.1734    │ 234853.1150    │ 0.0852 │
+│ 1801  │ 235075.9932    │ 234760.1336    │ 0.0835 │
+│ 2000  │ 235425.3385    │ 234760.1336    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 10 datasets: {'BBQ': 0.4953356085558382, 'Disinformation': 0.6456781479316062, 'DyckLanguage': 0.46859622160751707, 'GSM8K-Classic': 0.46214367573539183, 'IMDB': 0.3248259482832315, 'MATH-Classic': 0.3406187718714046, 'QuAC': 0.5285181181335049, 'RAFT': 0.673388082125087, 'SyntheticReasoning': 0.8175254288932757, 'TruthfulQA-Classic': 0.5487265268869951}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_IMDB/dist_3_QuAC_BBQ_SyntheticR/irt_target/item_params.parquet
+IRT training completed successfully. Parameters for 8206 questions.
+   🎯 Anchor clustering using full MIRT parameters: 4 features (D=2)
+      ✓ IMDB: 100 anchors selected
+      Total anchors: 948
+    Step 4: Validating target IMDB and Base datasets...
+      Precomputed thetas: 16 success, 0 failed
+   Validating 16 models × 1 datasets
+   ✓ Using full MIRT matrices (D=2)
+   Processing IMDB: 1698 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 16
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.2258 (n=16)
+      IRT:         0.0809 (n=16)
+      p-IRT:       0.0746 (n=16)
+      gp-IRT:      0.1719 (n=16)
+      → Best method: p-IRT (0.0746)
+   Validating 16 models × 1 datasets
+   ✓ Using full MIRT matrices (D=2)
+   Processing TruthfulQA-Classic: 654 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 16
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0354 (n=16)
+      IRT:         0.4942 (n=16)
+      p-IRT:       0.4889 (n=16)
+      gp-IRT:      0.0443 (n=16)
+      → Best method: Anchor-only (0.0354)
+      Base TruthfulQA-Classic: gp_irt_error = 0.0443
+   Validating 16 models × 1 datasets
+   ✓ Using full MIRT matrices (D=2)
+   Processing MATH-Classic: 866 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 16
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0158 (n=16)
+      IRT:         0.6061 (n=16)
+      p-IRT:       0.6013 (n=16)
+      gp-IRT:      0.1083 (n=16)
+      → Best method: Anchor-only (0.0158)
+      Base MATH-Classic: gp_irt_error = 0.1083
+   Validating 16 models × 1 datasets
+   ✓ Using full MIRT matrices (D=2)
+   Processing GSM8K-Classic: 1000 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 16
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0184 (n=16)
+      IRT:         0.5629 (n=16)
+      p-IRT:       0.5615 (n=16)
+      gp-IRT:      0.0660 (n=16)
+      → Best method: Anchor-only (0.0184)
+      Base GSM8K-Classic: gp_irt_error = 0.0660
+   Validating 16 models × 1 datasets
+   ✓ Using full MIRT matrices (D=2)
+   Processing RAFT: 440 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 16
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0224 (n=16)
+      IRT:         0.1669 (n=16)
+      p-IRT:       0.1859 (n=16)
+      gp-IRT:      0.0210 (n=16)
+      → Best method: gp-IRT (0.0210)
+      Base RAFT: gp_irt_error = 0.0210
+   Validating 11 models × 1 datasets
+   ✓ Using full MIRT matrices (D=2)
+   Processing Disinformation: 48 questions, 48 anchors
+
+   📊 Validation Statistics:
+      Processed: 11
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0000 (n=11)
+      IRT:         0.0907 (n=11)
+      p-IRT:       0.0000 (n=11)
+      gp-IRT:      0.0000 (n=11)
+      → Best method: p-IRT (0.0000)
+      Base Disinformation: gp_irt_error = 0.0000
+   Validating 16 models × 1 datasets
+   ✓ Using full MIRT matrices (D=2)
+   Processing DyckLanguage: 500 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 16
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0302 (n=16)
+      IRT:         0.2076 (n=16)
+      p-IRT:       0.2172 (n=16)
+      gp-IRT:      0.0342 (n=16)
+      → Best method: Anchor-only (0.0302)
+      Base DyckLanguage: gp_irt_error = 0.0342
+      ✓ Target error: 0.1719
+      ✓ Avg Base error: 0.0456
+
+[17/92]
+  Running: target=LegalSupport, distance=0, chain=[]
+    Using Sparse Matrix Mode (Train: Union, Test: Intersection)
+    Step 1: Training IRT on Base (6 datasets)...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 3508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 4 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/6 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  33%|███▎      | 2/6 [00:00<00:00, 18.99it/s]Finding optimal thresholds per dataset:  67%|██████▋   | 4/6 [00:00<00:00,  8.83it/s]Finding optimal thresholds per dataset: 100%|██████████| 6/6 [00:00<00:00,  9.49it/s]Finding optimal thresholds per dataset: 100%|██████████| 6/6 [00:00<00:00,  9.85it/s]
+     📊 Disinformation: threshold=0.208, error=0.0054
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/2 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_0_direct/irt_base/irt_val_dataset_dim2.jsonlines
+[09:37:11] amortized: False                                       dataset.py:212
+[09:37:12] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:37:12] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss          ┃ Best Loss     ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 24405678.9256 │ 24405678.9256 │ 0.1000 │
+│ 201   │ 64535.2601    │ 62704.4007    │ 0.0980 │
+│ 401   │ 64739.6073    │ 61648.8558    │ 0.0961 │
+│ 601   │ 63731.8466    │ 61266.2733    │ 0.0942 │
+│ 801   │ 62406.9689    │ 60981.1109    │ 0.0923 │
+│ 1001  │ 63380.3462    │ 60868.5389    │ 0.0905 │
+│ 1201  │ 61287.5765    │ 60736.9924    │ 0.0887 │
+│ 1401  │ 61288.7758    │ 60693.8772    │ 0.0869 │
+│ 1601  │ 63130.9985    │ 60608.1973    │ 0.0852 │
+│ 1801  │ 61116.7401    │ 60547.9237    │ 0.0835 │
+│ 2000  │ 61850.5168    │ 60420.8518    │ 0.0819 │
+└───────┴───────────────┴───────────────┴────────┘
+  0%|          | 0/6 [00:00<?, ?it/s][A
+ 17%|█▋        | 1/6 [00:00<00:02,  1.70it/s][A
+ 33%|███▎      | 2/6 [00:01<00:03,  1.10it/s][A
+ 50%|█████     | 3/6 [00:03<00:03,  1.13s/it][A
+ 67%|██████▋   | 4/6 [00:04<00:02,  1.27s/it][A
+ 83%|████████▎ | 5/6 [00:05<00:01,  1.24s/it][A
+100%|██████████| 6/6 [00:07<00:00,  1.25s/it][A100%|██████████| 6/6 [00:07<00:00,  1.18s/it]
+Validating dimensions:  50%|█████     | 1/2 [01:44<01:44, 104.04s/it]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_0_direct/irt_base/irt_val_dataset_dim5.jsonlines
+[09:38:55] amortized: False                                       dataset.py:212
+[09:38:55] Vocab size: None                                      training.py:105
+[09:38:56] args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:38:56] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 140497952.2461 │ 140497952.2461 │ 0.1000 │
+│ 201   │ 77022.0326     │ 70726.6246     │ 0.0980 │
+│ 401   │ 70969.7831     │ 64761.0294     │ 0.0961 │
+│ 601   │ 66994.6296     │ 63415.2030     │ 0.0942 │
+│ 801   │ 64381.9458     │ 63073.3478     │ 0.0923 │
+│ 1001  │ 63708.3671     │ 62876.2708     │ 0.0905 │
+│ 1201  │ 63303.8707     │ 62667.8400     │ 0.0887 │
+│ 1401  │ 63923.1418     │ 62361.9517     │ 0.0869 │
+│ 1601  │ 62452.8651     │ 62210.2108     │ 0.0852 │
+│ 1801  │ 62843.5294     │ 61996.7263     │ 0.0835 │
+│ 2000  │ 62421.7852     │ 61866.6663     │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘
+  0%|          | 0/6 [00:00<?, ?it/s][A
+ 17%|█▋        | 1/6 [00:00<00:02,  1.68it/s][A
+ 33%|███▎      | 2/6 [00:01<00:03,  1.06it/s][A
+ 50%|█████     | 3/6 [00:03<00:03,  1.19s/it][A
+ 67%|██████▋   | 4/6 [00:04<00:02,  1.31s/it][A
+ 83%|████████▎ | 5/6 [00:06<00:01,  1.29s/it][A
+100%|██████████| 6/6 [00:07<00:00,  1.32s/it][A100%|██████████| 6/6 [00:07<00:00,  1.23s/it]
+Validating dimensions: 100%|██████████| 2/2 [03:28<00:00, 104.27s/it]Validating dimensions: 100%|██████████| 2/2 [03:28<00:00, 104.23s/it]
+Best dimension: 5
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_0_direct/irt_base/irt_dataset_final.jsonlines
+[09:40:40] amortized: False                                       dataset.py:212
+[09:40:40] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 52}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 52, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:40:40] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 312206917.1964 │ 312206917.1964 │ 0.1000 │
+│ 201   │ 97835.7570     │ 83245.6163     │ 0.0980 │
+│ 401   │ 79336.5246     │ 78476.0902     │ 0.0961 │
+│ 601   │ 79649.2421     │ 76912.3424     │ 0.0942 │
+│ 801   │ 78949.4099     │ 76448.4390     │ 0.0923 │
+│ 1001  │ 76730.8842     │ 75981.6631     │ 0.0905 │
+│ 1201  │ 77729.0854     │ 75908.6078     │ 0.0887 │
+│ 1401  │ 75857.8999     │ 75736.7930     │ 0.0869 │
+│ 1601  │ 75852.2095     │ 75483.8603     │ 0.0852 │
+│ 1801  │ 75925.1269     │ 75429.1961     │ 0.0835 │
+│ 2000  │ 75806.4795     │ 75181.3484     │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 6 datasets: {'Disinformation': 0.9785077756421456, 'DyckLanguage': 0.7676520207760065, 'GSM8K-Classic': 0.3608484699038144, 'MATH-Classic': 0.44957383539048523, 'RAFT': 0.6461801105756947, 'TruthfulQA-Classic': 0.5498738077115036}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_0_direct/irt_base/item_params.parquet
+IRT training completed successfully. Parameters for 3508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ Disinformation: 48 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ DyckLanguage: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ GSM8K-Classic: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ MATH-Classic: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ RAFT: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ TruthfulQA-Classic: 100 anchors selected
+      Base anchors: 548
+    Step 3: Linking target dataset LegalSupport...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 4508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 4 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/7 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  29%|██▊       | 2/7 [00:00<00:00, 19.39it/s]Finding optimal thresholds per dataset:  57%|█████▋    | 4/7 [00:00<00:00,  8.40it/s]Finding optimal thresholds per dataset:  86%|████████▌ | 6/7 [00:00<00:00,  8.47it/s]Finding optimal thresholds per dataset: 100%|██████████| 7/7 [00:00<00:00,  8.84it/s]
+     📊 Disinformation: threshold=0.208, error=0.0054
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 LegalSupport: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_0_direct/irt_target/irt_val_dataset_dim5.jsonlines
+[09:42:22] amortized: False                                       dataset.py:212
+[09:42:22] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           4508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:42:22] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss          ┃ Best Loss     ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 44817879.1103 │ 44817879.1103 │ 0.1000 │
+│ 201   │ 94778.7582    │ 94778.7582    │ 0.0980 │
+│ 401   │ 95366.5961    │ 90170.9934    │ 0.0961 │
+│ 601   │ 89574.4116    │ 87891.2690    │ 0.0942 │
+│ 801   │ 88474.3162    │ 87295.3217    │ 0.0923 │
+│ 1001  │ 89465.4752    │ 86962.3317    │ 0.0905 │
+│ 1201  │ 87713.1576    │ 86494.0725    │ 0.0887 │
+│ 1401  │ 87131.8140    │ 86271.1641    │ 0.0869 │
+│ 1601  │ 86796.1133    │ 86140.3780    │ 0.0852 │
+│ 1801  │ 86246.7172    │ 85816.9901    │ 0.0835 │
+│ 2000  │ 87206.3583    │ 85777.7408    │ 0.0819 │
+└───────┴───────────────┴───────────────┴────────┘
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 14%|█▍        | 1/7 [00:00<00:05,  1.11it/s][A
+ 29%|██▊       | 2/7 [00:02<00:07,  1.42s/it][A
+ 43%|████▎     | 3/7 [00:04<00:06,  1.71s/it][A
+ 57%|█████▋    | 4/7 [00:06<00:05,  1.87s/it][A
+ 71%|███████▏  | 5/7 [00:08<00:03,  1.96s/it][A
+ 86%|████████▌ | 6/7 [00:10<00:01,  1.89s/it][A
+100%|██████████| 7/7 [00:12<00:00,  1.91s/it][A100%|██████████| 7/7 [00:12<00:00,  1.81s/it]
+Validating dimensions: 100%|██████████| 1/1 [01:51<00:00, 111.71s/it]Validating dimensions: 100%|██████████| 1/1 [01:51<00:00, 111.71s/it]
+Best dimension: 5
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_0_direct/irt_target/irt_dataset_final.jsonlines
+[09:44:14] amortized: False                                       dataset.py:212
+   🔗 Mapped 548/548 anchor items to IRT dataset
+           Added 548 anchor items                                 dataset.py:165
+[09:44:14] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
+           'num_subjects': 52}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           4508, 'num_subjects': 52, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:44:14] Initializing 548 anchor items:                    initializers.py:139
+[09:44:14] AnchorGradientZeroer initialized with 548 anchor   anchor_utils.py:73
+           items                                                                
+           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
+           'scale_diff', 'loc_slope', 'scale_slope',                            
+           'loc_disc', 'scale_disc', 'loc_guess',                               
+           'scale_guess', 'loc_slip', 'scale_slip']                             
+           Registering gradient hooks for anchor items           training.py:207
+           Registered gradient hook for loc_diff (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_diff (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for loc_disc (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_disc (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 111508202.7102 │ 111508202.7102 │ 0.1000 │
+│ 201   │ 216352.7275    │ 213204.3876    │ 0.0980 │
+│ 401   │ 202375.8927    │ 199819.4367    │ 0.0961 │
+│ 601   │ 198537.7706    │ 196959.5457    │ 0.0942 │
+│ 801   │ 196709.4786    │ 196193.8222    │ 0.0923 │
+│ 1001  │ 196440.8401    │ 196117.3420    │ 0.0905 │
+│ 1201  │ 195963.7104    │ 195481.7835    │ 0.0887 │
+│ 1401  │ 196735.7462    │ 195235.5043    │ 0.0869 │
+│ 1601  │ 196761.3658    │ 195122.2365    │ 0.0852 │
+│ 1801  │ 195630.6831    │ 194988.0980    │ 0.0835 │
+│ 2000  │ 195683.8917    │ 194708.8028    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 7 datasets: {'Disinformation': 0.9785077756421456, 'DyckLanguage': 0.7068737678284489, 'GSM8K-Classic': 0.30827109703951194, 'LegalSupport': 0.5134203732350104, 'MATH-Classic': 0.4235356159328969, 'RAFT': 0.5586466977661844, 'TruthfulQA-Classic': 0.5655343300931546}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_0_direct/irt_target/item_params.parquet
+IRT training completed successfully. Parameters for 4508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ LegalSupport: 100 anchors selected
+      Total anchors: 648
+    Step 4: Validating target LegalSupport and Base datasets...
+      Precomputed thetas: 17 success, 0 failed
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing LegalSupport: 1000 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0213 (n=17)
+      IRT:         0.0288 (n=17)
+      p-IRT:       0.0274 (n=17)
+      gp-IRT:      0.0207 (n=17)
+      → Best method: gp-IRT (0.0207)
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing TruthfulQA-Classic: 654 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0362 (n=17)
+      IRT:         0.0303 (n=17)
+      p-IRT:       0.0260 (n=17)
+      gp-IRT:      0.0332 (n=17)
+      → Best method: p-IRT (0.0260)
+      Base TruthfulQA-Classic: gp_irt_error = 0.0332
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing MATH-Classic: 866 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0201 (n=17)
+      IRT:         0.0278 (n=17)
+      p-IRT:       0.0263 (n=17)
+      gp-IRT:      0.0206 (n=17)
+      → Best method: Anchor-only (0.0201)
+      Base MATH-Classic: gp_irt_error = 0.0206
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing GSM8K-Classic: 1000 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0188 (n=17)
+      IRT:         0.0290 (n=17)
+      p-IRT:       0.0272 (n=17)
+      gp-IRT:      0.0186 (n=17)
+      → Best method: gp-IRT (0.0186)
+      Base GSM8K-Classic: gp_irt_error = 0.0186
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing RAFT: 440 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0189 (n=17)
+      IRT:         0.0354 (n=17)
+      p-IRT:       0.0298 (n=17)
+      gp-IRT:      0.0194 (n=17)
+      → Best method: Anchor-only (0.0189)
+      Base RAFT: gp_irt_error = 0.0194
+   Validating 14 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing Disinformation: 48 questions, 48 anchors
+
+   📊 Validation Statistics:
+      Processed: 14
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0000 (n=14)
+      IRT:         0.0240 (n=14)
+      p-IRT:       0.0000 (n=14)
+      gp-IRT:      0.0000 (n=14)
+      → Best method: p-IRT (0.0000)
+      Base Disinformation: gp_irt_error = 0.0000
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing DyckLanguage: 500 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0358 (n=17)
+      IRT:         0.0590 (n=17)
+      p-IRT:       0.0511 (n=17)
+      gp-IRT:      0.0354 (n=17)
+      → Best method: gp-IRT (0.0354)
+      Base DyckLanguage: gp_irt_error = 0.0354
+      ✓ Target error: 0.0207
+      ✓ Avg Base error: 0.0212
+
+[18/92]
+  Running: target=LegalSupport, distance=1, chain=['QuAC']
+    Using Sparse Matrix Mode (Train: Union, Test: Intersection)
+    Step 1: Training IRT on Base (6 datasets)...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 3508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 4 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/6 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  50%|█████     | 3/6 [00:00<00:00, 11.87it/s]Finding optimal thresholds per dataset:  83%|████████▎ | 5/6 [00:00<00:00, 10.47it/s]Finding optimal thresholds per dataset: 100%|██████████| 6/6 [00:00<00:00, 10.27it/s]
+     📊 Disinformation: threshold=0.208, error=0.0054
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/2 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_base/irt_val_dataset_dim2.jsonlines
+[09:55:38] amortized: False                                       dataset.py:212
+[09:55:38] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:55:38] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 450433688.3994 │ 450433688.3994 │ 0.1000 │
+│ 201   │ 65424.9011     │ 62759.7935     │ 0.0980 │
+│ 401   │ 67525.5031     │ 61551.4044     │ 0.0961 │
+│ 601   │ 67225.2141     │ 61029.5913     │ 0.0942 │
+│ 801   │ 66434.8934     │ 61029.5913     │ 0.0923 │
+│ 1001  │ 61354.9396     │ 61024.9423     │ 0.0905 │
+│ 1201  │ 61151.4015     │ 60855.9539     │ 0.0887 │
+│ 1401  │ 61809.5289     │ 60688.6669     │ 0.0869 │
+│ 1601  │ 61312.6413     │ 60626.6261     │ 0.0852 │
+│ 1801  │ 62023.3853     │ 60523.5382     │ 0.0835 │
+│ 2000  │ 60815.2648     │ 60473.6422     │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘
+  0%|          | 0/6 [00:00<?, ?it/s][A
+ 17%|█▋        | 1/6 [00:00<00:02,  1.75it/s][A
+ 33%|███▎      | 2/6 [00:01<00:03,  1.13it/s][A
+ 50%|█████     | 3/6 [00:02<00:03,  1.06s/it][A
+ 67%|██████▋   | 4/6 [00:04<00:02,  1.17s/it][A
+ 83%|████████▎ | 5/6 [00:05<00:01,  1.16s/it][A
+100%|██████████| 6/6 [00:06<00:00,  1.18s/it][A100%|██████████| 6/6 [00:06<00:00,  1.11s/it]
+Validating dimensions:  50%|█████     | 1/2 [01:42<01:42, 102.04s/it]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_base/irt_val_dataset_dim5.jsonlines
+[09:57:20] amortized: False                                       dataset.py:212
+[09:57:20] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:57:20] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 224187841.1345 │ 224187841.1345 │ 0.1000 │
+│ 201   │ 74153.8488     │ 69030.5042     │ 0.0980 │
+│ 401   │ 71330.4643     │ 64774.2825     │ 0.0961 │
+│ 601   │ 64905.9366     │ 63071.8244     │ 0.0942 │
+│ 801   │ 64431.4680     │ 63035.6836     │ 0.0923 │
+│ 1001  │ 63527.4783     │ 62762.8650     │ 0.0905 │
+│ 1201  │ 63370.9949     │ 62317.4767     │ 0.0887 │
+│ 1401  │ 63107.5739     │ 62274.2112     │ 0.0869 │
+│ 1601  │ 62798.6213     │ 62170.5387     │ 0.0852 │
+│ 1801  │ 62514.3608     │ 62146.0259     │ 0.0835 │
+│ 2000  │ 62891.4254     │ 61967.7247     │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘
+  0%|          | 0/6 [00:00<?, ?it/s][A
+ 17%|█▋        | 1/6 [00:00<00:02,  1.78it/s][A
+ 33%|███▎      | 2/6 [00:01<00:03,  1.11it/s][A
+ 50%|█████     | 3/6 [00:03<00:03,  1.12s/it][A
+ 67%|██████▋   | 4/6 [00:04<00:02,  1.25s/it][A
+ 83%|████████▎ | 5/6 [00:05<00:01,  1.22s/it][A
+100%|██████████| 6/6 [00:07<00:00,  1.27s/it][A100%|██████████| 6/6 [00:07<00:00,  1.18s/it]
+Validating dimensions: 100%|██████████| 2/2 [03:24<00:00, 102.29s/it]Validating dimensions: 100%|██████████| 2/2 [03:24<00:00, 102.25s/it]
+Best dimension: 5
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_base/irt_dataset_final.jsonlines
+[09:59:03] amortized: False                                       dataset.py:212
+[09:59:03] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 52}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 52, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[09:59:03] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 280767197.4105 │ 280767197.4105 │ 0.1000 │
+│ 201   │ 88519.0384     │ 82562.1951     │ 0.0980 │
+│ 401   │ 80747.2645     │ 77651.2708     │ 0.0961 │
+│ 601   │ 78346.9181     │ 76693.2838     │ 0.0942 │
+│ 801   │ 78546.9597     │ 76361.3600     │ 0.0923 │
+│ 1001  │ 76846.6121     │ 76070.7997     │ 0.0905 │
+│ 1201  │ 76216.8839     │ 75711.3556     │ 0.0887 │
+│ 1401  │ 76171.8584     │ 75400.2476     │ 0.0869 │
+│ 1601  │ 76187.4584     │ 75400.2476     │ 0.0852 │
+│ 1801  │ 75887.1831     │ 75172.7740     │ 0.0835 │
+│ 2000  │ 75721.3362     │ 75163.5958     │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 6 datasets: {'Disinformation': 0.9785077756421456, 'DyckLanguage': 0.8209827175996323, 'GSM8K-Classic': 0.27774471979514037, 'MATH-Classic': 0.19285346407130124, 'RAFT': 0.6979554226353942, 'TruthfulQA-Classic': 0.705512412723693}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_base/item_params.parquet
+IRT training completed successfully. Parameters for 3508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ Disinformation: 48 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ DyckLanguage: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ GSM8K-Classic: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ MATH-Classic: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ RAFT: 100 anchors selected
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ TruthfulQA-Classic: 100 anchors selected
+      Base anchors: 548
+    Step 2.1: Linking chain dataset QuAC...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 4508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 1133 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/7 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  43%|████▎     | 3/7 [00:00<00:00, 12.07it/s]Finding optimal thresholds per dataset:  71%|███████▏  | 5/7 [00:00<00:00,  8.58it/s]Finding optimal thresholds per dataset: 100%|██████████| 7/7 [00:00<00:00,  9.20it/s]Finding optimal thresholds per dataset: 100%|██████████| 7/7 [00:00<00:00,  9.36it/s]
+     📊 Disinformation: threshold=0.208, error=0.0054
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 QuAC: threshold=0.396, error=0.0189
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_chain_0/irt_val_dataset_dim5.jsonlines
+[10:00:42] amortized: False                                       dataset.py:212
+[10:00:42] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           4508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[10:00:42] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss          ┃ Best Loss     ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 47503181.5668 │ 47503181.5668 │ 0.1000 │
+│ 201   │ 101073.3688   │ 91509.5757    │ 0.0980 │
+│ 401   │ 92505.1298    │ 87947.1782    │ 0.0961 │
+│ 601   │ 89062.4741    │ 86066.2989    │ 0.0942 │
+│ 801   │ 86207.9910    │ 85721.8301    │ 0.0923 │
+│ 1001  │ 87110.2848    │ 85227.8443    │ 0.0905 │
+│ 1201  │ 85550.8815    │ 85046.3701    │ 0.0887 │
+│ 1401  │ 87165.6354    │ 84869.1962    │ 0.0869 │
+│ 1601  │ 85552.7638    │ 84705.4288    │ 0.0852 │
+│ 1801  │ 85052.9537    │ 84561.4447    │ 0.0835 │
+│ 2000  │ 85398.8456    │ 84328.5019    │ 0.0819 │
+└───────┴───────────────┴───────────────┴────────┘
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 14%|█▍        | 1/7 [00:00<00:04,  1.21it/s][A
+ 29%|██▊       | 2/7 [00:02<00:06,  1.26s/it][A
+ 43%|████▎     | 3/7 [00:04<00:06,  1.54s/it][A
+ 57%|█████▋    | 4/7 [00:06<00:04,  1.66s/it][A
+ 71%|███████▏  | 5/7 [00:07<00:03,  1.74s/it][A
+ 86%|████████▌ | 6/7 [00:09<00:01,  1.71s/it][A
+100%|██████████| 7/7 [00:11<00:00,  1.74s/it][A100%|██████████| 7/7 [00:11<00:00,  1.63s/it]
+Validating dimensions: 100%|██████████| 1/1 [01:48<00:00, 108.13s/it]Validating dimensions: 100%|██████████| 1/1 [01:48<00:00, 108.13s/it]
+Best dimension: 5
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_chain_0/irt_dataset_final.jsonlines
+[10:02:30] amortized: False                                       dataset.py:212
+   🔗 Mapped 548/548 anchor items to IRT dataset
+           Added 548 anchor items                                 dataset.py:165
+[10:02:30] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
+           'num_subjects': 52}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           4508, 'num_subjects': 52, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[10:02:30] Initializing 548 anchor items:                    initializers.py:139
+[10:02:30] AnchorGradientZeroer initialized with 548 anchor   anchor_utils.py:73
+           items                                                                
+           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
+           'scale_diff', 'loc_slope', 'scale_slope',                            
+           'loc_disc', 'scale_disc', 'loc_guess',                               
+           'scale_guess', 'loc_slip', 'scale_slip']                             
+           Registering gradient hooks for anchor items           training.py:207
+           Registered gradient hook for loc_diff (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_diff (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for loc_disc (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_disc (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 260049086.3588 │ 260049086.3588 │ 0.1000 │
+│ 201   │ 230659.6530    │ 206699.3608    │ 0.0980 │
+│ 401   │ 198657.9070    │ 196579.0181    │ 0.0961 │
+│ 601   │ 196146.6264    │ 194839.0397    │ 0.0942 │
+│ 801   │ 194351.6835    │ 194127.0966    │ 0.0923 │
+│ 1001  │ 194575.3156    │ 193347.7311    │ 0.0905 │
+│ 1201  │ 193901.6607    │ 193347.7311    │ 0.0887 │
+│ 1401  │ 194059.0426    │ 193110.8158    │ 0.0869 │
+│ 1601  │ 193494.8083    │ 192823.5224    │ 0.0852 │
+│ 1801  │ 192777.9391    │ 192626.5698    │ 0.0835 │
+│ 2000  │ 193459.1659    │ 192464.3999    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 7 datasets: {'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.7411898429990493, 'GSM8K-Classic': 0.32743629381662304, 'MATH-Classic': 0.20268988540865593, 'QuAC': 0.8316298928587252, 'RAFT': 0.5988255961362617, 'TruthfulQA-Classic': 0.7220851329126}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_chain_0/item_params.parquet
+IRT training completed successfully. Parameters for 4508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ QuAC: 100 anchors selected
+      Chain QuAC linked, total anchors: 648
+    Step 3: Linking target dataset LegalSupport...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 5508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 1133 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/8 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  38%|███▊      | 3/8 [00:00<00:00, 11.79it/s]Finding optimal thresholds per dataset:  62%|██████▎   | 5/8 [00:00<00:00,  8.50it/s]Finding optimal thresholds per dataset:  75%|███████▌  | 6/8 [00:00<00:00,  7.56it/s]Finding optimal thresholds per dataset: 100%|██████████| 8/8 [00:00<00:00,  8.44it/s]Finding optimal thresholds per dataset: 100%|██████████| 8/8 [00:00<00:00,  8.58it/s]
+     📊 Disinformation: threshold=0.208, error=0.0054
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 LegalSupport: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 QuAC: threshold=0.396, error=0.0189
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_target/irt_val_dataset_dim5.jsonlines
+[10:13:29] amortized: False                                       dataset.py:212
+[10:13:29] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 5508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           5508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[10:13:29] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 479551460.5110 │ 479551460.5110 │ 0.1000 │
+│ 201   │ 133085.0969    │ 121134.7836    │ 0.0980 │
+│ 401   │ 121908.0403    │ 114865.7686    │ 0.0961 │
+│ 601   │ 114988.9626    │ 112373.4322    │ 0.0942 │
+│ 801   │ 116338.9216    │ 111775.8392    │ 0.0923 │
+│ 1001  │ 113132.0398    │ 111656.9753    │ 0.0905 │
+│ 1201  │ 113255.6352    │ 111376.4060    │ 0.0887 │
+│ 1401  │ 111786.1553    │ 111011.0350    │ 0.0869 │
+│ 1601  │ 111012.7820    │ 110922.3740    │ 0.0852 │
+│ 1801  │ 111008.2234    │ 110451.4101    │ 0.0835 │
+│ 2000  │ 110634.6205    │ 110451.4101    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 12%|█▎        | 1/8 [00:01<00:08,  1.22s/it][A
+ 25%|██▌       | 2/8 [00:03<00:11,  1.93s/it][A
+ 38%|███▊      | 3/8 [00:06<00:11,  2.28s/it][A
+ 50%|█████     | 4/8 [00:09<00:10,  2.52s/it][A
+ 62%|██████▎   | 5/8 [00:12<00:07,  2.66s/it][A
+ 75%|███████▌  | 6/8 [00:14<00:05,  2.63s/it][A
+ 88%|████████▊ | 7/8 [00:17<00:02,  2.55s/it][A
+100%|██████████| 8/8 [00:19<00:00,  2.54s/it][A100%|██████████| 8/8 [00:19<00:00,  2.45s/it]
+Validating dimensions: 100%|██████████| 1/1 [01:57<00:00, 117.43s/it]Validating dimensions: 100%|██████████| 1/1 [01:57<00:00, 117.43s/it]
+Best dimension: 5
+Step 4: Training final IRT model...
+   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_target/irt_dataset_final.jsonlines
+[10:15:27] amortized: False                                       dataset.py:212
+   🔗 Mapped 648/648 anchor items to IRT dataset
+           Added 648 anchor items                                 dataset.py:165
+[10:15:27] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 5508,           training.py:155
+           'num_subjects': 52}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           5508, 'num_subjects': 52, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[10:15:27] Initializing 648 anchor items:                    initializers.py:139
+[10:15:27] AnchorGradientZeroer initialized with 648 anchor   anchor_utils.py:73
+           items                                                                
+           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
+           'scale_diff', 'loc_slope', 'scale_slope',                            
+           'loc_disc', 'scale_disc', 'loc_guess',                               
+           'scale_guess', 'loc_slip', 'scale_slip']                             
+           Registering gradient hooks for anchor items           training.py:207
+           Registered gradient hook for loc_diff (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_diff (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for loc_disc (on         anchor_utils.py:106
+           unconstrained parameter)                                             
+           Registered gradient hook for scale_disc (on       anchor_utils.py:106
+           unconstrained parameter)                                             
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 799412206.0266 │ 799412206.0266 │ 0.1000 │
+│ 201   │ 269824.3738    │ 256824.2165    │ 0.0980 │
+│ 401   │ 248739.3864    │ 244530.7770    │ 0.0961 │
+│ 601   │ 244723.1415    │ 241705.7733    │ 0.0942 │
+│ 801   │ 242048.3835    │ 241628.9710    │ 0.0923 │
+│ 1001  │ 241755.9859    │ 240611.7233    │ 0.0905 │
+│ 1201  │ 240716.1613    │ 239671.0928    │ 0.0887 │
+│ 1401  │ 240526.5090    │ 239258.5398    │ 0.0869 │
+│ 1601  │ 241318.7466    │ 239187.3533    │ 0.0852 │
+│ 1801  │ 239478.5280    │ 238937.4919    │ 0.0835 │
+│ 2000  │ 240958.4000    │ 238787.2191    │ 0.0819 │
+└───────┴────────────────┴────────────────┴────────┘IRT model training completed
+Step 5: Computing lambda values...
+Lambda values computed for 8 datasets: {'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.7675640604958578, 'GSM8K-Classic': 0.34505543804627736, 'LegalSupport': 0.5737444179366934, 'MATH-Classic': 0.21422582244790492, 'QuAC': 0.8471538599329083, 'RAFT': 0.6211524286406714, 'TruthfulQA-Classic': 0.6107915443595461}
+   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_1_QuAC/irt_target/item_params.parquet
+IRT training completed successfully. Parameters for 5508 questions.
+   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
+      ✓ LegalSupport: 100 anchors selected
+      Total anchors: 748
+    Step 4: Validating target LegalSupport and Base datasets...
+      Precomputed thetas: 17 success, 0 failed
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing LegalSupport: 1000 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0226 (n=17)
+      IRT:         0.0149 (n=17)
+      p-IRT:       0.0128 (n=17)
+      gp-IRT:      0.0209 (n=17)
+      → Best method: p-IRT (0.0128)
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing TruthfulQA-Classic: 654 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0246 (n=17)
+      IRT:         0.0408 (n=17)
+      p-IRT:       0.0353 (n=17)
+      gp-IRT:      0.0227 (n=17)
+      → Best method: gp-IRT (0.0227)
+      Base TruthfulQA-Classic: gp_irt_error = 0.0227
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing MATH-Classic: 866 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0187 (n=17)
+      IRT:         0.0202 (n=17)
+      p-IRT:       0.0193 (n=17)
+      gp-IRT:      0.0161 (n=17)
+      → Best method: gp-IRT (0.0161)
+      Base MATH-Classic: gp_irt_error = 0.0161
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing GSM8K-Classic: 1000 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0194 (n=17)
+      IRT:         0.0285 (n=17)
+      p-IRT:       0.0263 (n=17)
+      gp-IRT:      0.0191 (n=17)
+      → Best method: gp-IRT (0.0191)
+      Base GSM8K-Classic: gp_irt_error = 0.0191
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing RAFT: 440 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0298 (n=17)
+      IRT:         0.0296 (n=17)
+      p-IRT:       0.0256 (n=17)
+      gp-IRT:      0.0293 (n=17)
+      → Best method: p-IRT (0.0256)
+      Base RAFT: gp_irt_error = 0.0293
+   Validating 14 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing Disinformation: 48 questions, 48 anchors
+
+   📊 Validation Statistics:
+      Processed: 14
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0000 (n=14)
+      IRT:         0.0264 (n=14)
+      p-IRT:       0.0000 (n=14)
+      gp-IRT:      0.0000 (n=14)
+      → Best method: p-IRT (0.0000)
+      Base Disinformation: gp_irt_error = 0.0000
+   Validating 17 models × 1 datasets
+   ✓ Using full MIRT matrices (D=5)
+   Processing DyckLanguage: 500 questions, 100 anchors
+
+   📊 Validation Statistics:
+      Processed: 17
+      Skipped (no anchors): 0
+      Skipped (no data): 0
+      Theta estimation failures: 0
+
+   📈 Results Summary:
+      Anchor-only: 0.0242 (n=17)
+      IRT:         0.0434 (n=17)
+      p-IRT:       0.0353 (n=17)
+      gp-IRT:      0.0239 (n=17)
+      → Best method: gp-IRT (0.0239)
+      Base DyckLanguage: gp_irt_error = 0.0239
+      ✓ Target error: 0.0209
+      ✓ Avg Base error: 0.0185
+
+[19/92]
+  Running: target=LegalSupport, distance=2, chain=['QuAC', 'BBQ']
+    Using Sparse Matrix Mode (Train: Union, Test: Intersection)
+    Step 1: Training IRT on Base (6 datasets)...
+Starting IRT training following TinyBenchmarks methodology...
+Step 1: Computing balance weights...
+Balance weights computed for 3508 questions
+Step 2: Binarizing responses...
+   🔄 Data has 4 unique scores, applying thresholding...
+Finding optimal thresholds per dataset:   0%|          | 0/6 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  50%|█████     | 3/6 [00:00<00:00, 12.06it/s]Finding optimal thresholds per dataset:  83%|████████▎ | 5/6 [00:00<00:00, 10.65it/s]Finding optimal thresholds per dataset: 100%|██████████| 6/6 [00:00<00:00, 10.48it/s]
+     📊 Disinformation: threshold=0.208, error=0.0054
+     📊 DyckLanguage: threshold=0.010, error=0.0000
+     📊 GSM8K-Classic: threshold=0.010, error=0.0000
+     📊 MATH-Classic: threshold=0.010, error=0.0000
+     📊 RAFT: threshold=0.010, error=0.0000
+     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
+Responses binarized with optimal thresholds per dataset
+Step 2b: Skipping zero-variance filtering (disabled)
+Step 3: Validating dimensions...
+Validating dimensions:   0%|          | 0/2 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_2_QuAC_BBQ/irt_base/irt_val_dataset_dim2.jsonlines
+[10:28:15] amortized: False                                       dataset.py:212
+[10:28:15] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 2, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[10:28:15] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss          ┃ Best Loss     ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 56518552.4173 │ 56518552.4173 │ 0.1000 │
+│ 201   │ 66633.7438    │ 62740.3645    │ 0.0980 │
+│ 401   │ 70114.9110    │ 62039.8101    │ 0.0961 │
+│ 601   │ 63795.9772    │ 61236.7733    │ 0.0942 │
+│ 801   │ 64019.7298    │ 61069.7516    │ 0.0923 │
+│ 1001  │ 62795.7245    │ 60911.4986    │ 0.0905 │
+│ 1201  │ 63945.5867    │ 60911.4986    │ 0.0887 │
+│ 1401  │ 62035.6180    │ 60832.6360    │ 0.0869 │
+│ 1601  │ 61505.2170    │ 60641.5755    │ 0.0852 │
+│ 1801  │ 61422.5040    │ 60562.5760    │ 0.0835 │
+│ 2000  │ 60926.6804    │ 60514.0150    │ 0.0819 │
+└───────┴───────────────┴───────────────┴────────┘
+  0%|          | 0/6 [00:00<?, ?it/s][A
+ 17%|█▋        | 1/6 [00:00<00:02,  1.71it/s][A
+ 33%|███▎      | 2/6 [00:01<00:03,  1.13it/s][A
+ 50%|█████     | 3/6 [00:02<00:03,  1.07s/it][A
+ 67%|██████▋   | 4/6 [00:04<00:02,  1.18s/it][A
+ 83%|████████▎ | 5/6 [00:05<00:01,  1.19s/it][A
+100%|██████████| 6/6 [00:06<00:00,  1.23s/it][A100%|██████████| 6/6 [00:06<00:00,  1.14s/it]
+Validating dimensions:  50%|█████     | 1/2 [01:40<01:40, 100.32s/it]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/chain_classic_helm_classic_seed_42/target_LegalSupport/dist_2_QuAC_BBQ/irt_base/irt_val_dataset_dim5.jsonlines
+[10:29:56] amortized: False                                       dataset.py:212
+[10:29:56] Vocab size: None                                      training.py:105
+           args: {'device': 'cuda', 'num_items': 3508,           training.py:155
+           'num_subjects': 41}                                                  
+           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
+           3508, 'num_subjects': 41, 'priors': 'hierarchical',                  
+           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
+           'vocab_size': None}                                                  
+[10:29:56] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
+           no-op                                                                
+Training Pyro IRT Model for 2000 epochs
+┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 1     │ 272648650.4779 │ 272648650.4779 │ 0.1000 │
+└───────┴────────────────┴────────────────┴────────┘Validating dimensions:  50%|█████     | 1/2 [01:42<01:42, 102.77s/it]
+Traceback (most recent call last):
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/poutine/trace_messenger.py", line 191, in __call__
+    ret = self.fn(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/labs/gabis/eliyahabba/py-irt/py_irt/models/multidim_2pl.py", line 241, in guide_hierarchical
+    u_gamma = pyro.sample("u_gamma", dist.Gamma(alpha_gamma_param, beta_gamma_param))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/distributions/distribution.py", line 26, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/torch/distributions/gamma.py", line 68, in __init__
+    super().__init__(batch_shape, validate_args=validate_args)
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/torch/distributions/distribution.py", line 77, in __init__
+    raise ValueError(
+ValueError: Expected parameter concentration (Tensor of shape (5,)) of distribution Gamma(concentration: torch.Size([5]), rate: torch.Size([5])) to satisfy the constraint GreaterThan(lower_bound=0.0), but found invalid values:
+tensor([0.2081, 0.2631,    nan, 0.3337, 0.2108], device='cuda:0',
+       grad_fn=<AddBackward0>)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/cs/labs/gabis/eliyahabba/AdaptEval/src/experiments/chain_linking_experiment.py", line 968, in <module>
+    run_chain_linking_experiment(config)
+  File "/cs/labs/gabis/eliyahabba/AdaptEval/src/experiments/chain_linking_experiment.py", line 851, in run_chain_linking_experiment
+    result = run_chain_scenario(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/cs/labs/gabis/eliyahabba/AdaptEval/src/experiments/chain_linking_experiment.py", line 374, in run_chain_scenario
+    item_params_base, A_base, B_base = train_irt_on_base(
+                                       ^^^^^^^^^^^^^^^^^^
+  File "/cs/labs/gabis/eliyahabba/AdaptEval/src/experiments/cross_dataset_equating.py", line 1014, in train_irt_on_base
+    item_params = fit_2pl_parameters(
+                  ^^^^^^^^^^^^^^^^^^^
+  File "/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/training.py", line 730, in fit_2pl_parameters
+    best_dimension, validation_errors = validate_irt_dimensions(
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/training.py", line 336, in validate_irt_dimensions
+    trainer = train_irt_model_python_api(dataset_path, D, config.lr, config.epochs, config.device, deterministic=config.deterministic)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/irt.py", line 127, in train_irt_model_python_api
+    trainer.train(device=device)
+  File "/cs/labs/gabis/eliyahabba/py-irt/py_irt/training.py", line 227, in train
+    loss = svi.step(subjects, items, responses)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/infer/svi.py", line 145, in step
+    loss = self.loss_and_grads(self.model, self.guide, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/infer/trace_elbo.py", line 140, in loss_and_grads
+    for model_trace, guide_trace in self._get_traces(model, guide, args, kwargs):
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/infer/elbo.py", line 237, in _get_traces
+    yield self._get_trace(model, guide, args, kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/infer/trace_elbo.py", line 57, in _get_trace
+    model_trace, guide_trace = get_importance_trace(
+                               ^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/infer/enum.py", line 60, in get_importance_trace
+    guide_trace = poutine.trace(guide, graph_type=graph_type).get_trace(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/poutine/trace_messenger.py", line 216, in get_trace
+    self(*args, **kwargs)
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/poutine/trace_messenger.py", line 198, in __call__
+    raise exc from e
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/poutine/trace_messenger.py", line 191, in __call__
+    ret = self.fn(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/labs/gabis/eliyahabba/py-irt/py_irt/models/multidim_2pl.py", line 241, in guide_hierarchical
+    u_gamma = pyro.sample("u_gamma", dist.Gamma(alpha_gamma_param, beta_gamma_param))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/pyro/distributions/distribution.py", line 26, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/torch/distributions/gamma.py", line 68, in __init__
+    super().__init__(batch_shape, validate_args=validate_args)
+  File "/cs/snapless/gabis/eliyahabba/venvs/AdaptEval/lib/python3.11/site-packages/torch/distributions/distribution.py", line 77, in __init__
+    raise ValueError(
+ValueError: Expected parameter concentration (Tensor of shape (5,)) of distribution Gamma(concentration: torch.Size([5]), rate: torch.Size([5])) to satisfy the constraint GreaterThan(lower_bound=0.0), but found invalid values:
+tensor([0.2081, 0.2631,    nan, 0.3337, 0.2108], device='cuda:0',
+       grad_fn=<AddBackward0>)
+      Trace Shapes:       
+       Param Sites:       
+           loc_mu_b      5
+         scale_mu_b      5
+       loc_mu_theta      5
+     scale_mu_theta      5
+       loc_mu_gamma      5
+     scale_mu_gamma      5
+            alpha_b      5
+             beta_b      5
+        alpha_theta      5
+         beta_theta      5
+        alpha_gamma      5
+         beta_gamma      5
+        loc_ability   41 5
+      scale_ability   41 5
+           loc_diff 3508 5
+         scale_diff 3508 5
+           loc_disc 3508 5
+         scale_disc 3508 5
+      Sample Sites:       
+    mu_b_plate dist      |
+              value    5 |
+          mu_b dist    5 |
+              value    5 |
+     u_b_plate dist      |
+              value    5 |
+           u_b dist    5 |
+              value    5 |
+mu_theta_plate dist      |
+              value    5 |
+      mu_theta dist    5 |
+              value    5 |
+ u_theta_plate dist      |
+              value    5 |
+       u_theta dist    5 |
+              value    5 |
+mu_gamma_plate dist      |
+              value    5 |
+      mu_gamma dist    5 |
+              value    5 |
+ u_gamma_plate dist      |
+              value    5 |
+Job resource usage:
+     User        JobID    JobName  Partition      State  Timelimit               Start                 End    Elapsed     MaxRSS  MaxVMSize   NNodes      NCPUS        NodeList 
+--------- ------------ ---------- ---------- ---------- ---------- ------------------- ------------------- ---------- ---------- ---------- -------- ---------- --------------- 
+eliyahab+ 28931097     chain-lin+   killable    RUNNING 1-00:00:00 2025-12-22T08:29:54             Unknown   02:00:08                              1          8    dumfries-001 
+          28931097.ba+      batch               RUNNING            2025-12-22T08:29:54             Unknown   02:00:08                              1          8    dumfries-001 
+          28931097.ex+     extern               RUNNING            2025-12-22T08:29:54             Unknown   02:00:08                              1          8    dumfries-001 
