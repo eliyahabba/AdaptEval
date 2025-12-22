@@ -19,7 +19,9 @@ This reveals whether chain linking accumulates errors over multiple steps.
 from __future__ import annotations
 
 import json
+import traceback
 from dataclasses import dataclass, field
+from datetime import datetime
 from itertools import permutations
 from pathlib import Path
 from typing import Optional
@@ -744,7 +746,9 @@ def compute_baseline(
         
         if results:
             df = pd.DataFrame(results)
-            ds_result = {'n_validations': len(df)}
+            # Get number of unique items (questions) in this dataset
+            n_items = datasets[ds_name]['question_id'].nunique() if ds_name in datasets else 0
+            ds_result = {'n_validations': len(df), 'n_items': n_items}
             for metric in ERROR_METRICS:
                 if metric in df.columns:
                     vals = df[metric].dropna()
@@ -753,13 +757,51 @@ def compute_baseline(
                         ds_result[f'{metric}_std'] = float(vals.std())
             baseline_results[ds_name] = ds_result
             ds_err = ds_result.get('gp_irt_error_mean')
-            print(f"    {ds_name}: gp_irt_error = {ds_err:.4f}" if ds_err is not None else f"    {ds_name}: gp_irt_error = N/A")
+            print(f"    {ds_name}: gp_irt_error = {ds_err:.4f}, n_items = {n_items}" if ds_err is not None else f"    {ds_name}: gp_irt_error = N/A, n_items = {n_items}")
     
     # Save baseline
     with open(baseline_file, 'w') as f:
         json.dump(baseline_results, f, indent=2)
     
     return baseline_results
+
+
+def save_failed_scenarios(output_dir: Path, failed_scenarios: list[dict]) -> None:
+    """Save failed scenarios to a JSON file for later analysis."""
+    failed_file = output_dir / "failed_scenarios.json"
+    with open(failed_file, 'w') as f:
+        json.dump(failed_scenarios, f, indent=2)
+
+
+def save_incremental_results(output_dir: Path, all_results: list[dict]) -> None:
+    """Save results incrementally after each successful scenario."""
+    if not all_results:
+        return
+    results_df = pd.DataFrame(all_results)
+    results_df.to_csv(output_dir / "all_results.csv", index=False)
+
+
+def recover_cached_results(output_dir: Path) -> list[dict]:
+    """Recover results from cached results.json files in scenario directories.
+    
+    Useful for recovering partial results after a crash.
+    """
+    recovered = []
+    for target_dir in output_dir.glob("target_*"):
+        if not target_dir.is_dir():
+            continue
+        for dist_dir in target_dir.glob("dist_*"):
+            results_file = dist_dir / "results.json"
+            if results_file.exists():
+                try:
+                    with open(results_file) as f:
+                        result = json.load(f)
+                    if 'target_gp_irt_error_mean' in result:
+                        result['status'] = 'success'
+                        recovered.append(result)
+                except Exception as e:
+                    print(f"   ⚠️ Failed to recover {results_file}: {e}")
+    return recovered
 
 
 def run_chain_linking_experiment(config: ChainExperimentConfig | None = None):
@@ -842,18 +884,67 @@ def run_chain_linking_experiment(config: ChainExperimentConfig | None = None):
     )
     print(f"   Created {len(scenarios)} scenarios")
     
-    # 5. Run scenarios
+    # 5. Run scenarios with error handling and incremental saving
     print("\n4. Running chain scenarios...")
     all_results = []
+    failed_scenarios = []
+    
+    # Load any previously failed scenarios to append to
+    failed_file = output_dir / "failed_scenarios.json"
+    if failed_file.exists():
+        try:
+            with open(failed_file) as f:
+                failed_scenarios = json.load(f)
+            print(f"   Loaded {len(failed_scenarios)} previously failed scenarios")
+        except Exception:
+            pass
     
     for i, scenario in enumerate(scenarios):
         print(f"\n[{i+1}/{len(scenarios)}]", end="")
-        result = run_chain_scenario(
-            scenario, datasets, config, output_dir, baseline_results
-        )
-        all_results.append(result)
+        
+        try:
+            result = run_chain_scenario(
+                scenario, datasets, config, output_dir, baseline_results
+            )
+            
+            # Check if the result indicates an error (from ValueError handling in run_chain_scenario)
+            if 'error' in result and 'target_gp_irt_error_mean' not in result:
+                # This is a skipped scenario, not a crash - still mark it but don't add to failed
+                result['status'] = 'skipped'
+            else:
+                result['status'] = 'success'
+            
+            all_results.append(result)
+            
+            # Incremental save after each successful scenario
+            save_incremental_results(output_dir, all_results)
+            
+        except Exception as e:
+            # Log the failure with full traceback
+            error_msg = str(e)
+            tb = traceback.format_exc()
+            
+            failed_entry = {
+                'scenario': {
+                    'target_dataset': scenario.get('target_dataset', 'unknown'),
+                    'distance': scenario.get('distance', -1),
+                    'chain_before_target': scenario.get('chain_before_target', []),
+                    'base_datasets': scenario.get('base_datasets', []),
+                },
+                'error': error_msg,
+                'traceback': tb,
+                'timestamp': datetime.now().isoformat(),
+            }
+            failed_scenarios.append(failed_entry)
+            
+            # Save failed scenarios immediately
+            save_failed_scenarios(output_dir, failed_scenarios)
+            
+            print(f"    ❌ FAILED: {error_msg[:80]}...")
+            print(f"       Logged to failed_scenarios.json, continuing...")
+            continue
     
-    # 6. Save summary
+    # 6. Save final summary
     print("\n5. Saving summary...")
     results_df = pd.DataFrame(all_results)
     results_df.to_csv(output_dir / "all_results.csv", index=False)
@@ -862,6 +953,23 @@ def run_chain_linking_experiment(config: ChainExperimentConfig | None = None):
     print("\n" + "=" * 70)
     print("SUMMARY")
     print("=" * 70)
+    
+    # Show success/failure counts
+    n_total = len(scenarios)
+    n_success = len([r for r in all_results if r.get('status') == 'success'])
+    n_skipped = len([r for r in all_results if r.get('status') == 'skipped'])
+    n_failed = len(failed_scenarios)
+    print(f"\nScenarios: {n_success} succeeded, {n_skipped} skipped, {n_failed} failed (total: {n_total})")
+    
+    if failed_scenarios:
+        print(f"\n❌ Failed scenarios (see failed_scenarios.json for details):")
+        for fs in failed_scenarios[:5]:  # Show first 5
+            target = fs['scenario'].get('target_dataset', 'unknown')
+            dist = fs['scenario'].get('distance', '?')
+            err = fs['error'][:60] if len(fs['error']) > 60 else fs['error']
+            print(f"   - {target} (dist={dist}): {err}...")
+        if len(failed_scenarios) > 5:
+            print(f"   ... and {len(failed_scenarios) - 5} more")
     
     if not results_df.empty and 'target_gp_irt_error_mean' in results_df.columns:
         print(f"\n{'Target':<20} {'Distance':<10} {'Error':<12} {'Baseline':<12} {'Delta':<10}")
@@ -929,6 +1037,9 @@ if __name__ == "__main__":
     parser.add_argument("--use-sparse-matrix", action="store_true",
                         help="Use sparse matrix mode (include models not present in all datasets). "
                              "Recommended for helm_classic.")
+    parser.add_argument("--recover", action="store_true",
+                        help="Recover mode: rebuild all_results.csv from cached results.json files. "
+                             "Useful after a crash to generate summary without re-running.")
     
     args = parser.parse_args()
     
@@ -964,6 +1075,30 @@ if __name__ == "__main__":
     
     if args.output_dir:
         config.output_dir = args.output_dir
+    
+    # Handle recovery mode
+    if args.recover:
+        output_dir = Path(config.output_dir)
+        if not output_dir.exists():
+            print(f"ERROR: Output directory does not exist: {output_dir}")
+            exit(1)
+        
+        print(f"Recovering results from: {output_dir}")
+        recovered = recover_cached_results(output_dir)
+        print(f"Recovered {len(recovered)} successful scenarios")
+        
+        if recovered:
+            results_df = pd.DataFrame(recovered)
+            results_df.to_csv(output_dir / "all_results.csv", index=False)
+            print(f"Saved to: {output_dir / 'all_results.csv'}")
+            
+            # Also try to generate visualizations
+            try:
+                from visualize_chain_linking import visualize_chain_linking
+                visualize_chain_linking(output_dir)
+            except Exception as e:
+                print(f"⚠️ Failed to generate visualizations: {e}")
+        exit(0)
     
     run_chain_linking_experiment(config)
 

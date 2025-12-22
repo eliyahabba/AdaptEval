@@ -82,33 +82,39 @@ def calculate_costs(
     # Get total number of datasets from baseline
     n_total_datasets = len(baseline) if baseline else len(results_df['target_dataset'].unique())
     
-    # Load dataset sizes from data_source_config.json
+    # Load dataset sizes - first try from baseline (most accurate), then from config
     dataset_sizes = {}
-    try:
-        import json
-        from pathlib import Path as P
-        # Try to find data_source_config.json
-        config_path = P(__file__).parent / "data_source_config.json"
-        if config_path.exists():
-            with open(config_path) as f:
-                source_config = json.load(f)
-            datasets_config = source_config.get('datasets', {})
-            for ds_name, ds_info in datasets_config.items():
-                dataset_sizes[ds_name] = ds_info.get('items', total_items_per_dataset)
-        else:
-            print(f"  Warning: data_source_config.json not found at {config_path}")
-    except Exception as e:
-        print(f"  Warning: Could not load dataset sizes: {e}")
-        dataset_sizes = {}
+    
+    # 1. Try to get n_items from baseline results (preferred - actual data)
+    if baseline:
+        for ds_name, ds_data in baseline.items():
+            if 'n_items' in ds_data:
+                dataset_sizes[ds_name] = ds_data['n_items']
+    
+    # 2. If not in baseline, try data_source_config.json
+    if not dataset_sizes:
+        try:
+            import json
+            from pathlib import Path as P
+            config_path = P(__file__).parent / "data_source_config.json"
+            if config_path.exists():
+                with open(config_path) as f:
+                    source_config = json.load(f)
+                datasets_config = source_config.get('datasets', {})
+                for ds_name, ds_info in datasets_config.items():
+                    if ds_name not in dataset_sizes:  # Don't override baseline values
+                        dataset_sizes[ds_name] = ds_info.get('items', total_items_per_dataset)
+        except Exception as e:
+            pass  # Silently ignore - will use default
     
     # Calculate average items per dataset
+    relevant_datasets = set(results_df['target_dataset'].unique())
     if dataset_sizes:
-        # Only consider datasets that are in the results
-        relevant_datasets = set(results_df['target_dataset'].unique())
         relevant_sizes = [dataset_sizes.get(ds, total_items_per_dataset) for ds in relevant_datasets]
         avg_items_per_dataset = sum(relevant_sizes) / len(relevant_sizes) if relevant_sizes else total_items_per_dataset
     else:
         avg_items_per_dataset = total_items_per_dataset
+        print(f"  Note: Using default n_items={total_items_per_dataset} (no actual data available)")
     
     # First pass: find max distance to calculate n_base
     max_distance = results_df['distance'].max() if not results_df.empty else 1
@@ -120,8 +126,14 @@ def calculate_costs(
         dataset = row['target_dataset']
         distance = row['distance']
         
-        # Get actual number of items for this dataset
-        n_items_this_dataset = dataset_sizes.get(dataset, avg_items_per_dataset)
+        # Get actual number of items for this dataset (from baseline or config)
+        n_items_this_dataset = dataset_sizes.get(dataset, None)
+        if n_items_this_dataset is None:
+            # Try to get from baseline dict directly
+            if baseline and dataset in baseline and 'n_items' in baseline[dataset]:
+                n_items_this_dataset = baseline[dataset]['n_items']
+            else:
+                n_items_this_dataset = avg_items_per_dataset
         
         # Number of datasets at this point in the chain:
         # At distance d, we have: base datasets + d linked datasets
@@ -1008,23 +1020,31 @@ def plot_efficiency_pareto(
     baseline_error = grouped['baseline_error']['mean'].mean()
     baseline_error = baseline_error if not np.isnan(baseline_error) else 0
     
-    # Get average number of items per dataset
-    avg_n_items = grouped['n_items']['mean'].mean()
-    avg_n_items = avg_n_items if not np.isnan(avg_n_items) else 1000
+    # Get items per dataset (for Full Evaluation)
+    items_per_dataset = costs_df.groupby('target_dataset')['n_items'].first()
+    min_items = int(items_per_dataset.min())
+    max_items = int(items_per_dataset.max())
     
     # === Iteration 0 (In Base): Reference point - no cost, baseline error ===
     ax.scatter([0], [baseline_error], s=400, marker='*', 
               color='gold', edgecolor='black', linewidth=2,
               label='In Base (iter 0)', zorder=6)
     
-    # === Full Evaluation: All items (not just anchors) ===
-    # Full evaluation costs the actual number of items in each dataset
-    # For visualization, show it once at the average cost
-    full_cost_display = avg_n_items
-    # Full evaluation achieves baseline error (best possible with all data)
-    ax.scatter([full_cost_display], [baseline_error], s=250, marker='s', 
-              color=EFFICIENCY_COLORS['full'], edgecolor='black', linewidth=2,
-              label=f'Full Evaluation (~{int(avg_n_items)} items)', zorder=5, alpha=0.8)
+    # === Full Evaluation: Show each dataset's actual item count ===
+    # Full evaluation error = 0 (by definition: prediction = true_performance)
+    for dataset, n_items in items_per_dataset.items():
+        ax.scatter([n_items], [0], s=200, marker='s', 
+                  color=EFFICIENCY_COLORS['full'], edgecolor='black', linewidth=1.5,
+                  alpha=0.7, zorder=5)
+        # Add dataset label
+        ax.annotate(f'{dataset[:8]}', (n_items, 0),
+                   textcoords='offset points', xytext=(0, 8), fontsize=7,
+                   color=EFFICIENCY_COLORS['full'], ha='center', rotation=45)
+    
+    # Add a dummy point for legend with range
+    ax.scatter([], [], s=200, marker='s', color=EFFICIENCY_COLORS['full'], 
+              edgecolor='black', linewidth=1.5, alpha=0.7,
+              label=f'Full Evaluation ({min_items}-{max_items} items)')
     
     # === Concurrent: Points at each iteration ===
     concurrent_costs = grouped['cost_concurrent']['mean'].values

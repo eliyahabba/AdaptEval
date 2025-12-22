@@ -312,6 +312,8 @@ def validate_irt_dimensions(
     def scenario_from_dataset(name: str) -> str:
         return name.split(".")[0] if isinstance(name, str) and "." in name else name
     
+    failed_dimensions = {}  # Track which dimensions failed and why
+    
     for D in tqdm(Ds, desc="Validating dimensions"):
         # Train IRT model on training data
         if output_dir:
@@ -332,9 +334,21 @@ def validate_irt_dimensions(
             if output_dir:
                 print(f"   📁 Saved validation dataset: {dataset_path}")
             
-            # Train model using Python API
-            trainer = train_irt_model_python_api(dataset_path, D, config.lr, config.epochs, config.device, deterministic=config.deterministic)
-            A, B, Theta = load_irt_parameters_from_trainer(trainer)
+            # Train model using Python API - catch NaN/numerical errors
+            try:
+                trainer = train_irt_model_python_api(dataset_path, D, config.lr, config.epochs, config.device, deterministic=config.deterministic)
+                A, B, Theta = load_irt_parameters_from_trainer(trainer)
+            except (ValueError, RuntimeError) as e:
+                # Handle NaN errors in Gamma distribution or other numerical issues
+                error_msg = str(e)
+                if "nan" in error_msg.lower() or "invalid values" in error_msg.lower():
+                    print(f"\n   ⚠️ Dimension D={D} failed with numerical error: {error_msg[:100]}...")
+                    failed_dimensions[D] = error_msg
+                    errors_by_dimension.append(float('inf'))  # Mark as worst possible
+                    continue
+                else:
+                    # Re-raise non-numerical errors
+                    raise
             
             # Validate on each dataset separately
             dataset_errors = []
@@ -445,8 +459,17 @@ def validate_irt_dimensions(
                 temp_dir.cleanup()
     
     # Choose best dimension
+    if not errors_by_dimension or all(e == float('inf') for e in errors_by_dimension):
+        # All dimensions failed - raise error with details
+        failed_dims_str = ", ".join([f"D={d}: {err[:50]}..." for d, err in failed_dimensions.items()])
+        raise ValueError(f"All IRT dimensions failed validation. Failures: {failed_dims_str}")
+    
     best_idx = np.argmin(errors_by_dimension)
     best_dimension = Ds[best_idx]
+    
+    # Warn if some dimensions failed
+    if failed_dimensions:
+        print(f"   ⚠️ Note: {len(failed_dimensions)} dimension(s) failed: {list(failed_dimensions.keys())}")
     
     return best_dimension, errors_by_dataset
 
@@ -745,6 +768,17 @@ def fit_2pl_parameters(
         temp_dir = tempfile.TemporaryDirectory()
         dataset_path = os.path.join(temp_dir.name, 'irt_dataset.jsonlines')
     
+    # Dimensions to try (best first, then fallback to lower)
+    dims_to_try = [best_dimension]
+    # Add fallback dimensions in order of preference
+    for fallback_dim in sorted(cfg.dims_search):
+        if fallback_dim not in dims_to_try and fallback_dim < best_dimension:
+            dims_to_try.append(fallback_dim)
+    
+    trainer = None
+    final_dimension = best_dimension
+    last_error = None
+    
     try:
         
         # Convert to IRT format and train
@@ -753,17 +787,39 @@ def fit_2pl_parameters(
         question_id_mapping = create_irt_dataset(train_matrix, dataset_path, question_ids=question_ids)
         if output_dir:
             print(f"   📁 Saved final training dataset: {dataset_path}")
-        trainer = train_irt_model_python_api(
-            dataset_path,
-            best_dimension,
-            cfg.lr,
-            cfg.epochs,
-            cfg.device,
-            anchor_items=anchor_items,
-            question_id_mapping=question_id_mapping,
-            lr_decay=cfg.lr_decay,
-            deterministic=cfg.deterministic,
-        )
+        
+        # Try dimensions with fallback on NaN errors
+        for attempt_dim in dims_to_try:
+            try:
+                if attempt_dim != best_dimension:
+                    print(f"   ⚠️ Falling back to dimension D={attempt_dim}...")
+                
+                trainer = train_irt_model_python_api(
+                    dataset_path,
+                    attempt_dim,
+                    cfg.lr,
+                    cfg.epochs,
+                    cfg.device,
+                    anchor_items=anchor_items,
+                    question_id_mapping=question_id_mapping,
+                    lr_decay=cfg.lr_decay,
+                    deterministic=cfg.deterministic,
+                )
+                final_dimension = attempt_dim
+                break  # Success, exit loop
+                
+            except (ValueError, RuntimeError) as e:
+                error_msg = str(e)
+                if "nan" in error_msg.lower() or "invalid values" in error_msg.lower():
+                    print(f"   ⚠️ Dimension D={attempt_dim} failed: {error_msg[:80]}...")
+                    last_error = e
+                    continue  # Try next dimension
+                else:
+                    raise  # Re-raise non-numerical errors
+        
+        if trainer is None:
+            # All dimensions failed
+            raise ValueError(f"Final IRT training failed for all dimensions. Last error: {last_error}")
         
         # Load trained parameters directly from trainer
         A, B, Theta = load_irt_parameters_from_trainer(trainer)
@@ -773,6 +829,9 @@ def fit_2pl_parameters(
         if temp_dir:
             temp_dir.cleanup()
     
+    # Report if we used a different dimension than originally selected
+    if final_dimension != best_dimension:
+        print(f"   ℹ️ Used fallback dimension D={final_dimension} (original: D={best_dimension})")
     print("IRT model training completed")
     
     # Convert parameters to DataFrame format
@@ -832,7 +891,8 @@ def fit_2pl_parameters(
     params.attrs = {
         "lambdas_by_dataset": make_json_serializable(lambdas),
         "balance_weights": make_json_serializable(balance_weights),
-        "best_dimension": int(best_dimension),
+        "best_dimension": int(final_dimension),  # Actual dimension used (may differ from selected if fallback)
+        "selected_dimension": int(best_dimension),  # Originally selected dimension
         "validation_errors": make_json_serializable(validation_errors),
         "config_epochs": cfg.epochs,
         "config_lr": cfg.lr,
