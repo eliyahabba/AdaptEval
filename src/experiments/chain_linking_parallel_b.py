@@ -63,6 +63,7 @@ from cross_dataset_equating import (
     build_anchor_items_for_fixed_calibration,
     precompute_thetas_from_all_anchors,
     run_validation,
+    run_random_baseline_validation,
 )
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import train_item_parameters
@@ -132,6 +133,7 @@ class ScenarioTask:
     final_df_path: str  # Path to pickled DataFrame
     target_test_df_path: str
     base_chain_test_df_path: str | None  # Path to test models' responses on Base+Chain (for cross-dataset theta)
+    target_train_df_path: str | None  # Path to train models' responses on Target (for old model + new data)
     
     # IRT parameters (for Fixed-Anchor)
     prev_irt_path: str | None  # Path to pickled IRT params
@@ -149,6 +151,7 @@ class ScenarioTask:
     lr: float
     target_name: str
     test_models: list  # Serialized as list
+    train_models: list  # Serialized as list (for old model validation)
     
     # Timing info
     cumulative_chain_time: float
@@ -175,6 +178,16 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     final_df = pd.read_pickle(task.final_df_path)
     target_test_df = pd.read_pickle(task.target_test_df_path)
     test_models = set(task.test_models)
+    train_models = set(task.train_models) if task.train_models else set()
+    
+    # Load additional data for extra validations
+    target_train_df = None
+    if task.target_train_df_path:
+        target_train_df = pd.read_pickle(task.target_train_df_path)
+    
+    base_chain_test_df = None
+    if task.base_chain_test_df_path:
+        base_chain_test_df = pd.read_pickle(task.base_chain_test_df_path)
     
     # Load IRT params if Fixed-Anchor
     anchor_items = None
@@ -256,8 +269,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Prepare test data for theta precomputation
     # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
     # This enables cross-dataset theta estimation using historical anchor responses
-    if task.base_chain_test_df_path:
-        base_chain_test_df = pd.read_pickle(task.base_chain_test_df_path)
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         test_df = pd.concat([base_chain_test_df, target_test_df], ignore_index=True)
     else:
         test_df = target_test_df.copy()
@@ -270,6 +282,9 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         B_matrix=B_matrix,
     )
     
+    # ==========================================================================
+    # Validation 1: New Models + New Dataset (test_models on target)
+    # ==========================================================================
     validation_results = run_validation(
         test_df=target_test_df,
         item_params=irt_params,
@@ -280,10 +295,69 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         B_matrix=B_matrix,
         precomputed_thetas=precomputed_thetas,
     )
-    
     validation_df = pd.DataFrame(validation_results) if validation_results else None
     
+    # ==========================================================================
+    # Validation 2: Old Models + New Dataset (train_models on target)
+    # ==========================================================================
+    val_train_on_target_df = None
+    if target_train_df is not None and len(target_train_df) > 0:
+        precomputed_thetas_train = precompute_thetas_from_all_anchors(
+            test_df=final_df,  # final_df contains train_models on all datasets
+            item_params=irt_params,
+            anchor_ids=all_anchors,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+        )
+        train_on_target_results = run_validation(
+            test_df=target_train_df,
+            item_params=irt_params,
+            anchor_ids=all_anchors,
+            anchor_weights=all_weights,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas_train,
+        )
+        val_train_on_target_df = pd.DataFrame(train_on_target_results) if train_on_target_results else None
+    
+    # ==========================================================================
+    # Validation 3: New Models + Old Datasets (test_models on Base+Chain)
+    # ==========================================================================
+    val_test_on_base_df = None
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        test_on_base_results = run_validation(
+            test_df=base_chain_test_df,
+            item_params=irt_params,
+            anchor_ids=all_anchors,
+            anchor_weights=all_weights,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas,
+        )
+        val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
+    
+    # ==========================================================================
+    # Validation 4: Random Baseline (compare against IRT anchor selection)
+    # ==========================================================================
+    print(f"      Task {task.task_id}: Running random baseline validation...")
+    random_baseline_results = run_random_baseline_validation(
+        test_df=target_test_df,
+        item_params=irt_params,
+        n_random_questions=task.n_anchors_per_dataset,
+        target_name=task.target_name,
+        train_df=final_df,
+        A_matrix=A_matrix,
+        B_matrix=B_matrix,
+        precomputed_thetas=precomputed_thetas,
+        n_seeds=10,
+        base_seed=42,
+    )
+    
+    # ==========================================================================
     # Build result
+    # ==========================================================================
     result = {
         'task_id': task.task_id,
         'distance': task.distance,
@@ -298,6 +372,30 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         'gpu_id': gpu_id,
     }
     
+    # Helper to add metrics from a validation DataFrame
+    def add_metrics(df, prefix):
+        if df is not None and len(df) > 0:
+            result[f'{prefix}_n_models'] = len(df)
+            for metric in ERROR_METRICS:
+                if metric in df.columns:
+                    vals = df[metric].dropna()
+                    if len(vals) > 0:
+                        result[f'{prefix}_{metric}_mean'] = float(vals.mean())
+                        result[f'{prefix}_{metric}_std'] = float(vals.std())
+            if 'true_performance' in df.columns:
+                result[f'{prefix}_true_perf_mean'] = float(df['true_performance'].mean())
+                result[f'{prefix}_true_perf_std'] = float(df['true_performance'].std())
+    
+    # Add metrics for all three validation types
+    add_metrics(validation_df, 'new_model_new_data')
+    add_metrics(val_train_on_target_df, 'old_model_new_data')
+    add_metrics(val_test_on_base_df, 'new_model_old_data')
+    
+    # Add random baseline metrics
+    for key, val in random_baseline_results.items():
+        result[key] = val
+    
+    # Backward compatibility - also add without prefix for main metric
     if validation_df is not None and len(validation_df) > 0:
         result['n_test_models'] = len(validation_df)
         for metric in ERROR_METRICS:
@@ -306,13 +404,18 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 if len(vals) > 0:
                     result[f'{metric}_mean'] = float(vals.mean())
                     result[f'{metric}_std'] = float(vals.std())
-        
         if 'true_performance' in validation_df.columns:
             result['true_performance_mean'] = float(validation_df['true_performance'].mean())
             result['true_performance_std'] = float(validation_df['true_performance'].std())
         
-        # Save validation CSV
+        # Save validation CSV - New Model + New Dataset (primary)
         validation_df.to_csv(output_dir.parent / f"validation_{task.method}.csv", index=False)
+    
+    # Save additional validation CSVs
+    if val_train_on_target_df is not None:
+        val_train_on_target_df.to_csv(output_dir.parent / f"validation_{task.method}_old_model_new_data.csv", index=False)
+    if val_test_on_base_df is not None:
+        val_test_on_base_df.to_csv(output_dir.parent / f"validation_{task.method}_new_model_old_data.csv", index=False)
     
     return result
 
@@ -572,6 +675,10 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     target_test_path = temp_dir / "target_test.pkl"
     target_test_df.to_pickle(target_test_path)
     
+    # Save target train df for workers (old model + new data validation)
+    target_train_path = temp_dir / "target_train.pkl"
+    target_train_df.to_pickle(target_train_path)
+    
     # Save base IRT params
     base_irt_pkl = temp_dir / "base_irt.pkl"
     base_irt.to_pickle(base_irt_pkl)
@@ -679,6 +786,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 final_df_path=str(final_df_path),
                 target_test_df_path=str(target_test_path),
                 base_chain_test_df_path=base_chain_test_df_path_str,
+                target_train_df_path=str(target_train_path),
                 prev_irt_path=prev_irt_path if method == 'fixed' else None,
                 prev_A_path=prev_A_path if method == 'fixed' else None,
                 prev_B_path=prev_B_path if method == 'fixed' else None,
@@ -692,6 +800,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 lr=config.lr,
                 target_name=target_name,
                 test_models=list(test_models),
+                train_models=list(train_models),
                 cumulative_chain_time=cumulative_chain_time,
             )
             tasks.append(task)
@@ -878,6 +987,20 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         concurrent_err = r.get('concurrent_gp_irt_error_mean', float('nan'))
         delta = r.get('delta_gp_irt_error', float('nan'))
         print(f"{dist:<6} {chain:<20} {fixed_err:<10.4f} {concurrent_err:<12.4f} {delta:+10.4f}")
+    
+    # Random baseline comparison
+    print("\n" + "-" * 60)
+    print("RANDOM BASELINE COMPARISON (IRT Anchors vs Random Selection):")
+    for metric in ['anchor_error', 'gp_irt_error']:
+        # Get Fixed method's random baseline results
+        fixed_random = [r.get(f'fixed_random_{metric}_mean') for r in final_results if r.get(f'fixed_random_{metric}_mean') is not None]
+        fixed_irt = [r.get(f'fixed_{metric}_mean') for r in final_results if r.get(f'fixed_{metric}_mean') is not None]
+        
+        if fixed_random and fixed_irt:
+            avg_random = np.mean(fixed_random)
+            avg_irt = np.mean(fixed_irt)
+            improvement = avg_random - avg_irt
+            print(f"  {metric}: IRT={avg_irt:.4f}, Random={avg_random:.4f}, Improvement={improvement:+.4f} ({'IRT better' if improvement > 0 else 'Random better'})")
     
     print(f"\nResults saved to: {output_dir}")
     

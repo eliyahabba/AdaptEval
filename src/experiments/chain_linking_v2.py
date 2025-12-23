@@ -52,6 +52,7 @@ from cross_dataset_equating import (
     build_anchor_items_for_fixed_calibration,
     precompute_thetas_from_all_anchors,
     run_validation,
+    run_random_baseline_validation,
 )
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import train_item_parameters
@@ -153,17 +154,21 @@ def train_and_validate(
     prev_weights: list = None,
     dims: list[int] = None,
     base_chain_test_df: pd.DataFrame = None,
-) -> tuple[dict, pd.DataFrame | None]:
-    """Train IRT and validate. Returns (result_dict, validation_df).
+    target_train_df: pd.DataFrame = None,
+) -> tuple[dict, pd.DataFrame | None, pd.DataFrame | None, pd.DataFrame | None]:
+    """Train IRT and validate. Returns (result_dict, validation_df, val_train_on_target, val_test_on_base).
     
     Args:
         anchor_items: If provided, use Fixed-Anchor calibration. If None, use Concurrent.
         base_chain_test_df: Test models' responses on Base+Chain datasets (for cross-dataset theta estimation).
+        target_train_df: Train models' responses on Target dataset (for old model + new dataset validation).
     
     Returns:
         result: dict with method, n_items, n_anchors, best_dimension, training_time_sec,
                 and all error metrics (mean/std)
-        validation_df: DataFrame with per-model validation results
+        validation_df: DataFrame with per-model validation results (new models + new dataset)
+        val_train_on_target_df: DataFrame with old models + new dataset validation
+        val_test_on_base_df: DataFrame with new models + old datasets validation
     """
     method = "fixed" if anchor_items else "concurrent"
     
@@ -195,7 +200,7 @@ def train_and_validate(
             print(f"      ⚠️ Attempt {attempt+1}/{MAX_RETRIES} failed: {str(e)[:100]}")
             if attempt == MAX_RETRIES - 1:
                 print(f"      ❌ All retries failed, skipping...")
-                return None, None
+                return None, None, None, None
     training_time = time.time() - start_time
     
     # Extract IRT info
@@ -243,7 +248,9 @@ def train_and_validate(
         B_matrix=B_matrix,
     )
     
-    # Validate on target
+    # ==========================================================================
+    # Validation 1: New Models + New Dataset (test_models on target)
+    # ==========================================================================
     validation_results = run_validation(
         test_df=target_test_df,
         item_params=irt_params,
@@ -254,11 +261,73 @@ def train_and_validate(
         B_matrix=B_matrix,
         precomputed_thetas=precomputed_thetas,
     )
-    
-    # Convert to DataFrame
     validation_df = pd.DataFrame(validation_results) if validation_results else None
     
-    # Compile result with all info
+    # ==========================================================================
+    # Validation 2: Old Models + New Dataset (train_models on target)
+    # ==========================================================================
+    val_train_on_target_df = None
+    if target_train_df is not None and len(target_train_df) > 0:
+        # For train_models, we need to compute their thetas from anchors too
+        # (even though they were in training, we estimate theta from anchor responses)
+        train_models_set = set(train_df['model_name'].unique())
+        precomputed_thetas_train = precompute_thetas_from_all_anchors(
+            test_df=train_df,  # train_df contains train_models on all datasets
+            item_params=irt_params,
+            anchor_ids=all_anchors,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+        )
+        
+        train_on_target_results = run_validation(
+            test_df=target_train_df,
+            item_params=irt_params,
+            anchor_ids=all_anchors,
+            anchor_weights=all_weights,
+            train_df=train_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas_train,
+        )
+        val_train_on_target_df = pd.DataFrame(train_on_target_results) if train_on_target_results else None
+    
+    # ==========================================================================
+    # Validation 3: New Models + Old Datasets (test_models on Base+Chain)
+    # ==========================================================================
+    val_test_on_base_df = None
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        test_on_base_results = run_validation(
+            test_df=base_chain_test_df,
+            item_params=irt_params,
+            anchor_ids=all_anchors,
+            anchor_weights=all_weights,
+            train_df=train_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas,  # Already computed for test_models
+        )
+        val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
+    
+    # ==========================================================================
+    # Validation 4: Random Baseline (compare against IRT anchor selection)
+    # ==========================================================================
+    print("      Running random baseline validation...")
+    random_baseline_results = run_random_baseline_validation(
+        test_df=target_test_df,
+        item_params=irt_params,
+        n_random_questions=config.n_anchors_per_dataset,
+        target_name=target_name,
+        train_df=train_df,
+        A_matrix=A_matrix,
+        B_matrix=B_matrix,
+        precomputed_thetas=precomputed_thetas,
+        n_seeds=10,
+        base_seed=42,
+    )
+    
+    # ==========================================================================
+    # Compile results
+    # ==========================================================================
     result = {
         'method': method,
         'n_items': n_items,
@@ -267,7 +336,30 @@ def train_and_validate(
         'training_time_sec': round(training_time, 2),
     }
     
-    # Add all error metrics with mean AND std
+    # Helper to add metrics from a validation DataFrame
+    def add_metrics(df, prefix):
+        if df is not None and len(df) > 0:
+            result[f'{prefix}_n_models'] = len(df)
+            for metric in ERROR_METRICS:
+                if metric in df.columns:
+                    vals = df[metric].dropna()
+                    if len(vals) > 0:
+                        result[f'{prefix}_{metric}_mean'] = float(vals.mean())
+                        result[f'{prefix}_{metric}_std'] = float(vals.std())
+            if 'true_performance' in df.columns:
+                result[f'{prefix}_true_perf_mean'] = float(df['true_performance'].mean())
+                result[f'{prefix}_true_perf_std'] = float(df['true_performance'].std())
+    
+    # Add metrics for all three validation types
+    add_metrics(validation_df, 'new_model_new_data')
+    add_metrics(val_train_on_target_df, 'old_model_new_data')
+    add_metrics(val_test_on_base_df, 'new_model_old_data')
+    
+    # Add random baseline metrics
+    for key, val in random_baseline_results.items():
+        result[key] = val
+    
+    # Keep backward compatibility - also add without prefix for main metric
     if validation_df is not None and len(validation_df) > 0:
         result['n_test_models'] = len(validation_df)
         for metric in ERROR_METRICS:
@@ -276,13 +368,11 @@ def train_and_validate(
                 if len(vals) > 0:
                     result[f'{metric}_mean'] = float(vals.mean())
                     result[f'{metric}_std'] = float(vals.std())
-        
-        # Also save true performance stats
         if 'true_performance' in validation_df.columns:
             result['true_performance_mean'] = float(validation_df['true_performance'].mean())
             result['true_performance_std'] = float(validation_df['true_performance'].std())
     
-    return result, validation_df
+    return result, validation_df, val_train_on_target_df, val_test_on_base_df
 
 
 # =============================================================================
@@ -613,7 +703,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         
         # ----- Method 1: Fixed-Anchor Calibration -----
         print("      Running Fixed-Anchor...")
-        fixed_result, fixed_val_df = train_and_validate(
+        fixed_result, fixed_val_df, fixed_train_on_target_df, fixed_test_on_base_df = train_and_validate(
             train_df=final_df,
             target_test_df=target_test_df,
             test_models=test_models,
@@ -625,11 +715,12 @@ def run_chain_linking_v2(config: ChainConfigV2):
             prev_weights=prev_weights,
             dims=dims,
             base_chain_test_df=base_chain_test_df,
+            target_train_df=target_train_df,
         )
         
         # ----- Method 2: Concurrent Calibration (from scratch) -----
         print("      Running Concurrent...")
-        concurrent_result, concurrent_val_df = train_and_validate(
+        concurrent_result, concurrent_val_df, concurrent_train_on_target_df, concurrent_test_on_base_df = train_and_validate(
             train_df=final_df,
             target_test_df=target_test_df,
             test_models=test_models,
@@ -641,6 +732,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
             prev_weights=None,
             dims=dims,
             base_chain_test_df=base_chain_test_df,
+            target_train_df=target_train_df,
         )
         
         # Skip if both methods failed
@@ -688,10 +780,23 @@ def run_chain_linking_v2(config: ChainConfigV2):
             json.dump(result_to_save, f, indent=2)
         
         # Save detailed validation CSVs
+        # New Model + New Dataset (primary metric)
         if fixed_val_df is not None:
             fixed_val_df.to_csv(scenario_dir / "validation_fixed.csv", index=False)
         if concurrent_val_df is not None:
             concurrent_val_df.to_csv(scenario_dir / "validation_concurrent.csv", index=False)
+        
+        # Old Model + New Dataset (train_models on target)
+        if fixed_train_on_target_df is not None:
+            fixed_train_on_target_df.to_csv(scenario_dir / "validation_fixed_old_model_new_data.csv", index=False)
+        if concurrent_train_on_target_df is not None:
+            concurrent_train_on_target_df.to_csv(scenario_dir / "validation_concurrent_old_model_new_data.csv", index=False)
+        
+        # New Model + Old Datasets (test_models on Base+Chain)
+        if fixed_test_on_base_df is not None:
+            fixed_test_on_base_df.to_csv(scenario_dir / "validation_fixed_new_model_old_data.csv", index=False)
+        if concurrent_test_on_base_df is not None:
+            concurrent_test_on_base_df.to_csv(scenario_dir / "validation_concurrent_new_model_old_data.csv", index=False)
         
         results.append(result)
         
@@ -758,6 +863,20 @@ def run_chain_linking_v2(config: ChainConfigV2):
     fixed_times = [r.get('fixed_training_time_sec', 0) for r in results]
     concurrent_times = [r.get('concurrent_training_time_sec', 0) for r in results]
     print(f"\n  Training time: Fixed avg={np.mean(fixed_times):.1f}s, Concurrent avg={np.mean(concurrent_times):.1f}s")
+    
+    # Random baseline comparison
+    print("\n" + "-" * 75)
+    print("RANDOM BASELINE COMPARISON (IRT Anchors vs Random Selection):")
+    for metric in ['anchor_error', 'gp_irt_error']:
+        # Get Fixed method's random baseline results
+        fixed_random = [r.get(f'fixed_random_{metric}_mean') for r in results if r.get(f'fixed_random_{metric}_mean') is not None]
+        fixed_irt = [r.get(f'fixed_{metric}_mean') for r in results if r.get(f'fixed_{metric}_mean') is not None]
+        
+        if fixed_random and fixed_irt:
+            avg_random = np.mean(fixed_random)
+            avg_irt = np.mean(fixed_irt)
+            improvement = avg_random - avg_irt
+            print(f"  {metric}: IRT={avg_irt:.4f}, Random={avg_random:.4f}, Improvement={improvement:+.4f} ({'IRT better' if improvement > 0 else 'Random better'})")
     
     print(f"\nResults saved to: {output_dir}")
     print(f"  - all_results.csv (tabular)")

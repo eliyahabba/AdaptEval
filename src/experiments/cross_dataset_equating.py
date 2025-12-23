@@ -1429,6 +1429,153 @@ def run_validation(
     return results
 
 
+def run_random_baseline_validation(
+    test_df: pd.DataFrame,
+    item_params: pd.DataFrame,
+    n_random_questions: int,
+    target_name: str,
+    train_df: pd.DataFrame,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+    precomputed_thetas: dict[str, float] | None = None,
+    n_seeds: int = 10,
+    base_seed: int = 42,
+) -> dict:
+    """Run validation using randomly selected questions instead of IRT-selected anchors.
+    
+    This provides a baseline to compare against the IRT anchor selection method.
+    By running multiple seeds, we get variance estimates for the random baseline.
+    
+    Args:
+        test_df: Test data to evaluate on
+        item_params: IRT item parameters
+        n_random_questions: Number of random questions to select (same as n_anchors)
+        target_name: Name of the target dataset to select random questions from
+        train_df: Training data
+        A_matrix, B_matrix: MIRT matrices
+        precomputed_thetas: Optional dict mapping model_name -> theta
+        n_seeds: Number of random seeds to run (default 10)
+        base_seed: Base seed for reproducibility
+    
+    Returns:
+        Dict with aggregated statistics:
+        {
+            'random_anchor_error_mean': float,
+            'random_anchor_error_std': float,
+            'random_irt_error_mean': float,
+            'random_irt_error_std': float,
+            'random_gp_irt_error_mean': float,
+            'random_gp_irt_error_std': float,
+            'random_pirt_error_mean': float,
+            'random_pirt_error_std': float,
+            'n_seeds': int,
+            'n_random_questions': int,
+        }
+    """
+    # Get all questions from target dataset that have IRT parameters
+    target_questions = [q for q in item_params.index if q.startswith(f"{target_name}:")]
+    
+    if len(target_questions) < n_random_questions:
+        print(f"      Warning: Only {len(target_questions)} questions available, using all")
+        n_random_questions = len(target_questions)
+    
+    if len(target_questions) < 10:
+        print(f"      Warning: Too few questions ({len(target_questions)}) for random baseline, skipping")
+        return {}
+    
+    # Collect results from each seed
+    all_seed_results = {
+        'anchor_error': [],
+        'irt_error': [],
+        'gp_irt_error': [],
+        'pirt_error': [],
+    }
+    
+    # Get lambda values (needed for validation)
+    attrs = getattr(item_params, 'attrs', {})
+    validation_errors = attrs.get('validation_errors', {})
+    best_dim = attrs.get('best_dimension', 5)
+    dims_search = attrs.get('config_dims_search', [5, 10])
+    best_dim_idx = dims_search.index(best_dim) if best_dim in dims_search else 0
+    
+    question_ids_order = list(item_params.index) if hasattr(item_params, 'index') else None
+    
+    for seed_offset in range(n_seeds):
+        seed = base_seed + seed_offset
+        np.random.seed(seed)
+        
+        # Randomly select questions
+        random_anchors = list(np.random.choice(target_questions, size=n_random_questions, replace=False))
+        
+        # Assign uniform weights
+        random_weights = [1.0 / n_random_questions] * n_random_questions
+        
+        # Build anchors dict
+        anchors_by_dataset = {target_name: random_anchors}
+        anchor_weights_by_dataset = {target_name: random_weights}
+        
+        # Compute lambdas for this anchor count
+        lambdas_by_dataset = compute_lambda_values(
+            original_matrix_df=train_df,
+            validation_errors=validation_errors,
+            best_dim_idx=best_dim_idx,
+            number_item=n_random_questions,
+        )
+        
+        # Run validation (silently)
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            
+            # Suppress print statements during random validation
+            import sys
+            import io
+            old_stdout = sys.stdout
+            sys.stdout = io.StringIO()
+            
+            try:
+                results = run_estimation_validation(
+                    test_matrix=test_df,
+                    item_params=item_params,
+                    anchors_by_dataset=anchors_by_dataset,
+                    lambdas_by_dataset=lambdas_by_dataset,
+                    anchor_weights_by_dataset=anchor_weights_by_dataset,
+                    precomputed_thetas=precomputed_thetas,
+                    A_matrix=A_matrix,
+                    B_matrix=B_matrix,
+                    question_ids_order=question_ids_order,
+                )
+            finally:
+                sys.stdout = old_stdout
+        
+        # Aggregate results from this seed
+        if results:
+            for metric in ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']:
+                vals = [r[metric] for r in results if not np.isnan(r.get(metric, np.nan))]
+                if vals:
+                    all_seed_results[metric].append(np.mean(vals))
+    
+    # Compute statistics across seeds
+    output = {
+        'n_seeds': n_seeds,
+        'n_random_questions': n_random_questions,
+    }
+    
+    for metric in ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']:
+        vals = all_seed_results[metric]
+        if vals:
+            output[f'random_{metric}_mean'] = float(np.mean(vals))
+            output[f'random_{metric}_std'] = float(np.std(vals))
+    
+    n_successful_seeds = len(all_seed_results['anchor_error'])
+    print(f"      Random baseline: {n_successful_seeds}/{n_seeds} seeds successful")
+    if n_successful_seeds > 0:
+        print(f"         anchor_error: {output.get('random_anchor_error_mean', 'N/A'):.4f} ± {output.get('random_anchor_error_std', 'N/A'):.4f}")
+        print(f"         gp_irt_error: {output.get('random_gp_irt_error_mean', 'N/A'):.4f} ± {output.get('random_gp_irt_error_std', 'N/A'):.4f}")
+    
+    return output
+
+
 # =============================================================================
 # Main Experiment
 # =============================================================================
