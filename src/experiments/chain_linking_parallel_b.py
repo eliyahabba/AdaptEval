@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import json
 import os
+import pickle
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -79,6 +80,9 @@ DEBUG_EPOCHS = 10
 DEBUG_N_ANCHORS = 10
 
 ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
+
+# Retry settings
+MAX_RETRIES = 3
 
 
 @dataclass
@@ -192,7 +196,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     output_dir = Path(task.scenario_dir) / f"irt_{task.method}"
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Train IRT
+    # Train IRT with retry
     irt_config = TrainingConfig(
         dims_search=task.dims,
         epochs=task.epochs,
@@ -204,12 +208,22 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     )
     
     start_time = time.time()
-    irt_params = train_item_parameters(
-        final_df,
-        config=irt_config,
-        output_dir=str(output_dir),
-        anchor_items=anchor_items,
-    )
+    irt_params = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            irt_params = train_item_parameters(
+                final_df,
+                config=irt_config,
+                output_dir=str(output_dir),
+                anchor_items=anchor_items,
+            )
+            break
+        except Exception as e:
+            print(f"      ⚠️ Task {task.task_id} attempt {attempt+1}/{MAX_RETRIES} failed: {str(e)[:100]}")
+            if attempt == MAX_RETRIES - 1:
+                print(f"      ❌ Task {task.task_id} all retries failed")
+                return {'task_id': task.task_id, 'distance': task.distance, 'method': task.method, 
+                        'chain': task.chain_list, 'chain_str': task.chain_str, 'failed': True}
     training_time = time.time() - start_time
     
     # Extract info
@@ -408,7 +422,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # Step 4: Build chain cache (sequential)
     # -------------------------------------------------------------------------
     max_chain = min(config.max_chain_length, len(chain_pool))
-    print(f"\n5. Building chain cache ({max_chain} steps)...")
+    print(f"\n5. Building chain cache (up to {max_chain} steps)...")
     
     # Cache stores: (irt_params, A, B, anchors, weights, df, time)
     chain_cache = {}
@@ -423,13 +437,35 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     chain_cache_dir = output_dir / "chain_cache"
     chain_cache_dir.mkdir(exist_ok=True)
+    checkpoint_file = chain_cache_dir / "checkpoint.pkl"
+    
+    total_chain_time = 0
+    successful_chain = []
+    
+    # Resume: load checkpoint if exists
+    if checkpoint_file.exists():
+        print("   📂 Found checkpoint, loading...")
+        with open(checkpoint_file, 'rb') as f:
+            checkpoint = pickle.load(f)
+        successful_chain = checkpoint['successful_chain']
+        chain_cache = checkpoint['chain_cache']
+        chain_cache_times = checkpoint.get('chain_cache_times', {})
+        current_irt, current_A, current_B, current_anchors, current_weights, current_df = chain_cache[len(successful_chain)]
+        total_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, len(successful_chain) + 1))
+        print(f"   ✅ Resumed from step {len(successful_chain)}: {successful_chain}")
     
     for i in range(max_chain):
         chain_ds = chain_pool[i]
-        prefix = "_".join([d.replace(' ', '_')[:10] for d in chain_pool[:i+1]])
+        
+        # Skip if already in checkpoint
+        if chain_ds in successful_chain:
+            print(f"   Chain step {i+1}: {chain_ds} ✅ (from checkpoint)")
+            continue
+        
+        prefix = "_".join([d.replace(' ', '_')[:10] for d in successful_chain + [chain_ds]])
         cache_dir = chain_cache_dir / f"after_{prefix}"
         
-        print(f"   Step {i+1}: {chain_ds}...")
+        print(f"   Chain step {i+1}: adding {chain_ds}...")
         
         chain_df = datasets[chain_ds]
         chain_df = chain_df[chain_df['model_name'].isin(train_models)].copy()
@@ -457,14 +493,25 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         )
         
         chain_start = time.time()
-        new_irt = train_item_parameters(
-            combined_df,
-            config=irt_config,
-            output_dir=str(cache_dir),
-            anchor_items=anchor_items,
-        )
+        new_irt = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                new_irt = train_item_parameters(
+                    combined_df,
+                    config=irt_config,
+                    output_dir=str(cache_dir),
+                    anchor_items=anchor_items,
+                )
+                break
+            except Exception as e:
+                print(f"      ⚠️ Attempt {attempt+1}/{MAX_RETRIES} failed: {str(e)[:80]}")
+        
+        if new_irt is None:
+            print(f"      ❌ Chain step {i+1} failed, skipping {chain_ds}...")
+            continue  # Skip this dataset, try the next one
+            
         chain_time = time.time() - chain_start
-        chain_cache_times[i + 1] = chain_time
+        total_chain_time += chain_time
         
         new_A, new_B = None, None
         if hasattr(new_irt, 'attrs') and new_irt.attrs:
@@ -481,7 +528,10 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         new_anchors = current_anchors + chain_anchors
         new_weights = current_weights + chain_weights
         
-        chain_cache[i + 1] = (new_irt, new_A, new_B, new_anchors, new_weights, combined_df)
+        successful_chain.append(chain_ds)
+        distance = len(successful_chain)
+        chain_cache[distance] = (new_irt, new_A, new_B, new_anchors, new_weights, combined_df)
+        chain_cache_times[distance] = chain_time
         
         current_irt = new_irt
         current_A = new_A
@@ -489,11 +539,22 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         current_anchors = new_anchors
         current_weights = new_weights
         current_df = combined_df
+        
+        # Save checkpoint after each successful step
+        with open(checkpoint_file, 'wb') as f:
+            pickle.dump({'successful_chain': successful_chain, 'chain_cache': chain_cache, 
+                        'chain_cache_times': chain_cache_times}, f)
+        
+        print(f"      ✅ {len(new_irt)} items, {len(new_anchors)} anchors, {chain_time:.1f}s (checkpoint saved)")
+    
+    # Update chain_pool to reflect actual successful chain
+    chain_pool = successful_chain
+    max_chain = len(successful_chain)
     
     # -------------------------------------------------------------------------
     # Step 5: Prepare scenario tasks
     # -------------------------------------------------------------------------
-    print(f"\n6. Preparing {2 * (max_chain + 1)} parallel tasks...")
+    print(f"\n6. Preparing parallel tasks...")
     
     # Get target data
     target_df = datasets[target_name]
@@ -523,6 +584,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             np.save(temp_dir / f"chain_{dist}_B.npy", B)
     
     tasks = []
+    already_done = []
     task_id = 0
     
     for distance in range(max_chain + 1):
@@ -538,6 +600,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             prev_weights = list(base_weights)
             cumulative_chain_time = 0
         else:
+            if distance not in chain_cache:
+                print(f"   Distance {distance}: ⏭️ Skipped (chain not built)")
+                continue
             chain_list = chain_pool[:distance]
             chain_str = "_".join([d.replace(' ', '_')[:10] for d in chain_list])
             irt, A, B, anchors, weights, prev_df = chain_cache[distance]
@@ -547,6 +612,19 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             prev_anchors = anchors
             prev_weights = weights
             cumulative_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, distance + 1))
+        
+        scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
+        
+        # Resume: skip if results already exist
+        results_file = scenario_dir / "results.json"
+        if results_file.exists():
+            print(f"   Distance {distance} ({chain_str}): ✅ Already done, loading...")
+            with open(results_file) as f:
+                result = json.load(f)
+            already_done.append(result)
+            continue
+        
+        scenario_dir.mkdir(exist_ok=True)
         
         # Combine with target
         final_df = pd.concat([prev_df, target_train_df], ignore_index=True)
@@ -559,9 +637,6 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         else:
             A = chain_cache[distance][1]
             dims = [A.shape[1] if A.ndim == 3 else A.shape[0]] if A is not None else config.dims_search
-        
-        scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
-        scenario_dir.mkdir(exist_ok=True)
         
         # Create tasks for both methods
         for method in ['fixed', 'concurrent']:
@@ -593,60 +668,69 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             tasks.append(task)
             task_id += 1
     
-    print(f"   Created {len(tasks)} tasks")
+    print(f"   Created {len(tasks)} new tasks ({len(already_done)} already completed)")
     
     # -------------------------------------------------------------------------
     # Step 6: Run tasks in parallel
     # -------------------------------------------------------------------------
-    print(f"\n7. Running tasks with {config.num_workers} workers...")
-    
-    # Determine available GPUs
-    cuda_visible = os.environ.get('CUDA_VISIBLE_DEVICES', '')
-    if cuda_visible:
-        gpu_ids = [int(x) for x in cuda_visible.split(',') if x.strip()]
-    else:
-        # Try to detect GPUs
-        try:
-            import torch
-            gpu_ids = list(range(torch.cuda.device_count()))
-        except:
-            gpu_ids = [0]
-    
-    print(f"   Available GPUs: {gpu_ids}")
-    
-    # Assign GPUs round-robin to tasks
-    task_args = []
-    for i, task in enumerate(tasks):
-        gpu_id = gpu_ids[i % len(gpu_ids)] if gpu_ids else None
-        task_args.append((task, gpu_id))
-    
     all_results = []
-    completed = 0
+    parallel_time = 0
     
-    parallel_start = time.time()
-    
-    with ProcessPoolExecutor(max_workers=config.num_workers) as executor:
-        futures = {executor.submit(worker_wrapper, args): args[0].task_id for args in task_args}
+    if tasks:
+        print(f"\n7. Running {len(tasks)} tasks with {config.num_workers} workers...")
         
-        for future in as_completed(futures):
-            task_id = futures[future]
+        # Determine available GPUs
+        cuda_visible = os.environ.get('CUDA_VISIBLE_DEVICES', '')
+        if cuda_visible:
+            gpu_ids = [int(x) for x in cuda_visible.split(',') if x.strip()]
+        else:
+            # Try to detect GPUs
             try:
-                result = future.result()
-                all_results.append(result)
-                completed += 1
-                
-                # Print progress
-                dist = result['distance']
-                method = result['method']
-                err = result.get('gp_irt_error_mean', float('nan'))
-                t = result.get('training_time_sec', 0)
-                print(f"   [{completed}/{len(tasks)}] dist_{dist}/{method}: error={err:.4f}, time={t:.1f}s")
-                
-            except Exception as e:
-                print(f"   ❌ Task {task_id} failed: {e}")
-    
-    parallel_time = time.time() - parallel_start
-    print(f"\n   Parallel execution: {parallel_time:.1f}s")
+                import torch
+                gpu_ids = list(range(torch.cuda.device_count()))
+            except:
+                gpu_ids = [0]
+        
+        print(f"   Available GPUs: {gpu_ids}")
+        
+        # Assign GPUs round-robin to tasks
+        task_args = []
+        for i, task in enumerate(tasks):
+            gpu_id = gpu_ids[i % len(gpu_ids)] if gpu_ids else None
+            task_args.append((task, gpu_id))
+        
+        completed = 0
+        
+        parallel_start = time.time()
+        
+        with ProcessPoolExecutor(max_workers=config.num_workers) as executor:
+            futures = {executor.submit(worker_wrapper, args): args[0].task_id for args in task_args}
+            
+            for future in as_completed(futures):
+                task_id = futures[future]
+                try:
+                    result = future.result()
+                    # Check if task failed
+                    if result.get('failed'):
+                        print(f"   ❌ Task {task_id} (dist_{result['distance']}/{result['method']}) failed after retries")
+                        continue
+                    all_results.append(result)
+                    completed += 1
+                    
+                    # Print progress
+                    dist = result['distance']
+                    method = result['method']
+                    err = result.get('gp_irt_error_mean', float('nan'))
+                    t = result.get('training_time_sec', 0)
+                    print(f"   [{completed}/{len(tasks)}] dist_{dist}/{method}: error={err:.4f}, time={t:.1f}s")
+                    
+                except Exception as e:
+                    print(f"   ❌ Task {task_id} exception: {e}")
+        
+        parallel_time = time.time() - parallel_start
+        print(f"\n   Parallel execution: {parallel_time:.1f}s")
+    else:
+        print("\n7. No new tasks to run (all scenarios already completed)")
     
     # -------------------------------------------------------------------------
     # Step 7: Aggregate results
@@ -659,16 +743,34 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # Combine Fixed and Concurrent for each distance
     final_results = []
     
+    # First add already completed results
+    for result in already_done:
+        final_results.append(result)
+        print(f"   Distance {result['distance']}: loaded from previous run")
+    
+    # Then process new results
+    processed_distances = {r['distance'] for r in already_done}
+    
     for distance in range(max_chain + 1):
+        if distance in processed_distances:
+            continue
+        if distance not in chain_cache and distance != 0:
+            continue
+            
         dist_results = [r for r in all_results if r['distance'] == distance]
         fixed_result = next((r for r in dist_results if r['method'] == 'fixed'), None)
         concurrent_result = next((r for r in dist_results if r['method'] == 'concurrent'), None)
         
-        if not fixed_result or not concurrent_result:
-            print(f"   Warning: Missing results for distance {distance}")
+        if not fixed_result and not concurrent_result:
+            print(f"   Distance {distance}: ⏭️ No results (both methods failed)")
             continue
         
-        chain_list = fixed_result.get('chain', [])
+        # Allow partial results
+        fixed_result = fixed_result or {}
+        concurrent_result = concurrent_result or {}
+        
+        chain_list = fixed_result.get('chain', concurrent_result.get('chain', []))
+        chain_str = fixed_result.get('chain_str', concurrent_result.get('chain_str', 'direct'))
         
         result = {
             'target_dataset': target_name,
@@ -679,12 +781,12 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         
         # Add Fixed results
         for key, val in fixed_result.items():
-            if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id']:
+            if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
                 result[f'fixed_{key}'] = val
         
         # Add Concurrent results
         for key, val in concurrent_result.items():
-            if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id']:
+            if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
                 result[f'concurrent_{key}'] = val
         
         # Compute deltas
@@ -695,12 +797,16 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 result[f'delta_{metric}'] = fixed_val - concurrent_val
         
         # Save per-scenario result
-        scenario_dir = output_dir / f"dist_{distance}_{fixed_result['chain_str']}"
+        scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
+        scenario_dir.mkdir(exist_ok=True)
         with open(scenario_dir / "results.json", 'w') as f:
             result_save = {**result, 'chain': list(result['chain'])}
             json.dump(result_save, f, indent=2)
         
         final_results.append(result)
+    
+    # Sort final results by distance
+    final_results.sort(key=lambda x: x['distance'])
     
     # Save summary
     results_for_df = []
