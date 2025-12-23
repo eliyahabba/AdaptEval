@@ -62,7 +62,7 @@ from llm_eval.training import train_item_parameters
 # =============================================================================
 
 # ============== DEBUG MODE - SET TO False FOR REAL EXPERIMENTS ==============
-DEBUG_MODE = True  # <-- CHANGE TO True FOR QUICK TEST RUNS
+DEBUG_MODE = False  # <-- CHANGE TO True FOR QUICK TEST RUNS
 # =============================================================================
 
 # Debug overrides (only used when DEBUG_MODE = True)
