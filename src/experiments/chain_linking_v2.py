@@ -62,7 +62,7 @@ from llm_eval.training import train_item_parameters
 # =============================================================================
 
 # ============== DEBUG MODE - SET TO False FOR REAL EXPERIMENTS ==============
-DEBUG_MODE = False  # <-- CHANGE TO True FOR QUICK TEST RUNS
+DEBUG_MODE = True  # <-- CHANGE TO True FOR QUICK TEST RUNS
 # =============================================================================
 
 # Debug overrides (only used when DEBUG_MODE = True)
@@ -152,11 +152,13 @@ def train_and_validate(
     prev_anchors: list = None,
     prev_weights: list = None,
     dims: list[int] = None,
+    base_chain_test_df: pd.DataFrame = None,
 ) -> tuple[dict, pd.DataFrame | None]:
     """Train IRT and validate. Returns (result_dict, validation_df).
     
     Args:
         anchor_items: If provided, use Fixed-Anchor calibration. If None, use Concurrent.
+        base_chain_test_df: Test models' responses on Base+Chain datasets (for cross-dataset theta estimation).
     
     Returns:
         result: dict with method, n_items, n_anchors, best_dimension, training_time_sec,
@@ -224,8 +226,13 @@ def train_and_validate(
         all_anchors = target_anchors
         all_weights = target_weights
     
-    # Prepare test data
-    test_df = train_df[train_df['model_name'].isin(test_models)].copy()
+    # Prepare test data for theta precomputation
+    # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
+    # This enables cross-dataset theta estimation using historical anchor responses
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        test_df = pd.concat([base_chain_test_df, target_test_df], ignore_index=True)
+    else:
+        test_df = target_test_df.copy()
     
     # Precompute thetas
     precomputed_thetas = precompute_thetas_from_all_anchors(
@@ -577,6 +584,20 @@ def run_chain_linking_v2(config: ChainConfigV2):
         # Combine with target for training
         final_df = pd.concat([prev_df, target_train_df], ignore_index=True)
         
+        # Build test data for Base+Chain datasets (for cross-dataset theta estimation)
+        # This allows computing theta from historical anchor responses, not just target
+        if distance == 0:
+            base_chain_datasets = base_names
+        else:
+            base_chain_datasets = base_names + chain_list
+        
+        base_chain_test_dfs = []
+        for ds_name in base_chain_datasets:
+            ds_df = datasets[ds_name]
+            ds_test_df = ds_df[ds_df['model_name'].isin(test_models)].copy()
+            base_chain_test_dfs.append(ds_test_df)
+        base_chain_test_df = pd.concat(base_chain_test_dfs, ignore_index=True) if base_chain_test_dfs else pd.DataFrame()
+        
         # Determine dimension
         if prev_A is not None:
             dim = prev_A.shape[1] if prev_A.ndim == 3 else prev_A.shape[0]
@@ -603,6 +624,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
             prev_anchors=prev_anchors,
             prev_weights=prev_weights,
             dims=dims,
+            base_chain_test_df=base_chain_test_df,
         )
         
         # ----- Method 2: Concurrent Calibration (from scratch) -----
@@ -618,6 +640,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
             prev_anchors=None,
             prev_weights=None,
             dims=dims,
+            base_chain_test_df=base_chain_test_df,
         )
         
         # Skip if both methods failed
