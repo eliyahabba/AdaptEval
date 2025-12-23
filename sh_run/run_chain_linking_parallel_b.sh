@@ -53,6 +53,8 @@ echo "Python version: $(python --version)"
 # Print job info
 echo "Job ID: $SLURM_JOB_ID"
 echo "Node: $SLURMD_NODENAME"
+module load cuda
+
 
 # Show available GPUs
 echo "Available GPUs:"
