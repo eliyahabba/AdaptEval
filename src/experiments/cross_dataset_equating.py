@@ -76,8 +76,8 @@ class ExperimentConfig:
     filter_zero_variance: bool = False  # If True, remove zero-variance questions (uninformative for IRT)
 
     # Dimension selection
-    # If False, skip dimension cross-validation inside TinyBenchmarks training (use dims_search[0]).
-    validate_dimensions: bool = False
+    # Always enabled to ensure proper lambda computation for GP-IRT.
+    validate_dimensions: bool = True
 
 
 # =============================================================================

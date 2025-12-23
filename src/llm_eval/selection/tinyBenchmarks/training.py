@@ -67,9 +67,9 @@ class TrainingConfig:
     # Validation parameters (from notebook Cell 11)
     val_stride: int = 5  # val_ind = list(range(0,Y_bin_train.shape[0],5))
 
-    # If False, skip dimension cross-validation and train directly with dims_search[0].
-    # This is useful for large-scale experiments where you want a fixed IRT dimension.
-    validate_dimensions: bool = False
+    # Dimension validation is always enabled to ensure proper lambda computation.
+    # Without validation_errors, GP-IRT falls back to default lambda=0.5 which affects results.
+    validate_dimensions: bool = True
     
     # Lambda calculation parameters (from notebook Cells 17-18)
     number_item_per_scenario: int = 100  # number_item = 100 from notebook

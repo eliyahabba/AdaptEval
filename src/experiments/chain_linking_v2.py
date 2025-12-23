@@ -77,16 +77,28 @@ ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
 @dataclass
 class ChainConfigV2(ExperimentConfig):
     """Configuration for chain linking V2 experiments."""
-    n_base_datasets: int = DEBUG_N_BASE if DEBUG_MODE else 6
-    max_chain_length: int = DEBUG_MAX_CHAIN if DEBUG_MODE else 10
+    n_base_datasets: int = 6
+    max_chain_length: int = 10
     shuffle_seed: int = 42
     output_dir: str = field(default_factory=lambda: str(PROJECT_ROOT / "data/chain_v2"))
     data_source_mode: str = "helm_lite"
     filter_zero_variance: bool = False
-    validate_dimensions: bool = False  # Skip dimension validation by default
-    # Override parent defaults for DEBUG_MODE
-    epochs: int = DEBUG_EPOCHS if DEBUG_MODE else 2000
-    n_anchors_per_dataset: int = DEBUG_N_ANCHORS if DEBUG_MODE else 100
+    validate_dimensions: bool = True  # Always run dimension validation for proper lambda computation
+    epochs: int = 2000
+    n_anchors_per_dataset: int = 100
+    
+    def __post_init__(self):
+        """Apply DEBUG_MODE overrides after initialization."""
+        if DEBUG_MODE:
+            # Only override if still at default values (allows CLI override)
+            if self.n_base_datasets == 6:
+                self.n_base_datasets = DEBUG_N_BASE
+            if self.max_chain_length == 10:
+                self.max_chain_length = DEBUG_MAX_CHAIN
+            if self.epochs == 2000:
+                self.epochs = DEBUG_EPOCHS
+            if self.n_anchors_per_dataset == 100:
+                self.n_anchors_per_dataset = DEBUG_N_ANCHORS
 
 
 # =============================================================================
@@ -678,8 +690,7 @@ if __name__ == "__main__":
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
                         choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval"],
                         help="Data source mode")
-    parser.add_argument("--dim-validation", action="store_true",
-                        help="Enable dimension validation (slower)")
+    # Note: dimension validation is always enabled to ensure proper lambda computation
     
     args = parser.parse_args()
     
@@ -693,7 +704,7 @@ if __name__ == "__main__":
         dims_search=args.dims,
         epochs=args.epochs,
         data_source_mode=args.data_source_mode,
-        validate_dimensions=args.dim_validation,
+        # validate_dimensions is always True (required for proper lambda computation)
     )
     
     if args.output_dir:
@@ -701,8 +712,7 @@ if __name__ == "__main__":
     else:
         # Auto-generate output dir name
         dims_str = "-".join(map(str, args.dims))
-        dimval_str = "dimval" if args.dim_validation else "nodimval"
         config.output_dir = str(PROJECT_ROOT / "data" / 
-            f"chain_v2_{args.data_source_mode}_seed_{args.shuffle_seed}_dims_{dims_str}_{dimval_str}")
+            f"chain_v2_{args.data_source_mode}_seed_{args.shuffle_seed}_dims_{dims_str}")
     
     run_chain_linking_v2(config)

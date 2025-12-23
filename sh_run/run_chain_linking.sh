@@ -10,6 +10,11 @@
 #SBATCH --killable
 #SBATCH --requeue
 
+# Chain Linking V1 - Original Multi-Target Design
+#
+# Note: Dimension validation is ALWAYS enabled to ensure proper lambda computation.
+#       Without it, GP-IRT falls back to default lambda=0.5 which affects results.
+
 # Set Hugging Face cache directory
 export HF_HOME=/cs/snapless/gabis/gabis/shared/huggingface/
 
@@ -40,12 +45,11 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $1 = output directory (optional, default: data/chain_linking_experiment)
 #   $2 = seed for Base dataset selection (optional, default: 42)
 #   $3 = data source mode (optional, default: helm_lite)
-#   $4 = dims list (optional, default: "5") e.g. "5" or "2 5"
-#   $5 = dim validation flag (optional, default: False) True/False
 #        Options: helm_lite (91 models, 9 datasets), 
 #                 helm_classic (70 models, 30 datasets),
 #                 reeval (183 models, 22 scenarios),
 #                 lb_only (395 models, 6 datasets)
+#   $4 = dims list (optional, default: "5") e.g. "5" or "2 5"
 
 # Output directory base
 if [ -n "$1" ]; then
@@ -69,30 +73,10 @@ else
 fi
 
 # IRT dimension(s) to use (space-separated; passed to --dims)
-# Prefer CLI arg ($4). Default: "5".
 if [ -n "$4" ]; then
     DIMS="$4"
 else
     DIMS="5"
-fi
-
-# Enable expensive dimension validation (True/False)
-# Prefer CLI arg ($5). Default: False.
-if [ -n "$5" ]; then
-    DIM_VALIDATION="$5"
-else
-    DIM_VALIDATION="False"
-fi
-
-# Normalize/validate boolean input (accept True/False and also true/false; normalize to Python-style)
-DIM_VALIDATION_LC="$(echo "${DIM_VALIDATION}" | tr '[:upper:]' '[:lower:]')"
-if [[ "${DIM_VALIDATION_LC}" == "true" ]]; then
-    DIM_VALIDATION="True"
-elif [[ "${DIM_VALIDATION_LC}" == "false" ]]; then
-    DIM_VALIDATION="False"
-else
-    echo "ERROR: dim validation flag ($5) must be 'True' or 'False' (got: '${DIM_VALIDATION}')" >&2
-    exit 2
 fi
 
 # Configuration parameters
@@ -101,14 +85,9 @@ MAX_CHAIN=${MAX_CHAIN:-10}    # Maximum chain length (distance)
 N_ANCHORS=${N_ANCHORS:-100}   # Anchors per dataset
 EPOCHS=${EPOCHS:-2000}        # Training epochs
 
-# Append seed/data-source/dims/validation mode to output directory for reproducibility tracking
+# Build output directory name
 SANITIZED_DIMS="${DIMS// /-}"
-if [[ "${DIM_VALIDATION}" == "True" ]]; then
-    DIM_TAG="dimval"
-else
-    DIM_TAG="nodimval"
-fi
-OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}_dims_${SANITIZED_DIMS}_${DIM_TAG}"
+OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}_dims_${SANITIZED_DIMS}"
 echo "Output directory: ${OUTPUT_DIR}"
 echo "Shuffle seed: ${SHUFFLE_SEED}"
 echo "Data source mode: ${DATA_SOURCE_MODE}"
@@ -119,7 +98,7 @@ echo "  MAX_CHAIN: ${MAX_CHAIN}"
 echo "  N_ANCHORS: ${N_ANCHORS}"
 echo "  EPOCHS: ${EPOCHS}"
 echo "  DIMS: ${DIMS}"
-echo "  DIM_VALIDATION: ${DIM_VALIDATION}"
+echo "  DIM_VALIDATION: Always enabled (required for lambda computation)"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
 echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
 
@@ -134,10 +113,6 @@ fi
 
 # Run the chain linking experiment
 echo "Starting chain linking experiment..."
-DIM_VALIDATION_FLAG=""
-if [[ "${DIM_VALIDATION}" == "True" ]]; then
-    DIM_VALIDATION_FLAG="--dim-validation"
-fi
 python src/experiments/chain_linking_experiment.py \
     --output-dir "${OUTPUT_DIR}" \
     --n-base ${N_BASE} \
@@ -147,7 +122,6 @@ python src/experiments/chain_linking_experiment.py \
     --seed 42 \
     --shuffle-seed ${SHUFFLE_SEED} \
     --dims ${DIMS} \
-    ${DIM_VALIDATION_FLAG} \
     --epochs ${EPOCHS} \
     --data-source-mode ${DATA_SOURCE_MODE} \
     ${SPARSE_FLAG}
@@ -155,4 +129,3 @@ python src/experiments/chain_linking_experiment.py \
 # Print resource usage at the end
 echo "Job resource usage:"
 sacct -j $SLURM_JOB_ID --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
-
