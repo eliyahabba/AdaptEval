@@ -75,6 +75,10 @@ class ExperimentConfig:
     # Zero-variance filtering for IRT training
     filter_zero_variance: bool = False  # If True, remove zero-variance questions (uninformative for IRT)
 
+    # Dimension selection
+    # If False, skip dimension cross-validation inside TinyBenchmarks training (use dims_search[0]).
+    validate_dimensions: bool = False
+
 
 # =============================================================================
 # Data Loading
@@ -1009,6 +1013,7 @@ def train_irt_on_base(
         number_item_per_scenario=config.n_anchors_per_dataset,
         deterministic=True,
         filter_zero_variance=getattr(config, 'filter_zero_variance', True),
+        validate_dimensions=getattr(config, 'validate_dimensions', True),
     )
     
     item_params = fit_2pl_parameters(

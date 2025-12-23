@@ -425,6 +425,7 @@ def run_chain_scenario(
             number_item_per_scenario=config.n_anchors_per_dataset,
             deterministic=True,
             filter_zero_variance=config.filter_zero_variance,
+            validate_dimensions=getattr(config, 'validate_dimensions', True),
         )
         
         chain_irt_dir = scenario_dir / f"irt_chain_{chain_idx}"
@@ -492,6 +493,7 @@ def run_chain_scenario(
         number_item_per_scenario=config.n_anchors_per_dataset,
         deterministic=True,
         filter_zero_variance=config.filter_zero_variance,
+        validate_dimensions=getattr(config, 'validate_dimensions', True),
     )
     
     target_irt_dir = scenario_dir / "irt_target"
@@ -1040,6 +1042,11 @@ if __name__ == "__main__":
     parser.add_argument("--recover", action="store_true",
                         help="Recover mode: rebuild all_results.csv from cached results.json files. "
                              "Useful after a crash to generate summary without re-running.")
+    parser.add_argument("--dim-validation", action="store_true",
+                        help="Enable dimension cross-validation inside IRT training. "
+                             "If not set, we default to NO validation and use the first value in --dims.")
+    parser.add_argument("--no-dim-validation", action="store_true",
+                        help="Explicitly disable dimension cross-validation (overrides --dim-validation if both set).")
     
     args = parser.parse_args()
     
@@ -1072,6 +1079,12 @@ if __name__ == "__main__":
         filter_zero_variance=args.filter_zero_variance,
         use_sparse_matrix=use_sparse_matrix,
     )
+
+    # Inherited from ExperimentConfig (cross_dataset_equating)
+    if args.dim_validation and args.no_dim_validation:
+        print("ERROR: Both --dim-validation and --no-dim-validation were provided. Choose one.")
+        exit(2)
+    config.validate_dimensions = bool(args.dim_validation) and (not args.no_dim_validation)
     
     if args.output_dir:
         config.output_dir = args.output_dir

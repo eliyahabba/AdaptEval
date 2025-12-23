@@ -66,6 +66,10 @@ class TrainingConfig:
     lr_decay = 0.9999
     # Validation parameters (from notebook Cell 11)
     val_stride: int = 5  # val_ind = list(range(0,Y_bin_train.shape[0],5))
+
+    # If False, skip dimension cross-validation and train directly with dims_search[0].
+    # This is useful for large-scale experiments where you want a fixed IRT dimension.
+    validate_dimensions: bool = False
     
     # Lambda calculation parameters (from notebook Cells 17-18)
     number_item_per_scenario: int = 100  # number_item = 100 from notebook
@@ -588,6 +592,12 @@ def compute_lambda_values(
     This follows the notebook logic but works with any dataset structure.
     """
     lambdas = {}
+
+    # If validation errors are missing (e.g., validation was skipped), return empty dict.
+    # Downstream blending will fall back to a default (typically 0.5) when lambda is missing.
+    if not validation_errors:
+        print("   ⚠️  No validation_errors found; skipping lambda computation (will use defaults downstream).")
+        return lambdas
     
     if "dataset" not in original_matrix_df.columns:
         # No dataset separation, compute single lambda exactly like notebook:
@@ -748,13 +758,19 @@ def fit_2pl_parameters(
     else:
         print("Step 2b: Skipping zero-variance filtering (disabled)")
     
-    # Step 3: Validate dimensions using cross-validation
-    print("Step 3: Validating dimensions...")
-    best_dimension, validation_errors = validate_irt_dimensions(
-        binary_matrix_df, matrix_df, balance_weights, cfg, output_dir
-    )
-    best_dim_idx = cfg.dims_search.index(best_dimension) if best_dimension in cfg.dims_search else 0
-    print(f"Best dimension: {best_dimension}")
+    # Step 3: Validate dimensions using cross-validation (optional)
+    if cfg.validate_dimensions:
+        print("Step 3: Validating dimensions...")
+        best_dimension, validation_errors = validate_irt_dimensions(
+            binary_matrix_df, matrix_df, balance_weights, cfg, output_dir
+        )
+        best_dim_idx = cfg.dims_search.index(best_dimension) if best_dimension in cfg.dims_search else 0
+        print(f"Best dimension: {best_dimension}")
+    else:
+        best_dimension = cfg.dims_search[0] if cfg.dims_search else 2
+        validation_errors = {}
+        best_dim_idx = 0
+        print(f"Step 3: Skipping dimension validation; using fixed dimension D={best_dimension}")
     
     # Step 4: Train final IRT model
     print("Step 4: Training final IRT model...")
