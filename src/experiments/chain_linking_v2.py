@@ -85,6 +85,7 @@ class ChainConfigV2(ExperimentConfig):
     filter_zero_variance: bool = False
     validate_dimensions: bool = True  # Always run dimension validation for proper lambda computation
     epochs: int = 2000
+    epochs_fixed: int = 1000
     n_anchors_per_dataset: int = 100
     
     def __post_init__(self):
@@ -97,6 +98,8 @@ class ChainConfigV2(ExperimentConfig):
                 self.max_chain_length = DEBUG_MAX_CHAIN
             if self.epochs == 2000:
                 self.epochs = DEBUG_EPOCHS
+            if self.epochs_fixed == 1000:
+                self.epochs_fixed = DEBUG_EPOCHS
             if self.n_anchors_per_dataset == 100:
                 self.n_anchors_per_dataset = DEBUG_N_ANCHORS
 
@@ -158,9 +161,11 @@ def train_and_validate(
     """
     method = "fixed" if anchor_items else "concurrent"
     
+    current_epochs = config.epochs_fixed if anchor_items is not None else config.epochs
+
     irt_config = TrainingConfig(
         dims_search=dims or config.dims_search,
-        epochs=config.epochs,
+        epochs=current_epochs,
         lr=config.lr,
         number_item_per_scenario=config.n_anchors_per_dataset,
         deterministic=True,
@@ -424,7 +429,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         # Train with Fixed-Anchor
         irt_config = TrainingConfig(
             dims_search=dims,
-            epochs=config.epochs,
+            epochs=config.epochs_fixed,
             lr=config.lr,
             number_item_per_scenario=config.n_anchors_per_dataset,
             deterministic=True,
@@ -686,7 +691,8 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=42, help="Random seed for train/test split")
     parser.add_argument("--shuffle-seed", type=int, default=42, help="Seed for dataset shuffling")
     parser.add_argument("--dims", type=int, nargs="+", default=[5], help="IRT dimensions")
-    parser.add_argument("--epochs", type=int, default=2000, help="Training epochs")
+    parser.add_argument("--epochs", type=int, default=2000, help="Training epochs (concurrent/base)")
+    parser.add_argument("--epochs-fixed", type=int, default=1000, help="Training epochs (fixed-anchor)")
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
                         choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval"],
                         help="Data source mode")
@@ -703,6 +709,7 @@ if __name__ == "__main__":
         shuffle_seed=args.shuffle_seed,
         dims_search=args.dims,
         epochs=args.epochs,
+        epochs_fixed=args.epochs_fixed,
         data_source_mode=args.data_source_mode,
         # validate_dimensions is always True (required for proper lambda computation)
     )
