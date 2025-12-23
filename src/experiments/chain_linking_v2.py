@@ -32,6 +32,7 @@ Output structure:
 from __future__ import annotations
 
 import json
+import pickle
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -72,6 +73,9 @@ DEBUG_N_ANCHORS = 10       # Few anchors
 
 # All error metrics we track
 ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
+
+# Retry settings
+MAX_RETRIES = 3
 
 
 @dataclass
@@ -173,14 +177,23 @@ def train_and_validate(
         validate_dimensions=config.validate_dimensions,
     )
     
-    # Train IRT with timing
+    # Train IRT with timing and retry
     start_time = time.time()
-    irt_params = train_item_parameters(
-        train_df,
-        config=irt_config,
-        output_dir=str(output_dir),
-        anchor_items=anchor_items,
-    )
+    irt_params = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            irt_params = train_item_parameters(
+                train_df,
+                config=irt_config,
+                output_dir=str(output_dir),
+                anchor_items=anchor_items,
+            )
+            break
+        except Exception as e:
+            print(f"      ⚠️ Attempt {attempt+1}/{MAX_RETRIES} failed: {str(e)[:100]}")
+            if attempt == MAX_RETRIES - 1:
+                print(f"      ❌ All retries failed, skipping...")
+                return None, None
     training_time = time.time() - start_time
     
     # Extract IRT info
@@ -396,12 +409,31 @@ def run_chain_linking_v2(config: ChainConfigV2):
     
     chain_cache_dir = output_dir / "chain_cache"
     chain_cache_dir.mkdir(exist_ok=True)
+    checkpoint_file = chain_cache_dir / "checkpoint.pkl"
     
     total_chain_time = 0
+    successful_chain = []
+    
+    # Resume: load checkpoint if exists
+    if checkpoint_file.exists():
+        print("   📂 Found checkpoint, loading...")
+        with open(checkpoint_file, 'rb') as f:
+            checkpoint = pickle.load(f)
+        successful_chain = checkpoint['successful_chain']
+        chain_cache = checkpoint['chain_cache']
+        current_irt, current_A, current_B, current_anchors, current_weights, current_df, _ = chain_cache[len(successful_chain)]
+        total_chain_time = sum(chain_cache[j][6] for j in range(1, len(successful_chain) + 1))
+        print(f"   ✅ Resumed from step {len(successful_chain)}: {successful_chain}")
     
     for i in range(max_chain):
         chain_ds = chain_pool[i]
-        prefix = "_".join([d.replace(' ', '_')[:10] for d in chain_pool[:i+1]])
+        
+        # Skip if already in checkpoint
+        if chain_ds in successful_chain:
+            print(f"   Chain step {i+1}: {chain_ds} ✅ (from checkpoint)")
+            continue
+        
+        prefix = "_".join([d.replace(' ', '_')[:10] for d in successful_chain + [chain_ds]])
         cache_dir = chain_cache_dir / f"after_{prefix}"
         
         print(f"   Chain step {i+1}: adding {chain_ds}...")
@@ -426,7 +458,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         else:
             dims = config.dims_search
         
-        # Train with Fixed-Anchor
+        # Train with Fixed-Anchor (with retry)
         irt_config = TrainingConfig(
             dims_search=dims,
             epochs=config.epochs_fixed,
@@ -438,12 +470,23 @@ def run_chain_linking_v2(config: ChainConfigV2):
         )
         
         chain_start = time.time()
-        new_irt = train_item_parameters(
-            combined_df,
-            config=irt_config,
-            output_dir=str(cache_dir),
-            anchor_items=anchor_items,
-        )
+        new_irt = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                new_irt = train_item_parameters(
+                    combined_df,
+                    config=irt_config,
+                    output_dir=str(cache_dir),
+                    anchor_items=anchor_items,
+                )
+                break
+            except Exception as e:
+                print(f"      ⚠️ Attempt {attempt+1}/{MAX_RETRIES} failed: {str(e)[:80]}")
+        
+        if new_irt is None:
+            print(f"      ❌ Chain step {i+1} failed, skipping {chain_ds}...")
+            continue  # Skip this dataset, try the next one
+            
         chain_time = time.time() - chain_start
         total_chain_time += chain_time
         
@@ -465,7 +508,9 @@ def run_chain_linking_v2(config: ChainConfigV2):
         new_anchors = current_anchors + chain_anchors
         new_weights = current_weights + chain_weights
         
-        chain_cache[i + 1] = (new_irt, new_A, new_B, new_anchors, new_weights, combined_df, chain_time)
+        successful_chain.append(chain_ds)
+        distance = len(successful_chain)
+        chain_cache[distance] = (new_irt, new_A, new_B, new_anchors, new_weights, combined_df, chain_time)
         
         current_irt = new_irt
         current_A = new_A
@@ -474,7 +519,15 @@ def run_chain_linking_v2(config: ChainConfigV2):
         current_weights = new_weights
         current_df = combined_df
         
-        print(f"      {len(new_irt)} items, {len(new_anchors)} anchors, {chain_time:.1f}s")
+        # Save checkpoint after each successful step
+        with open(checkpoint_file, 'wb') as f:
+            pickle.dump({'successful_chain': successful_chain, 'chain_cache': chain_cache}, f)
+        
+        print(f"      ✅ {len(new_irt)} items, {len(new_anchors)} anchors, {chain_time:.1f}s (checkpoint saved)")
+    
+    # Update chain_pool to reflect actual successful chain
+    chain_pool = successful_chain
+    max_chain = len(successful_chain)
     
     # -------------------------------------------------------------------------
     # Step 5: Run scenarios - COMPARE Fixed-Anchor vs Concurrent
@@ -499,15 +552,26 @@ def run_chain_linking_v2(config: ChainConfigV2):
             prev_df = base_df
             cumulative_chain_time = 0
         else:
+            if distance not in chain_cache:
+                print(f"\n   Distance {distance}: ⏭️ Skipped (chain not built)")
+                continue
             chain_list = chain_pool[:distance]
             chain_str = "_".join([d.replace(' ', '_')[:10] for d in chain_list])
             prev_irt, prev_A, prev_B, prev_anchors, prev_weights, prev_df, _ = chain_cache[distance]
-            # Sum up chain times
             cumulative_chain_time = sum(chain_cache[j][6] for j in range(1, distance + 1))
         
         scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
-        scenario_dir.mkdir(exist_ok=True)
         
+        # Resume: skip if results already exist
+        results_file = scenario_dir / "results.json"
+        if results_file.exists():
+            print(f"\n   Distance {distance} ({chain_str}): ✅ Already done, loading...")
+            with open(results_file) as f:
+                result = json.load(f)
+            results.append(result)
+            continue
+        
+        scenario_dir.mkdir(exist_ok=True)
         print(f"\n   Distance {distance} ({chain_str}):")
         
         # Combine with target for training
@@ -556,12 +620,20 @@ def run_chain_linking_v2(config: ChainConfigV2):
             dims=dims,
         )
         
+        # Skip if both methods failed
+        if fixed_result is None and concurrent_result is None:
+            print(f"      ❌ Distance {distance} failed completely, skipping...")
+            continue
+        
+        fixed_result = fixed_result or {}
+        concurrent_result = concurrent_result or {}
+        
         # Compile combined result with ALL metrics
         result = {
             'target_dataset': target_name,
             'distance': distance,
             'chain': chain_list,
-            'n_datasets_in_training': config.n_base_datasets + distance + 1,  # Base + chain + target
+            'n_datasets_in_training': config.n_base_datasets + distance + 1,
             'n_questions_total': final_df['question_id'].nunique(),
             'n_train_models': len(train_models),
             'n_test_models': len(test_models),
@@ -582,15 +654,12 @@ def run_chain_linking_v2(config: ChainConfigV2):
             if fixed_val is not None and concurrent_val is not None:
                 result[f'delta_{metric}'] = fixed_val - concurrent_val
         
-        # Compute total time (including chain cache time for Fixed-Anchor)
-        # Fixed: only need to train the target link (chain was pre-built)
-        # Concurrent: trains everything from scratch each time
+        # Compute total time
         result['fixed_total_time_sec'] = round(cumulative_chain_time + fixed_result.get('training_time_sec', 0), 2)
         result['concurrent_total_time_sec'] = round(concurrent_result.get('training_time_sec', 0), 2)
         
         # Save scenario result
         with open(scenario_dir / "results.json", 'w') as f:
-            # Convert chain list to serializable format
             result_to_save = result.copy()
             result_to_save['chain'] = list(result_to_save['chain'])
             json.dump(result_to_save, f, indent=2)
