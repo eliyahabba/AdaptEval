@@ -131,6 +131,7 @@ class ScenarioTask:
     # Data (will be serialized/deserialized)
     final_df_path: str  # Path to pickled DataFrame
     target_test_df_path: str
+    base_chain_test_df_path: str | None  # Path to test models' responses on Base+Chain (for cross-dataset theta)
     
     # IRT parameters (for Fixed-Anchor)
     prev_irt_path: str | None  # Path to pickled IRT params
@@ -252,8 +253,14 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         all_anchors = target_anchors
         all_weights = target_weights
     
-    # Validate
-    test_df = final_df[final_df['model_name'].isin(test_models)].copy()
+    # Prepare test data for theta precomputation
+    # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
+    # This enables cross-dataset theta estimation using historical anchor responses
+    if task.base_chain_test_df_path:
+        base_chain_test_df = pd.read_pickle(task.base_chain_test_df_path)
+        test_df = pd.concat([base_chain_test_df, target_test_df], ignore_index=True)
+    else:
+        test_df = target_test_df.copy()
     
     precomputed_thetas = precompute_thetas_from_all_anchors(
         test_df=test_df,
@@ -631,6 +638,27 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         final_df_path = temp_dir / f"final_df_dist_{distance}.pkl"
         final_df.to_pickle(final_df_path)
         
+        # Build test data for Base+Chain datasets (for cross-dataset theta estimation)
+        # This allows computing theta from historical anchor responses, not just target
+        if distance == 0:
+            base_chain_datasets = base_names
+        else:
+            base_chain_datasets = base_names + chain_list
+        
+        base_chain_test_dfs = []
+        for ds_name in base_chain_datasets:
+            ds_df = datasets[ds_name]
+            ds_test_df = ds_df[ds_df['model_name'].isin(test_models)].copy()
+            base_chain_test_dfs.append(ds_test_df)
+        
+        if base_chain_test_dfs:
+            base_chain_test_df = pd.concat(base_chain_test_dfs, ignore_index=True)
+            base_chain_test_df_path = temp_dir / f"base_chain_test_dist_{distance}.pkl"
+            base_chain_test_df.to_pickle(base_chain_test_df_path)
+            base_chain_test_df_path_str = str(base_chain_test_df_path)
+        else:
+            base_chain_test_df_path_str = None
+        
         # Determine dimension
         if distance == 0:
             dims = [A_base.shape[1] if A_base.ndim == 3 else A_base.shape[0]] if A_base is not None else config.dims_search
@@ -650,6 +678,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 scenario_dir=str(scenario_dir),
                 final_df_path=str(final_df_path),
                 target_test_df_path=str(target_test_path),
+                base_chain_test_df_path=base_chain_test_df_path_str,
                 prev_irt_path=prev_irt_path if method == 'fixed' else None,
                 prev_A_path=prev_A_path if method == 'fixed' else None,
                 prev_B_path=prev_B_path if method == 'fixed' else None,
