@@ -19,6 +19,9 @@ import pandas as pd
 
 from .math_utils import item_curve, estimate_ability_parameters
 
+# One-time logging flags (per process) to understand which theta-estimation path is used.
+_THETA_ESTIMATION_PATH_LOGGED = {"full_matrices": False, "fallback": False}
+
 
 # ============================================================================
 # BACKWARDS COMPATIBILITY FUNCTIONS
@@ -98,6 +101,12 @@ def estimate_theta_from_anchors(
     
     # Use full matrices if provided (efficbench style)
     if A_matrix is not None and B_matrix is not None and question_ids_order is not None:
+        global _THETA_ESTIMATION_PATH_LOGGED
+        if not _THETA_ESTIMATION_PATH_LOGGED["full_matrices"]:
+            # Keep this loud but one-time to avoid log spam on large runs.
+            print(f"   ✅ Theta estimation path: FULL MIRT matrices (D={A_matrix.shape[1] if len(A_matrix.shape) == 3 else 'unknown'})")
+            _THETA_ESTIMATION_PATH_LOGGED["full_matrices"] = True
+
         qid_to_idx = {qid: i for i, qid in enumerate(question_ids_order)}
         
         # Get indices for common anchors
@@ -116,6 +125,11 @@ def estimate_theta_from_anchors(
         D = A.shape[1]
         init_theta_val = np.zeros(D) if init_theta == 0.0 else np.full(D, init_theta)
     else:
+        global _THETA_ESTIMATION_PATH_LOGGED
+        if not _THETA_ESTIMATION_PATH_LOGGED["fallback"]:
+            print("   ⚠️  Theta estimation path: FALLBACK (scalar params from item_params; no full MIRT matrices provided)")
+            _THETA_ESTIMATION_PATH_LOGGED["fallback"] = True
+
         # Fallback: use scalar parameters from item_params
         # Filter common items to ensure valid data
         valid_common = []
