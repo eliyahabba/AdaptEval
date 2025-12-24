@@ -727,9 +727,9 @@ def run_chain_linking_v2(config: ChainConfigV2):
             target_name=target_name,
             config=config,
             output_dir=scenario_dir / "irt_concurrent",
-            anchor_items=None,  # No anchors = train from scratch
-            prev_anchors=None,
-            prev_weights=None,
+            anchor_items=None,  # No anchors = train from scratch (full retraining)
+            prev_anchors=prev_anchors,  # But use Base anchors for VALIDATION (not training)
+            prev_weights=prev_weights,
             dims=dims,
             base_chain_test_df=base_chain_test_df,
             target_train_df=target_train_df,

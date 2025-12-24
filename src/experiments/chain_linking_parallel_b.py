@@ -790,8 +790,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 prev_irt_path=prev_irt_path if method == 'fixed' else None,
                 prev_A_path=prev_A_path if method == 'fixed' else None,
                 prev_B_path=prev_B_path if method == 'fixed' else None,
-                prev_anchors=prev_anchors if method == 'fixed' else None,
-                prev_weights=prev_weights if method == 'fixed' else None,
+                prev_anchors=prev_anchors,  # Always pass for validation (training uses anchor_items)
+                prev_weights=prev_weights,
                 dims=dims,
                 epochs=task_epochs,
                 n_anchors_per_dataset=config.n_anchors_per_dataset,
