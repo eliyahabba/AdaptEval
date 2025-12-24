@@ -53,6 +53,7 @@ from cross_dataset_equating import (
     precompute_thetas_from_all_anchors,
     run_validation,
     run_random_baseline_validation,
+    run_random_simple_baseline,
 )
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import train_item_parameters
@@ -309,9 +310,9 @@ def train_and_validate(
         val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
     
     # ==========================================================================
-    # Validation 4: Random Baseline (compare against IRT anchor selection)
+    # Validation 4: Random-IRT Baseline (random questions as anchors in IRT)
     # ==========================================================================
-    print("      Running random baseline validation...")
+    print("      Running Random-IRT baseline validation...")
     random_baseline_results = run_random_baseline_validation(
         test_df=target_test_df,
         item_params=irt_params,
@@ -321,6 +322,18 @@ def train_and_validate(
         A_matrix=A_matrix,
         B_matrix=B_matrix,
         precomputed_thetas=precomputed_thetas,
+        n_seeds=10,
+        base_seed=42,
+    )
+    
+    # ==========================================================================
+    # Validation 5: Random-Simple Baseline (just average of random questions, no IRT)
+    # ==========================================================================
+    print("      Running Random-Simple baseline validation...")
+    random_simple_results = run_random_simple_baseline(
+        test_df=target_test_df,
+        target_name=target_name,
+        n_random_questions=config.n_anchors_per_dataset,
         n_seeds=10,
         base_seed=42,
     )
@@ -355,8 +368,12 @@ def train_and_validate(
     add_metrics(val_train_on_target_df, 'old_model_new_data')
     add_metrics(val_test_on_base_df, 'new_model_old_data')
     
-    # Add random baseline metrics
+    # Add Random-IRT baseline metrics
     for key, val in random_baseline_results.items():
+        result[key] = val
+    
+    # Add Random-Simple baseline metrics
+    for key, val in random_simple_results.items():
         result[key] = val
     
     # Keep backward compatibility - also add without prefix for main metric
@@ -866,17 +883,30 @@ def run_chain_linking_v2(config: ChainConfigV2):
     
     # Random baseline comparison
     print("\n" + "-" * 75)
-    print("RANDOM BASELINE COMPARISON (IRT Anchors vs Random Selection):")
-    for metric in ['anchor_error', 'gp_irt_error']:
-        # Get Fixed method's random baseline results
-        fixed_random = [r.get(f'fixed_random_{metric}_mean') for r in results if r.get(f'fixed_random_{metric}_mean') is not None]
-        fixed_irt = [r.get(f'fixed_{metric}_mean') for r in results if r.get(f'fixed_{metric}_mean') is not None]
-        
-        if fixed_random and fixed_irt:
-            avg_random = np.mean(fixed_random)
-            avg_irt = np.mean(fixed_irt)
-            improvement = avg_random - avg_irt
-            print(f"  {metric}: IRT={avg_irt:.4f}, Random={avg_random:.4f}, Improvement={improvement:+.4f} ({'IRT better' if improvement > 0 else 'Random better'})")
+    print("RANDOM BASELINE COMPARISON:")
+    print("  Method comparison (lower error = better):")
+    
+    # Collect averages for comparison
+    fixed_irt_errors = [r.get('fixed_gp_irt_error_mean') for r in results if r.get('fixed_gp_irt_error_mean') is not None]
+    fixed_random_irt_errors = [r.get('fixed_random_gp_irt_error_mean') for r in results if r.get('fixed_random_gp_irt_error_mean') is not None]
+    fixed_simple_errors = [r.get('fixed_simple_random_error_mean') for r in results if r.get('fixed_simple_random_error_mean') is not None]
+    
+    if fixed_irt_errors:
+        print(f"    IRT Anchors (smart selection):   {np.mean(fixed_irt_errors):.4f}")
+    if fixed_random_irt_errors:
+        print(f"    Random-IRT (random as anchors):  {np.mean(fixed_random_irt_errors):.4f}")
+    if fixed_simple_errors:
+        print(f"    Random-Simple (just average):    {np.mean(fixed_simple_errors):.4f}")
+    
+    # Determine winner
+    if fixed_irt_errors and fixed_random_irt_errors and fixed_simple_errors:
+        methods = {
+            'IRT Anchors': np.mean(fixed_irt_errors),
+            'Random-IRT': np.mean(fixed_random_irt_errors),
+            'Random-Simple': np.mean(fixed_simple_errors),
+        }
+        winner = min(methods, key=methods.get)
+        print(f"\n  Winner: {winner} with error = {methods[winner]:.4f}")
     
     print(f"\nResults saved to: {output_dir}")
     print(f"  - all_results.csv (tabular)")

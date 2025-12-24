@@ -1576,6 +1576,118 @@ def run_random_baseline_validation(
     return output
 
 
+def run_random_simple_baseline(
+    test_df: pd.DataFrame,
+    target_name: str,
+    n_random_questions: int,
+    n_seeds: int = 10,
+    base_seed: int = 42,
+) -> dict:
+    """Run a simple random baseline: predict performance using just the average of random questions.
+    
+    This is the simplest possible baseline - no IRT model at all:
+    - Select n_random_questions randomly from the target dataset
+    - prediction = mean(model's responses to those questions)
+    - true_performance = mean(model's responses to ALL questions)
+    - error = |prediction - true_performance|
+    
+    This shows what you get from random sampling without any sophisticated modeling.
+    
+    Args:
+        test_df: Test data with columns ['model_name', 'question_id', 'correct', 'dataset']
+        target_name: Name of the target dataset
+        n_random_questions: Number of random questions to sample
+        n_seeds: Number of random seeds to run
+        base_seed: Base seed for reproducibility
+    
+    Returns:
+        Dict with:
+        {
+            'simple_random_error_mean': float,  # Average |prediction - true| across models and seeds
+            'simple_random_error_std': float,   # Std of errors across seeds
+            'simple_random_prediction_mean': float,  # Average prediction
+            'simple_random_true_perf_mean': float,   # Average true performance
+            'n_seeds': int,
+            'n_random_questions': int,
+        }
+    """
+    # Filter to target dataset only
+    target_df = test_df[test_df['dataset'] == target_name].copy()
+    
+    if len(target_df) == 0:
+        print(f"      Warning: No data for target '{target_name}' in test_df, skipping simple random baseline")
+        return {}
+    
+    # Get all unique questions
+    all_questions = target_df['question_id'].unique()
+    
+    if len(all_questions) < n_random_questions:
+        print(f"      Warning: Only {len(all_questions)} questions available, using all")
+        n_random_questions = len(all_questions)
+    
+    if len(all_questions) < 10:
+        print(f"      Warning: Too few questions ({len(all_questions)}) for simple random baseline, skipping")
+        return {}
+    
+    # Get all test models
+    test_models = target_df['model_name'].unique()
+    
+    # Compute true performance for each model (average over ALL questions)
+    true_perf_by_model = target_df.groupby('model_name')['correct'].mean().to_dict()
+    
+    # Collect errors from each seed
+    all_seed_errors = []
+    all_seed_predictions = []
+    
+    for seed_offset in range(n_seeds):
+        seed = base_seed + seed_offset
+        np.random.seed(seed)
+        
+        # Randomly select questions
+        random_questions = np.random.choice(all_questions, size=n_random_questions, replace=False)
+        
+        # Filter to only selected questions
+        random_df = target_df[target_df['question_id'].isin(random_questions)]
+        
+        # Compute prediction for each model (average over random questions)
+        pred_by_model = random_df.groupby('model_name')['correct'].mean().to_dict()
+        
+        # Compute errors
+        seed_errors = []
+        seed_predictions = []
+        for model in test_models:
+            if model in pred_by_model and model in true_perf_by_model:
+                pred = pred_by_model[model]
+                true_perf = true_perf_by_model[model]
+                error = abs(pred - true_perf)
+                seed_errors.append(error)
+                seed_predictions.append(pred)
+        
+        if seed_errors:
+            all_seed_errors.append(np.mean(seed_errors))
+            all_seed_predictions.append(np.mean(seed_predictions))
+    
+    # Compute statistics across seeds
+    output = {
+        'n_seeds': n_seeds,
+        'n_random_questions': n_random_questions,
+    }
+    
+    if all_seed_errors:
+        output['simple_random_error_mean'] = float(np.mean(all_seed_errors))
+        output['simple_random_error_std'] = float(np.std(all_seed_errors))
+        output['simple_random_prediction_mean'] = float(np.mean(all_seed_predictions))
+        output['simple_random_true_perf_mean'] = float(np.mean(list(true_perf_by_model.values())))
+        
+        n_successful = len(all_seed_errors)
+        print(f"      Simple random baseline: {n_successful}/{n_seeds} seeds successful")
+        print(f"         simple_random_error: {output['simple_random_error_mean']:.4f} ± {output['simple_random_error_std']:.4f}")
+    else:
+        print(f"      Simple random baseline: 0/{n_seeds} seeds successful")
+    
+    return output
+
+
 # =============================================================================
 # Main Experiment
 # =============================================================================
