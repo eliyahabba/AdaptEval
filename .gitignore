@@ -7,4 +7,4 @@
 /examples/
 /src/download_helm/download/
 /src/download_helm/
-__pycache__/
+__pycache__/**/chain_cache/
