@@ -80,6 +80,18 @@ def estimate_theta_from_anchors(
     
     Raises ValueError if no common anchors exist between item_params and anchor_responses.
     """
+    # ---------------------------------------------------------------------
+    # Robustness: clean anchor responses
+    # Some datasets/models may contain non-scalar values (e.g., lists/arrays),
+    # strings, or NaNs in `normalized_score`. Coerce to numeric and drop invalid
+    # anchors so theta estimation doesn't crash.
+    # ---------------------------------------------------------------------
+    if anchor_responses is None:
+        raise ValueError("anchor_responses is None")
+    anchor_responses = anchor_responses.copy()
+    anchor_responses = pd.to_numeric(anchor_responses, errors="coerce")
+    anchor_responses = anchor_responses.dropna()
+
     common = item_params.index.intersection(anchor_responses.index)
     if len(common) == 0:
         raise ValueError("No common anchors between item_params and anchor_responses")
