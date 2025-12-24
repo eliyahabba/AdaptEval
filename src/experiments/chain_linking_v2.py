@@ -76,6 +76,10 @@ DEBUG_N_ANCHORS = 10       # Few anchors
 # All error metrics we track
 ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
 
+# Minimum anchors needed per evaluated dataset for stable estimation (paper-grade runs).
+# If a dataset has too few local anchors (prefix-based), GP-IRT can become NaN in per-dataset validations.
+MIN_ANCHORS_PER_DATASET = 5
+
 # Retry settings
 MAX_RETRIES = 3
 
@@ -231,6 +235,29 @@ def train_and_validate(
     else:
         all_anchors = target_anchors
         all_weights = target_weights
+
+    # ----------------------------------------------------------------------
+    # Paper-grade sanity: ensure every dataset we evaluate has some LOCAL anchors.
+    # The estimation code uses prefix-based anchors (f"{dataset}:..."). If a dataset
+    # has too few local anchors, GP-IRT becomes NaN and plots become unusable.
+    # ----------------------------------------------------------------------
+    datasets_to_check = set(target_test_df['dataset'].unique())
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        datasets_to_check.update(base_chain_test_df['dataset'].unique())
+    if target_train_df is not None and len(target_train_df) > 0:
+        datasets_to_check.update(target_train_df['dataset'].unique())
+
+    anchor_counts_by_dataset = {
+        ds: sum(1 for a in all_anchors if str(a).startswith(f"{ds}:"))
+        for ds in sorted(datasets_to_check)
+    }
+    low_anchor_datasets = {ds: c for ds, c in anchor_counts_by_dataset.items() if c < MIN_ANCHORS_PER_DATASET}
+    if low_anchor_datasets:
+        raise ValueError(
+            "Anchor coverage check failed (too few local anchors for some evaluated datasets). "
+            f"Need >= {MIN_ANCHORS_PER_DATASET} anchors per dataset. "
+            f"Low: {low_anchor_datasets}"
+        )
     
     # Prepare test data for theta precomputation
     # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
@@ -347,6 +374,8 @@ def train_and_validate(
         'n_anchors': len(all_anchors),
         'best_dimension': best_dimension,
         'training_time_sec': round(training_time, 2),
+        # Diagnostics for paper plots
+        'min_anchors_per_eval_dataset': int(min(anchor_counts_by_dataset.values())) if anchor_counts_by_dataset else 0,
     }
     
     # Helper to add metrics from a validation DataFrame
@@ -503,6 +532,14 @@ def run_chain_linking_v2(config: ChainConfigV2):
     base_anchors, base_weights = select_anchors(
         base_irt, config.n_anchors_per_dataset, base_df, A_base, B_base
     )
+    # Ensure each Base dataset has enough LOCAL anchors (prefix-based) for stable evaluation.
+    base_anchor_counts = {ds: sum(1 for a in base_anchors if str(a).startswith(f"{ds}:")) for ds in base_names}
+    low_base = {ds: c for ds, c in base_anchor_counts.items() if c < MIN_ANCHORS_PER_DATASET}
+    if low_base:
+        raise ValueError(
+            "Base anchor selection produced too few anchors for some Base datasets. "
+            f"Need >= {MIN_ANCHORS_PER_DATASET} per dataset. Low: {low_base}"
+        )
     print(f"   Base IRT: {len(base_irt)} items, {len(base_anchors)} anchors, {base_training_time:.1f}s")
     
     # -------------------------------------------------------------------------
@@ -653,6 +690,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
     target_df = datasets[target_name]
     target_train_df = target_df[target_df['model_name'].isin(train_models)].copy()
     target_test_df = target_df[target_df['model_name'].isin(test_models)].copy()
+    target_n_questions = int(target_df['question_id'].nunique())
     
     results = []
     
@@ -767,6 +805,14 @@ def run_chain_linking_v2(config: ChainConfigV2):
             'chain': chain_list,
             'n_datasets_in_training': config.n_base_datasets + distance + 1,
             'n_questions_total': final_df['question_id'].nunique(),
+            # For correct cost reporting: Full evaluation is only the Target dataset size
+            'target_n_questions': target_n_questions,
+            'n_anchors_per_dataset': config.n_anchors_per_dataset,
+            'n_base_datasets': config.n_base_datasets,
+            # Cost model (per target addition) in #questions / API calls
+            'cost_full_eval_target': target_n_questions,
+            'cost_fixed_target_anchors': config.n_anchors_per_dataset,
+            'cost_concurrent_all_anchors': config.n_anchors_per_dataset * (config.n_base_datasets + distance + 1),
             'n_train_models': len(train_models),
             'n_test_models': len(test_models),
         }

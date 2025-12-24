@@ -83,6 +83,9 @@ DEBUG_N_ANCHORS = 10
 
 ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
 
+# Minimum anchors needed per evaluated dataset for paper-grade runs.
+MIN_ANCHORS_PER_DATASET = 5
+
 # Retry settings
 MAX_RETRIES = 3
 
@@ -266,6 +269,25 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     else:
         all_anchors = target_anchors
         all_weights = target_weights
+
+    # Paper-grade sanity: ensure every dataset we evaluate has enough LOCAL anchors (prefix-based).
+    datasets_to_check = set(target_test_df['dataset'].unique())
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        datasets_to_check.update(base_chain_test_df['dataset'].unique())
+    if target_train_df is not None and len(target_train_df) > 0:
+        datasets_to_check.update(target_train_df['dataset'].unique())
+
+    anchor_counts_by_dataset = {
+        ds: sum(1 for a in all_anchors if str(a).startswith(f"{ds}:"))
+        for ds in sorted(datasets_to_check)
+    }
+    low_anchor_datasets = {ds: c for ds, c in anchor_counts_by_dataset.items() if c < MIN_ANCHORS_PER_DATASET}
+    if low_anchor_datasets:
+        raise ValueError(
+            "Anchor coverage check failed (too few local anchors for some evaluated datasets). "
+            f"Need >= {MIN_ANCHORS_PER_DATASET} anchors per dataset. "
+            f"Low: {low_anchor_datasets}"
+        )
     
     # Prepare test data for theta precomputation
     # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
@@ -383,6 +405,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         'training_time_sec': round(training_time, 2),
         'cumulative_chain_time': task.cumulative_chain_time,
         'gpu_id': gpu_id,
+        'min_anchors_per_eval_dataset': int(min(anchor_counts_by_dataset.values())) if anchor_counts_by_dataset else 0,
     }
     
     # Helper to add metrics from a validation DataFrame
@@ -487,6 +510,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     base_names = shuffled[:config.n_base_datasets]
     target_name = shuffled[config.n_base_datasets]
     chain_pool = shuffled[config.n_base_datasets + 1:]
+    target_n_questions = int(datasets[target_name]['question_id'].nunique())
     
     print(f"\n2. Dataset assignment:")
     print(f"   Base ({len(base_names)}): {base_names}")
@@ -501,9 +525,11 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         'num_workers': config.num_workers,
         'epochs': config.epochs,
         'dims_search': config.dims_search,
+        'n_anchors_per_dataset': config.n_anchors_per_dataset,
         'base_datasets': base_names,
         'target_dataset': target_name,
         'chain_pool': chain_pool,
+        'target_n_questions': target_n_questions,
     }
     with open(output_dir / "config.json", 'w') as f:
         json.dump(config_dict, f, indent=2)
@@ -543,6 +569,14 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     base_anchors, base_weights = select_anchors(
         base_irt, config.n_anchors_per_dataset, base_df, A_base, B_base
     )
+    # Ensure each Base dataset has enough LOCAL anchors (prefix-based) for stable evaluation.
+    base_anchor_counts = {ds: sum(1 for a in base_anchors if str(a).startswith(f"{ds}:")) for ds in base_names}
+    low_base = {ds: c for ds, c in base_anchor_counts.items() if c < MIN_ANCHORS_PER_DATASET}
+    if low_base:
+        raise ValueError(
+            "Base anchor selection produced too few anchors for some Base datasets. "
+            f"Need >= {MIN_ANCHORS_PER_DATASET} per dataset. Low: {low_base}"
+        )
     print(f"   Base IRT: {len(base_irt)} items, {len(base_anchors)} anchors")
     
     # -------------------------------------------------------------------------
@@ -932,6 +966,14 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             'distance': distance,
             'chain': chain_list,
             'n_datasets_in_training': config.n_base_datasets + distance + 1,
+            # For correct cost reporting: Full evaluation is only the Target dataset size
+            'target_n_questions': target_n_questions,
+            'n_anchors_per_dataset': config.n_anchors_per_dataset,
+            'n_base_datasets': config.n_base_datasets,
+            # Cost model (per target addition) in #questions / API calls
+            'cost_full_eval_target': target_n_questions,
+            'cost_fixed_target_anchors': config.n_anchors_per_dataset,
+            'cost_concurrent_all_anchors': config.n_anchors_per_dataset * (config.n_base_datasets + distance + 1),
         }
         
         # Add Fixed results
