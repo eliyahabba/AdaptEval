@@ -1594,7 +1594,7 @@ def run_random_simple_baseline(
     This shows what you get from random sampling without any sophisticated modeling.
     
     Args:
-        test_df: Test data with columns ['model_name', 'question_id', 'correct', 'dataset']
+        test_df: Test data with columns ['model_name', 'question_id', 'normalized_score'/'correct', 'dataset']
         target_name: Name of the target dataset
         n_random_questions: Number of random questions to sample
         n_seeds: Number of random seeds to run
@@ -1618,6 +1618,9 @@ def run_random_simple_baseline(
         print(f"      Warning: No data for target '{target_name}' in test_df, skipping simple random baseline")
         return {}
     
+    # Determine score column (could be 'correct' or 'normalized_score')
+    score_col = 'correct' if 'correct' in target_df.columns else 'normalized_score'
+    
     # Get all unique questions
     all_questions = target_df['question_id'].unique()
     
@@ -1633,7 +1636,7 @@ def run_random_simple_baseline(
     test_models = target_df['model_name'].unique()
     
     # Compute true performance for each model (average over ALL questions)
-    true_perf_by_model = target_df.groupby('model_name')['correct'].mean().to_dict()
+    true_perf_by_model = target_df.groupby('model_name')[score_col].mean().to_dict()
     
     # Collect errors from each seed
     all_seed_errors = []
@@ -1650,7 +1653,7 @@ def run_random_simple_baseline(
         random_df = target_df[target_df['question_id'].isin(random_questions)]
         
         # Compute prediction for each model (average over random questions)
-        pred_by_model = random_df.groupby('model_name')['correct'].mean().to_dict()
+        pred_by_model = random_df.groupby('model_name')[score_col].mean().to_dict()
         
         # Compute errors
         seed_errors = []
