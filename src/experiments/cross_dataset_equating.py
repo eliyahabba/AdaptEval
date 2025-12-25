@@ -1440,7 +1440,8 @@ def run_random_baseline_validation(
     precomputed_thetas: dict[str, float] | None = None,
     n_seeds: int = 10,
     base_seed: int = 42,
-) -> dict:
+    return_per_model: bool = False,
+) -> dict | tuple[dict, pd.DataFrame]:
     """Run validation using randomly selected questions instead of IRT-selected anchors.
     
     This provides a baseline to compare against the IRT anchor selection method.
@@ -1456,21 +1457,25 @@ def run_random_baseline_validation(
         precomputed_thetas: Optional dict mapping model_name -> theta
         n_seeds: Number of random seeds to run (default 10)
         base_seed: Base seed for reproducibility
+        return_per_model: If True, also return per-model results DataFrame
     
     Returns:
-        Dict with aggregated statistics:
+        If return_per_model=False: Dict with aggregated statistics
+        If return_per_model=True: Tuple of (aggregated_dict, per_model_df)
+        
+        aggregated_dict contains:
         {
             'random_anchor_error_mean': float,
             'random_anchor_error_std': float,
-            'random_irt_error_mean': float,
-            'random_irt_error_std': float,
             'random_gp_irt_error_mean': float,
             'random_gp_irt_error_std': float,
-            'random_pirt_error_mean': float,
-            'random_pirt_error_std': float,
             'n_seeds': int,
             'n_random_questions': int,
         }
+        
+        per_model_df contains per-model results averaged across seeds:
+        - model_name
+        - random_anchor_error, random_gp_irt_error, etc.
     """
     # Get all questions from target dataset that have IRT parameters
     target_questions = [q for q in item_params.index if q.startswith(f"{target_name}:")]
@@ -1490,6 +1495,9 @@ def run_random_baseline_validation(
         'gp_irt_error': [],
         'pirt_error': [],
     }
+    
+    # Collect per-model results across all seeds (for averaging)
+    per_model_results = {}  # model_name -> {metric -> [values across seeds]}
     
     # Get lambda values (needed for validation)
     attrs = getattr(item_params, 'attrs', {})
@@ -1554,6 +1562,22 @@ def run_random_baseline_validation(
                 vals = [r[metric] for r in results if not np.isnan(r.get(metric, np.nan))]
                 if vals:
                     all_seed_results[metric].append(np.mean(vals))
+            
+            # Collect per-model results
+            if return_per_model:
+                for r in results:
+                    model_name = r['model_name']
+                    if model_name not in per_model_results:
+                        per_model_results[model_name] = {
+                            'anchor_error': [], 'irt_error': [], 
+                            'gp_irt_error': [], 'pirt_error': [],
+                            'true_performance': [], 'anchor_prediction': [],
+                            'gp_irt_prediction': [],
+                        }
+                    for metric in per_model_results[model_name].keys():
+                        val = r.get(metric, np.nan)
+                        if not np.isnan(val):
+                            per_model_results[model_name][metric].append(val)
     
     # Compute statistics across seeds
     output = {
@@ -1573,6 +1597,19 @@ def run_random_baseline_validation(
         print(f"         anchor_error: {output.get('random_anchor_error_mean', 'N/A'):.4f} ± {output.get('random_anchor_error_std', 'N/A'):.4f}")
         print(f"         gp_irt_error: {output.get('random_gp_irt_error_mean', 'N/A'):.4f} ± {output.get('random_gp_irt_error_std', 'N/A'):.4f}")
     
+    if return_per_model:
+        # Build per-model DataFrame with averaged results across seeds
+        per_model_rows = []
+        for model_name, metrics in per_model_results.items():
+            row = {'model_name': model_name}
+            for metric, values in metrics.items():
+                if values:
+                    row[f'random_{metric}_mean'] = float(np.mean(values))
+                    row[f'random_{metric}_std'] = float(np.std(values))
+            per_model_rows.append(row)
+        per_model_df = pd.DataFrame(per_model_rows) if per_model_rows else pd.DataFrame()
+        return output, per_model_df
+    
     return output
 
 
@@ -1582,7 +1619,8 @@ def run_random_simple_baseline(
     n_random_questions: int,
     n_seeds: int = 10,
     base_seed: int = 42,
-) -> dict:
+    return_per_model: bool = False,
+) -> dict | tuple[dict, pd.DataFrame]:
     """Run a simple random baseline: predict performance using just the average of random questions.
     
     This is the simplest possible baseline - no IRT model at all:
@@ -1599,9 +1637,13 @@ def run_random_simple_baseline(
         n_random_questions: Number of random questions to sample
         n_seeds: Number of random seeds to run
         base_seed: Base seed for reproducibility
+        return_per_model: If True, also return per-model results DataFrame
     
     Returns:
-        Dict with:
+        If return_per_model=False: Dict with aggregated statistics
+        If return_per_model=True: Tuple of (aggregated_dict, per_model_df)
+        
+        aggregated_dict contains:
         {
             'simple_random_error_mean': float,  # Average |prediction - true| across models and seeds
             'simple_random_error_std': float,   # Std of errors across seeds
@@ -1610,6 +1652,8 @@ def run_random_simple_baseline(
             'n_seeds': int,
             'n_random_questions': int,
         }
+        
+        per_model_df contains per-model results averaged across seeds
     """
     # Filter to target dataset only
     target_df = test_df[test_df['dataset'] == target_name].copy()
@@ -1642,6 +1686,9 @@ def run_random_simple_baseline(
     all_seed_errors = []
     all_seed_predictions = []
     
+    # Collect per-model results across all seeds (for averaging)
+    per_model_results = {}  # model_name -> {metric -> [values across seeds]}
+    
     for seed_offset in range(n_seeds):
         seed = base_seed + seed_offset
         np.random.seed(seed)
@@ -1665,6 +1712,16 @@ def run_random_simple_baseline(
                 error = abs(pred - true_perf)
                 seed_errors.append(error)
                 seed_predictions.append(pred)
+                
+                # Collect per-model results
+                if return_per_model:
+                    if model not in per_model_results:
+                        per_model_results[model] = {
+                            'error': [], 'prediction': [], 'true_performance': []
+                        }
+                    per_model_results[model]['error'].append(error)
+                    per_model_results[model]['prediction'].append(pred)
+                    per_model_results[model]['true_performance'].append(true_perf)
         
         if seed_errors:
             all_seed_errors.append(np.mean(seed_errors))
@@ -1687,6 +1744,19 @@ def run_random_simple_baseline(
         print(f"         simple_random_error: {output['simple_random_error_mean']:.4f} ± {output['simple_random_error_std']:.4f}")
     else:
         print(f"      Simple random baseline: 0/{n_seeds} seeds successful")
+    
+    if return_per_model:
+        # Build per-model DataFrame with averaged results across seeds
+        per_model_rows = []
+        for model_name, metrics in per_model_results.items():
+            row = {'model_name': model_name}
+            for metric, values in metrics.items():
+                if values:
+                    row[f'simple_random_{metric}_mean'] = float(np.mean(values))
+                    row[f'simple_random_{metric}_std'] = float(np.std(values))
+            per_model_rows.append(row)
+        per_model_df = pd.DataFrame(per_model_rows) if per_model_rows else pd.DataFrame()
+        return output, per_model_df
     
     return output
 

@@ -209,6 +209,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         )
         prev_anchors = task.prev_anchors
         prev_weights = task.prev_weights
+    else:
+        # For concurrent: still need prev_anchors for validation (not training)
+        prev_anchors = task.prev_anchors
+        prev_weights = task.prev_weights
     
     # Create output directory
     output_dir = Path(task.scenario_dir) / f"irt_{task.method}"
@@ -297,6 +301,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     else:
         test_df = target_test_df.copy()
     
+    # Precompute thetas for Validation 1 & 2 (uses ALL anchors including Target)
     precomputed_thetas = precompute_thetas_from_all_anchors(
         test_df=test_df,
         item_params=irt_params,
@@ -304,6 +309,18 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         A_matrix=A_matrix,
         B_matrix=B_matrix,
     )
+    
+    # Precompute thetas for Validation 3: New Model + Old Data
+    # IMPORTANT: Use only Base+Chain anchors (without Target) to avoid "cheating"
+    precomputed_thetas_base_chain = None
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and prev_anchors is not None:
+        precomputed_thetas_base_chain = precompute_thetas_from_all_anchors(
+            test_df=base_chain_test_df,
+            item_params=irt_params,
+            anchor_ids=prev_anchors,  # Only Base+Chain anchors (no Target)
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+        )
     
     # ==========================================================================
     # Validation 1: New Models + New Dataset (test_models on target)
@@ -346,26 +363,27 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Validation 3: New Models + Old Datasets (test_models on Base+Chain)
+    # Uses only Base+Chain anchors for theta estimation (no Target "cheating")
     # ==========================================================================
     val_test_on_base_df = None
-    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and prev_anchors is not None:
         test_on_base_results = run_validation(
             test_df=base_chain_test_df,
             item_params=irt_params,
-            anchor_ids=all_anchors,
-            anchor_weights=all_weights,
+            anchor_ids=prev_anchors,  # Only Base+Chain anchors
+            anchor_weights=prev_weights,  # Corresponding weights
             train_df=final_df,
             A_matrix=A_matrix,
             B_matrix=B_matrix,
-            precomputed_thetas=precomputed_thetas,
+            precomputed_thetas=precomputed_thetas_base_chain,  # Theta without Target
         )
         val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
     
     # ==========================================================================
-    # Validation 4: Random-IRT Baseline (random questions as anchors in IRT)
+    # Random Baselines for Validation 1: New Model + New Data
     # ==========================================================================
-    print(f"      Task {task.task_id}: Running Random-IRT baseline validation...")
-    random_baseline_results = run_random_baseline_validation(
+    print(f"      Task {task.task_id}: Running random baselines for Validation 1...")
+    random_baseline_results, random_baseline_per_model_df = run_random_baseline_validation(
         test_df=target_test_df,
         item_params=irt_params,
         n_random_questions=task.n_anchors_per_dataset,
@@ -376,19 +394,117 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         precomputed_thetas=precomputed_thetas,
         n_seeds=10,
         base_seed=42,
+        return_per_model=True,
     )
-    
-    # ==========================================================================
-    # Validation 5: Random-Simple Baseline (just average of random questions, no IRT)
-    # ==========================================================================
-    print(f"      Task {task.task_id}: Running Random-Simple baseline validation...")
-    random_simple_results = run_random_simple_baseline(
+    random_simple_results, random_simple_per_model_df = run_random_simple_baseline(
         test_df=target_test_df,
         target_name=task.target_name,
         n_random_questions=task.n_anchors_per_dataset,
         n_seeds=10,
         base_seed=42,
+        return_per_model=True,
     )
+    
+    # ==========================================================================
+    # Random Baselines for Validation 2: Old Model + New Data
+    # ==========================================================================
+    random_baseline_old_model = {}
+    random_simple_old_model = {}
+    random_baseline_old_model_per_model_df = pd.DataFrame()
+    random_simple_old_model_per_model_df = pd.DataFrame()
+    if target_train_df is not None and len(target_train_df) > 0:
+        print(f"      Task {task.task_id}: Running random baselines for Validation 2...")
+        random_baseline_old_model, random_baseline_old_model_per_model_df = run_random_baseline_validation(
+            test_df=target_train_df,
+            item_params=irt_params,
+            n_random_questions=task.n_anchors_per_dataset,
+            target_name=task.target_name,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas_train,
+            n_seeds=10,
+            base_seed=42,
+            return_per_model=True,
+        )
+        random_simple_old_model, random_simple_old_model_per_model_df = run_random_simple_baseline(
+            test_df=target_train_df,
+            target_name=task.target_name,
+            n_random_questions=task.n_anchors_per_dataset,
+            n_seeds=10,
+            base_seed=42,
+            return_per_model=True,
+        )
+    
+    # ==========================================================================
+    # Random Baselines for Validation 3: New Model + Old Data
+    # ==========================================================================
+    random_baseline_new_model_old_data = {}
+    random_simple_new_model_old_data = {}
+    random_baseline_new_model_old_data_per_model_dfs = []
+    random_simple_new_model_old_data_per_model_dfs = []
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and precomputed_thetas_base_chain is not None:
+        print(f"      Task {task.task_id}: Running random baselines for Validation 3...")
+        base_chain_datasets = base_chain_test_df['dataset'].unique()
+        all_random_irt_errors = []
+        all_random_simple_errors = []
+        
+        for ds_name in base_chain_datasets:
+            ds_test_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name].copy()
+            if len(ds_test_df) == 0:
+                continue
+            
+            ds_random_irt, ds_random_irt_per_model = run_random_baseline_validation(
+                test_df=ds_test_df,
+                item_params=irt_params,
+                n_random_questions=min(task.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
+                target_name=ds_name,
+                train_df=final_df,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                precomputed_thetas=precomputed_thetas_base_chain,
+                n_seeds=10,
+                base_seed=42,
+                return_per_model=True,
+            )
+            ds_random_simple, ds_random_simple_per_model = run_random_simple_baseline(
+                test_df=ds_test_df,
+                target_name=ds_name,
+                n_random_questions=min(task.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
+                n_seeds=10,
+                base_seed=42,
+                return_per_model=True,
+            )
+            
+            if 'random_gp_irt_error_mean' in ds_random_irt:
+                all_random_irt_errors.append(ds_random_irt['random_gp_irt_error_mean'])
+            if 'simple_random_error_mean' in ds_random_simple:
+                all_random_simple_errors.append(ds_random_simple['simple_random_error_mean'])
+            
+            # Collect per-model results per dataset
+            if len(ds_random_irt_per_model) > 0:
+                ds_random_irt_per_model['dataset'] = ds_name
+                random_baseline_new_model_old_data_per_model_dfs.append(ds_random_irt_per_model)
+            if len(ds_random_simple_per_model) > 0:
+                ds_random_simple_per_model['dataset'] = ds_name
+                random_simple_new_model_old_data_per_model_dfs.append(ds_random_simple_per_model)
+        
+        # Aggregate across datasets
+        if all_random_irt_errors:
+            random_baseline_new_model_old_data = {
+                'random_gp_irt_error_mean': float(np.mean(all_random_irt_errors)),
+                'random_gp_irt_error_std': float(np.std(all_random_irt_errors)),
+                'n_datasets': len(all_random_irt_errors),
+            }
+        if all_random_simple_errors:
+            random_simple_new_model_old_data = {
+                'simple_random_error_mean': float(np.mean(all_random_simple_errors)),
+                'simple_random_error_std': float(np.std(all_random_simple_errors)),
+            }
+    
+    # Combine Validation 3 per-model DataFrames
+    random_baseline_new_model_old_data_per_model_df = pd.concat(random_baseline_new_model_old_data_per_model_dfs) if random_baseline_new_model_old_data_per_model_dfs else pd.DataFrame()
+    random_simple_new_model_old_data_per_model_df = pd.concat(random_simple_new_model_old_data_per_model_dfs) if random_simple_new_model_old_data_per_model_dfs else pd.DataFrame()
     
     # ==========================================================================
     # Build result
@@ -427,13 +543,23 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     add_metrics(val_train_on_target_df, 'old_model_new_data')
     add_metrics(val_test_on_base_df, 'new_model_old_data')
     
-    # Add Random-IRT baseline metrics
+    # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
         result[key] = val
-    
-    # Add Random-Simple baseline metrics
     for key, val in random_simple_results.items():
         result[key] = val
+    
+    # Add Random baselines for Validation 2 (Old Model + New Data)
+    for key, val in random_baseline_old_model.items():
+        result[f'old_model_new_data_{key}'] = val
+    for key, val in random_simple_old_model.items():
+        result[f'old_model_new_data_{key}'] = val
+    
+    # Add Random baselines for Validation 3 (New Model + Old Data)
+    for key, val in random_baseline_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+    for key, val in random_simple_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
     
     # Backward compatibility - also add without prefix for main metric
     if validation_df is not None and len(validation_df) > 0:
@@ -447,9 +573,32 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         if 'true_performance' in validation_df.columns:
             result['true_performance_mean'] = float(validation_df['true_performance'].mean())
             result['true_performance_std'] = float(validation_df['true_performance'].std())
-        
-        # Save validation CSV - New Model + New Dataset (primary)
-        validation_df.to_csv(output_dir.parent / f"validation_{task.method}.csv", index=False)
+    
+    # Helper to save DataFrame as CSV and JSON
+    def save_per_model_df(df, name):
+        """Save DataFrame as CSV and JSON (dict format)."""
+        if df is None or len(df) == 0:
+            return
+        csv_path = output_dir.parent / f"{name}_{task.method}.csv"
+        json_path = output_dir.parent / f"{name}_{task.method}.json"
+        df.to_csv(csv_path, index=False)
+        # Also save as JSON dict: {model_name: {metric: value, ...}}
+        if 'model_name' in df.columns:
+            import json
+            json_dict = df.set_index('model_name').to_dict(orient='index')
+            with open(json_path, 'w') as f:
+                json.dump(json_dict, f, indent=2)
+    
+    # Save all per-model DataFrames
+    save_per_model_df(validation_df, 'validation')
+    save_per_model_df(val_train_on_target_df, 'validation_old_model_new_data')
+    save_per_model_df(val_test_on_base_df, 'validation_new_model_old_data')
+    save_per_model_df(random_baseline_per_model_df, 'random_irt')
+    save_per_model_df(random_simple_per_model_df, 'random_simple')
+    save_per_model_df(random_baseline_old_model_per_model_df, 'random_irt_old_model')
+    save_per_model_df(random_simple_old_model_per_model_df, 'random_simple_old_model')
+    save_per_model_df(random_baseline_new_model_old_data_per_model_df, 'random_irt_new_model_old_data')
+    save_per_model_df(random_simple_new_model_old_data_per_model_df, 'random_simple_new_model_old_data')
     
     # Save additional validation CSVs
     if val_train_on_target_df is not None:

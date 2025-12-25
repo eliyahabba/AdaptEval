@@ -160,8 +160,8 @@ def train_and_validate(
     dims: list[int] = None,
     base_chain_test_df: pd.DataFrame = None,
     target_train_df: pd.DataFrame = None,
-) -> tuple[dict, pd.DataFrame | None, pd.DataFrame | None, pd.DataFrame | None]:
-    """Train IRT and validate. Returns (result_dict, validation_df, val_train_on_target, val_test_on_base).
+) -> tuple[dict, dict]:
+    """Train IRT and validate. Returns (result_dict, per_model_dfs_dict).
     
     Args:
         anchor_items: If provided, use Fixed-Anchor calibration. If None, use Concurrent.
@@ -171,9 +171,13 @@ def train_and_validate(
     Returns:
         result: dict with method, n_items, n_anchors, best_dimension, training_time_sec,
                 and all error metrics (mean/std)
-        validation_df: DataFrame with per-model validation results (new models + new dataset)
-        val_train_on_target_df: DataFrame with old models + new dataset validation
-        val_test_on_base_df: DataFrame with new models + old datasets validation
+        per_model_dfs: dict with all per-model DataFrames:
+            - 'validation_df': per-model results (new models + new dataset)
+            - 'val_train_on_target_df': old models + new dataset
+            - 'val_test_on_base_df': new models + old datasets
+            - 'random_baseline_per_model_df': random IRT baseline per-model
+            - 'random_simple_per_model_df': simple random baseline per-model
+            - plus similar for old_model and new_model_old_data validations
     """
     method = "fixed" if anchor_items else "concurrent"
     
@@ -267,7 +271,7 @@ def train_and_validate(
     else:
         test_df = target_test_df.copy()
     
-    # Precompute thetas
+    # Precompute thetas for Validation 1 & 2 (uses ALL anchors including Target)
     precomputed_thetas = precompute_thetas_from_all_anchors(
         test_df=test_df,
         item_params=irt_params,
@@ -275,6 +279,19 @@ def train_and_validate(
         A_matrix=A_matrix,
         B_matrix=B_matrix,
     )
+    
+    # Precompute thetas for Validation 3: New Model + Old Data
+    # IMPORTANT: Use only Base+Chain anchors (without Target) to avoid "cheating"
+    # When evaluating on old datasets, we shouldn't use Target information
+    precomputed_thetas_base_chain = None
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and prev_anchors is not None:
+        precomputed_thetas_base_chain = precompute_thetas_from_all_anchors(
+            test_df=base_chain_test_df,  # Only responses on Base+Chain
+            item_params=irt_params,
+            anchor_ids=prev_anchors,  # Only Base+Chain anchors (no Target)
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+        )
     
     # ==========================================================================
     # Validation 1: New Models + New Dataset (test_models on target)
@@ -321,26 +338,27 @@ def train_and_validate(
     
     # ==========================================================================
     # Validation 3: New Models + Old Datasets (test_models on Base+Chain)
+    # Uses only Base+Chain anchors for theta estimation (no Target "cheating")
     # ==========================================================================
     val_test_on_base_df = None
-    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and prev_anchors is not None:
         test_on_base_results = run_validation(
             test_df=base_chain_test_df,
             item_params=irt_params,
-            anchor_ids=all_anchors,
-            anchor_weights=all_weights,
+            anchor_ids=prev_anchors,  # Only Base+Chain anchors
+            anchor_weights=prev_weights,  # Corresponding weights
             train_df=train_df,
             A_matrix=A_matrix,
             B_matrix=B_matrix,
-            precomputed_thetas=precomputed_thetas,  # Already computed for test_models
+            precomputed_thetas=precomputed_thetas_base_chain,  # Theta without Target
         )
         val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
     
     # ==========================================================================
-    # Validation 4: Random-IRT Baseline (random questions as anchors in IRT)
+    # Random Baselines for Validation 1: New Model + New Data
     # ==========================================================================
-    print("      Running Random-IRT baseline validation...")
-    random_baseline_results = run_random_baseline_validation(
+    print("      Running random baselines for Validation 1 (New Model + New Data)...")
+    random_baseline_results, random_baseline_per_model_df = run_random_baseline_validation(
         test_df=target_test_df,
         item_params=irt_params,
         n_random_questions=config.n_anchors_per_dataset,
@@ -351,19 +369,118 @@ def train_and_validate(
         precomputed_thetas=precomputed_thetas,
         n_seeds=10,
         base_seed=42,
+        return_per_model=True,
     )
-    
-    # ==========================================================================
-    # Validation 5: Random-Simple Baseline (just average of random questions, no IRT)
-    # ==========================================================================
-    print("      Running Random-Simple baseline validation...")
-    random_simple_results = run_random_simple_baseline(
+    random_simple_results, random_simple_per_model_df = run_random_simple_baseline(
         test_df=target_test_df,
         target_name=target_name,
         n_random_questions=config.n_anchors_per_dataset,
         n_seeds=10,
         base_seed=42,
+        return_per_model=True,
     )
+    
+    # ==========================================================================
+    # Random Baselines for Validation 2: Old Model + New Data
+    # ==========================================================================
+    random_baseline_old_model = {}
+    random_simple_old_model = {}
+    random_baseline_old_model_per_model_df = pd.DataFrame()
+    random_simple_old_model_per_model_df = pd.DataFrame()
+    if target_train_df is not None and len(target_train_df) > 0:
+        print("      Running random baselines for Validation 2 (Old Model + New Data)...")
+        random_baseline_old_model, random_baseline_old_model_per_model_df = run_random_baseline_validation(
+            test_df=target_train_df,
+            item_params=irt_params,
+            n_random_questions=config.n_anchors_per_dataset,
+            target_name=target_name,
+            train_df=train_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas_train,
+            n_seeds=10,
+            base_seed=42,
+            return_per_model=True,
+        )
+        random_simple_old_model, random_simple_old_model_per_model_df = run_random_simple_baseline(
+            test_df=target_train_df,
+            target_name=target_name,
+            n_random_questions=config.n_anchors_per_dataset,
+            n_seeds=10,
+            base_seed=42,
+            return_per_model=True,
+        )
+    
+    # ==========================================================================
+    # Random Baselines for Validation 3: New Model + Old Data
+    # Run for each dataset in Base+Chain
+    # ==========================================================================
+    random_baseline_new_model_old_data = {}
+    random_simple_new_model_old_data = {}
+    random_baseline_new_model_old_data_per_model_dfs = []  # List of (dataset_name, per_model_df)
+    random_simple_new_model_old_data_per_model_dfs = []
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and precomputed_thetas_base_chain is not None:
+        print("      Running random baselines for Validation 3 (New Model + Old Data)...")
+        base_chain_datasets = base_chain_test_df['dataset'].unique()
+        all_random_irt_errors = []
+        all_random_simple_errors = []
+        
+        for ds_name in base_chain_datasets:
+            ds_test_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name].copy()
+            if len(ds_test_df) == 0:
+                continue
+            
+            ds_random_irt, ds_random_irt_per_model = run_random_baseline_validation(
+                test_df=ds_test_df,
+                item_params=irt_params,
+                n_random_questions=min(config.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
+                target_name=ds_name,
+                train_df=train_df,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                precomputed_thetas=precomputed_thetas_base_chain,
+                n_seeds=10,
+                base_seed=42,
+                return_per_model=True,
+            )
+            ds_random_simple, ds_random_simple_per_model = run_random_simple_baseline(
+                test_df=ds_test_df,
+                target_name=ds_name,
+                n_random_questions=min(config.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
+                n_seeds=10,
+                base_seed=42,
+                return_per_model=True,
+            )
+            
+            if 'random_gp_irt_error_mean' in ds_random_irt:
+                all_random_irt_errors.append(ds_random_irt['random_gp_irt_error_mean'])
+            if 'simple_random_error_mean' in ds_random_simple:
+                all_random_simple_errors.append(ds_random_simple['simple_random_error_mean'])
+            
+            # Collect per-model results per dataset
+            if len(ds_random_irt_per_model) > 0:
+                ds_random_irt_per_model['dataset'] = ds_name
+                random_baseline_new_model_old_data_per_model_dfs.append(ds_random_irt_per_model)
+            if len(ds_random_simple_per_model) > 0:
+                ds_random_simple_per_model['dataset'] = ds_name
+                random_simple_new_model_old_data_per_model_dfs.append(ds_random_simple_per_model)
+        
+        # Aggregate across datasets
+        if all_random_irt_errors:
+            random_baseline_new_model_old_data = {
+                'random_gp_irt_error_mean': float(np.mean(all_random_irt_errors)),
+                'random_gp_irt_error_std': float(np.std(all_random_irt_errors)),
+                'n_datasets': len(all_random_irt_errors),
+            }
+        if all_random_simple_errors:
+            random_simple_new_model_old_data = {
+                'simple_random_error_mean': float(np.mean(all_random_simple_errors)),
+                'simple_random_error_std': float(np.std(all_random_simple_errors)),
+            }
+    
+    # Combine Validation 3 per-model DataFrames
+    random_baseline_new_model_old_data_per_model_df = pd.concat(random_baseline_new_model_old_data_per_model_dfs) if random_baseline_new_model_old_data_per_model_dfs else pd.DataFrame()
+    random_simple_new_model_old_data_per_model_df = pd.concat(random_simple_new_model_old_data_per_model_dfs) if random_simple_new_model_old_data_per_model_dfs else pd.DataFrame()
     
     # ==========================================================================
     # Compile results
@@ -397,13 +514,23 @@ def train_and_validate(
     add_metrics(val_train_on_target_df, 'old_model_new_data')
     add_metrics(val_test_on_base_df, 'new_model_old_data')
     
-    # Add Random-IRT baseline metrics
+    # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
         result[key] = val
-    
-    # Add Random-Simple baseline metrics
     for key, val in random_simple_results.items():
         result[key] = val
+    
+    # Add Random baselines for Validation 2 (Old Model + New Data)
+    for key, val in random_baseline_old_model.items():
+        result[f'old_model_new_data_{key}'] = val
+    for key, val in random_simple_old_model.items():
+        result[f'old_model_new_data_{key}'] = val
+    
+    # Add Random baselines for Validation 3 (New Model + Old Data)
+    for key, val in random_baseline_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+    for key, val in random_simple_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
     
     # Keep backward compatibility - also add without prefix for main metric
     if validation_df is not None and len(validation_df) > 0:
@@ -418,7 +545,22 @@ def train_and_validate(
             result['true_performance_mean'] = float(validation_df['true_performance'].mean())
             result['true_performance_std'] = float(validation_df['true_performance'].std())
     
-    return result, validation_df, val_train_on_target_df, val_test_on_base_df
+    # Build dict of all per-model DataFrames for saving
+    per_model_dfs = {
+        # IRT method validation results (per-model)
+        'validation_df': validation_df,  # New Model + New Data
+        'val_train_on_target_df': val_train_on_target_df,  # Old Model + New Data
+        'val_test_on_base_df': val_test_on_base_df,  # New Model + Old Data
+        # Random baseline per-model results
+        'random_baseline_per_model_df': random_baseline_per_model_df,  # Val1 random IRT
+        'random_simple_per_model_df': random_simple_per_model_df,  # Val1 random simple
+        'random_baseline_old_model_per_model_df': random_baseline_old_model_per_model_df,  # Val2
+        'random_simple_old_model_per_model_df': random_simple_old_model_per_model_df,  # Val2
+        'random_baseline_new_model_old_data_per_model_df': random_baseline_new_model_old_data_per_model_df,  # Val3
+        'random_simple_new_model_old_data_per_model_df': random_simple_new_model_old_data_per_model_df,  # Val3
+    }
+    
+    return result, per_model_dfs
 
 
 # =============================================================================
@@ -758,7 +900,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         
         # ----- Method 1: Fixed-Anchor Calibration -----
         print("      Running Fixed-Anchor...")
-        fixed_result, fixed_val_df, fixed_train_on_target_df, fixed_test_on_base_df = train_and_validate(
+        fixed_result, fixed_per_model_dfs = train_and_validate(
             train_df=final_df,
             target_test_df=target_test_df,
             test_models=test_models,
@@ -775,7 +917,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         
         # ----- Method 2: Concurrent Calibration (from scratch) -----
         print("      Running Concurrent...")
-        concurrent_result, concurrent_val_df, concurrent_train_on_target_df, concurrent_test_on_base_df = train_and_validate(
+        concurrent_result, concurrent_per_model_dfs = train_and_validate(
             train_df=final_df,
             target_test_df=target_test_df,
             test_models=test_models,
@@ -842,24 +984,43 @@ def run_chain_linking_v2(config: ChainConfigV2):
             result_to_save['chain'] = list(result_to_save['chain'])
             json.dump(result_to_save, f, indent=2)
         
-        # Save detailed validation CSVs
-        # New Model + New Dataset (primary metric)
-        if fixed_val_df is not None:
-            fixed_val_df.to_csv(scenario_dir / "validation_fixed.csv", index=False)
-        if concurrent_val_df is not None:
-            concurrent_val_df.to_csv(scenario_dir / "validation_concurrent.csv", index=False)
+        # Save detailed validation CSVs and JSONs (per-model results)
+        def save_per_model_df(df, name, method_prefix):
+            """Save DataFrame as CSV and JSON (dict format)."""
+            if df is None or len(df) == 0:
+                return
+            csv_path = scenario_dir / f"{name}_{method_prefix}.csv"
+            json_path = scenario_dir / f"{name}_{method_prefix}.json"
+            df.to_csv(csv_path, index=False)
+            # Also save as JSON dict: {model_name: {metric: value, ...}}
+            if 'model_name' in df.columns:
+                json_dict = df.set_index('model_name').to_dict(orient='index')
+                with open(json_path, 'w') as f:
+                    json.dump(json_dict, f, indent=2)
         
-        # Old Model + New Dataset (train_models on target)
-        if fixed_train_on_target_df is not None:
-            fixed_train_on_target_df.to_csv(scenario_dir / "validation_fixed_old_model_new_data.csv", index=False)
-        if concurrent_train_on_target_df is not None:
-            concurrent_train_on_target_df.to_csv(scenario_dir / "validation_concurrent_old_model_new_data.csv", index=False)
+        # Save Fixed method per-model results
+        if fixed_per_model_dfs:
+            save_per_model_df(fixed_per_model_dfs.get('validation_df'), 'validation', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('val_train_on_target_df'), 'validation_old_model_new_data', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('val_test_on_base_df'), 'validation_new_model_old_data', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('random_baseline_per_model_df'), 'random_irt', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('random_simple_per_model_df'), 'random_simple', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('random_baseline_old_model_per_model_df'), 'random_irt_old_model', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('random_simple_old_model_per_model_df'), 'random_simple_old_model', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('random_baseline_new_model_old_data_per_model_df'), 'random_irt_new_model_old_data', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('random_simple_new_model_old_data_per_model_df'), 'random_simple_new_model_old_data', 'fixed')
         
-        # New Model + Old Datasets (test_models on Base+Chain)
-        if fixed_test_on_base_df is not None:
-            fixed_test_on_base_df.to_csv(scenario_dir / "validation_fixed_new_model_old_data.csv", index=False)
-        if concurrent_test_on_base_df is not None:
-            concurrent_test_on_base_df.to_csv(scenario_dir / "validation_concurrent_new_model_old_data.csv", index=False)
+        # Save Concurrent method per-model results
+        if concurrent_per_model_dfs:
+            save_per_model_df(concurrent_per_model_dfs.get('validation_df'), 'validation', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('val_train_on_target_df'), 'validation_old_model_new_data', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('val_test_on_base_df'), 'validation_new_model_old_data', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('random_baseline_per_model_df'), 'random_irt', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('random_simple_per_model_df'), 'random_simple', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('random_baseline_old_model_per_model_df'), 'random_irt_old_model', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('random_simple_old_model_per_model_df'), 'random_simple_old_model', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('random_baseline_new_model_old_data_per_model_df'), 'random_irt_new_model_old_data', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('random_simple_new_model_old_data_per_model_df'), 'random_simple_new_model_old_data', 'concurrent')
         
         results.append(result)
         
