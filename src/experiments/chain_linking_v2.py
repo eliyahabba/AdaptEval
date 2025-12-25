@@ -994,19 +994,34 @@ def run_chain_linking_v2(config: ChainConfigV2):
             df.to_csv(csv_path, index=False)
             # Save as JSON dict
             if 'model_name' in df.columns:
-                if 'dataset' in df.columns:
+                # Find dataset column (may be 'dataset', 'dataset_name', or 'scenario_name')
+                dataset_col = None
+                for col in ['dataset', 'dataset_name', 'scenario_name']:
+                    if col in df.columns:
+                        dataset_col = col
+                        break
+                
+                has_duplicates = df['model_name'].duplicated().any()
+                
+                if dataset_col is not None:
                     # Nested structure for per-model-per-dataset results:
                     # {model_name: {dataset: {metric: value, ...}}}
                     nested_dict = {}
                     for _, row in df.iterrows():
                         model = row['model_name']
-                        dataset = row['dataset']
+                        dataset = row[dataset_col]
                         if model not in nested_dict:
                             nested_dict[model] = {}
                         metrics = {k: (v if not pd.isna(v) else None) 
-                                   for k, v in row.items() if k not in ['model_name', 'dataset']}
+                                   for k, v in row.items() if k not in ['model_name', dataset_col]}
                         nested_dict[model][dataset] = metrics
                     json_dict = nested_dict
+                elif has_duplicates:
+                    # Fallback: duplicates but no dataset column - save as list of records
+                    print(f"      ⚠️ WARNING {name}_{method_prefix}: duplicate model_names without dataset column!")
+                    print(f"         Columns: {list(df.columns)}")
+                    print(f"         Saving as list of records instead of nested dict")
+                    json_dict = df.to_dict(orient='records')
                 else:
                     # Simple structure: {model_name: {metric: value, ...}}
                     json_dict = df.set_index('model_name').to_dict(orient='index')
