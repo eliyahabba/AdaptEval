@@ -17,12 +17,13 @@
 #       Without it, GP-IRT falls back to default lambda=0.5 which affects results.
 #
 # Usage:
-#   sbatch run_chain_linking_v2.sh [output_dir] [shuffle_seed] [data_source_mode] [dims]
+#   sbatch run_chain_linking_v2.sh [output_dir] [shuffle_seed] [data_source_mode] [dims] [n_anchors]
 #
 # Examples:
-#   sbatch run_chain_linking_v2.sh                                    # All defaults
-#   sbatch run_chain_linking_v2.sh /path/to/output 42 helm_classic    # Custom settings
+#   sbatch run_chain_linking_v2.sh                                       # All defaults (100 anchors)
+#   sbatch run_chain_linking_v2.sh /path/to/output 42 helm_classic       # Custom settings
 #   sbatch run_chain_linking_v2.sh /path/to/output 42 reeval "5"
+#   sbatch run_chain_linking_v2.sh /path/to/output 42 helm_lite "5" 50   # 50 anchors experiment
 #
 # For multiple targets, run with different shuffle_seeds:
 #   sbatch run_chain_linking_v2.sh /path/out 42 helm_classic
@@ -63,6 +64,7 @@ export CUDA_LAUNCH_BLOCKING=1
 #                 reeval (183 models, 22 scenarios),
 #                 lb_only (395 models, 6 datasets)
 #   $4 = dims (optional, default: "5") e.g. "5" or "2 5"
+#   $5 = n_anchors (optional, default: 100) - number of anchors per dataset
 
 # Output directory base
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_v2}"
@@ -76,15 +78,21 @@ DATA_SOURCE_MODE="${3:-helm_lite}"
 # IRT dimension(s) - space-separated
 DIMS="${4:-5}"
 
+# Number of anchors per dataset (positional argument or env variable)
+N_ANCHORS="${5:-${N_ANCHORS:-100}}"
+
 # Configuration (can override via environment variables)
 N_BASE=${N_BASE:-6}           # Number of datasets in Base
 MAX_CHAIN=${MAX_CHAIN:-10}    # Maximum chain length
-N_ANCHORS=${N_ANCHORS:-100}   # Anchors per dataset
 EPOCHS=${EPOCHS:-2000}        # Training epochs
 
-# Build output directory name
+# Build output directory name (include n_anchors if not default 100)
 SANITIZED_DIMS="${DIMS// /-}"
-OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}_dims_${SANITIZED_DIMS}"
+if [ "$N_ANCHORS" = "100" ]; then
+    OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}_dims_${SANITIZED_DIMS}"
+else
+    OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}_dims_${SANITIZED_DIMS}_anchors_${N_ANCHORS}"
+fi
 
 echo "========================================"
 echo "Chain Linking V2 - Single Target Design"

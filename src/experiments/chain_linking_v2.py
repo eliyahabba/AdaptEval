@@ -626,6 +626,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         'epochs': config.epochs,
         'dims_search': config.dims_search,
         'validate_dimensions': config.validate_dimensions,
+        'n_anchors_per_dataset': config.n_anchors_per_dataset,
         'base_datasets': base_names,
         'target_dataset': target_name,
         'chain_pool': chain_pool,
