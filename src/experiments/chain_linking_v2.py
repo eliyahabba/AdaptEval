@@ -992,9 +992,24 @@ def run_chain_linking_v2(config: ChainConfigV2):
             csv_path = scenario_dir / f"{name}_{method_prefix}.csv"
             json_path = scenario_dir / f"{name}_{method_prefix}.json"
             df.to_csv(csv_path, index=False)
-            # Also save as JSON dict: {model_name: {metric: value, ...}}
+            # Save as JSON dict
             if 'model_name' in df.columns:
-                json_dict = df.set_index('model_name').to_dict(orient='index')
+                if 'dataset' in df.columns:
+                    # Nested structure for per-model-per-dataset results:
+                    # {model_name: {dataset: {metric: value, ...}}}
+                    nested_dict = {}
+                    for _, row in df.iterrows():
+                        model = row['model_name']
+                        dataset = row['dataset']
+                        if model not in nested_dict:
+                            nested_dict[model] = {}
+                        metrics = {k: (v if not pd.isna(v) else None) 
+                                   for k, v in row.items() if k not in ['model_name', 'dataset']}
+                        nested_dict[model][dataset] = metrics
+                    json_dict = nested_dict
+                else:
+                    # Simple structure: {model_name: {metric: value, ...}}
+                    json_dict = df.set_index('model_name').to_dict(orient='index')
                 with open(json_path, 'w') as f:
                     json.dump(json_dict, f, indent=2)
         
