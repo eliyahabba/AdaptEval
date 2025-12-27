@@ -17,13 +17,13 @@
 #       Without it, GP-IRT falls back to default lambda=0.5 which affects results.
 #
 # Usage:
-#   sbatch run_chain_linking_v2.sh [output_dir] [shuffle_seed] [data_source_mode] [dims] [n_anchors]
+#   sbatch run_chain_linking_v2.sh [output_dir] [shuffle_seed] [data_source_mode] [n_anchors] [dims]
 #
 # Examples:
-#   sbatch run_chain_linking_v2.sh                                       # All defaults (100 anchors)
+#   sbatch run_chain_linking_v2.sh                                       # All defaults (100 anchors, dim=5)
 #   sbatch run_chain_linking_v2.sh /path/to/output 42 helm_classic       # Custom settings
-#   sbatch run_chain_linking_v2.sh /path/to/output 42 reeval "5"
-#   sbatch run_chain_linking_v2.sh /path/to/output 42 helm_lite "5" 50   # 50 anchors experiment
+#   sbatch run_chain_linking_v2.sh /path/to/output 42 helm_lite 50       # 50 anchors experiment
+#   sbatch run_chain_linking_v2.sh /path/to/output 42 helm_lite 50 "2 5" # 50 anchors, dims 2 and 5
 #
 # For multiple targets, run with different shuffle_seeds:
 #   sbatch run_chain_linking_v2.sh /path/out 42 helm_classic
@@ -63,8 +63,8 @@ export CUDA_LAUNCH_BLOCKING=1
 #                 helm_classic (70 models, 30 datasets),
 #                 reeval (183 models, 22 scenarios),
 #                 lb_only (395 models, 6 datasets)
-#   $4 = dims (optional, default: "5") e.g. "5" or "2 5"
-#   $5 = n_anchors (optional, default: 100) - number of anchors per dataset
+#   $4 = n_anchors (optional, default: 100) - number of anchors per dataset
+#   $5 = dims (optional, default: "5") e.g. "5" or "2 5"
 
 # Output directory base
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_v2}"
@@ -75,11 +75,11 @@ SHUFFLE_SEED="${2:-42}"
 # Data source mode
 DATA_SOURCE_MODE="${3:-helm_lite}"
 
-# IRT dimension(s) - space-separated
-DIMS="${4:-5}"
-
 # Number of anchors per dataset (positional argument or env variable)
-N_ANCHORS="${5:-${N_ANCHORS:-100}}"
+N_ANCHORS="${4:-${N_ANCHORS:-100}}"
+
+# IRT dimension(s) - space-separated
+DIMS="${5:-5}"
 
 # Configuration (can override via environment variables)
 N_BASE=${N_BASE:-6}           # Number of datasets in Base

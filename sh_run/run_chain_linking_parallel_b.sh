@@ -21,12 +21,13 @@
 #   - CPUs: ~2 per worker (IRT training is GPU-bound)
 #
 # Usage:
-#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [dims] [num_workers] [n_anchors]
+#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [n_anchors] [dims] [num_workers]
 #
 # Examples:
-#   sbatch run_chain_linking_parallel_b.sh                                       # All defaults (4 workers, 100 anchors)
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic "5" 8    # 8 workers
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "5" 4 50    # 50 anchors experiment
+#   sbatch run_chain_linking_parallel_b.sh                                       # All defaults (100 anchors, dim=5, 4 workers)
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic          # Default anchors, dims & workers
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50          # 50 anchors experiment
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50 "5" 8    # 50 anchors, dim=5, 8 workers
 #
 # Expected speedup:
 #   - With max_chain=10: 22 tasks (11 distances × 2 methods)
@@ -69,18 +70,19 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $1 = output directory (optional, default: data/chain_parallel_b)
 #   $2 = shuffle seed (optional, default: 42)
 #   $3 = data source mode (optional, default: helm_lite)
-#   $4 = dims (optional, default: "5")
-#   $5 = num workers (optional, default: 4)
-#   $6 = n_anchors (optional, default: 100) - number of anchors per dataset
+#   $4 = n_anchors (optional, default: 100) - number of anchors per dataset
+#   $5 = dims (optional, default: "5")
+#   $6 = num workers (optional, default: 4)
 
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_parallel_b}"
 SHUFFLE_SEED="${2:-42}"
 DATA_SOURCE_MODE="${3:-helm_lite}"
-DIMS="${4:-5}"
-NUM_WORKERS="${5:-4}"
 
 # Number of anchors per dataset (positional argument or env variable)
-N_ANCHORS="${6:-${N_ANCHORS:-100}}"
+N_ANCHORS="${4:-${N_ANCHORS:-100}}"
+
+DIMS="${5:-5}"
+NUM_WORKERS="${6:-4}"
 
 # Configuration (can override via environment variables)
 N_BASE=${N_BASE:-6}
