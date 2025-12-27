@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-v2
-#SBATCH --mem=12g
-#SBATCH --time=24:0:0
+#SBATCH --mem=4g
+#SBATCH --time=12:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --gres=gpu:rtx2080:1
-#SBATCH --cpus-per-task=8
+#SBATCH --gres=gpu:0:4
+#SBATCH --cpus-per-task=4
 #SBATCH --killable
 #SBATCH --requeue
 
