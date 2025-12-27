@@ -1,0 +1,45 @@
+{
+  "n_base_datasets": 6,
+  "max_chain_length": 10,
+  "shuffle_seed": 43,
+  "num_workers": 4,
+  "epochs": 2000,
+  "dims_search": [
+    50
+  ],
+  "n_anchors_per_dataset": 100,
+  "base_datasets": [
+    "SRN",
+    "GSM8K-Classic",
+    "IMDB",
+    "CommonSense",
+    "Copyright",
+    "Disinformation"
+  ],
+  "target_dataset": "EntityDataImputation",
+  "chain_pool": [
+    "RealToxicityPrompts",
+    "DyckLanguage",
+    "WikiFact",
+    "CivilComments",
+    "MS MARCO",
+    "NaturalQA-Classic",
+    "RAFT",
+    "Summarization",
+    "LegalSupport",
+    "BLiMP",
+    "EntityMatching",
+    "BabiQA",
+    "TruthfulQA-Classic",
+    "LSAT",
+    "BOLD",
+    "SyntheticReasoning",
+    "NarrativeQA-Classic",
+    "MATH-Classic",
+    "QuAC",
+    "MMLU-Classic",
+    "BBQ",
+    "BoolQ"
+  ],
+  "target_n_questions": 424
+}
