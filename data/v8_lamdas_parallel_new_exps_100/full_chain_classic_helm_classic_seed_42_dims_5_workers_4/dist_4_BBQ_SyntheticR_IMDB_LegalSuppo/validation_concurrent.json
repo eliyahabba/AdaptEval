@@ -1,0 +1,306 @@
+{
+  "AlephAlpha/luminous-base": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 0.8002261429148468,
+      "true_performance": 0.3299848192417863,
+      "anchor_prediction": 0.3295019825901131,
+      "irt_prediction": 0.281191826152821,
+      "gp_irt_prediction": 0.32873379623818494,
+      "pirt_prediction": 0.28481347366802745,
+      "anchor_error": 0.0004828366516732019,
+      "irt_error": 0.048792993088965286,
+      "gp_irt_error": 0.0012510230036013592,
+      "pirt_error": 0.04517134557375885,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "ai21/j1-grande-v2-beta": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 0.1428842934880123,
+      "true_performance": 0.3883457664924923,
+      "anchor_prediction": 0.3889458719225266,
+      "irt_prediction": 0.4101130741933187,
+      "gp_irt_prediction": 0.38926025841169387,
+      "pirt_prediction": 0.40723500631142884,
+      "anchor_error": 0.0006001054300343034,
+      "irt_error": 0.02176730770082641,
+      "gp_irt_error": 0.0009144919192015655,
+      "pirt_error": 0.018889239818936532,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "ai21/j1-jumbo": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": -1.7978932299508912,
+      "true_performance": 0.34564846635007573,
+      "anchor_prediction": 0.2799421278928873,
+      "irt_prediction": 0.33281149953330474,
+      "gp_irt_prediction": 0.280766944103205,
+      "pirt_prediction": 0.3279250248570738,
+      "anchor_error": 0.06570633845718843,
+      "irt_error": 0.01283696681677099,
+      "gp_irt_error": 0.06488152224687072,
+      "pirt_error": 0.017723441493001924,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "anthropic/stanford-online-all-v4-s3": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 0.6722716623858395,
+      "true_performance": 0.41127192401470997,
+      "anchor_prediction": 0.4426087682947058,
+      "irt_prediction": 0.4585850914604947,
+      "gp_irt_prediction": 0.4428048142411459,
+      "pirt_prediction": 0.45401355439203567,
+      "anchor_error": 0.031336844279995835,
+      "irt_error": 0.04731316744578473,
+      "gp_irt_error": 0.03153289022643596,
+      "pirt_error": 0.0427416303773257,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "cohere/command-xlarge-beta": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 0.41776402967113985,
+      "true_performance": 0.4332697131176618,
+      "anchor_prediction": 0.41406347960343876,
+      "irt_prediction": 0.44871891320444707,
+      "gp_irt_prediction": 0.4146030514750299,
+      "pirt_prediction": 0.4454525590073952,
+      "anchor_error": 0.01920623351422307,
+      "irt_error": 0.015449200086785242,
+      "gp_irt_error": 0.01866666164263192,
+      "pirt_error": 0.012182845889733396,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "cohere/xlarge-20221108": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": -0.6760298173897865,
+      "true_performance": 0.37818621436322397,
+      "anchor_prediction": 0.3467768741747818,
+      "irt_prediction": 0.3807012785168704,
+      "gp_irt_prediction": 0.347292069409753,
+      "pirt_prediction": 0.3767478659749317,
+      "anchor_error": 0.03140934018844216,
+      "irt_error": 0.00251506415364644,
+      "gp_irt_error": 0.03089414495347098,
+      "pirt_error": 0.0014383483882922654,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "lmsys/vicuna-7b-v1.3": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": -0.5324543685285736,
+      "true_performance": 0.3972156297726151,
+      "anchor_prediction": 0.3823022068801403,
+      "irt_prediction": 0.4327531116952441,
+      "gp_irt_prediction": 0.3830832008751434,
+      "pirt_prediction": 0.4277357882320967,
+      "anchor_error": 0.01491342289247477,
+      "irt_error": 0.03553748192262901,
+      "gp_irt_error": 0.014132428897471683,
+      "pirt_error": 0.030520158459481583,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "microsoft/TNLGv2_530B": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": -0.7629818031265047,
+      "true_performance": 0.3930860771413968,
+      "anchor_prediction": 0.3388197270518068,
+      "irt_prediction": 0.4274649664922099,
+      "gp_irt_prediction": 0.3402211744337566,
+      "pirt_prediction": 0.4203475928813658,
+      "anchor_error": 0.05426635008959002,
+      "irt_error": 0.03437888935081307,
+      "gp_irt_error": 0.052864902707640216,
+      "pirt_error": 0.02726151573996899,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "microsoft/TNLGv2_7B": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": -1.8825608057951964,
+      "true_performance": 0.3366287061160979,
+      "anchor_prediction": 0.3642546995793625,
+      "irt_prediction": 0.334038874218656,
+      "gp_irt_prediction": 0.3637842182043534,
+      "pirt_prediction": 0.33688489396904653,
+      "anchor_error": 0.02762599346326461,
+      "irt_error": 0.0025898318974418855,
+      "gp_irt_error": 0.027155512088255507,
+      "pirt_error": 0.00025618785294861945,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "mosaicml/mpt-30b": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": -0.35887705652922236,
+      "true_performance": 0.3879324201026549,
+      "anchor_prediction": 0.3803615354248035,
+      "irt_prediction": 0.3987855602656006,
+      "gp_irt_prediction": 0.38065290587159356,
+      "pirt_prediction": 0.39731173348329263,
+      "anchor_error": 0.007570884677851386,
+      "irt_error": 0.010853140162945696,
+      "gp_irt_error": 0.007279514231061324,
+      "pirt_error": 0.009379313380637744,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "openai/text-babbage-001": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 1.299307934769746,
+      "true_performance": 0.27060572058924404,
+      "anchor_prediction": 0.23945305952530951,
+      "irt_prediction": 0.256256085982744,
+      "gp_irt_prediction": 0.23973909541635008,
+      "pirt_prediction": 0.25609292488704016,
+      "anchor_error": 0.031152661063934523,
+      "irt_error": 0.014349634606500017,
+      "gp_irt_error": 0.030866625172893958,
+      "pirt_error": 0.014512795702203873,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "openai/text-davinci-003": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 1.4194718491722655,
+      "true_performance": 0.4972840510259892,
+      "anchor_prediction": 0.5107660721246455,
+      "irt_prediction": 0.556958576482339,
+      "gp_irt_prediction": 0.5115135246733913,
+      "pirt_prediction": 0.5542484118064426,
+      "anchor_error": 0.013482021098656316,
+      "irt_error": 0.059674525456349825,
+      "gp_irt_error": 0.014229473647402069,
+      "pirt_error": 0.05696436078045336,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "together/bloom": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 0.9827777832058862,
+      "true_performance": 0.34251180027415307,
+      "anchor_prediction": 0.2946022800301333,
+      "irt_prediction": 0.30827831268338174,
+      "gp_irt_prediction": 0.29479535485109937,
+      "pirt_prediction": 0.3058342237345713,
+      "anchor_error": 0.04790952024401979,
+      "irt_error": 0.03423348759077133,
+      "gp_irt_error": 0.0477164454230537,
+      "pirt_error": 0.03667757653958176,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "together/opt-175b": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": -0.4733735573749495,
+      "true_performance": 0.36403221886734105,
+      "anchor_prediction": 0.3167795885671281,
+      "irt_prediction": 0.3224455016991145,
+      "gp_irt_prediction": 0.3168725467547762,
+      "pirt_prediction": 0.3221873425420142,
+      "anchor_error": 0.04725263030021293,
+      "irt_error": 0.04158671716822654,
+      "gp_irt_error": 0.04715967211256483,
+      "pirt_error": 0.04184487632532685,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "together/redpajama-incite-base-3b-v1": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 1.4611240335171816,
+      "true_performance": 0.3090580773022383,
+      "anchor_prediction": 0.2994553689811991,
+      "irt_prediction": 0.2874970138053899,
+      "gp_irt_prediction": 0.29925678409414846,
+      "pirt_prediction": 0.28790288243352835,
+      "anchor_error": 0.009602708321039155,
+      "irt_error": 0.021561063496848387,
+      "gp_irt_error": 0.009801293208089812,
+      "pirt_error": 0.021155194868709926,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  },
+  "writer/palmyra-x": {
+    "QuAC": {
+      "scenario_name": "QuAC",
+      "num_questions": 1000,
+      "num_anchors": 100,
+      "estimated_theta": 0.3606885469111813,
+      "true_performance": 0.4666984128306594,
+      "anchor_prediction": 0.4765980908264349,
+      "irt_prediction": 0.6024862852578391,
+      "gp_irt_prediction": 0.4785357377668822,
+      "pirt_prediction": 0.5893188549596271,
+      "anchor_error": 0.009899677995775513,
+      "irt_error": 0.1357878724271797,
+      "gp_irt_error": 0.011837324936222804,
+      "pirt_error": 0.12262044212896772,
+      "dataset_lambda": 0.9828102039997023,
+      "pirt_lambda": 0.1
+    }
+  }
+}

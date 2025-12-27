@@ -1,0 +1,130 @@
+{
+  "AlephAlpha/luminous-base": {
+    "simple_random_error_mean": 0.02484896846229493,
+    "simple_random_error_std": 0.01747016800042994,
+    "simple_random_prediction_mean": 0.3371359746334202,
+    "simple_random_prediction_std": 0.029521839037703577,
+    "simple_random_true_performance_mean": 0.3299848192417862,
+    "simple_random_true_performance_std": 5.551115123125783e-17
+  },
+  "ai21/j1-grande-v2-beta": {
+    "simple_random_error_mean": 0.026359648232919426,
+    "simple_random_error_std": 0.01586633713584374,
+    "simple_random_prediction_mean": 0.3986281571251566,
+    "simple_random_prediction_std": 0.02899731284013752,
+    "simple_random_true_performance_mean": 0.3883457664924923,
+    "simple_random_true_performance_std": 0.0
+  },
+  "ai21/j1-jumbo": {
+    "simple_random_error_mean": 0.03231636032527453,
+    "simple_random_error_std": 0.021593432992670216,
+    "simple_random_prediction_mean": 0.3464228588214463,
+    "simple_random_prediction_std": 0.038859024812547736,
+    "simple_random_true_performance_mean": 0.34564846635007573,
+    "simple_random_true_performance_std": 0.0
+  },
+  "anthropic/stanford-online-all-v4-s3": {
+    "simple_random_error_mean": 0.025602882165152274,
+    "simple_random_error_std": 0.015649726749209416,
+    "simple_random_prediction_mean": 0.4020078617007843,
+    "simple_random_prediction_std": 0.02854117502716548,
+    "simple_random_true_performance_mean": 0.41127192401470997,
+    "simple_random_true_performance_std": 0.0
+  },
+  "cohere/command-xlarge-beta": {
+    "simple_random_error_mean": 0.03492120298188557,
+    "simple_random_error_std": 0.02212415202423463,
+    "simple_random_prediction_mean": 0.42451330171574647,
+    "simple_random_prediction_std": 0.040401655657335445,
+    "simple_random_true_performance_mean": 0.4332697131176618,
+    "simple_random_true_performance_std": 0.0
+  },
+  "cohere/xlarge-20221108": {
+    "simple_random_error_mean": 0.02298103810695251,
+    "simple_random_error_std": 0.015124699809921392,
+    "simple_random_prediction_mean": 0.37690935448552515,
+    "simple_random_prediction_std": 0.027481890139984238,
+    "simple_random_true_performance_mean": 0.3781862143632239,
+    "simple_random_true_performance_std": 0.0
+  },
+  "lmsys/vicuna-7b-v1.3": {
+    "simple_random_error_mean": 0.02820123411738721,
+    "simple_random_error_std": 0.019399527539625563,
+    "simple_random_prediction_mean": 0.40065079769522943,
+    "simple_random_prediction_std": 0.03405658373718386,
+    "simple_random_true_performance_mean": 0.39721562977261504,
+    "simple_random_true_performance_std": 0.0
+  },
+  "microsoft/TNLGv2_530B": {
+    "simple_random_error_mean": 0.03442338064870789,
+    "simple_random_error_std": 0.027333101088102846,
+    "simple_random_prediction_mean": 0.401060678821661,
+    "simple_random_prediction_std": 0.04322584040154007,
+    "simple_random_true_performance_mean": 0.39308607714139676,
+    "simple_random_true_performance_std": 5.551115123125783e-17
+  },
+  "microsoft/TNLGv2_7B": {
+    "simple_random_error_mean": 0.04524893335803696,
+    "simple_random_error_std": 0.02296664631353155,
+    "simple_random_prediction_mean": 0.32749351186965675,
+    "simple_random_prediction_std": 0.04991473769349801,
+    "simple_random_true_performance_mean": 0.33662870611609785,
+    "simple_random_true_performance_std": 5.551115123125783e-17
+  },
+  "mosaicml/mpt-30b": {
+    "simple_random_error_mean": 0.037809974941751465,
+    "simple_random_error_std": 0.03551321744408643,
+    "simple_random_prediction_mean": 0.3901253377404601,
+    "simple_random_prediction_std": 0.051826382572591735,
+    "simple_random_true_performance_mean": 0.38793242010265494,
+    "simple_random_true_performance_std": 5.551115123125783e-17
+  },
+  "openai/text-babbage-001": {
+    "simple_random_error_mean": 0.02031714672921844,
+    "simple_random_error_std": 0.01949047212728923,
+    "simple_random_prediction_mean": 0.2697147765577559,
+    "simple_random_prediction_std": 0.02814020564413106,
+    "simple_random_true_performance_mean": 0.27060572058924404,
+    "simple_random_true_performance_std": 0.0
+  },
+  "openai/text-davinci-003": {
+    "simple_random_error_mean": 0.024778051163510804,
+    "simple_random_error_std": 0.022406561224458336,
+    "simple_random_prediction_mean": 0.5014483971376975,
+    "simple_random_prediction_std": 0.03314610123119849,
+    "simple_random_true_performance_mean": 0.49728405102598916,
+    "simple_random_true_performance_std": 0.0
+  },
+  "together/bloom": {
+    "simple_random_error_mean": 0.012659456214362541,
+    "simple_random_error_std": 0.010554505043922684,
+    "simple_random_prediction_mean": 0.3418336458503014,
+    "simple_random_prediction_std": 0.016468136353059565,
+    "simple_random_true_performance_mean": 0.34251180027415307,
+    "simple_random_true_performance_std": 0.0
+  },
+  "together/opt-175b": {
+    "simple_random_error_mean": 0.027887804259739357,
+    "simple_random_error_std": 0.021870896603455814,
+    "simple_random_prediction_mean": 0.3711000672434181,
+    "simple_random_prediction_std": 0.03472911262905198,
+    "simple_random_true_performance_mean": 0.3640322188673411,
+    "simple_random_true_performance_std": 0.0
+  },
+  "together/redpajama-incite-base-3b-v1": {
+    "simple_random_error_mean": 0.02555728723473825,
+    "simple_random_error_std": 0.017062343245973083,
+    "simple_random_prediction_mean": 0.32777420179734373,
+    "simple_random_prediction_std": 0.024372221312921587,
+    "simple_random_true_performance_mean": 0.3090580773022382,
+    "simple_random_true_performance_std": 0.0
+  },
+  "writer/palmyra-x": {
+    "simple_random_error_mean": 0.025480845478212843,
+    "simple_random_error_std": 0.022406762908436767,
+    "simple_random_prediction_mean": 0.47686981250243676,
+    "simple_random_prediction_std": 0.032370961354838156,
+    "simple_random_true_performance_mean": 0.4666984128306594,
+    "simple_random_true_performance_std": 0.0
+  }
+}
