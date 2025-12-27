@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-parallel
-#SBATCH --mem=4g
+#SBATCH --mem=8g
 #SBATCH --time=8:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --gres=gg:g0:4
+#SBATCH --gres=gg:g4:4
 #SBATCH --cpus-per-task=4
 #SBATCH --killable
 #SBATCH --requeue
