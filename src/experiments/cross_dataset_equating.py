@@ -1438,7 +1438,7 @@ def run_random_baseline_validation(
     A_matrix: np.ndarray | None = None,
     B_matrix: np.ndarray | None = None,
     precomputed_thetas: dict[str, float] | None = None,
-    n_seeds: int = 10,
+    n_seeds: int = 1,
     base_seed: int = 42,
     return_per_model: bool = False,
 ) -> dict | tuple[dict, pd.DataFrame]:
@@ -1601,7 +1601,7 @@ def run_random_baseline_validation(
         # Build per-model DataFrame with averaged results across seeds
         per_model_rows = []
         for model_name, metrics in per_model_results.items():
-            row = {'model_name': model_name}
+            row = {'model_name': model_name, 'n_seeds': n_seeds}
             for metric, values in metrics.items():
                 if values:
                     row[f'random_{metric}_mean'] = float(np.mean(values))
@@ -1617,7 +1617,7 @@ def run_random_simple_baseline(
     test_df: pd.DataFrame,
     target_name: str,
     n_random_questions: int,
-    n_seeds: int = 10,
+    n_seeds: int = 1,
     base_seed: int = 42,
     return_per_model: bool = False,
 ) -> dict | tuple[dict, pd.DataFrame]:
@@ -1749,7 +1749,7 @@ def run_random_simple_baseline(
         # Build per-model DataFrame with averaged results across seeds
         per_model_rows = []
         for model_name, metrics in per_model_results.items():
-            row = {'model_name': model_name}
+            row = {'model_name': model_name, 'n_seeds': n_seeds}
             for metric, values in metrics.items():
                 if values:
                     row[f'simple_random_{metric}_mean'] = float(np.mean(values))

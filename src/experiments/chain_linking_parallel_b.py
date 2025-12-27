@@ -392,7 +392,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         A_matrix=A_matrix,
         B_matrix=B_matrix,
         precomputed_thetas=precomputed_thetas,
-        n_seeds=10,
+        n_seeds=1,
         base_seed=42,
         return_per_model=True,
     )
@@ -400,7 +400,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         test_df=target_test_df,
         target_name=task.target_name,
         n_random_questions=task.n_anchors_per_dataset,
-        n_seeds=10,
+        n_seeds=1,
         base_seed=42,
         return_per_model=True,
     )
@@ -423,7 +423,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             A_matrix=A_matrix,
             B_matrix=B_matrix,
             precomputed_thetas=precomputed_thetas_train,
-            n_seeds=10,
+            n_seeds=1,
             base_seed=42,
             return_per_model=True,
         )
@@ -431,7 +431,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             test_df=target_train_df,
             target_name=task.target_name,
             n_random_questions=task.n_anchors_per_dataset,
-            n_seeds=10,
+            n_seeds=1,
             base_seed=42,
             return_per_model=True,
         )
@@ -463,7 +463,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 A_matrix=A_matrix,
                 B_matrix=B_matrix,
                 precomputed_thetas=precomputed_thetas_base_chain,
-                n_seeds=10,
+                n_seeds=1,
                 base_seed=42,
                 return_per_model=True,
             )
@@ -471,7 +471,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 test_df=ds_test_df,
                 target_name=ds_name,
                 n_random_questions=min(task.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
-                n_seeds=10,
+                n_seeds=1,
                 base_seed=42,
                 return_per_model=True,
             )
