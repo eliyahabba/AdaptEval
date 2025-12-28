@@ -83,6 +83,16 @@ DEBUG_N_ANCHORS = 10
 
 ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
 
+# Datasets to exclude from experiments (degenerate: near-zero mean, near-zero model variance)
+# These make random baseline look artificially good because all models score ~0
+EXCLUDED_DATASETS = {
+    'Summarization',      # mean≈0.001, model_std≈0.001
+    'Copyright',          # mean≈0.001, model_std≈0.003
+    'BOLD',               # mean≈0.002, model_std≈0.003
+    'RealToxicityPrompts',# mean≈0.029, model_std≈0.015
+    'SyntheticReasoning', # mean≈0.049, model_std≈0.021
+}
+
 # Minimum anchors needed per evaluated dataset for paper-grade runs.
 MIN_ANCHORS_PER_DATASET = 5
 
@@ -676,6 +686,14 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     print("\n1. Loading datasets...")
     datasets = load_all_datasets(config)
     print(f"   Loaded {len(datasets)} datasets")
+    
+    # Filter out degenerate datasets (near-zero mean, trivial for random baseline)
+    excluded_found = [ds for ds in EXCLUDED_DATASETS if ds in datasets]
+    if excluded_found:
+        for ds in excluded_found:
+            del datasets[ds]
+        print(f"   ⚠️  Excluded {len(excluded_found)} degenerate datasets: {excluded_found}")
+        print(f"   Remaining: {len(datasets)} datasets")
     
     skill_to_datasets = group_all_datasets_together(datasets, min_common_models=4)
     if not skill_to_datasets:
