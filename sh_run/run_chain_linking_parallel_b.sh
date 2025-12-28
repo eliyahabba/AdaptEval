@@ -21,13 +21,14 @@
 #   - CPUs: ~2 per worker (IRT training is GPU-bound)
 #
 # Usage:
-#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [n_anchors] [dims] [num_workers]
+#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [n_anchors] [dims] [num_workers] [target_dataset]
 #
 # Examples:
-#   sbatch run_chain_linking_parallel_b.sh                                       # All defaults (100 anchors, dim=5, 4 workers)
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic          # Default anchors, dims & workers
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50          # 50 anchors experiment
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50 "5" 8    # 50 anchors, dim=5, 8 workers
+#   sbatch run_chain_linking_parallel_b.sh                                                # All defaults (100 anchors, dim=5, 4 workers)
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic                   # Default anchors, dims & workers
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50                   # 50 anchors experiment
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50 "5" 8             # 50 anchors, dim=5, 8 workers
+#   sbatch run_chain_linking_parallel_b.sh /path/output 43 helm_classic 25 "5" 4 "QuAC"   # Specific target dataset
 #
 # Expected speedup:
 #   - With max_chain=10: 22 tasks (11 distances × 2 methods)
@@ -73,6 +74,7 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $4 = n_anchors (optional, default: 100) - number of anchors per dataset
 #   $5 = dims (optional, default: "5")
 #   $6 = num workers (optional, default: 4)
+#   $7 = target dataset (optional, default: auto from shuffle)
 
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_parallel_b}"
 SHUFFLE_SEED="${2:-42}"
@@ -83,6 +85,7 @@ N_ANCHORS="${4:-${N_ANCHORS:-100}}"
 
 DIMS="${5:-5}"
 NUM_WORKERS="${6:-4}"
+TARGET_DATASET="${7:-}"
 
 # Configuration (can override via environment variables)
 N_BASE=${N_BASE:-6}
@@ -111,9 +114,16 @@ echo "  MAX_CHAIN: ${MAX_CHAIN}"
 echo "  N_ANCHORS: ${N_ANCHORS}"
 echo "  EPOCHS: ${EPOCHS}"
 echo "  DIMS: ${DIMS}"
+echo "  TARGET_DATASET: ${TARGET_DATASET:-auto}"
 echo ""
 echo "Expected tasks: $((2 * (MAX_CHAIN + 1))) (${MAX_CHAIN}+1 distances × 2 methods)"
 echo "========================================"
+
+# Build target dataset argument if specified
+TARGET_ARG=""
+if [ -n "${TARGET_DATASET}" ]; then
+    TARGET_ARG="--target-dataset ${TARGET_DATASET}"
+fi
 
 # Run parallel experiment
 python src/experiments/chain_linking_parallel_b.py \
@@ -127,7 +137,8 @@ python src/experiments/chain_linking_parallel_b.py \
     --dims ${DIMS} \
     --epochs ${EPOCHS} \
     --data-source-mode ${DATA_SOURCE_MODE} \
-    --num-workers ${NUM_WORKERS}
+    --num-workers ${NUM_WORKERS} \
+    ${TARGET_ARG}
 
 # Print resource usage
 echo ""

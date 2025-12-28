@@ -114,6 +114,7 @@ class ParallelChainConfig(ExperimentConfig):
     epochs_fixed: int = 1000
     n_anchors_per_dataset: int = 100
     num_workers: int = 4  # Number of parallel workers
+    target_dataset: str | None = None  # Specific target dataset (if None, use shuffled[n_base])
     
     def __post_init__(self):
         if DEBUG_MODE:
@@ -702,9 +703,22 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     shuffled = list(all_dataset_names)
     np.random.shuffle(shuffled)
     
-    base_names = shuffled[:config.n_base_datasets]
-    target_name = shuffled[config.n_base_datasets]
-    chain_pool = shuffled[config.n_base_datasets + 1:]
+    # Handle user-specified target dataset
+    if config.target_dataset:
+        if config.target_dataset not in all_dataset_names:
+            available = ", ".join(all_dataset_names[:10]) + "..."
+            raise ValueError(f"Target dataset '{config.target_dataset}' not found. Available: {available}")
+        # Remove target from shuffled list
+        shuffled = [d for d in shuffled if d != config.target_dataset]
+        target_name = config.target_dataset
+        base_names = shuffled[:config.n_base_datasets]
+        chain_pool = shuffled[config.n_base_datasets:]
+        print(f"   Using user-specified target: {target_name}")
+    else:
+        base_names = shuffled[:config.n_base_datasets]
+        target_name = shuffled[config.n_base_datasets]
+        chain_pool = shuffled[config.n_base_datasets + 1:]
+    
     target_n_questions = int(datasets[target_name]['question_id'].nunique())
 
     # Update output directory with target name
@@ -1312,6 +1326,8 @@ if __name__ == "__main__":
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
                         choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval"])
     parser.add_argument("--num-workers", type=int, default=4, help="Number of parallel workers")
+    parser.add_argument("--target-dataset", type=str, default=None, 
+                        help="Specific target dataset name (if not specified, uses shuffled[n_base])")
     
     args = parser.parse_args()
     
@@ -1327,6 +1343,7 @@ if __name__ == "__main__":
         epochs_fixed=args.epochs_fixed,
         data_source_mode=args.data_source_mode,
         num_workers=args.num_workers,
+        target_dataset=args.target_dataset,
     )
     
     if args.output_dir:

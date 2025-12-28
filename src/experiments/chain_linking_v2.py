@@ -106,6 +106,7 @@ class ChainConfigV2(ExperimentConfig):
     validate_dimensions: bool = True  # Always run dimension validation for proper lambda computation
     epochs: int = 2000
     epochs_fixed: int = 1000
+    target_dataset: str | None = None  # Specific target dataset (if None, use shuffled[n_base])
     n_anchors_per_dataset: int = 100
     
     def __post_init__(self):
@@ -626,10 +627,22 @@ def run_chain_linking_v2(config: ChainConfigV2):
     shuffled = list(all_dataset_names)
     np.random.shuffle(shuffled)
     
-    # Define roles
-    base_names = shuffled[:config.n_base_datasets]
-    target_name = shuffled[config.n_base_datasets]
-    chain_pool = shuffled[config.n_base_datasets + 1:]
+    # Handle user-specified target dataset
+    if config.target_dataset:
+        if config.target_dataset not in all_dataset_names:
+            available = ", ".join(all_dataset_names[:10]) + "..."
+            raise ValueError(f"Target dataset '{config.target_dataset}' not found. Available: {available}")
+        # Remove target from shuffled list
+        shuffled = [d for d in shuffled if d != config.target_dataset]
+        target_name = config.target_dataset
+        base_names = shuffled[:config.n_base_datasets]
+        chain_pool = shuffled[config.n_base_datasets:]
+        print(f"   Using user-specified target: {target_name}")
+    else:
+        # Define roles
+        base_names = shuffled[:config.n_base_datasets]
+        target_name = shuffled[config.n_base_datasets]
+        chain_pool = shuffled[config.n_base_datasets + 1:]
 
     # Update output directory with target name
     initial_output_dir = Path(config.output_dir)
@@ -1212,6 +1225,8 @@ if __name__ == "__main__":
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
                         choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval"],
                         help="Data source mode")
+    parser.add_argument("--target-dataset", type=str, default=None,
+                        help="Specific target dataset name (if not specified, uses shuffled[n_base])")
     # Note: dimension validation is always enabled to ensure proper lambda computation
     
     args = parser.parse_args()
@@ -1227,6 +1242,7 @@ if __name__ == "__main__":
         epochs=args.epochs,
         epochs_fixed=args.epochs_fixed,
         data_source_mode=args.data_source_mode,
+        target_dataset=args.target_dataset,
         # validate_dimensions is always True (required for proper lambda computation)
     )
     
