@@ -170,6 +170,8 @@ def train_and_validate(
     dims: list[int] = None,
     base_chain_test_df: pd.DataFrame = None,
     target_train_df: pd.DataFrame = None,
+    distance: int = 0,
+    seed: int = 42,
 ) -> tuple[dict, dict]:
     """Train IRT and validate. Returns (result_dict, per_model_dfs_dict).
     
@@ -377,16 +379,16 @@ def train_and_validate(
         A_matrix=A_matrix,
         B_matrix=B_matrix,
         precomputed_thetas=precomputed_thetas,
-        n_seeds=1,
-        base_seed=42,
+        n_seeds=10,
+        base_seed=seed + distance * 100,  # Different seed per distance
         return_per_model=True,
     )
     random_simple_results, random_simple_per_model_df = run_random_simple_baseline(
         test_df=target_test_df,
         target_name=target_name,
         n_random_questions=config.n_anchors_per_dataset,
-        n_seeds=1,
-        base_seed=42,
+        n_seeds=10,
+        base_seed=seed + distance * 100,  # Different seed per distance
         return_per_model=True,
     )
     
@@ -408,16 +410,16 @@ def train_and_validate(
             A_matrix=A_matrix,
             B_matrix=B_matrix,
             precomputed_thetas=precomputed_thetas_train,
-            n_seeds=1,
-            base_seed=42,
+            n_seeds=10,
+            base_seed=seed + distance * 100,  # Different seed per distance
             return_per_model=True,
         )
         random_simple_old_model, random_simple_old_model_per_model_df = run_random_simple_baseline(
             test_df=target_train_df,
             target_name=target_name,
             n_random_questions=config.n_anchors_per_dataset,
-            n_seeds=1,
-            base_seed=42,
+            n_seeds=10,
+            base_seed=seed + distance * 100,  # Different seed per distance
             return_per_model=True,
         )
     
@@ -449,16 +451,16 @@ def train_and_validate(
                 A_matrix=A_matrix,
                 B_matrix=B_matrix,
                 precomputed_thetas=precomputed_thetas_base_chain,
-                n_seeds=1,
-                base_seed=42,
+                n_seeds=10,
+                base_seed=seed + distance * 100,  # Different seed per distance
                 return_per_model=True,
             )
             ds_random_simple, ds_random_simple_per_model = run_random_simple_baseline(
                 test_df=ds_test_df,
                 target_name=ds_name,
                 n_random_questions=min(config.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
-                n_seeds=1,
-                base_seed=42,
+                n_seeds=10,
+                base_seed=seed + distance * 100,  # Different seed per distance
                 return_per_model=True,
             )
             
@@ -945,6 +947,8 @@ def run_chain_linking_v2(config: ChainConfigV2):
             dims=dims,
             base_chain_test_df=base_chain_test_df,
             target_train_df=target_train_df,
+            distance=distance,
+            seed=config.shuffle_seed,
         )
         
         # ----- Method 2: Concurrent Calibration (from scratch) -----
@@ -962,6 +966,8 @@ def run_chain_linking_v2(config: ChainConfigV2):
             dims=dims,
             base_chain_test_df=base_chain_test_df,
             target_train_df=target_train_df,
+            distance=distance,
+            seed=config.shuffle_seed,
         )
         
         # Skip if both methods failed
