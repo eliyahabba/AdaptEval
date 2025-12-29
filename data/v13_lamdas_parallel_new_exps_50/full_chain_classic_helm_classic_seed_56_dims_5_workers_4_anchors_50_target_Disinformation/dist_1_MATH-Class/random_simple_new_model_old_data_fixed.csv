@@ -1,0 +1,115 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+ai21/j1-grande-v2-beta,1,0.0432,0.0,0.2116,0.0,0.2547,0.0,MS MARCO
+ai21/j1-jumbo,1,0.046,0.0,0.2454,0.0,0.1994,0.0,MS MARCO
+ai21/j2-large,1,0.0209,0.0,0.2006,0.0,0.2215,0.0,MS MARCO
+anthropic/stanford-online-all-v4-s3,1,0.0053,0.0,0.3709,0.0,0.3762,0.0,MS MARCO
+cohere/command-xlarge-beta,1,0.009,0.0,0.4816,0.0,0.4725,0.0,MS MARCO
+cohere/xlarge-20221108,1,0.0771,0.0,0.1614,0.0,0.2386,0.0,MS MARCO
+microsoft/TNLGv2_530B,1,0.0457,0.0,0.2856,0.0,0.3313,0.0,MS MARCO
+microsoft/TNLGv2_7B,1,0.0364,0.0,0.1442,0.0,0.1078,0.0,MS MARCO
+openai/text-babbage-001,1,0.0508,0.0,0.1274,0.0,0.1781,0.0,MS MARCO
+openai/text-davinci-003,1,0.0103,0.0,0.3678,0.0,0.3575,0.0,MS MARCO
+together/bloom,1,0.0557,0.0,0.1433,0.0,0.199,0.0,MS MARCO
+together/opt-175b,1,0.0381,0.0,0.2008,0.0,0.2389,0.0,MS MARCO
+AlephAlpha/luminous-base,1,0.067,0.0,0.58,0.0,0.513,0.0,LegalSupport
+ai21/j1-grande-v2-beta,1,0.018,0.0,0.56,0.0,0.578,0.0,LegalSupport
+ai21/j1-jumbo,1,0.082,0.0,0.4,0.0,0.482,0.0,LegalSupport
+ai21/j2-large,1,0.056,0.0,0.62,0.0,0.564,0.0,LegalSupport
+anthropic/stanford-online-all-v4-s3,1,0.141,0.0,0.46,0.0,0.601,0.0,LegalSupport
+cohere/command-xlarge-beta,1,0.021,0.0,0.62,0.0,0.599,0.0,LegalSupport
+cohere/xlarge-20221108,1,0.039,0.0,0.5,0.0,0.539,0.0,LegalSupport
+lmsys/vicuna-7b-v1.3,1,0.068,0.0,0.64,0.0,0.572,0.0,LegalSupport
+microsoft/TNLGv2_530B,1,0.009,0.0,0.58,0.0,0.589,0.0,LegalSupport
+microsoft/TNLGv2_7B,1,0.053,0.0,0.44,0.0,0.493,0.0,LegalSupport
+mosaicml/mpt-30b,1,0.05,0.0,0.6,0.0,0.55,0.0,LegalSupport
+openai/text-babbage-001,1,0.083,0.0,0.6,0.0,0.517,0.0,LegalSupport
+openai/text-davinci-003,1,0.005,0.0,0.64,0.0,0.635,0.0,LegalSupport
+together/bloom,1,0.126,0.0,0.66,0.0,0.534,0.0,LegalSupport
+together/opt-175b,1,0.002,0.0,0.52,0.0,0.518,0.0,LegalSupport
+together/redpajama-incite-base-3b-v1,1,0.084,0.0,0.6,0.0,0.516,0.0,LegalSupport
+writer/palmyra-x,1,0.088,0.0,0.56,0.0,0.648,0.0,LegalSupport
+AlephAlpha/luminous-base,1,0.0874,0.0,0.8,0.0,0.7126,0.0,BoolQ
+ai21/j1-grande-v2-beta,1,0.0268,0.0,0.84,0.0,0.8132,0.0,BoolQ
+ai21/j1-jumbo,1,0.1204,0.0,0.88,0.0,0.7596,0.0,BoolQ
+ai21/j2-large,1,0.0253,0.0,0.76,0.0,0.7347,0.0,BoolQ
+anthropic/stanford-online-all-v4-s3,1,0.0916,0.0,0.9,0.0,0.8084,0.0,BoolQ
+cohere/command-xlarge-beta,1,0.0704,0.0,0.92,0.0,0.8496,0.0,BoolQ
+cohere/xlarge-20221108,1,0.0871,0.0,0.84,0.0,0.7529,0.0,BoolQ
+lmsys/vicuna-7b-v1.3,1,0.0661,0.0,0.6939,0.0,0.76,0.0,BoolQ
+microsoft/TNLGv2_530B,1,0.0372,0.0,0.86,0.0,0.8228,0.0,BoolQ
+microsoft/TNLGv2_7B,1,0.0221,0.0,0.68,0.0,0.7021,0.0,BoolQ
+mosaicml/mpt-30b,1,0.0673,0.0,0.6327,0.0,0.7,0.0,BoolQ
+openai/text-babbage-001,1,0.0874,0.0,0.38,0.0,0.4674,0.0,BoolQ
+openai/text-davinci-003,1,0.0245,0.0,0.9,0.0,0.8755,0.0,BoolQ
+together/bloom,1,0.1622,0.0,0.56,0.0,0.7222,0.0,BoolQ
+together/opt-175b,1,0.1164,0.0,0.92,0.0,0.8036,0.0,BoolQ
+together/redpajama-incite-base-3b-v1,1,0.0718,0.0,0.6122,0.0,0.684,0.0,BoolQ
+writer/palmyra-x,1,0.0282,0.0,0.92,0.0,0.8918,0.0,BoolQ
+AlephAlpha/luminous-base,1,0.0566,0.0,0.64,0.0,0.5834,0.0,EntityMatching
+ai21/j1-grande-v2-beta,1,0.0615,0.0,0.92,0.0,0.8585,0.0,EntityMatching
+ai21/j1-jumbo,1,0.0914,0.0,0.96,0.0,0.8686,0.0,EntityMatching
+ai21/j2-large,1,0.0815,0.0,0.94,0.0,0.8585,0.0,EntityMatching
+anthropic/stanford-online-all-v4-s3,1,0.077,0.0,0.58,0.0,0.657,0.0,EntityMatching
+cohere/command-xlarge-beta,1,0.0144,0.0,0.54,0.0,0.5256,0.0,EntityMatching
+cohere/xlarge-20221108,1,0.0571,0.0,0.86,0.0,0.8029,0.0,EntityMatching
+lmsys/vicuna-7b-v1.3,1,0.0999,0.0,0.98,0.0,0.8801,0.0,EntityMatching
+microsoft/TNLGv2_530B,1,0.022,0.0,0.9,0.0,0.878,0.0,EntityMatching
+microsoft/TNLGv2_7B,1,0.064,0.0,0.62,0.0,0.556,0.0,EntityMatching
+mosaicml/mpt-30b,1,0.0661,0.0,0.96,0.0,0.8939,0.0,EntityMatching
+openai/text-babbage-001,1,0.0643,0.0,0.86,0.0,0.7957,0.0,EntityMatching
+openai/text-davinci-003,1,0.0466,0.0,0.96,0.0,0.9134,0.0,EntityMatching
+together/bloom,1,0.0784,0.0,0.96,0.0,0.8816,0.0,EntityMatching
+together/opt-175b,1,0.0767,0.0,0.08,0.0,0.1567,0.0,EntityMatching
+together/redpajama-incite-base-3b-v1,1,0.0876,0.0,0.22,0.0,0.3076,0.0,EntityMatching
+writer/palmyra-x,1,0.0132,0.0,0.98,0.0,0.9668,0.0,EntityMatching
+AlephAlpha/luminous-base,1,0.036,0.0,0.56,0.0,0.524,0.0,DyckLanguage
+ai21/j1-grande-v2-beta,1,0.024,0.0,0.62,0.0,0.644,0.0,DyckLanguage
+ai21/j1-jumbo,1,0.012,0.0,0.48,0.0,0.468,0.0,DyckLanguage
+ai21/j2-large,1,0.014,0.0,0.56,0.0,0.574,0.0,DyckLanguage
+anthropic/stanford-online-all-v4-s3,1,0.03,0.0,0.88,0.0,0.85,0.0,DyckLanguage
+cohere/command-xlarge-beta,1,0.046,0.0,0.5,0.0,0.454,0.0,DyckLanguage
+cohere/xlarge-20221108,1,0.082,0.0,0.68,0.0,0.598,0.0,DyckLanguage
+lmsys/vicuna-7b-v1.3,1,0.022,0.0,0.6,0.0,0.622,0.0,DyckLanguage
+microsoft/TNLGv2_530B,1,0.022,0.0,0.8,0.0,0.778,0.0,DyckLanguage
+microsoft/TNLGv2_7B,1,0.076,0.0,0.46,0.0,0.536,0.0,DyckLanguage
+mosaicml/mpt-30b,1,0.006,0.0,0.64,0.0,0.634,0.0,DyckLanguage
+openai/text-babbage-001,1,0.008,0.0,0.2,0.0,0.208,0.0,DyckLanguage
+openai/text-davinci-003,1,0.06,0.0,0.7,0.0,0.76,0.0,DyckLanguage
+together/bloom,1,0.052,0.0,0.58,0.0,0.528,0.0,DyckLanguage
+together/opt-175b,1,0.036,0.0,0.48,0.0,0.516,0.0,DyckLanguage
+together/redpajama-incite-base-3b-v1,1,0.05,0.0,0.58,0.0,0.53,0.0,DyckLanguage
+writer/palmyra-x,1,0.022,0.0,0.62,0.0,0.598,0.0,DyckLanguage
+AlephAlpha/luminous-base,1,0.0227,0.0,0.46,0.0,0.4827,0.0,CivilComments
+ai21/j1-grande-v2-beta,1,0.0014,0.0,0.74,0.0,0.7414,0.0,CivilComments
+ai21/j1-jumbo,1,0.0154,0.0,0.4,0.0,0.3846,0.0,CivilComments
+ai21/j2-large,1,0.04,0.0,0.6,0.0,0.64,0.0,CivilComments
+anthropic/stanford-online-all-v4-s3,1,0.0015,0.0,0.5,0.0,0.4985,0.0,CivilComments
+cohere/command-xlarge-beta,1,0.0316,0.0,0.56,0.0,0.5916,0.0,CivilComments
+cohere/xlarge-20221108,1,0.0419,0.0,0.62,0.0,0.6619,0.0,CivilComments
+lmsys/vicuna-7b-v1.3,1,0.0075,0.0,0.48,0.0,0.4725,0.0,CivilComments
+microsoft/TNLGv2_530B,1,0.1342,0.0,0.56,0.0,0.4258,0.0,CivilComments
+microsoft/TNLGv2_7B,1,0.0252,0.0,0.54,0.0,0.5652,0.0,CivilComments
+mosaicml/mpt-30b,1,0.038,0.0,0.44,0.0,0.402,0.0,CivilComments
+openai/text-babbage-001,1,0.0101,0.0,0.8,0.0,0.8101,0.0,CivilComments
+openai/text-davinci-003,1,0.035,0.0,0.66,0.0,0.695,0.0,CivilComments
+together/bloom,1,0.093,0.0,0.52,0.0,0.613,0.0,CivilComments
+together/opt-175b,1,0.0099,0.0,0.22,0.0,0.2101,0.0,CivilComments
+together/redpajama-incite-base-3b-v1,1,0.0544,0.0,0.56,0.0,0.6144,0.0,CivilComments
+writer/palmyra-x,1,0.0014,0.0,0.0,0.0,0.0014,0.0,CivilComments
+AlephAlpha/luminous-base,1,0.0234,0.0,0.08,0.0,0.0566,0.0,MATH-Classic
+ai21/j1-grande-v2-beta,1,0.0147,0.0,0.08,0.0,0.0947,0.0,MATH-Classic
+ai21/j1-jumbo,1,0.032,0.0,0.02,0.0,0.052,0.0,MATH-Classic
+ai21/j2-large,1,0.0184,0.0,0.06,0.0,0.0416,0.0,MATH-Classic
+anthropic/stanford-online-all-v4-s3,1,0.0017,0.0,0.16,0.0,0.1617,0.0,MATH-Classic
+cohere/command-xlarge-beta,1,0.0158,0.0,0.08,0.0,0.0958,0.0,MATH-Classic
+cohere/xlarge-20221108,1,0.0172,0.0,0.12,0.0,0.1028,0.0,MATH-Classic
+lmsys/vicuna-7b-v1.3,1,0.0311,0.0,0.12,0.0,0.0889,0.0,MATH-Classic
+microsoft/TNLGv2_530B,1,0.0197,0.0,0.12,0.0,0.1397,0.0,MATH-Classic
+microsoft/TNLGv2_7B,1,0.0407,0.0,0.08,0.0,0.0393,0.0,MATH-Classic
+mosaicml/mpt-30b,1,0.0655,0.0,0.08,0.0,0.1455,0.0,MATH-Classic
+openai/text-babbage-001,1,0.0285,0.0,0.04,0.0,0.0115,0.0,MATH-Classic
+openai/text-davinci-003,1,0.0519,0.0,0.38,0.0,0.4319,0.0,MATH-Classic
+together/bloom,1,0.0108,0.0,0.04,0.0,0.0508,0.0,MATH-Classic
+together/opt-175b,1,0.0227,0.0,0.02,0.0,0.0427,0.0,MATH-Classic
+together/redpajama-incite-base-3b-v1,1,0.0184,0.0,0.06,0.0,0.0416,0.0,MATH-Classic
+writer/palmyra-x,1,0.0918,0.0,0.28,0.0,0.3718,0.0,MATH-Classic
