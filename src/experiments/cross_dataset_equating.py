@@ -336,11 +336,48 @@ def build_reeval_config() -> dict:
     }
 
 
+def build_mmlu_split_config() -> dict:
+    """Build config that treats every MMLU subtask as a separate dataset."""
+    project_root = Path(__file__).resolve().parents[2]
+    tinybenchmarks_dir = project_root / "aggregated_data/tinybenchmarks"
+    pickle_path = tinybenchmarks_dir / "mmlu_fields.pickle"
+    
+    datasets_config = {}
+    
+    # We need to peek at the pickle to get the subtask names
+    if pickle_path.exists():
+        with open(pickle_path, 'rb') as f:
+            data = pickle.load(f)
+            all_data = data.get('data', {})
+            # Find all MMLU keys (hendrycksTest)
+            mmlu_keys = [k for k in all_data.keys() if "hendrycksTest" in k]
+            
+            for key in mmlu_keys:
+                # Clean name: "hendrycksTest-abstract_algebra" -> "MMLU-abstract_algebra"
+                clean_name = key.replace("hendrycksTest-", "MMLU-")
+                datasets_config[clean_name] = {
+                    "source_type": "tinybenchmarks",
+                    "source_file": "mmlu_fields.pickle",
+                    "pickle_keys": [key],  # Load only this specific subtask
+                    "models": 428,
+                }
+    else:
+        print(f"Warning: {pickle_path} not found, cannot build MMLU split config")
+
+    return {
+        "datasets": datasets_config,
+        "paths": {
+            "tinybenchmarks_dir": str(tinybenchmarks_dir),
+            "aggregated_dir": str(project_root / "aggregated_data/aggregated"),
+        }
+    }
+
+
 def get_data_source_config(mode: str) -> dict:
     """Get data source configuration based on mode.
     
     Args:
-        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only", "reeval"
+        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only", "reeval", "mmlu_split"
     
     Returns:
         Data source configuration dict
@@ -355,9 +392,11 @@ def get_data_source_config(mode: str) -> dict:
         return build_lb_only_config()
     elif mode == "reeval":
         return build_reeval_config()
+    elif mode == "mmlu_split":
+        return build_mmlu_split_config()
     else:
         raise ValueError(f"Unknown data source mode: {mode}. "
-                        f"Options: mixed, helm_lite, helm_classic, lb_only, reeval")
+                        f"Options: mixed, helm_lite, helm_classic, lb_only, reeval, mmlu_split")
 
 
 def load_pickle_data(pickle_path: str) -> dict:

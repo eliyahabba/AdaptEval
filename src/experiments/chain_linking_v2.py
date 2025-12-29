@@ -508,7 +508,7 @@ def train_and_validate(
         'min_anchors_per_eval_dataset': int(min(anchor_counts_by_dataset.values())) if anchor_counts_by_dataset else 0,
     }
     
-    # Helper to add metrics from a validation DataFrame
+    # Helper to add metrics from a validation DataFrame (flat mean across all rows)
     def add_metrics(df, prefix):
         if df is not None and len(df) > 0:
             result[f'{prefix}_n_models'] = len(df)
@@ -522,10 +522,58 @@ def train_and_validate(
                 result[f'{prefix}_true_perf_mean'] = float(df['true_performance'].mean())
                 result[f'{prefix}_true_perf_std'] = float(df['true_performance'].std())
     
+    # Helper to add metrics using mean-of-means (first average per dataset, then across datasets)
+    # This ensures each dataset has equal weight regardless of size
+    def add_metrics_mean_of_means(df, prefix):
+        if df is None or len(df) == 0:
+            return
+        
+        # Find the dataset column
+        dataset_col = None
+        for col in ['scenario_name', 'dataset', 'dataset_name']:
+            if col in df.columns:
+                dataset_col = col
+                break
+        
+        if dataset_col is None:
+            # Fallback to flat mean if no dataset column
+            add_metrics(df, prefix)
+            return
+        
+        datasets = df[dataset_col].unique()
+        result[f'{prefix}_n_models'] = df['model_name'].nunique() if 'model_name' in df.columns else len(df)
+        result[f'{prefix}_n_datasets'] = len(datasets)
+        
+        for metric in ERROR_METRICS:
+            if metric not in df.columns:
+                continue
+            # Compute mean per dataset, then mean across datasets
+            per_dataset_means = []
+            for ds in datasets:
+                ds_vals = df[df[dataset_col] == ds][metric].dropna()
+                if len(ds_vals) > 0:
+                    per_dataset_means.append(float(ds_vals.mean()))
+            
+            if per_dataset_means:
+                result[f'{prefix}_{metric}_mean'] = float(np.mean(per_dataset_means))
+                result[f'{prefix}_{metric}_std'] = float(np.std(per_dataset_means))
+        
+        if 'true_performance' in df.columns:
+            per_dataset_perf = []
+            for ds in datasets:
+                ds_vals = df[df[dataset_col] == ds]['true_performance'].dropna()
+                if len(ds_vals) > 0:
+                    per_dataset_perf.append(float(ds_vals.mean()))
+            if per_dataset_perf:
+                result[f'{prefix}_true_perf_mean'] = float(np.mean(per_dataset_perf))
+                result[f'{prefix}_true_perf_std'] = float(np.std(per_dataset_perf))
+    
     # Add metrics for all three validation types
+    # Validation 1 & 2: single dataset (target) - use flat mean
     add_metrics(validation_df, 'new_model_new_data')
     add_metrics(val_train_on_target_df, 'old_model_new_data')
-    add_metrics(val_test_on_base_df, 'new_model_old_data')
+    # Validation 3: multiple datasets (Base+Chain) - use mean-of-means for consistency with random baselines
+    add_metrics_mean_of_means(val_test_on_base_df, 'new_model_old_data')
     
     # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
@@ -1223,7 +1271,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=2000, help="Training epochs (concurrent/base)")
     parser.add_argument("--epochs-fixed", type=int, default=1000, help="Training epochs (fixed-anchor)")
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
-                        choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval"],
+                        choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval", "mmlu_split"],
                         help="Data source mode")
     parser.add_argument("--target-dataset", type=str, default=None,
                         help="Specific target dataset name (if not specified, uses shuffled[n_base])")
