@@ -129,6 +129,32 @@ class ChainConfigV2(ExperimentConfig):
 # Helper Functions
 # =============================================================================
 
+def round_for_json(obj, decimals: int = 4):
+    """Recursively round all numeric values in a dict/list structure for JSON serialization."""
+    if isinstance(obj, dict):
+        return {k: round_for_json(v, decimals) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [round_for_json(item, decimals) for item in obj]
+    elif isinstance(obj, float):
+        if np.isnan(obj) or np.isinf(obj):
+            return None  # JSON doesn't support NaN/Inf
+        return round(obj, decimals)
+    elif isinstance(obj, (np.floating, np.integer)):
+        val = float(obj)
+        if np.isnan(val) or np.isinf(val):
+            return None
+        return round(val, decimals)
+    return obj
+
+
+def round_df_for_save(df: pd.DataFrame, decimals: int = 4) -> pd.DataFrame:
+    """Round all numeric columns in a DataFrame before saving."""
+    df_rounded = df.copy()
+    for col in df_rounded.select_dtypes(include=[np.number]).columns:
+        df_rounded[col] = df_rounded[col].round(decimals)
+    return df_rounded
+
+
 def summarize_validation(validation_df: pd.DataFrame, prefix: str) -> dict:
     """Summarize validation results with all metrics.
     
@@ -145,15 +171,15 @@ def summarize_validation(validation_df: pd.DataFrame, prefix: str) -> dict:
         if metric in validation_df.columns:
             vals = validation_df[metric].dropna()
             if len(vals) > 0:
-                summary[f'{prefix}_{metric}_mean'] = float(vals.mean())
-                summary[f'{prefix}_{metric}_std'] = float(vals.std())
+                summary[f'{prefix}_{metric}_mean'] = vals.mean()
+                summary[f'{prefix}_{metric}_std'] = vals.std()
     
     # Also save prediction metrics
     for pred_col in ['anchor_prediction', 'irt_prediction', 'gp_irt_prediction', 'pirt_prediction']:
         if pred_col in validation_df.columns:
             vals = validation_df[pred_col].dropna()
             if len(vals) > 0:
-                summary[f'{prefix}_{pred_col}_mean'] = float(vals.mean())
+                summary[f'{prefix}_{pred_col}_mean'] = vals.mean()
     
     return summary
 
@@ -481,14 +507,14 @@ def train_and_validate(
         # Aggregate across datasets
         if all_random_irt_errors:
             random_baseline_new_model_old_data = {
-                'random_gp_irt_error_mean': float(np.mean(all_random_irt_errors)),
-                'random_gp_irt_error_std': float(np.std(all_random_irt_errors)),
+                'random_gp_irt_error_mean': np.mean(all_random_irt_errors),
+                'random_gp_irt_error_std': np.std(all_random_irt_errors),
                 'n_datasets': len(all_random_irt_errors),
             }
         if all_random_simple_errors:
             random_simple_new_model_old_data = {
-                'simple_random_error_mean': float(np.mean(all_random_simple_errors)),
-                'simple_random_error_std': float(np.std(all_random_simple_errors)),
+                'simple_random_error_mean': np.mean(all_random_simple_errors),
+                'simple_random_error_std': np.std(all_random_simple_errors),
             }
     
     # Combine Validation 3 per-model DataFrames
@@ -516,11 +542,11 @@ def train_and_validate(
                 if metric in df.columns:
                     vals = df[metric].dropna()
                     if len(vals) > 0:
-                        result[f'{prefix}_{metric}_mean'] = float(vals.mean())
-                        result[f'{prefix}_{metric}_std'] = float(vals.std())
+                        result[f'{prefix}_{metric}_mean'] = vals.mean()
+                        result[f'{prefix}_{metric}_std'] = vals.std()
             if 'true_performance' in df.columns:
-                result[f'{prefix}_true_perf_mean'] = float(df['true_performance'].mean())
-                result[f'{prefix}_true_perf_std'] = float(df['true_performance'].std())
+                result[f'{prefix}_true_perf_mean'] = df['true_performance'].mean()
+                result[f'{prefix}_true_perf_std'] = df['true_performance'].std()
     
     # Helper to add metrics using mean-of-means (first average per dataset, then across datasets)
     # This ensures each dataset has equal weight regardless of size
@@ -552,21 +578,21 @@ def train_and_validate(
             for ds in datasets:
                 ds_vals = df[df[dataset_col] == ds][metric].dropna()
                 if len(ds_vals) > 0:
-                    per_dataset_means.append(float(ds_vals.mean()))
+                    per_dataset_means.append(ds_vals.mean())
             
             if per_dataset_means:
-                result[f'{prefix}_{metric}_mean'] = float(np.mean(per_dataset_means))
-                result[f'{prefix}_{metric}_std'] = float(np.std(per_dataset_means))
+                result[f'{prefix}_{metric}_mean'] = np.mean(per_dataset_means)
+                result[f'{prefix}_{metric}_std'] = np.std(per_dataset_means)
         
         if 'true_performance' in df.columns:
             per_dataset_perf = []
             for ds in datasets:
                 ds_vals = df[df[dataset_col] == ds]['true_performance'].dropna()
                 if len(ds_vals) > 0:
-                    per_dataset_perf.append(float(ds_vals.mean()))
+                    per_dataset_perf.append(ds_vals.mean())
             if per_dataset_perf:
-                result[f'{prefix}_true_perf_mean'] = float(np.mean(per_dataset_perf))
-                result[f'{prefix}_true_perf_std'] = float(np.std(per_dataset_perf))
+                result[f'{prefix}_true_perf_mean'] = np.mean(per_dataset_perf)
+                result[f'{prefix}_true_perf_std'] = np.std(per_dataset_perf)
     
     # Add metrics for all three validation types
     # Validation 1 & 2: single dataset (target) - use flat mean
@@ -600,11 +626,11 @@ def train_and_validate(
             if metric in validation_df.columns:
                 vals = validation_df[metric].dropna()
                 if len(vals) > 0:
-                    result[f'{metric}_mean'] = float(vals.mean())
-                    result[f'{metric}_std'] = float(vals.std())
+                    result[f'{metric}_mean'] = vals.mean()
+                    result[f'{metric}_std'] = vals.std()
         if 'true_performance' in validation_df.columns:
-            result['true_performance_mean'] = float(validation_df['true_performance'].mean())
-            result['true_performance_std'] = float(validation_df['true_performance'].std())
+            result['true_performance_mean'] = validation_df['true_performance'].mean()
+            result['true_performance_std'] = validation_df['true_performance'].std()
     
     # Build dict of all per-model DataFrames for saving
     per_model_dfs = {
@@ -745,7 +771,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         'chain_pool': chain_pool,
     }
     with open(output_dir / "config.json", 'w') as f:
-        json.dump(config_dict, f, indent=2)
+        json.dump(round_for_json(config_dict), f, indent=2)
     
     # -------------------------------------------------------------------------
     # Step 2: Define global train/test split (based on Base models only)
@@ -1100,7 +1126,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
         with open(scenario_dir / "results.json", 'w') as f:
             result_to_save = result.copy()
             result_to_save['chain'] = list(result_to_save['chain'])
-            json.dump(result_to_save, f, indent=2)
+            json.dump(round_for_json(result_to_save), f, indent=2)
         
         # Save detailed validation CSVs and JSONs (per-model results)
         def save_per_model_df(df, name, method_prefix):
@@ -1109,23 +1135,25 @@ def run_chain_linking_v2(config: ChainConfigV2):
                 return
             csv_path = scenario_dir / f"{name}_{method_prefix}.csv"
             json_path = scenario_dir / f"{name}_{method_prefix}.json"
-            df.to_csv(csv_path, index=False)
+            # Round numeric columns to 4 decimal places for cleaner output
+            df_rounded = round_df_for_save(df)
+            df_rounded.to_csv(csv_path, index=False)
             # Save as JSON dict
-            if 'model_name' in df.columns:
+            if 'model_name' in df_rounded.columns:
                 # Find dataset column (may be 'dataset', 'dataset_name', or 'scenario_name')
                 dataset_col = None
                 for col in ['dataset', 'dataset_name', 'scenario_name']:
-                    if col in df.columns:
+                    if col in df_rounded.columns:
                         dataset_col = col
                         break
                 
-                has_duplicates = df['model_name'].duplicated().any()
+                has_duplicates = df_rounded['model_name'].duplicated().any()
                 
                 if dataset_col is not None:
                     # Nested structure for per-model-per-dataset results:
                     # {model_name: {dataset: {metric: value, ...}}}
                     nested_dict = {}
-                    for _, row in df.iterrows():
+                    for _, row in df_rounded.iterrows():
                         model = row['model_name']
                         dataset = row[dataset_col]
                         if model not in nested_dict:
@@ -1137,14 +1165,14 @@ def run_chain_linking_v2(config: ChainConfigV2):
                 elif has_duplicates:
                     # Fallback: duplicates but no dataset column - save as list of records
                     print(f"      ⚠️ WARNING {name}_{method_prefix}: duplicate model_names without dataset column!")
-                    print(f"         Columns: {list(df.columns)}")
+                    print(f"         Columns: {list(df_rounded.columns)}")
                     print(f"         Saving as list of records instead of nested dict")
-                    json_dict = df.to_dict(orient='records')
+                    json_dict = df_rounded.to_dict(orient='records')
                 else:
                     # Simple structure: {model_name: {metric: value, ...}}
-                    json_dict = df.set_index('model_name').to_dict(orient='index')
+                    json_dict = df_rounded.set_index('model_name').to_dict(orient='index')
                 with open(json_path, 'w') as f:
-                    json.dump(json_dict, f, indent=2)
+                    json.dump(round_for_json(json_dict), f, indent=2)
         
         # Save Fixed method per-model results
         if fixed_per_model_dfs:
@@ -1193,11 +1221,11 @@ def run_chain_linking_v2(config: ChainConfigV2):
         results_for_df.append(r_copy)
     
     results_df = pd.DataFrame(results_for_df)
-    results_df.to_csv(output_dir / "all_results.csv", index=False)
+    round_df_for_save(results_df).to_csv(output_dir / "all_results.csv", index=False)
     
     # Also save as JSON for easy programmatic access
     with open(output_dir / "all_results.json", 'w') as f:
-        json.dump([{**r, 'chain': list(r['chain'])} for r in results], f, indent=2)
+        json.dump(round_for_json([{**r, 'chain': list(r['chain'])} for r in results]), f, indent=2)
     
     total_time = time.time() - experiment_start
     

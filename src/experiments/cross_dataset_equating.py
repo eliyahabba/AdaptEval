@@ -81,6 +81,36 @@ class ExperimentConfig:
 
 
 # =============================================================================
+# Helper Functions for Clean Output
+# =============================================================================
+
+def round_for_json(obj, decimals: int = 4):
+    """Recursively round all numeric values in a dict/list structure for JSON serialization."""
+    if isinstance(obj, dict):
+        return {k: round_for_json(v, decimals) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [round_for_json(item, decimals) for item in obj]
+    elif isinstance(obj, float):
+        if np.isnan(obj) or np.isinf(obj):
+            return None  # JSON doesn't support NaN/Inf
+        return round(obj, decimals)
+    elif isinstance(obj, (np.floating, np.integer)):
+        val = float(obj)
+        if np.isnan(val) or np.isinf(val):
+            return None
+        return round(val, decimals)
+    return obj
+
+
+def round_df_for_save(df: pd.DataFrame, decimals: int = 4) -> pd.DataFrame:
+    """Round all numeric columns in a DataFrame before saving."""
+    df_rounded = df.copy()
+    for col in df_rounded.select_dtypes(include=[np.number]).columns:
+        df_rounded[col] = df_rounded[col].round(decimals)
+    return df_rounded
+
+
+# =============================================================================
 # Data Loading
 # =============================================================================
 
@@ -2091,15 +2121,15 @@ def run_single_split_experiment(
     
     # Save results
     with open(results_file, 'w') as f:
-        json.dump(result, f, indent=2)
+        json.dump(round_for_json(result), f, indent=2)
     
     # Save detailed results
     if base_results:
-        pd.DataFrame(base_results).to_csv(split_dir / "base_validation.csv", index=False)
+        round_df_for_save(pd.DataFrame(base_results)).to_csv(split_dir / "base_validation.csv", index=False)
     if link_results_concurrent:
-        pd.DataFrame(link_results_concurrent).to_csv(split_dir / "link_concurrent_validation.csv", index=False)
+        round_df_for_save(pd.DataFrame(link_results_concurrent)).to_csv(split_dir / "link_concurrent_validation.csv", index=False)
     if link_results_fixed:
-        pd.DataFrame(link_results_fixed).to_csv(split_dir / "link_fixed_validation.csv", index=False)
+        round_df_for_save(pd.DataFrame(link_results_fixed)).to_csv(split_dir / "link_fixed_validation.csv", index=False)
     
     return result
 
@@ -2268,7 +2298,7 @@ def run_cross_dataset_equating(config: Optional[ExperimentConfig] = None):
     # 5. Save summary
     print("\n5. Saving summary...")
     results_df = pd.DataFrame(all_results)
-    results_df.to_csv(output_dir / "all_results.csv", index=False)
+    round_df_for_save(results_df).to_csv(output_dir / "all_results.csv", index=False)
     
     # 6. Print summary
     print("\n" + "=" * 70)
@@ -2696,7 +2726,7 @@ def print_role_impact_analysis(output_dir: str | Path = None):
     
     # Save results
     output_path = Path(output_dir) / "role_impact_analysis.csv"
-    df.to_csv(output_path, index=False)
+    round_df_for_save(df).to_csv(output_path, index=False)
     print(f"\n✅ Results saved to: {output_path}")
     
     # Generate plots
@@ -2750,7 +2780,7 @@ def rebuild_all_results_csv(output_dir: str | Path) -> pd.DataFrame:
     
     # Save to CSV
     output_file = output_dir / "all_results.csv"
-    results_df.to_csv(output_file, index=False)
+    round_df_for_save(results_df).to_csv(output_file, index=False)
     print(f"\n✅ Saved {len(results)} results to: {output_file}")
     
     # Print column summary
