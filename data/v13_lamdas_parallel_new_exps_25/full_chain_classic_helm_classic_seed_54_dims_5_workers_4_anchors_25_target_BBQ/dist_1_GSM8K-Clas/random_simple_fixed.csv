@@ -1,0 +1,13 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+AlephAlpha/luminous-base,1,0.004,0.0,0.32,0.0,0.316,0.0
+ai21/j1-grande-v2-beta,1,0.136,0.0,0.6,0.0,0.464,0.0
+ai21/j1-jumbo,1,0.058,0.0,0.4,0.0,0.342,0.0
+ai21/j2-large,1,0.153,0.0,0.48,0.0,0.327,0.0
+anthropic/stanford-online-all-v4-s3,1,0.149,0.0,0.68,0.0,0.531,0.0
+cohere/command-xlarge-beta,1,0.167,0.0,0.64,0.0,0.473,0.0
+cohere/xlarge-20221108,1,0.068,0.0,0.44,0.0,0.372,0.0
+microsoft/TNLGv2_530B,1,0.108,0.0,0.56,0.0,0.452,0.0
+openai/text-babbage-001,1,0.056,0.0,0.4,0.0,0.344,0.0
+together/bloom,1,0.039,0.0,0.4,0.0,0.361,0.0
+together/opt-175b,1,0.019,0.0,0.32,0.0,0.339,0.0
+together/yalm,1,0.033,0.0,0.36,0.0,0.327,0.0

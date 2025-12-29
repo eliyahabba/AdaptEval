@@ -1,0 +1,15 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,Disinformation,Disinformation,48,25,3.7935,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9933,0.5208
+ai21/j1-grande-v2-beta,Disinformation,Disinformation,48,25,3.7935,0.0125,0.0,0.0,0.0,0.0,0.0125,0.0125,0.0125,0.0125,0.9933,0.5208
+ai21/j1-jumbo,Disinformation,Disinformation,48,25,-7.88,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.9933,0.5208
+ai21/j2-large,Disinformation,Disinformation,48,25,-7.88,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.9933,0.5208
+anthropic/stanford-online-all-v4-s3,Disinformation,Disinformation,48,25,-7.88,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.9933,0.5208
+cohere/command-xlarge-beta,Disinformation,Disinformation,48,25,3.7935,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9933,0.5208
+cohere/xlarge-20221108,Disinformation,Disinformation,48,25,3.7935,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9933,0.5208
+microsoft/TNLGv2_530B,Disinformation,Disinformation,48,25,13.2837,0.0083,0.0042,0.0042,0.0042,0.0042,0.0042,0.0042,0.0042,0.0042,0.9933,0.5208
+microsoft/TNLGv2_7B,Disinformation,Disinformation,48,25,-8.8214,0.0083,0.0083,0.0083,0.0083,0.0083,0.0,0.0,0.0,0.0,0.9933,0.5208
+openai/text-babbage-001,Disinformation,Disinformation,48,25,3.7935,0.0083,0.0,0.0,0.0,0.0,0.0083,0.0083,0.0083,0.0083,0.9933,0.5208
+openai/text-davinci-003,Disinformation,Disinformation,48,25,3.7935,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9933,0.5208
+together/bloom,Disinformation,Disinformation,48,25,132.1987,0.0083,0.0083,0.0259,0.0085,0.0259,0.0,0.0176,0.0001,0.0176,0.9933,0.5208
+together/opt-175b,Disinformation,Disinformation,48,25,0.2057,0.0125,0.0125,0.0074,0.0125,0.0066,0.0,0.0051,0.0,0.0059,0.9933,0.5208
+writer/palmyra-x,Disinformation,Disinformation,48,25,-90.1443,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.9933,0.5208

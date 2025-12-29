@@ -1,0 +1,15 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,Disinformation,Disinformation,48,25,-0.3848,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.743,0.5208
+ai21/j1-grande-v2-beta,Disinformation,Disinformation,48,25,545.2052,0.0125,0.0167,0.025,0.0188,0.025,0.0042,0.0125,0.0063,0.0125,0.743,0.5208
+ai21/j1-jumbo,Disinformation,Disinformation,48,25,3.916,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.743,0.5208
+ai21/j2-large,Disinformation,Disinformation,48,25,3.916,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.743,0.5208
+anthropic/stanford-online-all-v4-s3,Disinformation,Disinformation,48,25,3.916,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.743,0.5208
+cohere/command-xlarge-beta,Disinformation,Disinformation,48,25,-0.3848,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.743,0.5208
+cohere/xlarge-20221108,Disinformation,Disinformation,48,25,-0.3848,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.743,0.5208
+microsoft/TNLGv2_530B,Disinformation,Disinformation,48,25,6.8318,0.0083,0.0083,0.011,0.0091,0.0113,0.0,0.0027,0.0008,0.003,0.743,0.5208
+microsoft/TNLGv2_7B,Disinformation,Disinformation,48,25,4.6761,0.0083,0.0083,0.0083,0.0083,0.0083,0.0,0.0,0.0,0.0,0.743,0.5208
+openai/text-babbage-001,Disinformation,Disinformation,48,25,-0.3848,0.0083,0.0,0.0,0.0,0.0,0.0083,0.0083,0.0083,0.0083,0.743,0.5208
+openai/text-davinci-003,Disinformation,Disinformation,48,25,-0.3848,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.743,0.5208
+together/bloom,Disinformation,Disinformation,48,25,-23.5627,0.0083,0.0083,0.0115,0.0091,0.0114,0.0,0.0032,0.0008,0.003,0.743,0.5208
+together/opt-175b,Disinformation,Disinformation,48,25,-8.4509,0.0125,0.0125,0.0294,0.0168,0.0292,0.0,0.0169,0.0043,0.0167,0.743,0.5208
+writer/palmyra-x,Disinformation,Disinformation,48,25,1313.4124,0.0042,0.0042,0.0875,0.0256,0.0875,0.0,0.0833,0.0214,0.0833,0.743,0.5208
