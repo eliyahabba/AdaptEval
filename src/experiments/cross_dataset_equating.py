@@ -1264,6 +1264,67 @@ def select_anchors_for_dataset(
         return [], []
 
 
+def select_anchors_pooled(
+    item_params: pd.DataFrame,
+    n_anchors: int,
+    train_df: pd.DataFrame,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+) -> tuple[list[str], list[float]]:
+    """Select anchor items from ALL datasets combined (pooled).
+    
+    Instead of selecting N anchors per dataset, this selects N anchors
+    from the entire pool using IRT clustering on all questions together.
+    
+    Args:
+        item_params: DataFrame with IRT parameters indexed by question_id
+        n_anchors: Total number of anchors to select from the combined pool
+        train_df: Training data (used for balance weights if available)
+        A_matrix, B_matrix: MIRT matrices for clustering
+    
+    Returns:
+        (anchor_ids, anchor_weights) from the combined pool
+    """
+    if len(item_params) == 0:
+        print("      Warning: No items in item_params for pooled selection")
+        return [], []
+    
+    n_anchors = min(n_anchors, len(item_params))
+    
+    if n_anchors < 5:
+        print(f"      Warning: Only {len(item_params)} items available, need at least 5")
+        return [], []
+    
+    # Get balance weights if available
+    balance_weights = None
+    if hasattr(item_params, 'attrs'):
+        bw = item_params.attrs.get('balance_weights')
+        if bw is not None:
+            balance_weights = np.array(bw)
+    
+    anchor_config = AnchorConfig(
+        number_items=n_anchors,
+        method="irt_clustering",
+        balance_weights=balance_weights,
+    )
+    
+    try:
+        anchor_ids, anchor_weights = find_anchor_items_clustering(
+            item_params,
+            config=anchor_config,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+        )
+        
+        weights_list = anchor_weights.tolist() if hasattr(anchor_weights, 'tolist') else list(anchor_weights)
+        print(f"      ✓ Pooled selection: {len(anchor_ids)} anchors selected from {len(item_params)} total items")
+        return anchor_ids, weights_list
+        
+    except Exception as e:
+        print(f"      Warning: Failed to select pooled anchors: {e}")
+        return [], []
+
+
 def precompute_thetas_from_all_anchors(
     test_df: pd.DataFrame,
     item_params: pd.DataFrame,

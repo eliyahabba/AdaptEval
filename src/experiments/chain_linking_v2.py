@@ -49,6 +49,7 @@ from cross_dataset_equating import (
     train_irt_on_base,
     select_anchors,
     select_anchors_for_dataset,
+    select_anchors_pooled,
     build_anchor_items_for_fixed_calibration,
     precompute_thetas_from_all_anchors,
     run_validation,
@@ -394,6 +395,45 @@ def train_and_validate(
         val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
     
     # ==========================================================================
+    # Validation 3 POOLED: IRT with N anchors from combined Base+Chain pool
+    # ==========================================================================
+    val_test_on_base_pooled_df = None
+    pooled_irt_new_model_old_data = {}
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        print("      Running Validation 3 POOLED IRT...")
+        
+        # Filter to Base+Chain questions
+        base_chain_questions = base_chain_test_df['question_id'].unique()
+        pooled_irt_params = irt_params[irt_params.index.isin(base_chain_questions)].copy()
+        all_question_ids = list(irt_params.index)
+        pooled_indices = [all_question_ids.index(q) for q in pooled_irt_params.index if q in all_question_ids]
+        pooled_A = A_matrix[:, :, pooled_indices] if A_matrix is not None else None
+        pooled_B = B_matrix[:, :, pooled_indices] if B_matrix is not None else None
+        
+        # Select N anchors using IRT clustering on combined pool
+        pooled_anchors, pooled_weights = select_anchors_pooled(
+            pooled_irt_params, config.n_anchors_per_dataset, train_df, pooled_A, pooled_B
+        )
+        
+        if pooled_anchors:
+            precomputed_thetas_pooled = precompute_thetas_from_all_anchors(
+                base_chain_test_df, irt_params, pooled_anchors, A_matrix, B_matrix
+            )
+            test_on_base_pooled_results = run_validation(
+                base_chain_test_df, irt_params, pooled_anchors, pooled_weights,
+                train_df, A_matrix, B_matrix, precomputed_thetas_pooled
+            )
+            val_test_on_base_pooled_df = pd.DataFrame(test_on_base_pooled_results) if test_on_base_pooled_results else None
+            
+            if val_test_on_base_pooled_df is not None and 'dataset' in val_test_on_base_pooled_df.columns:
+                for metric in ERROR_METRICS:
+                    if metric in val_test_on_base_pooled_df.columns:
+                        means = val_test_on_base_pooled_df.groupby('dataset')[metric].mean()
+                        pooled_irt_new_model_old_data[f'pooled_irt_{metric}_mean'] = means.mean()
+                        pooled_irt_new_model_old_data[f'pooled_irt_{metric}_std'] = means.std()
+                pooled_irt_new_model_old_data['n_pooled_anchors'] = len(pooled_anchors)
+    
+    # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
     # ==========================================================================
     print("      Running random baselines for Validation 1 (New Model + New Data)...")
@@ -522,6 +562,42 @@ def train_and_validate(
     random_simple_new_model_old_data_per_model_df = pd.concat(random_simple_new_model_old_data_per_model_dfs) if random_simple_new_model_old_data_per_model_dfs else pd.DataFrame()
     
     # ==========================================================================
+    # Validation 3 POOLED Random: N random questions from combined Base+Chain pool
+    # ==========================================================================
+    random_simple_pooled_new_model_old_data = {}
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        print("      Running Validation 3 POOLED Random...")
+        
+        all_pooled_questions = list(base_chain_test_df['question_id'].unique())
+        n_pooled_anchors = min(config.n_anchors_per_dataset, len(all_pooled_questions))
+        
+        np.random.seed(seed + distance * 100 + 1000)
+        pooled_random_questions = set(np.random.choice(all_pooled_questions, size=n_pooled_anchors, replace=False))
+        
+        score_col = 'normalized_score' if 'normalized_score' in base_chain_test_df.columns else 'score'
+        per_dataset_errors = []
+        
+        for ds_name in base_chain_test_df['dataset'].unique():
+            ds_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name]
+            ds_pooled = ds_df[ds_df['question_id'].isin(pooled_random_questions)]
+            if len(ds_pooled) == 0:
+                continue
+            
+            true_perf = ds_df.groupby('model_name')[score_col].mean()
+            pred_perf = ds_pooled.groupby('model_name')[score_col].mean()
+            common_models = set(true_perf.index) & set(pred_perf.index) & set(test_models)
+            if common_models:
+                errors = [abs(pred_perf[m] - true_perf[m]) for m in common_models]
+                per_dataset_errors.append(np.mean(errors))
+        
+        if per_dataset_errors:
+            random_simple_pooled_new_model_old_data = {
+                'pooled_simple_random_error_mean': np.mean(per_dataset_errors),
+                'pooled_simple_random_error_std': np.std(per_dataset_errors),
+                'n_pooled_anchors': n_pooled_anchors,
+            }
+    
+    # ==========================================================================
     # Compile results
     # ==========================================================================
     result = {
@@ -619,6 +695,14 @@ def train_and_validate(
     for key, val in random_simple_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
     
+    # Add POOLED Random baselines for Validation 3 (New Model + Old Data)
+    for key, val in random_simple_pooled_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+    
+    # Add POOLED IRT results for Validation 3 (New Model + Old Data)
+    for key, val in pooled_irt_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+    
     # Keep backward compatibility - also add without prefix for main metric
     if validation_df is not None and len(validation_df) > 0:
         result['n_test_models'] = len(validation_df)
@@ -638,6 +722,7 @@ def train_and_validate(
         'validation_df': validation_df,  # New Model + New Data
         'val_train_on_target_df': val_train_on_target_df,  # Old Model + New Data
         'val_test_on_base_df': val_test_on_base_df,  # New Model + Old Data
+        'val_test_on_base_pooled_df': val_test_on_base_pooled_df,  # New Model + Old Data (POOLED anchors)
         # Random baseline per-model results
         'random_baseline_per_model_df': random_baseline_per_model_df,  # Val1 random IRT
         'random_simple_per_model_df': random_simple_per_model_df,  # Val1 random simple
@@ -1179,6 +1264,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
             save_per_model_df(fixed_per_model_dfs.get('validation_df'), 'validation', 'fixed')
             save_per_model_df(fixed_per_model_dfs.get('val_train_on_target_df'), 'validation_old_model_new_data', 'fixed')
             save_per_model_df(fixed_per_model_dfs.get('val_test_on_base_df'), 'validation_new_model_old_data', 'fixed')
+            save_per_model_df(fixed_per_model_dfs.get('val_test_on_base_pooled_df'), 'validation_new_model_old_data_pooled', 'fixed')
             save_per_model_df(fixed_per_model_dfs.get('random_baseline_per_model_df'), 'random_irt', 'fixed')
             save_per_model_df(fixed_per_model_dfs.get('random_simple_per_model_df'), 'random_simple', 'fixed')
             save_per_model_df(fixed_per_model_dfs.get('random_baseline_old_model_per_model_df'), 'random_irt_old_model', 'fixed')
@@ -1191,6 +1277,7 @@ def run_chain_linking_v2(config: ChainConfigV2):
             save_per_model_df(concurrent_per_model_dfs.get('validation_df'), 'validation', 'concurrent')
             save_per_model_df(concurrent_per_model_dfs.get('val_train_on_target_df'), 'validation_old_model_new_data', 'concurrent')
             save_per_model_df(concurrent_per_model_dfs.get('val_test_on_base_df'), 'validation_new_model_old_data', 'concurrent')
+            save_per_model_df(concurrent_per_model_dfs.get('val_test_on_base_pooled_df'), 'validation_new_model_old_data_pooled', 'concurrent')
             save_per_model_df(concurrent_per_model_dfs.get('random_baseline_per_model_df'), 'random_irt', 'concurrent')
             save_per_model_df(concurrent_per_model_dfs.get('random_simple_per_model_df'), 'random_simple', 'concurrent')
             save_per_model_df(concurrent_per_model_dfs.get('random_baseline_old_model_per_model_df'), 'random_irt_old_model', 'concurrent')
