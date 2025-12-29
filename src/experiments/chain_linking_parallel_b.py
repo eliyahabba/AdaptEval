@@ -46,11 +46,7 @@ import pandas as pd
 
 # Set multiprocessing start method before any other imports that might use it
 import multiprocessing
-if multiprocessing.get_start_method(allow_none=True) != 'spawn':
-    try:
-        multiprocessing.set_start_method('spawn', force=True)
-    except RuntimeError:
-        pass  # Already set
+multiprocessing.set_start_method('spawn', force=True)
 
 from cross_dataset_equating import (
     PROJECT_ROOT,
@@ -450,12 +446,15 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             val_test_on_base_pooled_df = pd.DataFrame(test_on_base_pooled_results) if test_on_base_pooled_results else None
             
             if val_test_on_base_pooled_df is not None and 'dataset' in val_test_on_base_pooled_df.columns:
+                pooled_irt_per_dataset_errors = {}
                 for metric in ERROR_METRICS:
                     if metric in val_test_on_base_pooled_df.columns:
                         means = val_test_on_base_pooled_df.groupby('dataset')[metric].mean()
+                        pooled_irt_per_dataset_errors = means.to_dict()
                         pooled_irt_new_model_old_data[f'pooled_irt_{metric}_mean'] = means.mean()
                         pooled_irt_new_model_old_data[f'pooled_irt_{metric}_std'] = means.std()
                 pooled_irt_new_model_old_data['n_pooled_anchors'] = len(pooled_anchors)
+                pooled_irt_new_model_old_data['per_dataset_errors'] = pooled_irt_per_dataset_errors
     
     # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
@@ -598,7 +597,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         pooled_random_questions = set(np.random.choice(all_pooled_questions, size=n_pooled_anchors, replace=False))
         
         score_col = 'normalized_score' if 'normalized_score' in base_chain_test_df.columns else 'score'
-        per_dataset_errors = []
+        pooled_per_dataset_errors = {}  # Save per-dataset errors
         
         for ds_name in base_chain_test_df['dataset'].unique():
             ds_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name]
@@ -611,13 +610,101 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             common_models = set(true_perf.index) & set(pred_perf.index) & set(test_models)
             if common_models:
                 errors = [abs(pred_perf[m] - true_perf[m]) for m in common_models]
-                per_dataset_errors.append(np.mean(errors))
+                pooled_per_dataset_errors[ds_name] = np.mean(errors)
         
-        if per_dataset_errors:
+        if pooled_per_dataset_errors:
             random_simple_pooled_new_model_old_data = {
-                'pooled_simple_random_error_mean': np.mean(per_dataset_errors),
-                'pooled_simple_random_error_std': np.std(per_dataset_errors),
+                'pooled_simple_random_error_mean': np.mean(list(pooled_per_dataset_errors.values())),
+                'pooled_simple_random_error_std': np.std(list(pooled_per_dataset_errors.values())),
                 'n_pooled_anchors': n_pooled_anchors,
+                'per_dataset_errors': pooled_per_dataset_errors,
+            }
+    
+    # ==========================================================================
+    # Validation 3 PROPORTIONAL: N total anchors distributed by dataset size
+    # ==========================================================================
+    proportional_irt_new_model_old_data = {}
+    proportional_random_new_model_old_data = {}
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+        print(f"      Task {task.task_id}: Running Validation 3 PROPORTIONAL...")
+        
+        # Calculate proportional allocation per dataset
+        datasets = base_chain_test_df['dataset'].unique()
+        dataset_sizes = {ds: base_chain_test_df[base_chain_test_df['dataset'] == ds]['question_id'].nunique() for ds in datasets}
+        total_questions = sum(dataset_sizes.values())
+        n_total = task.n_anchors_per_dataset
+        
+        # Allocate proportionally with rounding (ensure exact total)
+        raw_alloc = {ds: n_total * size / total_questions for ds, size in dataset_sizes.items()}
+        alloc = {ds: int(np.floor(v)) for ds, v in raw_alloc.items()}
+        remainder = n_total - sum(alloc.values())
+        # Give remainder to datasets with largest fractional parts
+        fractional = {ds: raw_alloc[ds] - alloc[ds] for ds in datasets}
+        for ds in sorted(fractional, key=fractional.get, reverse=True)[:remainder]:
+            alloc[ds] += 1
+        
+        score_col = 'normalized_score' if 'normalized_score' in base_chain_test_df.columns else 'score'
+        np.random.seed(task.seed + task.distance * 100 + 2000)
+        
+        # --- PROPORTIONAL IRT ---
+        prop_irt_per_dataset_errors = {}
+        prop_anchors_all = []
+        prop_weights_all = []
+        for ds_name, n_ds in alloc.items():
+            if n_ds < 1:
+                continue
+            ds_anchors, ds_weights = select_anchors_for_dataset(
+                irt_params, n_ds, ds_name, final_df, A_matrix, B_matrix
+            )
+            prop_anchors_all.extend(ds_anchors)
+            prop_weights_all.extend(ds_weights)
+        
+        if prop_anchors_all:
+            prop_thetas = precompute_thetas_from_all_anchors(
+                base_chain_test_df, irt_params, prop_anchors_all, A_matrix, B_matrix
+            )
+            prop_results = run_validation(
+                base_chain_test_df, irt_params, prop_anchors_all, prop_weights_all,
+                final_df, A_matrix, B_matrix, prop_thetas
+            )
+            if prop_results:
+                prop_df = pd.DataFrame(prop_results)
+                if 'dataset' in prop_df.columns:
+                    for metric in ERROR_METRICS:
+                        if metric in prop_df.columns:
+                            means = prop_df.groupby('dataset')[metric].mean()
+                            prop_irt_per_dataset_errors = means.to_dict()
+                            proportional_irt_new_model_old_data[f'proportional_irt_{metric}_mean'] = means.mean()
+                            proportional_irt_new_model_old_data[f'proportional_irt_{metric}_std'] = means.std()
+                    proportional_irt_new_model_old_data['n_proportional_anchors'] = len(prop_anchors_all)
+                    proportional_irt_new_model_old_data['allocation'] = alloc
+                    proportional_irt_new_model_old_data['per_dataset_errors'] = prop_irt_per_dataset_errors
+        
+        # --- PROPORTIONAL RANDOM ---
+        prop_random_per_dataset_errors = {}
+        for ds_name, n_ds in alloc.items():
+            if n_ds < 1:
+                continue
+            ds_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name]
+            ds_questions = list(ds_df['question_id'].unique())
+            n_sample = min(n_ds, len(ds_questions))
+            random_qs = set(np.random.choice(ds_questions, size=n_sample, replace=False))
+            
+            ds_sampled = ds_df[ds_df['question_id'].isin(random_qs)]
+            true_perf = ds_df.groupby('model_name')[score_col].mean()
+            pred_perf = ds_sampled.groupby('model_name')[score_col].mean()
+            common_models = set(true_perf.index) & set(pred_perf.index) & set(test_models)
+            if common_models:
+                errors = [abs(pred_perf[m] - true_perf[m]) for m in common_models]
+                prop_random_per_dataset_errors[ds_name] = np.mean(errors)
+        
+        if prop_random_per_dataset_errors:
+            proportional_random_new_model_old_data = {
+                'proportional_random_error_mean': np.mean(list(prop_random_per_dataset_errors.values())),
+                'proportional_random_error_std': np.std(list(prop_random_per_dataset_errors.values())),
+                'n_proportional_anchors': sum(alloc.values()),
+                'allocation': alloc,
+                'per_dataset_errors': prop_random_per_dataset_errors,
             }
     
     # ==========================================================================
@@ -729,6 +816,12 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # Add POOLED IRT results for Validation 3 (New Model + Old Data)
     for key, val in pooled_irt_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+    
+    # Add PROPORTIONAL results for Validation 3 (New Model + Old Data)
+    for key, val in proportional_irt_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+    for key, val in proportional_random_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
     
     # Backward compatibility - also add without prefix for main metric
