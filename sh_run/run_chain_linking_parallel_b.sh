@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-parallel
-#SBATCH --mem=8g
-#SBATCH --time=8:0:0
+#SBATCH --mem=12g
+#SBATCH --time=5:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --gres=gg:g4:4
