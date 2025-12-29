@@ -404,7 +404,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         A_matrix=A_matrix,
         B_matrix=B_matrix,
         precomputed_thetas=precomputed_thetas,
-        n_seeds=10,
+        n_seeds=1,
         base_seed=task.seed + task.distance * 100,  # Different seed per distance
         return_per_model=True,
     )
@@ -412,7 +412,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         test_df=target_test_df,
         target_name=task.target_name,
         n_random_questions=task.n_anchors_per_dataset,
-        n_seeds=10,
+        n_seeds=1,
         base_seed=task.seed + task.distance * 100,  # Different seed per distance
         return_per_model=True,
     )
@@ -435,7 +435,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             A_matrix=A_matrix,
             B_matrix=B_matrix,
             precomputed_thetas=precomputed_thetas_train,
-            n_seeds=10,
+            n_seeds=1,
             base_seed=task.seed + task.distance * 100,  # Different seed per distance
             return_per_model=True,
         )
@@ -443,7 +443,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             test_df=target_train_df,
             target_name=task.target_name,
             n_random_questions=task.n_anchors_per_dataset,
-            n_seeds=10,
+            n_seeds=1,
             base_seed=task.seed + task.distance * 100,  # Different seed per distance
             return_per_model=True,
         )
@@ -475,7 +475,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 A_matrix=A_matrix,
                 B_matrix=B_matrix,
                 precomputed_thetas=precomputed_thetas_base_chain,
-                n_seeds=10,
+                n_seeds=1,
                 base_seed=task.seed + task.distance * 100,  # Different seed per distance
                 return_per_model=True,
             )
@@ -483,7 +483,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 test_df=ds_test_df,
                 target_name=ds_name,
                 n_random_questions=min(task.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
-                n_seeds=10,
+                n_seeds=1,
                 base_seed=task.seed + task.distance * 100,  # Different seed per distance
                 return_per_model=True,
             )
@@ -763,9 +763,29 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         chain_pool = shuffled[config.n_base_datasets:]
         print(f"   Using user-specified target: {target_name}")
     else:
-        base_names = shuffled[:config.n_base_datasets]
-        target_name = shuffled[config.n_base_datasets]
-        chain_pool = shuffled[config.n_base_datasets + 1:]
+        # Define roles - skip targets that already have output folders
+        output_parent = Path(config.output_dir).parent
+        current_seed = config.shuffle_seed
+        while True:
+            np.random.seed(current_seed)
+            shuffled = list(all_dataset_names)
+            np.random.shuffle(shuffled)
+            base_names = shuffled[:config.n_base_datasets]
+            target_name = shuffled[config.n_base_datasets]
+            chain_pool = shuffled[config.n_base_datasets + 1:]
+            
+            # Check if target already exists in output parent
+            existing = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
+            if not existing:
+                break
+            print(f"   ⏭️ Target '{target_name}' already exists (seed {current_seed}), trying next seed...")
+            current_seed += 1
+            if current_seed > config.shuffle_seed + 100:
+                raise ValueError("Could not find unique target after 100 seed attempts")
+        
+        if current_seed != config.shuffle_seed:
+            print(f"   Changed shuffle_seed: {config.shuffle_seed} → {current_seed}")
+            config.shuffle_seed = current_seed
     
     target_n_questions = int(datasets[target_name]['question_id'].nunique())
 

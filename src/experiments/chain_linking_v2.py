@@ -687,10 +687,29 @@ def run_chain_linking_v2(config: ChainConfigV2):
         chain_pool = shuffled[config.n_base_datasets:]
         print(f"   Using user-specified target: {target_name}")
     else:
-        # Define roles
-        base_names = shuffled[:config.n_base_datasets]
-        target_name = shuffled[config.n_base_datasets]
-        chain_pool = shuffled[config.n_base_datasets + 1:]
+        # Define roles - skip targets that already have output folders
+        output_parent = Path(config.output_dir).parent
+        current_seed = config.shuffle_seed
+        while True:
+            np.random.seed(current_seed)
+            shuffled = list(all_dataset_names)
+            np.random.shuffle(shuffled)
+            base_names = shuffled[:config.n_base_datasets]
+            target_name = shuffled[config.n_base_datasets]
+            chain_pool = shuffled[config.n_base_datasets + 1:]
+            
+            # Check if target already exists in output parent
+            existing = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
+            if not existing:
+                break
+            print(f"   ⏭️ Target '{target_name}' already exists (seed {current_seed}), trying next seed...")
+            current_seed += 1
+            if current_seed > config.shuffle_seed + 100:
+                raise ValueError("Could not find unique target after 100 seed attempts")
+        
+        if current_seed != config.shuffle_seed:
+            print(f"   Changed shuffle_seed: {config.shuffle_seed} → {current_seed}")
+            config.shuffle_seed = current_seed
 
     # Update output directory with target name
     initial_output_dir = Path(config.output_dir)
