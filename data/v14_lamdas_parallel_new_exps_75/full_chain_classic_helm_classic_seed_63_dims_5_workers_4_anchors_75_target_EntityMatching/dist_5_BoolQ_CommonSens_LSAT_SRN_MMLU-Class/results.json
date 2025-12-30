@@ -211,5 +211,21 @@
     "LSAT": 3,
     "SRN": 7,
     "MMLU-Classic": 4
-  }
+  },
+  "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.4284,
+  "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.2229,
+  "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.0798,
+  "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0536,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2149,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1609,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.0795,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.0534,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.4291,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.2202,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.0799,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0507,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.3016,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.2406,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0795,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0505
 }

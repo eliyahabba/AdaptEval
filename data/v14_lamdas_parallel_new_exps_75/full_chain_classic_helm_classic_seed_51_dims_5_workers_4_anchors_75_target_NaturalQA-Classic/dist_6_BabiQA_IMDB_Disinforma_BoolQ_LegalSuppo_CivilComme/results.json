@@ -214,5 +214,21 @@
     "BoolQ": 4,
     "LegalSupport": 4,
     "CivilComments": 31
-  }
+  },
+  "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.4515,
+  "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.2565,
+  "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.1019,
+  "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0486,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2693,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1965,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.1015,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.0486,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.492,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.223,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.0995,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0574,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2994,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1939,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0993,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0573
 }
