@@ -1028,7 +1028,7 @@ if __name__ == "__main__":
     parser.add_argument("--dims", type=int, nargs="+", default=[2, 5], help="Dimensions to search")
     parser.add_argument("--epochs", type=int, default=2000, help="Training epochs")
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
-                        choices=["mixed", "helm_lite", "helm_classic", "lb_only", "reeval"],
+                        choices=["mixed", "helm_lite", "helm_classic", "lb_only", "lb", "reeval", "mmlu_split", "tinybenchmarks"],
                         help="Data source mode: 'helm_lite' (default, 91 models, 9 datasets), "
                              "'helm_classic' (70 models, 30 datasets), "
                              "'mixed' (uses data_source_config.json), "

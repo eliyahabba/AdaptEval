@@ -407,7 +407,7 @@ def get_data_source_config(mode: str) -> dict:
     """Get data source configuration based on mode.
     
     Args:
-        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only", "reeval", "mmlu_split"
+        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only", "lb", "reeval", "mmlu_split", "tinybenchmarks"
     
     Returns:
         Data source configuration dict
@@ -418,7 +418,7 @@ def get_data_source_config(mode: str) -> dict:
         return build_helm_lite_config()
     elif mode == "helm_classic":
         return build_helm_classic_config()
-    elif mode == "lb_only":
+    elif mode in ["lb_only", "lb", "tinybenchmarks"]:
         return build_lb_only_config()
     elif mode == "reeval":
         return build_reeval_config()
@@ -426,7 +426,7 @@ def get_data_source_config(mode: str) -> dict:
         return build_mmlu_split_config()
     else:
         raise ValueError(f"Unknown data source mode: {mode}. "
-                        f"Options: mixed, helm_lite, helm_classic, lb_only, reeval, mmlu_split")
+                        f"Options: mixed, helm_lite, helm_classic, lb_only, lb, reeval, mmlu_split, tinybenchmarks")
 
 
 def load_pickle_data(pickle_path: str) -> dict:
@@ -2981,7 +2981,7 @@ if __name__ == "__main__":
     parser.add_argument("--freeze-all-base", action="store_true",
                         help="Freeze ALL Base items in fixed-anchor calibration (slower, original behavior)")
     parser.add_argument("--data-source-mode", type=str, default="mixed",
-                        choices=["mixed", "helm_lite", "helm_classic", "lb_only"],
+                        choices=["mixed", "helm_lite", "helm_classic", "lb_only", "lb", "reeval", "mmlu_split", "tinybenchmarks"],
                         help="Data source mode: 'mixed' (default, uses data_source_config.json), "
                              "'helm_lite' (91 models, 9 datasets), "
                              "'helm_classic' (70 models, 30 datasets), "
