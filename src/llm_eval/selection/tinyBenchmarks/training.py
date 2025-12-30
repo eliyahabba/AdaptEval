@@ -200,7 +200,7 @@ def binarize_responses(matrix_df: pd.DataFrame) -> pd.DataFrame:
     print(f"   🔄 Data has {len(unique_scores)} unique scores, applying thresholding...")
     
     result_data = []
-    cs = np.linspace(0.01, 0.99, 100)  # Threshold values to consider
+    cs = np.linspace(0.01, 0.99, 1000)  # Threshold values to consider
     
     # If no dataset column, treat all as one dataset
     if "dataset" not in matrix_df.columns:
