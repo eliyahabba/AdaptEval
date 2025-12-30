@@ -516,25 +516,23 @@ def extract_from_pickle(
 
 
 def extract_from_parquet(
-    parquet_path: str,
+    parquet_df: pd.DataFrame,
     dataset_name: str,
     filter_pattern: str,
 ) -> pd.DataFrame:
-    """Extract a dataset from aggregated parquet file.
+    """Extract a dataset from aggregated parquet DataFrame.
     
     Args:
-        parquet_path: Path to parquet file
+        parquet_df: Loaded parquet DataFrame
         dataset_name: Clean dataset name
         filter_pattern: Pattern to filter dataset_name column
     
     Returns:
         DataFrame with columns: model_name, question_id, dataset, normalized_score
     """
-    df = pd.read_parquet(parquet_path)
-    
     # Filter by dataset name pattern
-    mask = df['dataset_name'].str.contains(filter_pattern, case=False, na=False)
-    df = df[mask].copy()
+    mask = parquet_df['dataset_name'].str.contains(filter_pattern, case=False, na=False)
+    df = parquet_df[mask].copy()
     
     if df.empty:
         return pd.DataFrame()
@@ -612,8 +610,9 @@ def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
     reeval_dir = Path(paths_config.get('reeval_dir', 
                       str(Path(config.tinybenchmarks_dir).parent / 'reeval')))
     
-    # Cache loaded pickle files and reeval data
+    # Cache loaded pickle files, parquet files, and reeval data
     loaded_pickles = {}
+    loaded_parquets = {}
     reeval_data = None
     
     # Determine which datasets to load
@@ -657,15 +656,19 @@ def load_all_datasets(config: ExperimentConfig) -> dict[str, pd.DataFrame]:
                 df = extract_from_pickle(pickle_data, dataset_name, keys, key_pattern)
                 
             elif source_type == 'aggregated':
-                # Load from parquet
+                # Load from parquet (with caching)
                 parquet_path = aggregated_dir / source_file
                 
-                if not parquet_path.exists():
-                    print(f"  Warning: {parquet_path} not found, skipping {dataset_name}")
-                    continue
+                if source_file not in loaded_parquets:
+                    if not parquet_path.exists():
+                        print(f"  Warning: {parquet_path} not found, skipping {dataset_name}")
+                        continue
+                    loaded_parquets[source_file] = pd.read_parquet(parquet_path)
+                    print(f"  Loaded parquet: {source_file}")
                 
+                parquet_df = loaded_parquets[source_file]
                 filter_pattern = ds_config.get('parquet_filter', dataset_name)
-                df = extract_from_parquet(str(parquet_path), dataset_name, filter_pattern)
+                df = extract_from_parquet(parquet_df, dataset_name, filter_pattern)
             
             elif source_type == 'reeval':
                 # Load from reeval parquet (load once and cache, supports split files)
@@ -2214,6 +2217,7 @@ def run_cross_dataset_equating(config: Optional[ExperimentConfig] = None):
         "helm_lite": "HELM Lite only (91 models, 9 datasets)",
         "helm_classic": "HELM Classic only (70 models, 30 datasets)",
         "lb_only": "Open LLM Leaderboard only (395 models, 6 datasets)",
+        "lb": "Open LLM Leaderboard only (395 models, 6 datasets)",
         "reeval": "reeval dataset (183 models, 22 scenarios)",
     }
     print(f"   {mode_info.get(config.data_source_mode, 'Unknown mode')}")

@@ -112,6 +112,13 @@ class ChainConfigV2(ExperimentConfig):
     
     def __post_init__(self):
         """Apply DEBUG_MODE overrides after initialization."""
+        # Auto-adjust for tinybenchmarks/lb (only 6 datasets available)
+        if self.data_source_mode in ["tinybenchmarks", "lb_only", "lb"]:
+            if self.n_base_datasets == 6:
+                self.n_base_datasets = 1
+            if self.max_chain_length == 10:
+                self.max_chain_length = 5
+
         if DEBUG_MODE:
             # Only override if still at default values (allows CLI override)
             if self.n_base_datasets == 6:
