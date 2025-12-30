@@ -994,8 +994,33 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             # Check if target dataset already has any experiment (skip regardless of seed)
             existing_dirs = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
             if existing_dirs:
-                print(f"   ⏭️ Target '{target_name}' already exists in output directory (seed {current_seed}), trying next seed...")
-                current_seed += 1
+                target_dir = existing_dirs[0]
+                all_results_file = target_dir / "all_results.json"
+                config_file = target_dir / "config.json"
+
+                # Check if existing experiment has same n_models_per_chain parameter
+                existing_n_models = None
+                if config_file.exists():
+                    try:
+                        with open(config_file) as f:
+                            existing_config = json.load(f)
+                        existing_n_models = existing_config.get('n_models_per_chain')
+                    except:
+                        pass  # If can't read config, assume it's different
+
+                # If n_models_per_chain differs, treat as different experiment
+                if config.n_models_per_chain != existing_n_models:
+                    print(f"   🔄 Target '{target_name}' exists but with different n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain}), running new experiment")
+                    break
+
+                if all_results_file.exists():
+                    # Complete experiment exists with same parameters - skip to next seed
+                    print(f"   ⏭️ Target '{target_name}' already has complete results with same parameters, trying next seed...")
+                    current_seed += 1
+                else:
+                    # Directory exists but no complete results - resume this experiment
+                    print(f"   🔄 Target '{target_name}' directory exists but incomplete - resuming with current seed")
+                    break
             else:
                 break
             current_seed += 1
