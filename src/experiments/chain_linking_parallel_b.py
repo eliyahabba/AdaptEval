@@ -88,6 +88,7 @@ EXCLUDED_DATASETS = {
     'BOLD',               # mean≈0.002, model_std≈0.003
     'RealToxicityPrompts',# mean≈0.029, model_std≈0.015
     'SyntheticReasoning', # mean≈0.049, model_std≈0.021
+    "Disinformation",    # mean≈0.055, model_std≈0.030
 }
 
 # Minimum anchors needed per evaluated dataset for paper-grade runs.
