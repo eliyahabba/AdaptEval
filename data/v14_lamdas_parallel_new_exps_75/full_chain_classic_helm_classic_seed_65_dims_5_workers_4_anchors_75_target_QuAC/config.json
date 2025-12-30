@@ -1,0 +1,40 @@
+{
+  "n_base_datasets": 6,
+  "max_chain_length": 10,
+  "shuffle_seed": 76,
+  "num_workers": 4,
+  "epochs": 2000,
+  "dims_search": [
+    5
+  ],
+  "n_anchors_per_dataset": 75,
+  "base_datasets": [
+    "IMDB",
+    "MATH-Classic",
+    "EntityMatching",
+    "Disinformation",
+    "LegalSupport",
+    "RAFT"
+  ],
+  "target_dataset": "QuAC",
+  "chain_pool": [
+    "BoolQ",
+    "SRN",
+    "CommonSense",
+    "CivilComments",
+    "MS MARCO",
+    "NaturalQA-Classic",
+    "NarrativeQA-Classic",
+    "TruthfulQA-Classic",
+    "LSAT",
+    "EntityDataImputation",
+    "BabiQA",
+    "MMLU-Classic",
+    "WikiFact",
+    "GSM8K-Classic",
+    "BBQ",
+    "DyckLanguage",
+    "BLiMP"
+  ],
+  "target_n_questions": 1000
+}

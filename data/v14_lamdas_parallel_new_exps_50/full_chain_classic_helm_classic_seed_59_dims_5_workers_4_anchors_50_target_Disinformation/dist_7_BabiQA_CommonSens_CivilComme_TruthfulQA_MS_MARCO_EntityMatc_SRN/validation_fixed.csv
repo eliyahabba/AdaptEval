@@ -1,0 +1,15 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,Disinformation,Disinformation,48,48,-0.6343,0.0,0.0,0.1166,0.0,0.0,0.0,0.1166,0.0,0.0,0.9948,1.0
+ai21/j1-grande-v2-beta,Disinformation,Disinformation,48,48,-0.7095,0.0125,0.0125,0.1799,0.0125,0.0125,0.0,0.1674,0.0,0.0,0.9948,1.0
+ai21/j1-jumbo,Disinformation,Disinformation,48,48,-0.2875,0.0042,0.0042,0.2606,0.0042,0.0042,0.0,0.2564,0.0,0.0,0.9948,1.0
+ai21/j2-large,Disinformation,Disinformation,48,48,-0.6469,0.0042,0.0042,0.151,0.0042,0.0042,0.0,0.1468,0.0,0.0,0.9948,1.0
+anthropic/stanford-online-all-v4-s3,Disinformation,Disinformation,48,48,-0.1233,0.0042,0.0042,0.2294,0.0042,0.0042,0.0,0.2252,0.0,0.0,0.9948,1.0
+cohere/command-xlarge-beta,Disinformation,Disinformation,48,48,-0.8369,0.0,0.0,0.1787,0.0,0.0,0.0,0.1787,0.0,0.0,0.9948,1.0
+cohere/xlarge-20221108,Disinformation,Disinformation,48,48,-0.9638,0.0,0.0,0.1814,0.0,0.0,0.0,0.1814,0.0,0.0,0.9948,1.0
+microsoft/TNLGv2_530B,Disinformation,Disinformation,48,48,-0.015,0.0083,0.0083,0.2172,0.0083,0.0083,0.0,0.2089,0.0,0.0,0.9948,1.0
+microsoft/TNLGv2_7B,Disinformation,Disinformation,48,48,-1.103,0.0083,0.0083,0.1904,0.0083,0.0083,0.0,0.1821,0.0,0.0,0.9948,1.0
+openai/text-babbage-001,Disinformation,Disinformation,48,48,-0.6186,0.0083,0.0083,0.1922,0.0083,0.0083,0.0,0.1839,0.0,0.0,0.9948,1.0
+openai/text-davinci-003,Disinformation,Disinformation,48,48,0.0917,0.0,0.0,0.1369,0.0,0.0,0.0,0.1369,0.0,0.0,0.9948,1.0
+together/bloom,Disinformation,Disinformation,48,48,-0.619,0.0083,0.0083,0.1911,0.0083,0.0083,0.0,0.1828,0.0,0.0,0.9948,1.0
+together/opt-175b,Disinformation,Disinformation,48,48,-0.595,0.0125,0.0125,0.3235,0.0125,0.0125,0.0,0.311,0.0,0.0,0.9948,1.0
+writer/palmyra-x,Disinformation,Disinformation,48,48,0.7658,0.0042,0.0042,0.2423,0.0042,0.0042,0.0,0.2381,0.0,0.0,0.9948,1.0
