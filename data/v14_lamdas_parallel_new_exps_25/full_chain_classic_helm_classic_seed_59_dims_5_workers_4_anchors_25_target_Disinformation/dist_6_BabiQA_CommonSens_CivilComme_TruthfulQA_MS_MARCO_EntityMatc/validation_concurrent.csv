@@ -1,0 +1,15 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,Disinformation,Disinformation,48,25,-2.9816,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.989,0.5208
+ai21/j1-grande-v2-beta,Disinformation,Disinformation,48,25,-2.9816,0.0125,0.0,0.0,0.0,0.0,0.0125,0.0125,0.0125,0.0125,0.989,0.5208
+ai21/j1-jumbo,Disinformation,Disinformation,48,25,4.5919,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.989,0.5208
+ai21/j2-large,Disinformation,Disinformation,48,25,4.5919,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.989,0.5208
+anthropic/stanford-online-all-v4-s3,Disinformation,Disinformation,48,25,4.5919,0.0042,0.0042,0.0042,0.0042,0.0042,0.0,0.0,0.0,0.0,0.989,0.5208
+cohere/command-xlarge-beta,Disinformation,Disinformation,48,25,-2.9816,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.989,0.5208
+cohere/xlarge-20221108,Disinformation,Disinformation,48,25,-2.9816,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.989,0.5208
+microsoft/TNLGv2_530B,Disinformation,Disinformation,48,25,-3.4012,0.0083,0.0167,0.0157,0.0167,0.0156,0.0083,0.0073,0.0083,0.0073,0.989,0.5208
+microsoft/TNLGv2_7B,Disinformation,Disinformation,48,25,6.1721,0.0083,0.0083,0.0083,0.0083,0.0083,0.0,0.0,0.0,0.0,0.989,0.5208
+openai/text-babbage-001,Disinformation,Disinformation,48,25,149.7938,0.0083,0.0167,0.0282,0.0168,0.0282,0.0083,0.0199,0.0085,0.0199,0.989,0.5208
+openai/text-davinci-003,Disinformation,Disinformation,48,25,-2.9816,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.989,0.5208
+together/bloom,Disinformation,Disinformation,48,25,4.8504,0.0083,0.0167,0.0104,0.0166,0.0108,0.0083,0.0021,0.0083,0.0025,0.989,0.5208
+together/opt-175b,Disinformation,Disinformation,48,25,20.6903,0.0125,0.0208,0.0198,0.0208,0.0199,0.0083,0.0073,0.0083,0.0074,0.989,0.5208
+writer/palmyra-x,Disinformation,Disinformation,48,25,-34.6308,0.0042,0.025,0.0101,0.0248,0.0102,0.0208,0.0059,0.0207,0.006,0.989,0.5208

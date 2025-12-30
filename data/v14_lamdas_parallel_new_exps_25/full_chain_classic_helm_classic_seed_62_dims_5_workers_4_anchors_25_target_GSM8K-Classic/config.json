@@ -1,0 +1,40 @@
+{
+  "n_base_datasets": 6,
+  "max_chain_length": 10,
+  "shuffle_seed": 63,
+  "num_workers": 4,
+  "epochs": 2000,
+  "dims_search": [
+    5
+  ],
+  "n_anchors_per_dataset": 25,
+  "base_datasets": [
+    "MMLU-Classic",
+    "CivilComments",
+    "BLiMP",
+    "EntityMatching",
+    "MS MARCO",
+    "DyckLanguage"
+  ],
+  "target_dataset": "GSM8K-Classic",
+  "chain_pool": [
+    "TruthfulQA-Classic",
+    "LegalSupport",
+    "EntityDataImputation",
+    "CommonSense",
+    "BoolQ",
+    "WikiFact",
+    "Disinformation",
+    "BabiQA",
+    "SRN",
+    "MATH-Classic",
+    "QuAC",
+    "NarrativeQA-Classic",
+    "BBQ",
+    "NaturalQA-Classic",
+    "IMDB",
+    "RAFT",
+    "LSAT"
+  ],
+  "target_n_questions": 1000
+}
