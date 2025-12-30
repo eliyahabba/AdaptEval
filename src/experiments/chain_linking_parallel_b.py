@@ -990,11 +990,20 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             target_name = shuffled[config.n_base_datasets]
             chain_pool = shuffled[config.n_base_datasets + 1:]
             
-            # Check if target already exists in output parent
-            existing = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
-            if not existing:
+            # Check if target already exists in output parent (only skip if all_results.json exists)
+            existing_dirs = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
+            if not existing_dirs:
                 break
-            print(f"   ⏭️ Target '{target_name}' already exists (seed {current_seed}), trying next seed...")
+            # Check if results are complete by looking for all_results.json
+            target_dir = existing_dirs[0]  # Should only be one
+            all_results_file = target_dir / "all_results.json"
+            if all_results_file.exists():
+                print(f"   ⏭️ Target '{target_name}' already has complete results (seed {current_seed}), trying next seed...")
+                current_seed += 1
+            else:
+                # Directory exists but no complete results - resume from this seed
+                print(f"   🔄 Target '{target_name}' directory exists but incomplete - resuming with seed {current_seed}")
+                break
             current_seed += 1
             if current_seed > config.shuffle_seed + 100:
                 raise ValueError("Could not find unique target after 100 seed attempts")
