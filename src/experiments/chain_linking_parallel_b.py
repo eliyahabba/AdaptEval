@@ -1036,7 +1036,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     print(f"   Target: {target_name}")
     print(f"   Chain pool: {chain_pool[:5]}...")
     
-    # Save config
+    # Save config (initial - will be updated after train/test split)
     config_dict = {
         'n_base_datasets': config.n_base_datasets,
         'max_chain_length': config.max_chain_length,
@@ -1046,15 +1046,11 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         'dims_search': config.dims_search,
         'n_anchors_per_dataset': config.n_anchors_per_dataset,
         'n_models_per_chain': config.n_models_per_chain,
-        'n_train_models': len(train_models),
-        'n_chain_train_models': len(chain_train_models),
         'base_datasets': base_names,
         'target_dataset': target_name,
         'chain_pool': chain_pool,
         'target_n_questions': target_n_questions,
     }
-    with open(output_dir / "config.json", 'w') as f:
-        json.dump(round_for_json(config_dict), f, indent=2)
     
     # -------------------------------------------------------------------------
     # Step 2: Train/test split
@@ -1081,6 +1077,12 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     else:
         chain_train_models = train_models
         print(f"   Train: {len(train_models)}, Test: {len(test_models)}")
+    
+    # Save config with model counts
+    config_dict['n_train_models'] = len(train_models)
+    config_dict['n_chain_train_models'] = len(chain_train_models)
+    with open(output_dir / "config.json", 'w') as f:
+        json.dump(round_for_json(config_dict), f, indent=2)
     
     # -------------------------------------------------------------------------
     # Step 3: Train Base IRT (sequential)
