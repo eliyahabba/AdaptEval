@@ -139,6 +139,7 @@ class ParallelChainConfig(ExperimentConfig):
     n_anchors_per_dataset: int = 100
     num_workers: int = 4  # Number of parallel workers
     target_dataset: str | None = None  # Specific target dataset (if None, use shuffled[n_base])
+    n_models_per_chain: int | None = None  # Number of models to use for chain steps (None = all train models)
     
     def __post_init__(self):
         # Auto-adjust for tinybenchmarks/lb (only 6 datasets available)
@@ -1044,6 +1045,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         'epochs': config.epochs,
         'dims_search': config.dims_search,
         'n_anchors_per_dataset': config.n_anchors_per_dataset,
+        'n_models_per_chain': config.n_models_per_chain,
+        'n_train_models': len(train_models),
+        'n_chain_train_models': len(chain_train_models),
         'base_datasets': base_names,
         'target_dataset': target_name,
         'chain_pool': chain_pool,
@@ -1067,7 +1071,16 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     test_models = set(np.random.choice(base_models_list, size=n_test, replace=False))
     train_models = base_models - test_models
     
-    print(f"   Train: {len(train_models)}, Test: {len(test_models)}")
+    # Subset of train_models for chain steps (if specified)
+    if config.n_models_per_chain is not None:
+        n_chain_models = min(config.n_models_per_chain, len(train_models))
+        train_models_list = sorted(list(train_models))
+        np.random.seed(config.seed + 1000)  # Different seed for chain model selection
+        chain_train_models = set(np.random.choice(train_models_list, size=n_chain_models, replace=False))
+        print(f"   Train: {len(train_models)}, Test: {len(test_models)}, Chain models: {len(chain_train_models)}")
+    else:
+        chain_train_models = train_models
+        print(f"   Train: {len(train_models)}, Test: {len(test_models)}")
     
     # -------------------------------------------------------------------------
     # Step 3: Train Base IRT (sequential)
@@ -1077,6 +1090,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     base_dfs = []
     for ds_name in base_names:
         df = datasets[ds_name]
+        # Base uses ALL train_models for proper baseline
         df = df[df['model_name'].isin(train_models)].copy()
         base_dfs.append(df)
     base_df = pd.concat(base_dfs, ignore_index=True)
@@ -1147,7 +1161,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         print(f"   Chain step {i+1}: adding {chain_ds}...")
         
         chain_df = datasets[chain_ds]
-        chain_df = chain_df[chain_df['model_name'].isin(train_models)].copy()
+        chain_df = chain_df[chain_df['model_name'].isin(chain_train_models)].copy()
         combined_df = pd.concat([current_df, chain_df], ignore_index=True)
         
         available_questions = set(combined_df['question_id'].astype(str).unique())
@@ -1237,6 +1251,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     # Get target data
     target_df = datasets[target_name]
+    # Use ALL train_models for validation - test if model generalizes to models not in chain training
     target_train_df = target_df[target_df['model_name'].isin(train_models)].copy()
     target_test_df = target_df[target_df['model_name'].isin(test_models)].copy()
     
@@ -1369,7 +1384,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 lr=config.lr,
                 target_name=target_name,
                 test_models=list(test_models),
-                train_models=list(train_models),
+                train_models=list(train_models),  # ALL train_models for generalization test
                 seed=config.seed,
                 cumulative_chain_time=cumulative_chain_time,
             )
@@ -1552,6 +1567,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     print("=" * 70)
     print(f"Target: {target_name}")
     print(f"Workers: {config.num_workers}")
+    print(f"Train models: {len(train_models)}" + 
+          (f" (chain subset: {len(chain_train_models)})" if config.n_models_per_chain else ""))
     print(f"Total time: {total_time:.1f}s (parallel phase: {parallel_time:.1f}s)")
     print(f"\n{'Dist':<6} {'Chain':<20} {'Fixed':<10} {'Concurrent':<12} {'Delta':<10}")
     print("-" * 60)
@@ -1621,6 +1638,8 @@ if __name__ == "__main__":
     parser.add_argument("--num-workers", type=int, default=4, help="Number of parallel workers")
     parser.add_argument("--target-dataset", type=str, default=None, 
                         help="Specific target dataset name (if not specified, uses shuffled[n_base])")
+    parser.add_argument("--n-models-per-chain", type=int, default=None,
+                        help="Number of models to use for training (None = all train models)")
     
     args = parser.parse_args()
     
@@ -1637,14 +1656,17 @@ if __name__ == "__main__":
         data_source_mode=args.data_source_mode,
         num_workers=args.num_workers,
         target_dataset=args.target_dataset,
+        n_models_per_chain=args.n_models_per_chain,
     )
     
     if args.output_dir:
         config.output_dir = args.output_dir
     else:
         dims_str = "-".join(map(str, args.dims))
-        config.output_dir = str(PROJECT_ROOT / "data" / 
-            f"chain_parallel_b_{args.data_source_mode}_seed_{args.shuffle_seed}_dims_{dims_str}")
+        base_name = f"chain_parallel_b_{args.data_source_mode}_seed_{args.shuffle_seed}_dims_{dims_str}"
+        if args.n_models_per_chain is not None:
+            base_name += f"_models_{args.n_models_per_chain}"
+        config.output_dir = str(PROJECT_ROOT / "data" / base_name)
     
     run_chain_linking_parallel(config)
 

@@ -65,7 +65,7 @@ from llm_eval.training import train_item_parameters
 # =============================================================================
 
 # ============== DEBUG MODE - SET TO False FOR REAL EXPERIMENTS ==============
-DEBUG_MODE = False  # <-- CHANGE TO True FOR QUICK TEST RUNS
+DEBUG_MODE = True  # <-- CHANGE TO True FOR QUICK TEST RUNS
 # =============================================================================
 
 # Debug overrides (only used when DEBUG_MODE = True)
@@ -1507,7 +1507,7 @@ if __name__ == "__main__":
     parser.add_argument("--dims", type=int, nargs="+", default=[5], help="IRT dimensions")
     parser.add_argument("--epochs", type=int, default=2000, help="Training epochs (concurrent/base)")
     parser.add_argument("--epochs-fixed", type=int, default=1000, help="Training epochs (fixed-anchor)")
-    parser.add_argument("--data-source-mode", type=str, default="helm_lite",
+    parser.add_argument("--data-source-mode", type=str, default="lb_only",
                         choices=["mixed", "helm_lite", "helm_classic", "lb_only", "lb", "reeval", "mmlu_split", "tinybenchmarks"],
                         help="Data source mode")
     parser.add_argument("--target-dataset", type=str, default=None,
