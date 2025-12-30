@@ -1663,7 +1663,7 @@ if __name__ == "__main__":
         config.output_dir = args.output_dir
     else:
         dims_str = "-".join(map(str, args.dims))
-        base_name = f"chain_parallel_b_{args.data_source_mode}_seed_{args.shuffle_seed}_dims_{dims_str}"
+        base_name = f"chain_parallel_b_{args.data_source_mode}_seed_{args.shuffle_seed}_anchors_{args.n_anchors_per_dataset}_dims_{dims_str}"
         if args.n_models_per_chain is not None:
             base_name += f"_models_{args.n_models_per_chain}"
         config.output_dir = str(PROJECT_ROOT / "data" / base_name)

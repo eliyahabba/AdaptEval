@@ -26,15 +26,17 @@
 #   - Total: 12 tasks (6 distances × 2 methods)
 #
 # Usage:
-#   sbatch run_chain_linking_parallel_lb.sh [output_dir] [shuffle_seed] [n_anchors] [dims] [num_workers] [target_dataset] [n_models_per_chain]
+#   sbatch run_chain_linking_parallel_lb.sh [output_dir] [shuffle_seed] [n_anchors] [n_models_per_chain] [dims] [num_workers] [target_dataset]
 #
 # Examples:
-#   sbatch run_chain_linking_parallel_lb.sh                                           # All defaults
+#   sbatch run_chain_linking_parallel_lb.sh                                           # All defaults (all models)
 #   sbatch run_chain_linking_parallel_lb.sh /path/output 42                           # Specific output & seed
-#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 "5" 4                 # Full config
-#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 "5" 4 "MMLU"          # Specific target
-#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 "5" 4 "" 50           # 50 models per chain
-#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 "5" 4 "MMLU" 100      # Target + 100 models
+#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 "" "5" 4              # Full config, all models
+#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 50 "5" 4                        # 50 models per chain
+#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 100 "5" 4                       # 100 models per chain
+#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 200 "5" 4                       # 200 models per chain
+#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 10 "5" 4                        # 10 models per chain
+#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 50 "5" 4 "MMLU"                 # 50 models + specific target
 
 # Set Hugging Face cache directory
 export HF_HOME=/cs/snapless/gabis/gabis/shared/huggingface/
@@ -70,18 +72,18 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $1 = output directory (optional)
 #   $2 = shuffle seed (optional, default: 42)
 #   $3 = n_anchors (optional, default: 100)
-#   $4 = dims (optional, default: "5")
-#   $5 = num workers (optional, default: 4)
-#   $6 = target dataset (optional)
-#   $7 = n_models_per_chain (optional, default: "" = all models)
+#   $4 = n_models_per_chain (optional, default: "" = all models)
+#   $5 = dims (optional, default: "5")
+#   $6 = num workers (optional, default: 4)
+#   $7 = target dataset (optional)
 
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_parallel_lb}"
 SHUFFLE_SEED="${2:-42}"
 N_ANCHORS="${3:-100}"
-DIMS="${4:-5}"
-NUM_WORKERS="${5:-4}"
-TARGET_DATASET="${6:-}"
-N_MODELS_PER_CHAIN="${7:-}"
+N_MODELS_PER_CHAIN="${4:-}"
+DIMS="${5:-5}"
+NUM_WORKERS="${6:-4}"
+TARGET_DATASET="${7:-}"
 
 # LB-specific configuration (6 datasets total)
 # The Python code auto-adjusts these when data_source_mode=lb:
@@ -94,10 +96,7 @@ DATA_SOURCE_MODE="lb"
 
 # Build output directory name
 SANITIZED_DIMS="${DIMS// /-}"
-OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}_dims_${SANITIZED_DIMS}_workers_${NUM_WORKERS}"
-if [ "$N_ANCHORS" != "100" ]; then
-    OUTPUT_DIR="${OUTPUT_DIR}_anchors_${N_ANCHORS}"
-fi
+OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}_anchors_${N_ANCHORS}_dims_${SANITIZED_DIMS}_workers_${NUM_WORKERS}"
 if [ -n "${N_MODELS_PER_CHAIN}" ]; then
     OUTPUT_DIR="${OUTPUT_DIR}_models_${N_MODELS_PER_CHAIN}"
 fi
