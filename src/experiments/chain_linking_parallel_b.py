@@ -1076,8 +1076,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             if current_seed > config.shuffle_seed + 100:
                 raise ValueError("Could not find unique target after 100 seed attempts")
 
+        # Update config to reflect the actual seed used for dataset selection
         if current_seed != config.shuffle_seed:
-            print(f"   Changed shuffle_seed: {config.shuffle_seed} → {current_seed}")
+            print(f"   Changed shuffle_seed: {config.shuffle_seed} → {current_seed} (for unique dataset selection)")
             config.shuffle_seed = current_seed
 
     target_n_questions = int(datasets[target_name]['question_id'].nunique())
@@ -1112,7 +1113,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     config_dict = {
         'n_base_datasets': config.n_base_datasets,
         'max_chain_length': config.max_chain_length,
-        'shuffle_seed': config.shuffle_seed,
+        'shuffle_seed': config.shuffle_seed,  # Actual seed used for dataset selection
         'num_workers': config.num_workers,
         'epochs': config.epochs,
         'dims_search': config.dims_search,
