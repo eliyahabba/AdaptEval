@@ -1,0 +1,197 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_deepseek-ai__deepseek-moe-16b-base,ARC Challenge,ARC Challenge,1172,100,-1.2954,0.5324,0.4889,0.5315,0.4928,0.5274,0.0435,0.0009,0.0396,0.005,0.8982,0.0853
+open-llm-leaderboard/details_wang7776__Mistral-7B-Instruct-v0.2-sparsity-20,ARC Challenge,ARC Challenge,1172,100,-0.5714,0.5265,0.5836,0.5538,0.5808,0.5561,0.0572,0.0273,0.0544,0.0297,0.8982,0.0853
+open-llm-leaderboard/details_BAAI__Aquila2-34B,ARC Challenge,ARC Challenge,1172,100,-0.9549,0.5247,0.5043,0.5269,0.5064,0.5257,0.0205,0.0021,0.0183,0.0009,0.8982,0.0853
+open-llm-leaderboard/details_h2m__mhm-7b-v1.3,ARC Challenge,ARC Challenge,1172,100,-1.1378,0.4753,0.5358,0.5095,0.5335,0.5129,0.0606,0.0343,0.0583,0.0377,0.8982,0.0853
+open-llm-leaderboard/details_AA051611__limb,ARC Challenge,ARC Challenge,1172,100,0.4089,0.6348,0.5913,0.6164,0.5938,0.6159,0.0435,0.0184,0.041,0.0189,0.8982,0.0853
+open-llm-leaderboard/details_PSanni__MPOMixtral-8x7B-Instruct-v0.1,ARC Challenge,ARC Challenge,1172,100,2.7602,0.7099,0.7253,0.7059,0.7236,0.7089,0.0154,0.004,0.0137,0.001,0.8982,0.0853
+open-llm-leaderboard/details_Weyaxi__Bagel-Hermes-34B-Slerp,ARC Challenge,ARC Challenge,1172,100,3.0736,0.7073,0.7039,0.698,0.7036,0.7003,0.0034,0.0094,0.0038,0.0071,0.8982,0.0853
+open-llm-leaderboard/details_Weyaxi__Helion-4x34B,ARC Challenge,ARC Challenge,1172,100,3.1802,0.6971,0.6903,0.698,0.6911,0.6985,0.0068,0.0009,0.006,0.0014,0.8982,0.0853
+open-llm-leaderboard/details_diffnamehard__Psyfighter2-Noromaid-ties-Capybara-13B,ARC Challenge,ARC Challenge,1172,100,2.2812,0.6229,0.6596,0.645,0.658,0.6444,0.0367,0.0221,0.0351,0.0215,0.8982,0.0853
+open-llm-leaderboard/details_FelixChao__WizardDolphin-7B,ARC Challenge,ARC Challenge,1172,100,1.0211,0.6468,0.6118,0.6457,0.615,0.6432,0.035,0.0011,0.0318,0.0036,0.8982,0.0853
+open-llm-leaderboard/details_umd-zhou-lab__recycled-wizardlm-7b-v2.0,ARC Challenge,ARC Challenge,1172,100,-1.5106,0.5495,0.5162,0.5227,0.5168,0.5222,0.0333,0.0268,0.0327,0.0273,0.8982,0.0853
+open-llm-leaderboard/details_Sao10K__Sensualize-Mixtral-bf16,ARC Challenge,ARC Challenge,1172,100,2.1334,0.7014,0.7261,0.6829,0.7222,0.6874,0.0247,0.0184,0.0208,0.0139,0.8982,0.0853
+open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,ARC Challenge,ARC Challenge,1172,100,1.5466,0.6425,0.6365,0.6614,0.6388,0.6591,0.006,0.0189,0.0037,0.0166,0.8982,0.0853
+open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,ARC Challenge,ARC Challenge,1172,100,5.6761,0.7142,0.7031,0.7215,0.7048,0.7204,0.0111,0.0074,0.0093,0.0063,0.8982,0.0853
+open-llm-leaderboard/details_gagan3012__MetaModel_moe,ARC Challenge,ARC Challenge,1172,100,3.0937,0.7125,0.6971,0.7231,0.6993,0.7183,0.0154,0.0106,0.0132,0.0059,0.8982,0.0853
+open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,ARC Challenge,ARC Challenge,1172,100,1.736,0.6502,0.6485,0.6738,0.6507,0.6707,0.0017,0.0237,0.0006,0.0205,0.8982,0.0853
+open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6,ARC Challenge,ARC Challenge,1172,100,1.0766,0.6246,0.6075,0.6545,0.612,0.6515,0.0171,0.0299,0.0126,0.0269,0.8982,0.0853
+open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,ARC Challenge,ARC Challenge,1172,100,3.2849,0.6945,0.7295,0.7276,0.7292,0.7266,0.035,0.0331,0.0347,0.032,0.8982,0.0853
+open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.1,ARC Challenge,ARC Challenge,1172,100,1.6968,0.6468,0.68,0.6722,0.6796,0.6753,0.0333,0.0254,0.0328,0.0285,0.8982,0.0853
+open-llm-leaderboard/details_AdaptLLM__finance-chat,ARC Challenge,ARC Challenge,1172,100,-2.3979,0.5375,0.4787,0.5026,0.4809,0.5007,0.0589,0.0349,0.0566,0.0368,0.8982,0.0853
+open-llm-leaderboard/details_OpenBuddy__openbuddy-mixtral-7bx8-v16.3-32k,ARC Challenge,ARC Challenge,1172,100,-1.3018,0.2645,0.2713,0.4043,0.2836,0.3921,0.0068,0.1398,0.0191,0.1275,0.8982,0.0853
+open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.4,ARC Challenge,ARC Challenge,1172,100,0.9991,0.6331,0.6544,0.6444,0.6536,0.6464,0.0213,0.0113,0.0205,0.0133,0.8982,0.0853
+open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,ARC Challenge,ARC Challenge,1172,100,2.4447,0.7193,0.6638,0.6874,0.6662,0.6873,0.0555,0.0319,0.0531,0.032,0.8982,0.0853
+open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,ARC Challenge,ARC Challenge,1172,100,6.7337,0.698,0.7014,0.7117,0.7023,0.7108,0.0034,0.0138,0.0044,0.0128,0.8982,0.0853
+open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,ARC Challenge,ARC Challenge,1172,100,2.9558,0.7116,0.6886,0.7177,0.691,0.7127,0.023,0.0061,0.0206,0.0011,0.8982,0.0853
+open-llm-leaderboard/details_KnutJaegersberg__Qwen-1_8B-Llamafied,ARC Challenge,ARC Challenge,1172,100,-2.4346,0.3771,0.3558,0.414,0.3611,0.4077,0.0213,0.0369,0.016,0.0306,0.8982,0.0853
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,ARC Challenge,ARC Challenge,1172,100,3.0562,0.7099,0.6971,0.721,0.6991,0.7164,0.0128,0.0111,0.0108,0.0065,0.8982,0.0853
+open-llm-leaderboard/details_nlpguy__ColorShadow-7B,ARC Challenge,ARC Challenge,1172,100,2.5142,0.6783,0.7065,0.6952,0.7055,0.6963,0.0282,0.0169,0.0271,0.018,0.8982,0.0853
+open-llm-leaderboard/details_sr5434__CodegebraGPT-10b,ARC Challenge,ARC Challenge,1172,100,-0.0316,0.5981,0.5956,0.6091,0.5967,0.607,0.0026,0.011,0.0014,0.0089,0.8982,0.0853
+open-llm-leaderboard/details_beberik__rawr,ARC Challenge,ARC Challenge,1172,100,1.9368,0.6399,0.6578,0.6626,0.6583,0.662,0.0179,0.0227,0.0183,0.0221,0.8982,0.0853
+open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,ARC Challenge,ARC Challenge,1172,100,-1.2913,0.5956,0.5725,0.5938,0.5745,0.5918,0.023,0.0017,0.0211,0.0037,0.8982,0.0853
+open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,ARC Challenge,ARC Challenge,1172,100,-0.9613,0.599,0.6143,0.5975,0.6127,0.5985,0.0154,0.0015,0.0137,0.0005,0.8982,0.0853
+open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,ARC Challenge,ARC Challenge,1172,100,0.5892,0.5964,0.5623,0.621,0.5679,0.6179,0.0341,0.0246,0.0285,0.0215,0.8982,0.0853
+open-llm-leaderboard/details_zyh3826__GML-Mistral-merged-v1,ARC Challenge,ARC Challenge,1172,100,3.8201,0.7125,0.7082,0.7198,0.7092,0.7185,0.0043,0.0074,0.0032,0.006,0.8982,0.0853
+open-llm-leaderboard/details_crumb__apricot-wildflower-20,ARC Challenge,ARC Challenge,1172,100,-1.1431,0.5964,0.6143,0.6046,0.6134,0.6052,0.0179,0.0082,0.017,0.0088,0.8982,0.0853
+open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,ARC Challenge,ARC Challenge,1172,100,3.1796,0.709,0.7048,0.7246,0.7064,0.7205,0.0043,0.0156,0.0027,0.0115,0.8982,0.0853
+open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,ARC Challenge,ARC Challenge,1172,100,-0.5064,0.4846,0.4812,0.531,0.4857,0.5256,0.0034,0.0463,0.0011,0.0409,0.8982,0.0853
+open-llm-leaderboard/details_Zangs3011__mistral_7b_DolphinCoder,ARC Challenge,ARC Challenge,1172,100,-0.8874,0.5973,0.5947,0.5897,0.5942,0.59,0.0026,0.0075,0.003,0.0072,0.8982,0.0853
+open-llm-leaderboard/details_Mihaiii__Pallas-0.4,ARC Challenge,ARC Challenge,1172,100,1.1634,0.6365,0.6672,0.6478,0.6655,0.6504,0.0307,0.0113,0.029,0.0139,0.8982,0.0853
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,ARC Challenge,ARC Challenge,1172,100,2.6612,0.7073,0.7099,0.7116,0.7097,0.7082,0.0026,0.0043,0.0024,0.0009,0.8982,0.0853
+open-llm-leaderboard/details_Mihaiii__Metis-0.3,ARC Challenge,ARC Challenge,1172,100,0.7624,0.6271,0.651,0.6397,0.65,0.6411,0.0239,0.0125,0.0229,0.014,0.8982,0.0853
+open-llm-leaderboard/details_Mihaiii__Metis-0.1,ARC Challenge,ARC Challenge,1172,100,-0.799,0.6015,0.6058,0.601,0.6053,0.6012,0.0043,0.0006,0.0038,0.0003,0.8982,0.0853
+open-llm-leaderboard/details_one-man-army__una-neural-chat-v3-3-P2-OMA,ARC Challenge,ARC Challenge,1172,100,2.0397,0.6732,0.6903,0.6828,0.6897,0.6849,0.0171,0.0096,0.0165,0.0117,0.8982,0.0853
+open-llm-leaderboard/details_rwitz2__pee,ARC Challenge,ARC Challenge,1172,100,4.8969,0.6988,0.6732,0.6987,0.6756,0.6971,0.0256,0.0001,0.0232,0.0017,0.8982,0.0853
+open-llm-leaderboard/details_mistralai__Mixtral-8x7B-v0.1,ARC Challenge,ARC Challenge,1172,100,1.605,0.6638,0.6715,0.6655,0.671,0.6664,0.0077,0.0017,0.0072,0.0026,0.8982,0.0853
+open-llm-leaderboard/details_meta-math__MetaMath-Llemma-7B,ARC Challenge,ARC Challenge,1172,100,-1.422,0.465,0.4761,0.4671,0.475,0.4653,0.0111,0.0021,0.01,0.0003,0.8982,0.0853
+open-llm-leaderboard/details_PulsarAI__OpenHermes-2.5-neural-chat-v3-3-Slerp,ARC Challenge,ARC Challenge,1172,100,4.1556,0.6809,0.7142,0.7021,0.713,0.7027,0.0333,0.0212,0.0321,0.0218,0.8982,0.0853
+open-llm-leaderboard/details_Intel__neural-chat-7b-v3-3,ARC Challenge,ARC Challenge,1172,100,1.7188,0.6689,0.6741,0.6751,0.6743,0.6762,0.0051,0.0061,0.0053,0.0073,0.8982,0.0853
+open-llm-leaderboard/details_webbigdata__ALMA-7B-Ja-V2,ARC Challenge,ARC Challenge,1172,100,-3.0089,0.5239,0.5392,0.5281,0.5382,0.5285,0.0154,0.0042,0.0143,0.0046,0.8982,0.0853
+open-llm-leaderboard/details_Q-bert__MetaMath-Cybertron,ARC Challenge,ARC Challenge,1172,100,2.7291,0.6647,0.6613,0.6768,0.6628,0.676,0.0034,0.0121,0.0019,0.0113,0.8982,0.0853
+open-llm-leaderboard/details_migtissera__Tess-7B-v1.4,ARC Challenge,ARC Challenge,1172,100,0.5931,0.6041,0.6177,0.6382,0.6197,0.6374,0.0137,0.0341,0.0156,0.0333,0.8982,0.0853
+open-llm-leaderboard/details_mrfakename__NeuralOrca-7B-v1,ARC Challenge,ARC Challenge,1172,100,3.1211,0.6527,0.6706,0.6698,0.6706,0.6702,0.0179,0.0171,0.0179,0.0174,0.8982,0.0853
+open-llm-leaderboard/details_maywell__Synatra-RP-Orca-2-7b-v0.1,ARC Challenge,ARC Challenge,1172,100,-1.0608,0.5742,0.5,0.5333,0.5032,0.5316,0.0742,0.0409,0.071,0.0426,0.8982,0.0853
+open-llm-leaderboard/details_922-CA__monika-ddlc-7b-v1,ARC Challenge,ARC Challenge,1172,100,-2.006,0.5495,0.5205,0.4964,0.5183,0.499,0.029,0.0531,0.0312,0.0505,0.8982,0.0853
+open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2,ARC Challenge,ARC Challenge,1172,100,2.4888,0.6519,0.6297,0.6822,0.6347,0.6787,0.0222,0.0303,0.0172,0.0268,0.8982,0.0853
+open-llm-leaderboard/details_Intel__neural-chat-7b-v3-1,ARC Challenge,ARC Challenge,1172,100,1.9613,0.663,0.6493,0.6792,0.6522,0.6776,0.0137,0.0162,0.0108,0.0147,0.8982,0.0853
+open-llm-leaderboard/details_CobraMamba__mamba-gpt-7b-v1,ARC Challenge,ARC Challenge,1172,100,-0.9369,0.6126,0.5956,0.6105,0.597,0.6098,0.0171,0.0021,0.0156,0.0028,0.8982,0.0853
+open-llm-leaderboard/details_Sao10K__Euryale-L2-70B,ARC Challenge,ARC Challenge,1172,100,3.1598,0.6894,0.7159,0.6878,0.7133,0.6906,0.0265,0.0017,0.0239,0.0012,0.8982,0.0853
+open-llm-leaderboard/details_teknium__CollectiveCognition-v1-Mistral-7B,ARC Challenge,ARC Challenge,1172,100,0.1057,0.6237,0.622,0.6256,0.6222,0.6243,0.0017,0.0019,0.0015,0.0005,0.8982,0.0853
+open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,ARC Challenge,ARC Challenge,1172,100,0.1734,0.6143,0.5879,0.5951,0.5885,0.5938,0.0265,0.0192,0.0259,0.0206,0.8982,0.0853
+open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mixed-datasets-time-unit,ARC Challenge,ARC Challenge,1172,100,-2.2972,0.5179,0.5162,0.5133,0.516,0.5144,0.0017,0.0046,0.0019,0.0035,0.8982,0.0853
+open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-pretrain,ARC Challenge,ARC Challenge,1172,100,-0.6608,0.5392,0.5435,0.5575,0.5448,0.5562,0.0043,0.0183,0.0056,0.017,0.8982,0.0853
+open-llm-leaderboard/details_Envoid__Libra-19B,ARC Challenge,ARC Challenge,1172,100,0.02,0.6058,0.6109,0.6003,0.6097,0.5993,0.0051,0.0055,0.0039,0.0065,0.8982,0.0853
+open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,ARC Challenge,ARC Challenge,1172,100,-1.847,0.5435,0.5418,0.5307,0.5409,0.5331,0.0017,0.0128,0.0026,0.0104,0.8982,0.0853
+open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,ARC Challenge,ARC Challenge,1172,100,-0.8366,0.5392,0.5913,0.5503,0.5875,0.5539,0.052,0.0111,0.0482,0.0147,0.8982,0.0853
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE4_3.8w-r8-q_k_v_o,ARC Challenge,ARC Challenge,1172,100,0.0684,0.5768,0.6118,0.5999,0.6106,0.5999,0.035,0.0231,0.0338,0.0231,0.8982,0.0853
+open-llm-leaderboard/details_Brouz__Slerpeno,ARC Challenge,ARC Challenge,1172,100,1.374,0.6169,0.6348,0.6115,0.6326,0.6131,0.0179,0.0054,0.0157,0.0038,0.8982,0.0853
+open-llm-leaderboard/details_togethercomputer__Llama-2-7B-32K-Instruct,ARC Challenge,ARC Challenge,1172,100,-1.972,0.5137,0.5452,0.5172,0.5426,0.5193,0.0316,0.0035,0.0289,0.0056,0.8982,0.0853
+open-llm-leaderboard/details_teknium__Mistral-Trismegistus-7B,ARC Challenge,ARC Challenge,1172,100,-0.4778,0.541,0.5102,0.5652,0.5152,0.5587,0.0307,0.0242,0.0258,0.0178,0.8982,0.0853
+open-llm-leaderboard/details_TinyPixel__testmodel2,ARC Challenge,ARC Challenge,1172,100,-6.8231,0.5324,0.5299,0.504,0.5274,0.5061,0.0026,0.0285,0.005,0.0263,0.8982,0.0853
+open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-v1.2,ARC Challenge,ARC Challenge,1172,100,2.087,0.6092,0.5887,0.6074,0.5905,0.6063,0.0205,0.0018,0.0187,0.0029,0.8982,0.0853
+open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mctaco-modified1,ARC Challenge,ARC Challenge,1172,100,-1.886,0.4087,0.3823,0.3996,0.3836,0.3959,0.0265,0.0091,0.0251,0.0128,0.8982,0.0853
+open-llm-leaderboard/details_NewstaR__Koss-7B-chat,ARC Challenge,ARC Challenge,1172,100,-1.804,0.5367,0.4974,0.5081,0.4984,0.5073,0.0392,0.0286,0.0382,0.0294,0.8982,0.0853
+open-llm-leaderboard/details_TigerResearch__tigerbot-13b-base,ARC Challenge,ARC Challenge,1172,100,-1.9653,0.5384,0.5384,0.5175,0.5364,0.5185,0.0,0.0209,0.002,0.0199,0.8982,0.0853
+open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa,ARC Challenge,ARC Challenge,1172,100,-2.3897,0.4778,0.4224,0.4398,0.424,0.4384,0.0555,0.038,0.0538,0.0394,0.8982,0.0853
+open-llm-leaderboard/details_TheBloke__koala-13B-HF,ARC Challenge,ARC Challenge,1172,100,-1.3936,0.5299,0.4761,0.5418,0.4821,0.5354,0.0538,0.0119,0.0477,0.0056,0.8982,0.0853
+open-llm-leaderboard/details_TFLai__Airboros2.1-Platypus2-13B-QLora-0.80-epoch,ARC Challenge,ARC Challenge,1172,100,0.4061,0.5896,0.5964,0.6093,0.5976,0.6081,0.0068,0.0197,0.008,0.0185,0.8982,0.0853
+open-llm-leaderboard/details_NousResearch__CodeLlama-34b-hf,ARC Challenge,ARC Challenge,1172,100,-2.916,0.3754,0.3515,0.3932,0.3555,0.3906,0.0239,0.0178,0.0199,0.0151,0.8982,0.0853
+open-llm-leaderboard/details_lmsys__vicuna-7b-v1.5,ARC Challenge,ARC Challenge,1172,100,-1.7258,0.5324,0.5077,0.489,0.5059,0.4903,0.0247,0.0434,0.0265,0.0421,0.8982,0.0853
+open-llm-leaderboard/details_chargoddard__llama2-22b-blocktriangular,ARC Challenge,ARC Challenge,1172,100,-1.5668,0.5828,0.5904,0.5842,0.5898,0.5836,0.0077,0.0014,0.007,0.0009,0.8982,0.0853
+open-llm-leaderboard/details_Undi95__Nous-Hermes-13B-Code,ARC Challenge,ARC Challenge,1172,100,1.0183,0.6118,0.6382,0.6295,0.6373,0.6293,0.0265,0.0178,0.0255,0.0176,0.8982,0.0853
+open-llm-leaderboard/details_upstage__llama-65b-instruct,ARC Challenge,ARC Challenge,1172,100,1.3575,0.6886,0.6655,0.6508,0.6643,0.653,0.023,0.0377,0.0243,0.0356,0.8982,0.0853
+open-llm-leaderboard/details_heegyu__LIMA2-7b-hf,ARC Challenge,ARC Challenge,1172,100,-0.3036,0.5324,0.5666,0.5765,0.5673,0.5743,0.0341,0.0441,0.0349,0.0419,0.8982,0.0853
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_FINETUNE2_3w,ARC Challenge,ARC Challenge,1172,100,0.1248,0.5862,0.593,0.6081,0.5943,0.6056,0.0068,0.0219,0.0081,0.0195,0.8982,0.0853
+open-llm-leaderboard/details_davzoku__cria-llama2-7b-v1.3,ARC Challenge,ARC Challenge,1172,100,-1.7489,0.5273,0.4974,0.5254,0.5001,0.5231,0.0299,0.0019,0.0273,0.0042,0.8982,0.0853
+open-llm-leaderboard/details_WizardLM__WizardLM-70B-V1.0,ARC Challenge,ARC Challenge,1172,100,0.8413,0.6408,0.6357,0.6325,0.6353,0.6323,0.0051,0.0083,0.0055,0.0085,0.8982,0.0853
+open-llm-leaderboard/details_The-Face-Of-Goonery__huginnv1.2,ARC Challenge,ARC Challenge,1172,100,-0.029,0.6237,0.5759,0.5852,0.5766,0.5822,0.0478,0.0385,0.0471,0.0416,0.8982,0.0853
+open-llm-leaderboard/details_ausboss__llama7b-wizardlm-unfiltered,ARC Challenge,ARC Challenge,1172,100,-1.8941,0.5299,0.5282,0.51,0.5264,0.5108,0.0017,0.0198,0.0035,0.019,0.8982,0.0853
+open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,ARC Challenge,ARC Challenge,1172,100,1.1277,0.6092,0.634,0.6146,0.632,0.6151,0.0247,0.0053,0.0228,0.0059,0.8982,0.0853
+open-llm-leaderboard/details_augtoma__qCammel-70x,ARC Challenge,ARC Challenge,1172,100,2.6716,0.6834,0.7389,0.6969,0.735,0.7006,0.0555,0.0134,0.0516,0.0172,0.8982,0.0853
+open-llm-leaderboard/details_wenge-research__yayi-7b,ARC Challenge,ARC Challenge,1172,100,-1.5357,0.4633,0.465,0.4724,0.4656,0.4712,0.0017,0.009,0.0023,0.0079,0.8982,0.0853
+open-llm-leaderboard/details_IGeniusDev__llama13B-quant8-testv1-openorca-customdataset,ARC Challenge,ARC Challenge,1172,100,0.6387,0.6015,0.6118,0.614,0.6121,0.6145,0.0102,0.0125,0.0105,0.013,0.8982,0.0853
+open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,ARC Challenge,ARC Challenge,1172,100,-0.8176,0.5956,0.552,0.5648,0.5531,0.5627,0.0435,0.0308,0.0424,0.0328,0.8982,0.0853
+open-llm-leaderboard/details_duliadotio__dulia-13b-8k-alpha,ARC Challenge,ARC Challenge,1172,100,0.2664,0.6067,0.5811,0.603,0.583,0.6004,0.0256,0.0036,0.0236,0.0063,0.8982,0.0853
+open-llm-leaderboard/details_FreedomIntelligence__phoenix-inst-chat-7b,ARC Challenge,ARC Challenge,1172,100,-1.1152,0.4471,0.4616,0.479,0.4632,0.4777,0.0145,0.0319,0.0161,0.0306,0.8982,0.0853
+open-llm-leaderboard/details_OpenBuddyEA__openbuddy-llama-30b-v7.1-bf16,ARC Challenge,ARC Challenge,1172,100,0.3507,0.6246,0.6263,0.6194,0.6258,0.6214,0.0017,0.0052,0.0012,0.0032,0.8982,0.0853
+open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V2-16k,ARC Challenge,ARC Challenge,1172,100,0.4694,0.587,0.6092,0.6064,0.609,0.6068,0.0222,0.0194,0.0219,0.0198,0.8982,0.0853
+open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,ARC Challenge,ARC Challenge,1172,100,0.7004,0.6101,0.6195,0.6005,0.6176,0.6012,0.0094,0.0095,0.0075,0.0089,0.8982,0.0853
+open-llm-leaderboard/details_deepseek-ai__deepseek-moe-16b-base,Winogrande,Winogrande,1267,100,-1.2954,0.7372,0.7672,0.7602,0.7652,0.7594,0.03,0.023,0.028,0.0223,0.7422,0.0789
+open-llm-leaderboard/details_wang7776__Mistral-7B-Instruct-v0.2-sparsity-20,Winogrande,Winogrande,1267,100,-0.5714,0.6906,0.7143,0.725,0.7167,0.7236,0.0237,0.0344,0.0261,0.033,0.7422,0.0789
+open-llm-leaderboard/details_BAAI__Aquila2-34B,Winogrande,Winogrande,1267,100,-0.9549,0.7553,0.7711,0.7887,0.7755,0.7881,0.0158,0.0334,0.0202,0.0328,0.7422,0.0789
+open-llm-leaderboard/details_h2m__mhm-7b-v1.3,Winogrande,Winogrande,1267,100,-1.1378,0.6227,0.6654,0.6898,0.6717,0.69,0.0426,0.067,0.049,0.0673,0.7422,0.0789
+open-llm-leaderboard/details_AA051611__limb,Winogrande,Winogrande,1267,100,0.4089,0.7979,0.8169,0.8194,0.8174,0.8189,0.0189,0.0215,0.0195,0.021,0.7422,0.0789
+open-llm-leaderboard/details_PSanni__MPOMixtral-8x7B-Instruct-v0.1,Winogrande,Winogrande,1267,100,2.7602,0.8256,0.8011,0.82,0.8057,0.819,0.0245,0.0056,0.0199,0.0066,0.7422,0.0789
+open-llm-leaderboard/details_Weyaxi__Bagel-Hermes-34B-Slerp,Winogrande,Winogrande,1267,100,3.0736,0.8437,0.8335,0.8376,0.8345,0.8374,0.0103,0.0061,0.0092,0.0063,0.7422,0.0789
+open-llm-leaderboard/details_Weyaxi__Helion-4x34B,Winogrande,Winogrande,1267,100,3.1802,0.8437,0.8713,0.8696,0.8709,0.8696,0.0276,0.0259,0.0272,0.0259,0.7422,0.0789
+open-llm-leaderboard/details_diffnamehard__Psyfighter2-Noromaid-ties-Capybara-13B,Winogrande,Winogrande,1267,100,2.2812,0.7703,0.764,0.7726,0.7663,0.7727,0.0063,0.0023,0.0041,0.0024,0.7422,0.0789
+open-llm-leaderboard/details_FelixChao__WizardDolphin-7B,Winogrande,Winogrande,1267,100,1.0211,0.7853,0.8216,0.8218,0.8217,0.8217,0.0363,0.0365,0.0363,0.0364,0.7422,0.0789
+open-llm-leaderboard/details_umd-zhou-lab__recycled-wizardlm-7b-v2.0,Winogrande,Winogrande,1267,100,-1.5106,0.7151,0.7435,0.7405,0.7426,0.74,0.0284,0.0255,0.0275,0.0249,0.7422,0.0789
+open-llm-leaderboard/details_Sao10K__Sensualize-Mixtral-bf16,Winogrande,Winogrande,1267,100,2.1334,0.824,0.7972,0.8041,0.7986,0.8028,0.0268,0.0199,0.0254,0.0212,0.7422,0.0789
+open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,Winogrande,Winogrande,1267,100,1.5466,0.7798,0.7577,0.7638,0.7592,0.7634,0.0221,0.016,0.0206,0.0164,0.7422,0.0789
+open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,Winogrande,Winogrande,1267,100,5.6761,0.8122,0.8248,0.8338,0.8271,0.8336,0.0126,0.0217,0.0149,0.0215,0.7422,0.0789
+open-llm-leaderboard/details_gagan3012__MetaModel_moe,Winogrande,Winogrande,1267,100,3.0937,0.8335,0.8485,0.8404,0.8463,0.84,0.015,0.0069,0.0128,0.0066,0.7422,0.0789
+open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,Winogrande,Winogrande,1267,100,1.736,0.8398,0.8327,0.8417,0.8351,0.8419,0.0071,0.002,0.0047,0.0021,0.7422,0.0789
+open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6,Winogrande,Winogrande,1267,100,1.0766,0.7845,0.7948,0.805,0.7975,0.8052,0.0103,0.0204,0.013,0.0207,0.7422,0.0789
+open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,Winogrande,Winogrande,1267,100,3.2849,0.8129,0.8366,0.8366,0.8365,0.836,0.0237,0.0236,0.0235,0.0231,0.7422,0.0789
+open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.1,Winogrande,Winogrande,1267,100,1.6968,0.8129,0.809,0.8157,0.8104,0.8145,0.0039,0.0027,0.0025,0.0016,0.7422,0.0789
+open-llm-leaderboard/details_AdaptLLM__finance-chat,Winogrande,Winogrande,1267,100,-2.3979,0.7569,0.8011,0.8202,0.8058,0.8194,0.0442,0.0632,0.0489,0.0625,0.7422,0.0789
+open-llm-leaderboard/details_OpenBuddy__openbuddy-mixtral-7bx8-v16.3-32k,Winogrande,Winogrande,1267,100,-1.3018,0.7711,0.7877,0.7946,0.7888,0.7919,0.0166,0.0235,0.0177,0.0208,0.7422,0.0789
+open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.4,Winogrande,Winogrande,1267,100,0.9991,0.8058,0.8114,0.8201,0.8136,0.82,0.0055,0.0143,0.0078,0.0142,0.7422,0.0789
+open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,Winogrande,Winogrande,1267,100,2.4447,0.8335,0.8382,0.8538,0.842,0.8531,0.0047,0.0203,0.0086,0.0196,0.7422,0.0789
+open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,Winogrande,Winogrande,1267,100,6.7337,0.8161,0.8074,0.8216,0.811,0.8214,0.0087,0.0055,0.0051,0.0053,0.7422,0.0789
+open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,Winogrande,Winogrande,1267,100,2.9558,0.8343,0.8485,0.8402,0.8462,0.8398,0.0142,0.0059,0.012,0.0056,0.7422,0.0789
+open-llm-leaderboard/details_KnutJaegersberg__Qwen-1_8B-Llamafied,Winogrande,Winogrande,1267,100,-2.4346,0.6172,0.5817,0.6245,0.5924,0.6232,0.0355,0.0073,0.0248,0.006,0.7422,0.0789
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,Winogrande,Winogrande,1267,100,3.0562,0.8358,0.8603,0.8488,0.8572,0.8484,0.0245,0.0129,0.0214,0.0126,0.7422,0.0789
+open-llm-leaderboard/details_nlpguy__ColorShadow-7B,Winogrande,Winogrande,1267,100,2.5142,0.8058,0.7924,0.7869,0.7909,0.7866,0.0134,0.019,0.0149,0.0193,0.7422,0.0789
+open-llm-leaderboard/details_sr5434__CodegebraGPT-10b,Winogrande,Winogrande,1267,100,-0.0316,0.8098,0.8461,0.8557,0.8485,0.8555,0.0363,0.0459,0.0387,0.0457,0.7422,0.0789
+open-llm-leaderboard/details_beberik__rawr,Winogrande,Winogrande,1267,100,1.9368,0.7956,0.7719,0.7825,0.7747,0.7826,0.0237,0.013,0.0209,0.013,0.7422,0.0789
+open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,Winogrande,Winogrande,1267,100,-1.2913,0.7664,0.753,0.783,0.7606,0.7824,0.0134,0.0167,0.0058,0.0161,0.7422,0.0789
+open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,Winogrande,Winogrande,1267,100,-0.9613,0.783,0.794,0.799,0.7951,0.7984,0.011,0.016,0.0122,0.0155,0.7422,0.0789
+open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,Winogrande,Winogrande,1267,100,0.5892,0.7167,0.6772,0.6713,0.6753,0.6698,0.0395,0.0453,0.0414,0.0468,0.7422,0.0789
+open-llm-leaderboard/details_zyh3826__GML-Mistral-merged-v1,Winogrande,Winogrande,1267,100,3.8201,0.8098,0.8082,0.8304,0.8139,0.8303,0.0016,0.0206,0.0041,0.0205,0.7422,0.0789
+open-llm-leaderboard/details_crumb__apricot-wildflower-20,Winogrande,Winogrande,1267,100,-1.1431,0.779,0.7837,0.7934,0.7862,0.7931,0.0047,0.0144,0.0071,0.0141,0.7422,0.0789
+open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,Winogrande,Winogrande,1267,100,3.1796,0.8374,0.8682,0.8567,0.8651,0.8564,0.0308,0.0193,0.0277,0.0189,0.7422,0.0789
+open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,Winogrande,Winogrande,1267,100,-0.5064,0.7348,0.7182,0.7088,0.7156,0.7079,0.0166,0.026,0.0192,0.0269,0.7422,0.0789
+open-llm-leaderboard/details_Zangs3011__mistral_7b_DolphinCoder,Winogrande,Winogrande,1267,100,-0.8874,0.7459,0.7206,0.7458,0.7268,0.7446,0.0253,0.0,0.0191,0.0012,0.7422,0.0789
+open-llm-leaderboard/details_Mihaiii__Pallas-0.4,Winogrande,Winogrande,1267,100,1.1634,0.8058,0.8272,0.838,0.8297,0.837,0.0213,0.0321,0.0238,0.0311,0.7422,0.0789
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,Winogrande,Winogrande,1267,100,2.6612,0.8335,0.8374,0.8336,0.8363,0.833,0.0039,0.0001,0.0028,0.0004,0.7422,0.0789
+open-llm-leaderboard/details_Mihaiii__Metis-0.3,Winogrande,Winogrande,1267,100,0.7624,0.7727,0.749,0.7774,0.756,0.776,0.0237,0.0047,0.0167,0.0033,0.7422,0.0789
+open-llm-leaderboard/details_Mihaiii__Metis-0.1,Winogrande,Winogrande,1267,100,-0.799,0.7727,0.7593,0.7596,0.7593,0.7594,0.0134,0.0131,0.0134,0.0133,0.7422,0.0789
+open-llm-leaderboard/details_one-man-army__una-neural-chat-v3-3-P2-OMA,Winogrande,Winogrande,1267,100,2.0397,0.7979,0.7766,0.7916,0.7803,0.7908,0.0213,0.0063,0.0177,0.0071,0.7422,0.0789
+open-llm-leaderboard/details_rwitz2__pee,Winogrande,Winogrande,1267,100,4.8969,0.8177,0.7869,0.8127,0.7935,0.8123,0.0308,0.005,0.0242,0.0053,0.7422,0.0789
+open-llm-leaderboard/details_mistralai__Mixtral-8x7B-v0.1,Winogrande,Winogrande,1267,100,1.605,0.8169,0.7893,0.7876,0.7887,0.787,0.0276,0.0293,0.0282,0.0299,0.7422,0.0789
+open-llm-leaderboard/details_meta-math__MetaMath-Llemma-7B,Winogrande,Winogrande,1267,100,-1.422,0.6275,0.5107,0.5693,0.5254,0.568,0.1168,0.0582,0.102,0.0594,0.7422,0.0789
+open-llm-leaderboard/details_PulsarAI__OpenHermes-2.5-neural-chat-v3-3-Slerp,Winogrande,Winogrande,1267,100,4.1556,0.7916,0.7806,0.7878,0.7825,0.788,0.011,0.0039,0.0091,0.0036,0.7422,0.0789
+open-llm-leaderboard/details_Intel__neural-chat-7b-v3-3,Winogrande,Winogrande,1267,100,1.7188,0.7964,0.7885,0.797,0.7905,0.7964,0.0079,0.0006,0.0058,0.0,0.7422,0.0789
+open-llm-leaderboard/details_webbigdata__ALMA-7B-Ja-V2,Winogrande,Winogrande,1267,100,-3.0089,0.734,0.7159,0.7287,0.7191,0.7282,0.0182,0.0053,0.015,0.0058,0.7422,0.0789
+open-llm-leaderboard/details_Q-bert__MetaMath-Cybertron,Winogrande,Winogrande,1267,100,2.7291,0.7964,0.7948,0.8117,0.7992,0.8117,0.0016,0.0154,0.0028,0.0154,0.7422,0.0789
+open-llm-leaderboard/details_migtissera__Tess-7B-v1.4,Winogrande,Winogrande,1267,100,0.5931,0.7482,0.749,0.7564,0.7508,0.756,0.0008,0.0081,0.0026,0.0077,0.7422,0.0789
+open-llm-leaderboard/details_mrfakename__NeuralOrca-7B-v1,Winogrande,Winogrande,1267,100,3.1211,0.7877,0.7964,0.7873,0.794,0.7873,0.0087,0.0004,0.0063,0.0004,0.7422,0.0789
+open-llm-leaderboard/details_maywell__Synatra-RP-Orca-2-7b-v0.1,Winogrande,Winogrande,1267,100,-1.0608,0.7443,0.7332,0.7416,0.7349,0.7398,0.011,0.0027,0.0094,0.0045,0.7422,0.0789
+open-llm-leaderboard/details_922-CA__monika-ddlc-7b-v1,Winogrande,Winogrande,1267,100,-2.006,0.7285,0.7222,0.7608,0.7319,0.7599,0.0063,0.0323,0.0034,0.0314,0.7422,0.0789
+open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2,Winogrande,Winogrande,1267,100,2.4888,0.7814,0.8208,0.8403,0.8258,0.84,0.0395,0.0589,0.0444,0.0586,0.7422,0.0789
+open-llm-leaderboard/details_Intel__neural-chat-7b-v3-1,Winogrande,Winogrande,1267,100,1.9613,0.7798,0.7948,0.811,0.7989,0.8108,0.015,0.0312,0.0191,0.031,0.7422,0.0789
+open-llm-leaderboard/details_CobraMamba__mamba-gpt-7b-v1,Winogrande,Winogrande,1267,100,-0.9369,0.7916,0.7474,0.7692,0.7529,0.7687,0.0442,0.0224,0.0387,0.0229,0.7422,0.0789
+open-llm-leaderboard/details_Sao10K__Euryale-L2-70B,Winogrande,Winogrande,1267,100,3.1598,0.8208,0.8832,0.889,0.8845,0.8883,0.0624,0.0681,0.0637,0.0675,0.7422,0.0789
+open-llm-leaderboard/details_teknium__CollectiveCognition-v1-Mistral-7B,Winogrande,Winogrande,1267,100,0.1057,0.7758,0.8019,0.8287,0.8087,0.8283,0.026,0.0528,0.0329,0.0525,0.7422,0.0789
+open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,Winogrande,Winogrande,1267,100,0.1734,0.7593,0.7758,0.7738,0.7753,0.7737,0.0166,0.0146,0.016,0.0144,0.7422,0.0789
+open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mixed-datasets-time-unit,Winogrande,Winogrande,1267,100,-2.2972,0.734,0.7466,0.7869,0.7567,0.7855,0.0126,0.0529,0.0226,0.0514,0.7422,0.0789
+open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-pretrain,Winogrande,Winogrande,1267,100,-0.6608,0.7553,0.7498,0.7765,0.7565,0.7757,0.0055,0.0211,0.0012,0.0204,0.7422,0.0789
+open-llm-leaderboard/details_Envoid__Libra-19B,Winogrande,Winogrande,1267,100,0.02,0.7632,0.7459,0.7454,0.7457,0.7451,0.0174,0.0178,0.0175,0.0181,0.7422,0.0789
+open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,Winogrande,Winogrande,1267,100,-1.847,0.7309,0.7419,0.7643,0.7475,0.7638,0.011,0.0335,0.0167,0.0329,0.7422,0.0789
+open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,Winogrande,Winogrande,1267,100,-0.8366,0.7261,0.7395,0.7688,0.7469,0.768,0.0134,0.0427,0.0208,0.0419,0.7422,0.0789
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE4_3.8w-r8-q_k_v_o,Winogrande,Winogrande,1267,100,0.0684,0.7648,0.7553,0.7578,0.7558,0.7572,0.0095,0.007,0.009,0.0076,0.7422,0.0789
+open-llm-leaderboard/details_Brouz__Slerpeno,Winogrande,Winogrande,1267,100,1.374,0.764,0.7522,0.7737,0.7576,0.7734,0.0118,0.0097,0.0064,0.0094,0.7422,0.0789
+open-llm-leaderboard/details_togethercomputer__Llama-2-7B-32K-Instruct,Winogrande,Winogrande,1267,100,-1.972,0.7285,0.6819,0.7283,0.6937,0.7277,0.0466,0.0002,0.0348,0.0008,0.7422,0.0789
+open-llm-leaderboard/details_teknium__Mistral-Trismegistus-7B,Winogrande,Winogrande,1267,100,-0.4778,0.7017,0.768,0.7746,0.7695,0.774,0.0663,0.0729,0.0679,0.0723,0.7422,0.0789
+open-llm-leaderboard/details_TinyPixel__testmodel2,Winogrande,Winogrande,1267,100,-6.8231,0.738,0.7561,0.7687,0.7593,0.7684,0.0182,0.0307,0.0213,0.0305,0.7422,0.0789
+open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-v1.2,Winogrande,Winogrande,1267,100,2.087,0.7522,0.7609,0.7825,0.7664,0.7824,0.0087,0.0303,0.0142,0.0302,0.7422,0.0789
+open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mctaco-modified1,Winogrande,Winogrande,1267,100,-1.886,0.6946,0.6796,0.6956,0.6837,0.6958,0.015,0.001,0.0108,0.0013,0.7422,0.0789
+open-llm-leaderboard/details_NewstaR__Koss-7B-chat,Winogrande,Winogrande,1267,100,-1.804,0.7174,0.674,0.7067,0.6822,0.7059,0.0434,0.0107,0.0352,0.0116,0.7422,0.0789
+open-llm-leaderboard/details_TigerResearch__tigerbot-13b-base,Winogrande,Winogrande,1267,100,-1.9653,0.7498,0.6977,0.7207,0.7034,0.7198,0.0521,0.0291,0.0464,0.03,0.7422,0.0789
+open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa,Winogrande,Winogrande,1267,100,-2.3897,0.6543,0.6527,0.646,0.6508,0.6451,0.0016,0.0083,0.0035,0.0092,0.7422,0.0789
+open-llm-leaderboard/details_TheBloke__koala-13B-HF,Winogrande,Winogrande,1267,100,-1.3936,0.7403,0.7703,0.7587,0.7671,0.7577,0.03,0.0184,0.0267,0.0174,0.7422,0.0789
+open-llm-leaderboard/details_TFLai__Airboros2.1-Platypus2-13B-QLora-0.80-epoch,Winogrande,Winogrande,1267,100,0.4061,0.7514,0.7088,0.7232,0.7122,0.7223,0.0426,0.0281,0.0391,0.0291,0.7422,0.0789
+open-llm-leaderboard/details_NousResearch__CodeLlama-34b-hf,Winogrande,Winogrande,1267,100,-2.916,0.734,0.663,0.6704,0.6643,0.668,0.071,0.0636,0.0697,0.066,0.7422,0.0789
+open-llm-leaderboard/details_lmsys__vicuna-7b-v1.5,Winogrande,Winogrande,1267,100,-1.7258,0.7214,0.7506,0.7665,0.7546,0.7662,0.0292,0.0451,0.0332,0.0448,0.7422,0.0789
+open-llm-leaderboard/details_chargoddard__llama2-22b-blocktriangular,Winogrande,Winogrande,1267,100,-1.5668,0.7593,0.768,0.7663,0.7674,0.7658,0.0087,0.007,0.0081,0.0065,0.7422,0.0789
+open-llm-leaderboard/details_Undi95__Nous-Hermes-13B-Code,Winogrande,Winogrande,1267,100,1.0183,0.7514,0.7908,0.7885,0.7903,0.7887,0.0395,0.0372,0.0389,0.0373,0.7422,0.0789
+open-llm-leaderboard/details_upstage__llama-65b-instruct,Winogrande,Winogrande,1267,100,1.3575,0.8106,0.8169,0.8253,0.8189,0.8248,0.0063,0.0147,0.0084,0.0142,0.7422,0.0789
+open-llm-leaderboard/details_heegyu__LIMA2-7b-hf,Winogrande,Winogrande,1267,100,-0.3036,0.6993,0.7553,0.7322,0.7495,0.7329,0.056,0.0329,0.0503,0.0336,0.7422,0.0789
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_FINETUNE2_3w,Winogrande,Winogrande,1267,100,0.1248,0.768,0.794,0.7872,0.7922,0.787,0.026,0.0192,0.0243,0.0191,0.7422,0.0789
+open-llm-leaderboard/details_davzoku__cria-llama2-7b-v1.3,Winogrande,Winogrande,1267,100,-1.7489,0.719,0.7024,0.7305,0.7094,0.7295,0.0166,0.0114,0.0096,0.0105,0.7422,0.0789
+open-llm-leaderboard/details_WizardLM__WizardLM-70B-V1.0,Winogrande,Winogrande,1267,100,0.8413,0.8082,0.7932,0.808,0.7969,0.8075,0.015,0.0002,0.0113,0.0007,0.7422,0.0789
+open-llm-leaderboard/details_The-Face-Of-Goonery__huginnv1.2,Winogrande,Winogrande,1267,100,-0.029,0.7522,0.7609,0.771,0.7634,0.7709,0.0087,0.0188,0.0113,0.0187,0.7422,0.0789
+open-llm-leaderboard/details_ausboss__llama7b-wizardlm-unfiltered,Winogrande,Winogrande,1267,100,-1.8941,0.723,0.7245,0.7695,0.736,0.7688,0.0016,0.0465,0.013,0.0458,0.7422,0.0789
+open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,Winogrande,Winogrande,1267,100,1.1277,0.7656,0.7885,0.7803,0.7864,0.7804,0.0229,0.0147,0.0208,0.0148,0.7422,0.0789
+open-llm-leaderboard/details_augtoma__qCammel-70x,Winogrande,Winogrande,1267,100,2.6716,0.8429,0.8824,0.893,0.885,0.8926,0.0395,0.05,0.0421,0.0496,0.7422,0.0789
+open-llm-leaderboard/details_wenge-research__yayi-7b,Winogrande,Winogrande,1267,100,-1.5357,0.6227,0.5312,0.567,0.5402,0.5662,0.0916,0.0557,0.0825,0.0565,0.7422,0.0789
+open-llm-leaderboard/details_IGeniusDev__llama13B-quant8-testv1-openorca-customdataset,Winogrande,Winogrande,1267,100,0.6387,0.7569,0.7814,0.782,0.7815,0.7817,0.0245,0.0251,0.0246,0.0248,0.7422,0.0789
+open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,Winogrande,Winogrande,1267,100,-0.8176,0.7561,0.7293,0.7367,0.7311,0.7364,0.0268,0.0194,0.025,0.0197,0.7422,0.0789
+open-llm-leaderboard/details_duliadotio__dulia-13b-8k-alpha,Winogrande,Winogrande,1267,100,0.2664,0.7719,0.7561,0.7697,0.7595,0.7693,0.0158,0.0022,0.0124,0.0026,0.7422,0.0789
+open-llm-leaderboard/details_FreedomIntelligence__phoenix-inst-chat-7b,Winogrande,Winogrande,1267,100,-1.1152,0.6283,0.6448,0.6568,0.6476,0.6557,0.0166,0.0285,0.0194,0.0275,0.7422,0.0789
+open-llm-leaderboard/details_OpenBuddyEA__openbuddy-llama-30b-v7.1-bf16,Winogrande,Winogrande,1267,100,0.3507,0.7751,0.7822,0.7919,0.7843,0.7905,0.0071,0.0168,0.0093,0.0154,0.7422,0.0789
+open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V2-16k,Winogrande,Winogrande,1267,100,0.4694,0.7301,0.7285,0.7412,0.7316,0.7404,0.0016,0.0111,0.0015,0.0103,0.7422,0.0789
+open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,Winogrande,Winogrande,1267,100,0.7004,0.7514,0.7837,0.7815,0.7831,0.7814,0.0324,0.0301,0.0318,0.03,0.7422,0.0789
