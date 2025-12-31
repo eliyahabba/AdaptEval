@@ -196,5 +196,21 @@
     "EntityDataImputation": 2,
     "BabiQA": 11,
     "MS MARCO": 6
-  }
+  },
+  "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.3848,
+  "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.1946,
+  "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.1049,
+  "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0299,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2413,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1005,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.1044,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.0295,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.3828,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.1889,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.0839,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0316,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2573,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1884,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0835,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0312
 }

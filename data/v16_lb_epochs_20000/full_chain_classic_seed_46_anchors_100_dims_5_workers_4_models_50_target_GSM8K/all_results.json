@@ -2,7 +2,7 @@
   {
     "target_dataset": "GSM8K",
     "distance": 0,
-    "chain": [],
+    "chain": "direct",
     "n_datasets_in_training": 2,
     "target_n_questions": 1319,
     "n_anchors_per_dataset": 100,
@@ -14,7 +14,7 @@
     "fixed_n_anchors": 200,
     "fixed_best_dimension": 5,
     "fixed_training_time_sec": 424.69,
-    "fixed_cumulative_chain_time": 0,
+    "fixed_cumulative_chain_time": 0.0,
     "fixed_min_anchors_per_eval_dataset": 100,
     "fixed_new_model_new_data_n_models": 100,
     "fixed_new_model_new_data_anchor_error_mean": 0.0257,
@@ -85,15 +85,11 @@
     "fixed_new_model_old_data_pooled_simple_random_error_mean": 0.0298,
     "fixed_new_model_old_data_pooled_simple_random_error_std": 0.0,
     "fixed_new_model_old_data_n_pooled_anchors": 100,
-    "fixed_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0363
-    },
+    "fixed_new_model_old_data_per_dataset_errors": "{'MMLU': 0.03629291032110611}",
     "fixed_new_model_old_data_proportional_random_error_mean": 0.0363,
     "fixed_new_model_old_data_proportional_random_error_std": 0.0,
     "fixed_new_model_old_data_n_proportional_anchors": 100,
-    "fixed_new_model_old_data_allocation": {
-      "MMLU": 100
-    },
+    "fixed_new_model_old_data_allocation": "{'MMLU': 100}",
     "fixed_n_test_models": 100,
     "fixed_anchor_error_mean": 0.0257,
     "fixed_anchor_error_std": 0.0236,
@@ -109,7 +105,7 @@
     "concurrent_n_anchors": 200,
     "concurrent_best_dimension": 5,
     "concurrent_training_time_sec": 468.59,
-    "concurrent_cumulative_chain_time": 0,
+    "concurrent_cumulative_chain_time": 0.0,
     "concurrent_min_anchors_per_eval_dataset": 100,
     "concurrent_new_model_new_data_n_models": 100,
     "concurrent_new_model_new_data_anchor_error_mean": 0.0255,
@@ -180,15 +176,11 @@
     "concurrent_new_model_old_data_pooled_simple_random_error_mean": 0.0298,
     "concurrent_new_model_old_data_pooled_simple_random_error_std": 0.0,
     "concurrent_new_model_old_data_n_pooled_anchors": 100,
-    "concurrent_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0363
-    },
+    "concurrent_new_model_old_data_per_dataset_errors": "{'MMLU': 0.0362929103211061}",
     "concurrent_new_model_old_data_proportional_random_error_mean": 0.0363,
     "concurrent_new_model_old_data_proportional_random_error_std": 0.0,
     "concurrent_new_model_old_data_n_proportional_anchors": 100,
-    "concurrent_new_model_old_data_allocation": {
-      "MMLU": 100
-    },
+    "concurrent_new_model_old_data_allocation": "{'MMLU': 100}",
     "concurrent_n_test_models": 100,
     "concurrent_anchor_error_mean": 0.0255,
     "concurrent_anchor_error_std": 0.0236,
@@ -203,14 +195,28 @@
     "delta_anchor_error": 0.0002,
     "delta_irt_error": 0.0058,
     "delta_gp_irt_error": 0.0001,
-    "delta_pirt_error": 0.0051
+    "delta_pirt_error": 0.0051,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.0259,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_std": null,
+    "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.0255,
+    "fixed_new_model_old_data_pooled_irt_irt_error_std": null,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.023,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": null,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.0255,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_std": null,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.0257,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_std": null,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.0254,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_std": null,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.0239,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": null,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0254,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_std": null
   },
   {
     "target_dataset": "GSM8K",
     "distance": 1,
-    "chain": [
-      "HellaSwag"
-    ],
+    "chain": "HellaSwag",
     "n_datasets_in_training": 3,
     "target_n_questions": 1319,
     "n_anchors_per_dataset": 100,
@@ -293,17 +299,11 @@
     "fixed_new_model_old_data_pooled_simple_random_error_mean": 0.0355,
     "fixed_new_model_old_data_pooled_simple_random_error_std": 0.0028,
     "fixed_new_model_old_data_n_pooled_anchors": 100,
-    "fixed_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0452,
-      "HellaSwag": 0.041
-    },
+    "fixed_new_model_old_data_per_dataset_errors": "{'MMLU': 0.045235960090815444, 'HellaSwag': 0.04098182870041065}",
     "fixed_new_model_old_data_proportional_random_error_mean": 0.0431,
     "fixed_new_model_old_data_proportional_random_error_std": 0.0021,
     "fixed_new_model_old_data_n_proportional_anchors": 100,
-    "fixed_new_model_old_data_allocation": {
-      "MMLU": 58,
-      "HellaSwag": 42
-    },
+    "fixed_new_model_old_data_allocation": "{'MMLU': 58, 'HellaSwag': 42}",
     "fixed_n_test_models": 100,
     "fixed_anchor_error_mean": 0.0292,
     "fixed_anchor_error_std": 0.0244,
@@ -390,17 +390,11 @@
     "concurrent_new_model_old_data_pooled_simple_random_error_mean": 0.0355,
     "concurrent_new_model_old_data_pooled_simple_random_error_std": 0.0028,
     "concurrent_new_model_old_data_n_pooled_anchors": 100,
-    "concurrent_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0452,
-      "HellaSwag": 0.041
-    },
+    "concurrent_new_model_old_data_per_dataset_errors": "{'MMLU': 0.045235960090815444, 'HellaSwag': 0.04098182870041065}",
     "concurrent_new_model_old_data_proportional_random_error_mean": 0.0431,
     "concurrent_new_model_old_data_proportional_random_error_std": 0.0021,
     "concurrent_new_model_old_data_n_proportional_anchors": 100,
-    "concurrent_new_model_old_data_allocation": {
-      "MMLU": 58,
-      "HellaSwag": 42
-    },
+    "concurrent_new_model_old_data_allocation": "{'MMLU': 58, 'HellaSwag': 42}",
     "concurrent_n_test_models": 100,
     "concurrent_anchor_error_mean": 0.0259,
     "concurrent_anchor_error_std": 0.0257,
@@ -415,15 +409,28 @@
     "delta_anchor_error": 0.0034,
     "delta_irt_error": 0.0051,
     "delta_gp_irt_error": 0.0032,
-    "delta_pirt_error": 0.0048
+    "delta_pirt_error": 0.0048,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.3545,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.162,
+    "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.0291,
+    "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0052,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.3123,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.2121,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.0291,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.0051,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.3514,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.1655,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.037,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0224,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.3288,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1917,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0369,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0221
   },
   {
     "target_dataset": "GSM8K",
     "distance": 2,
-    "chain": [
-      "HellaSwag",
-      "TruthfulQA"
-    ],
+    "chain": "HellaSwag_TruthfulQA",
     "n_datasets_in_training": 4,
     "target_n_questions": 1319,
     "n_anchors_per_dataset": 100,
@@ -506,19 +513,11 @@
     "fixed_new_model_old_data_pooled_simple_random_error_mean": 0.0834,
     "fixed_new_model_old_data_pooled_simple_random_error_std": 0.0473,
     "fixed_new_model_old_data_n_pooled_anchors": 100,
-    "fixed_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0515,
-      "HellaSwag": 0.0766,
-      "TruthfulQA": 0.1855
-    },
+    "fixed_new_model_old_data_per_dataset_errors": "{'MMLU': 0.051452545135539436, 'HellaSwag': 0.07663099980083651, 'TruthfulQA': 0.1854984092506754}",
     "fixed_new_model_old_data_proportional_random_error_mean": 0.1045,
     "fixed_new_model_old_data_proportional_random_error_std": 0.0582,
     "fixed_new_model_old_data_n_proportional_anchors": 100,
-    "fixed_new_model_old_data_allocation": {
-      "MMLU": 57,
-      "HellaSwag": 40,
-      "TruthfulQA": 3
-    },
+    "fixed_new_model_old_data_allocation": "{'MMLU': 57, 'HellaSwag': 40, 'TruthfulQA': 3}",
     "fixed_n_test_models": 100,
     "fixed_anchor_error_mean": 0.022,
     "fixed_anchor_error_std": 0.0203,
@@ -605,19 +604,11 @@
     "concurrent_new_model_old_data_pooled_simple_random_error_mean": 0.0834,
     "concurrent_new_model_old_data_pooled_simple_random_error_std": 0.0473,
     "concurrent_new_model_old_data_n_pooled_anchors": 100,
-    "concurrent_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0515,
-      "HellaSwag": 0.0766,
-      "TruthfulQA": 0.1855
-    },
+    "concurrent_new_model_old_data_per_dataset_errors": "{'MMLU': 0.051452545135539436, 'HellaSwag': 0.07663099980083651, 'TruthfulQA': 0.18549840925067534}",
     "concurrent_new_model_old_data_proportional_random_error_mean": 0.1045,
     "concurrent_new_model_old_data_proportional_random_error_std": 0.0582,
     "concurrent_new_model_old_data_n_proportional_anchors": 100,
-    "concurrent_new_model_old_data_allocation": {
-      "MMLU": 57,
-      "HellaSwag": 40,
-      "TruthfulQA": 3
-    },
+    "concurrent_new_model_old_data_allocation": "{'MMLU': 57, 'HellaSwag': 40, 'TruthfulQA': 3}",
     "concurrent_n_test_models": 100,
     "concurrent_anchor_error_mean": 0.0284,
     "concurrent_anchor_error_std": 0.0226,
@@ -632,16 +623,28 @@
     "delta_anchor_error": -0.0064,
     "delta_irt_error": 0.1194,
     "delta_gp_irt_error": 0.0009,
-    "delta_pirt_error": 0.1101
+    "delta_pirt_error": 0.1101,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.4072,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.1524,
+    "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.0505,
+    "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0277,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.1322,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.0673,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.05,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.027,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.4085,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.1432,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.036,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0104,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.1327,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.0417,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0359,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0103
   },
   {
     "target_dataset": "GSM8K",
     "distance": 3,
-    "chain": [
-      "HellaSwag",
-      "TruthfulQA",
-      "ARC Challenge"
-    ],
+    "chain": "HellaSwag_TruthfulQA_ARC Challenge",
     "n_datasets_in_training": 5,
     "target_n_questions": 1319,
     "n_anchors_per_dataset": 100,
@@ -724,21 +727,11 @@
     "fixed_new_model_old_data_pooled_simple_random_error_mean": 0.1646,
     "fixed_new_model_old_data_pooled_simple_random_error_std": 0.1704,
     "fixed_new_model_old_data_n_pooled_anchors": 100,
-    "fixed_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0383,
-      "HellaSwag": 0.0284,
-      "TruthfulQA": 0.1572,
-      "ARC Challenge": 0.121
-    },
+    "fixed_new_model_old_data_per_dataset_errors": "{'MMLU': 0.0382906563896305, 'HellaSwag': 0.028392954718387903, 'TruthfulQA': 0.15724836458545924, 'ARC Challenge': 0.12098976109215018}",
     "fixed_new_model_old_data_proportional_random_error_mean": 0.0862,
     "fixed_new_model_old_data_proportional_random_error_std": 0.0545,
     "fixed_new_model_old_data_n_proportional_anchors": 100,
-    "fixed_new_model_old_data_allocation": {
-      "MMLU": 54,
-      "HellaSwag": 39,
-      "TruthfulQA": 3,
-      "ARC Challenge": 4
-    },
+    "fixed_new_model_old_data_allocation": "{'MMLU': 54, 'HellaSwag': 39, 'TruthfulQA': 3, 'ARC Challenge': 4}",
     "fixed_n_test_models": 100,
     "fixed_anchor_error_mean": 0.0262,
     "fixed_anchor_error_std": 0.0246,
@@ -825,21 +818,11 @@
     "concurrent_new_model_old_data_pooled_simple_random_error_mean": 0.1646,
     "concurrent_new_model_old_data_pooled_simple_random_error_std": 0.1704,
     "concurrent_new_model_old_data_n_pooled_anchors": 100,
-    "concurrent_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0383,
-      "HellaSwag": 0.0284,
-      "TruthfulQA": 0.1572,
-      "ARC Challenge": 0.121
-    },
+    "concurrent_new_model_old_data_per_dataset_errors": "{'MMLU': 0.038290656389630494, 'HellaSwag': 0.028392954718387906, 'TruthfulQA': 0.15724836458545924, 'ARC Challenge': 0.12098976109215016}",
     "concurrent_new_model_old_data_proportional_random_error_mean": 0.0862,
     "concurrent_new_model_old_data_proportional_random_error_std": 0.0545,
     "concurrent_new_model_old_data_n_proportional_anchors": 100,
-    "concurrent_new_model_old_data_allocation": {
-      "MMLU": 54,
-      "HellaSwag": 39,
-      "TruthfulQA": 3,
-      "ARC Challenge": 4
-    },
+    "concurrent_new_model_old_data_allocation": "{'MMLU': 54, 'HellaSwag': 39, 'TruthfulQA': 3, 'ARC Challenge': 4}",
     "concurrent_n_test_models": 100,
     "concurrent_anchor_error_mean": 0.0292,
     "concurrent_anchor_error_std": 0.0247,
@@ -854,17 +837,28 @@
     "delta_anchor_error": -0.0029,
     "delta_irt_error": 0.0187,
     "delta_gp_irt_error": -0.003,
-    "delta_pirt_error": 0.0172
+    "delta_pirt_error": 0.0172,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.4555,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.1422,
+    "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.0409,
+    "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0205,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.1898,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1188,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.0407,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.0203,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.4594,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.1421,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.0396,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0133,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2007,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1129,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0395,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0133
   },
   {
     "target_dataset": "GSM8K",
     "distance": 4,
-    "chain": [
-      "HellaSwag",
-      "TruthfulQA",
-      "ARC Challenge",
-      "Winogrande"
-    ],
+    "chain": "HellaSwag_TruthfulQA_ARC Challenge_Winogrande",
     "n_datasets_in_training": 6,
     "target_n_questions": 1319,
     "n_anchors_per_dataset": 100,
@@ -947,23 +941,11 @@
     "fixed_new_model_old_data_pooled_simple_random_error_mean": 0.0873,
     "fixed_new_model_old_data_pooled_simple_random_error_std": 0.0413,
     "fixed_new_model_old_data_n_pooled_anchors": 100,
-    "fixed_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0452,
-      "HellaSwag": 0.0309,
-      "TruthfulQA": 0.1417,
-      "ARC Challenge": 0.1375,
-      "Winogrande": 0.1834
-    },
+    "fixed_new_model_old_data_per_dataset_errors": "{'MMLU': 0.04520062420659694, 'HellaSwag': 0.030925841196703576, 'TruthfulQA': 0.14172322602082668, 'ARC Challenge': 0.13750853242320818, 'Winogrande': 0.18343962115232837}",
     "fixed_new_model_old_data_proportional_random_error_mean": 0.1078,
     "fixed_new_model_old_data_proportional_random_error_std": 0.0593,
     "fixed_new_model_old_data_n_proportional_anchors": 100,
-    "fixed_new_model_old_data_allocation": {
-      "MMLU": 51,
-      "HellaSwag": 37,
-      "TruthfulQA": 3,
-      "ARC Challenge": 4,
-      "Winogrande": 5
-    },
+    "fixed_new_model_old_data_allocation": "{'MMLU': 51, 'HellaSwag': 37, 'TruthfulQA': 3, 'ARC Challenge': 4, 'Winogrande': 5}",
     "fixed_n_test_models": 100,
     "fixed_anchor_error_mean": 0.0238,
     "fixed_anchor_error_std": 0.0195,
@@ -1050,23 +1032,11 @@
     "concurrent_new_model_old_data_pooled_simple_random_error_mean": 0.0873,
     "concurrent_new_model_old_data_pooled_simple_random_error_std": 0.0413,
     "concurrent_new_model_old_data_n_pooled_anchors": 100,
-    "concurrent_new_model_old_data_per_dataset_errors": {
-      "MMLU": 0.0452,
-      "HellaSwag": 0.0309,
-      "TruthfulQA": 0.1417,
-      "ARC Challenge": 0.1375,
-      "Winogrande": 0.1834
-    },
+    "concurrent_new_model_old_data_per_dataset_errors": "{'MMLU': 0.04520062420659694, 'HellaSwag': 0.030925841196703576, 'TruthfulQA': 0.14172322602082668, 'ARC Challenge': 0.13750853242320818, 'Winogrande': 0.18343962115232834}",
     "concurrent_new_model_old_data_proportional_random_error_mean": 0.1078,
     "concurrent_new_model_old_data_proportional_random_error_std": 0.0593,
     "concurrent_new_model_old_data_n_proportional_anchors": 100,
-    "concurrent_new_model_old_data_allocation": {
-      "MMLU": 51,
-      "HellaSwag": 37,
-      "TruthfulQA": 3,
-      "ARC Challenge": 4,
-      "Winogrande": 5
-    },
+    "concurrent_new_model_old_data_allocation": "{'MMLU': 51, 'HellaSwag': 37, 'TruthfulQA': 3, 'ARC Challenge': 4, 'Winogrande': 5}",
     "concurrent_n_test_models": 100,
     "concurrent_anchor_error_mean": 0.0266,
     "concurrent_anchor_error_std": 0.0251,
@@ -1081,6 +1051,22 @@
     "delta_anchor_error": -0.0028,
     "delta_irt_error": 0.0064,
     "delta_gp_irt_error": -0.0029,
-    "delta_pirt_error": 0.0084
+    "delta_pirt_error": 0.0084,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.498,
+    "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.1744,
+    "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.0578,
+    "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0297,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.1965,
+    "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1136,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.0575,
+    "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.0295,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.5186,
+    "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.1699,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.0401,
+    "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0197,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2465,
+    "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1345,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0401,
+    "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0196
   }
 ]

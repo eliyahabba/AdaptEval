@@ -218,5 +218,21 @@
   "delta_anchor_error": -0.0011,
   "delta_irt_error": -0.0689,
   "delta_gp_irt_error": -0.0011,
-  "delta_pirt_error": -0.0621
+  "delta_pirt_error": -0.0621,
+  "fixed_new_model_old_data_pooled_irt_anchor_error_mean": 0.3605,
+  "fixed_new_model_old_data_pooled_irt_anchor_error_std": 0.1899,
+  "fixed_new_model_old_data_pooled_irt_irt_error_mean": 0.1035,
+  "fixed_new_model_old_data_pooled_irt_irt_error_std": 0.0257,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2823,
+  "fixed_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1643,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_mean": 0.1022,
+  "fixed_new_model_old_data_pooled_irt_pirt_error_std": 0.0256,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_mean": 0.3601,
+  "concurrent_new_model_old_data_pooled_irt_anchor_error_std": 0.2104,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_mean": 0.0604,
+  "concurrent_new_model_old_data_pooled_irt_irt_error_std": 0.0541,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_mean": 0.2999,
+  "concurrent_new_model_old_data_pooled_irt_gp_irt_error_std": 0.1989,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_mean": 0.0593,
+  "concurrent_new_model_old_data_pooled_irt_pirt_error_std": 0.0523
 }
