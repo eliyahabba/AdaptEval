@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-mmlu
-#SBATCH --mem=12g
+#SBATCH --mem=8g
 #SBATCH --time=24:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
