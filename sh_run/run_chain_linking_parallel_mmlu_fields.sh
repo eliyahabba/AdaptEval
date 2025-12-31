@@ -5,7 +5,7 @@
 #SBATCH --time=24:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --gres=gpu:g4:4
+#SBATCH --gres=gpu:g0:4
 #SBATCH --cpus-per-task=4
 #SBATCH --killable
 #SBATCH --requeue
