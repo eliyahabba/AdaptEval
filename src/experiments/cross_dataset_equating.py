@@ -407,7 +407,7 @@ def get_data_source_config(mode: str) -> dict:
     """Get data source configuration based on mode.
     
     Args:
-        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only", "lb", "reeval", "mmlu_split", "tinybenchmarks"
+        mode: One of "mixed", "helm_lite", "helm_classic", "lb_only", "lb", "reeval", "mmlu_split", "mmlu_fields", "tinybenchmarks"
     
     Returns:
         Data source configuration dict
@@ -422,11 +422,11 @@ def get_data_source_config(mode: str) -> dict:
         return build_lb_only_config()
     elif mode == "reeval":
         return build_reeval_config()
-    elif mode == "mmlu_split":
+    elif mode in ["mmlu_split", "mmlu_fields"]:
         return build_mmlu_split_config()
     else:
         raise ValueError(f"Unknown data source mode: {mode}. "
-                        f"Options: mixed, helm_lite, helm_classic, lb_only, lb, reeval, mmlu_split, tinybenchmarks")
+                        f"Options: mixed, helm_lite, helm_classic, lb_only, lb, reeval, mmlu_split, mmlu_fields, tinybenchmarks")
 
 
 def load_pickle_data(pickle_path: str) -> dict:
