@@ -139,6 +139,11 @@ if [ -n "${TARGET_DATASET}" ]; then
     TARGET_ARG="--target-dataset ${TARGET_DATASET}"
 fi
 
+N_MODELS_ARG=""
+if [ -n "${N_MODELS_PER_CHAIN}" ]; then
+    N_MODELS_ARG="--n-models-per-chain ${N_MODELS_PER_CHAIN}"
+fi
+
 # Run parallel experiment
 python src/experiments/chain_linking_parallel_b.py \
     --output-dir "${OUTPUT_DIR}" \
@@ -152,7 +157,7 @@ python src/experiments/chain_linking_parallel_b.py \
     --epochs ${EPOCHS} \
     --data-source-mode ${DATA_SOURCE_MODE} \
     --num-workers ${NUM_WORKERS} \
-    --n-models-per-chain ${N_MODELS_PER_CHAIN} \
+    ${N_MODELS_ARG} \
     ${TARGET_ARG}
 
 # Print resource usage
