@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-0.4078,0.1988,0.2385,0.2416,0.2386,0.2415,0.0398,0.0428,0.0398,0.0427,0.9769,0.0382
+ai21/j1-jumbo,TruthfulQA-Classic,TruthfulQA-Classic,654,25,0.1188,0.185,0.1774,0.2909,0.1799,0.286,0.0076,0.1058,0.0051,0.101,0.9769,0.0382
+anthropic/stanford-online-all-v4-s3,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-1.1702,0.3471,0.3333,0.3127,0.3329,0.3142,0.0138,0.0343,0.0142,0.0329,0.9769,0.0382
+cohere/large-20220720,TruthfulQA-Classic,TruthfulQA-Classic,654,25,0.0482,0.1835,0.1453,0.1797,0.146,0.1794,0.0382,0.0037,0.0374,0.0041,0.9769,0.0382
+cohere/medium-20220720,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-2.343,0.2049,0.1651,0.1583,0.165,0.1603,0.0398,0.0466,0.0399,0.0446,0.9769,0.0382
+cohere/xlarge-20220609,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-0.1786,0.208,0.1346,0.2311,0.1367,0.2281,0.0734,0.0231,0.0712,0.0202,0.9769,0.0382
+meta/llama-2-7b,TruthfulQA-Classic,TruthfulQA-Classic,654,25,0.7008,0.2768,0.2584,0.3325,0.2601,0.3306,0.0183,0.0557,0.0167,0.0538,0.9769,0.0382
+microsoft/TNLGv2_7B,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-1.1097,0.1606,0.0321,0.2182,0.0363,0.2115,0.1284,0.0576,0.1243,0.051,0.9769,0.0382
+mosaicml/mpt-instruct-30b,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-0.4629,0.2187,0.1728,0.3695,0.1772,0.3628,0.0459,0.1508,0.0415,0.1442,0.9769,0.0382
+openai/ada,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-2.0325,0.2171,0.1254,0.2185,0.1275,0.2157,0.0917,0.0014,0.0897,0.0014,0.9769,0.0382
+openai/text-babbage-001,TruthfulQA-Classic,TruthfulQA-Classic,654,25,1.0434,0.2492,0.156,0.3365,0.16,0.3298,0.0933,0.0873,0.0893,0.0805,0.9769,0.0382
+stanford/alpaca-7b,TruthfulQA-Classic,TruthfulQA-Classic,654,25,0.2446,0.2401,0.2385,0.2343,0.2384,0.2347,0.0015,0.0058,0.0016,0.0053,0.9769,0.0382
+together/opt-175b,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-2.8535,0.2446,0.2339,0.2903,0.2352,0.2885,0.0107,0.0456,0.0094,0.0438,0.9769,0.0382
+together/ul2,TruthfulQA-Classic,TruthfulQA-Classic,654,25,0.7653,0.1835,0.0872,0.2383,0.0905,0.2324,0.0963,0.0548,0.093,0.0489,0.9769,0.0382
+together/yalm,TruthfulQA-Classic,TruthfulQA-Classic,654,25,-4.4096,0.2034,0.1774,0.1925,0.1777,0.1922,0.026,0.0108,0.0257,0.0112,0.9769,0.0382
+writer/palmyra-x,TruthfulQA-Classic,TruthfulQA-Classic,654,25,0.1116,0.5826,0.5031,0.5451,0.504,0.5439,0.0795,0.0375,0.0786,0.0387,0.9769,0.0382

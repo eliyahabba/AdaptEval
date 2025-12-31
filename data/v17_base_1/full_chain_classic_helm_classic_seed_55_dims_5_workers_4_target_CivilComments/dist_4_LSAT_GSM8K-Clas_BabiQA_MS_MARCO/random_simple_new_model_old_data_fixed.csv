@@ -1,0 +1,81 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+AlephAlpha/luminous-base,1,0.016,0.0,0.54,0.0,0.524,0.0,DyckLanguage
+ai21/j1-grande-v2-beta,1,0.014,0.0,0.63,0.0,0.644,0.0,DyckLanguage
+ai21/j1-jumbo,1,0.022,0.0,0.49,0.0,0.468,0.0,DyckLanguage
+ai21/j2-large,1,0.094,0.0,0.48,0.0,0.574,0.0,DyckLanguage
+anthropic/stanford-online-all-v4-s3,1,0.02,0.0,0.87,0.0,0.85,0.0,DyckLanguage
+cohere/command-xlarge-beta,1,0.024,0.0,0.43,0.0,0.454,0.0,DyckLanguage
+cohere/xlarge-20221108,1,0.058,0.0,0.54,0.0,0.598,0.0,DyckLanguage
+lmsys/vicuna-7b-v1.3,1,0.018,0.0,0.64,0.0,0.622,0.0,DyckLanguage
+microsoft/TNLGv2_530B,1,0.038,0.0,0.74,0.0,0.778,0.0,DyckLanguage
+microsoft/TNLGv2_7B,1,0.056,0.0,0.48,0.0,0.536,0.0,DyckLanguage
+mosaicml/mpt-30b,1,0.024,0.0,0.61,0.0,0.634,0.0,DyckLanguage
+openai/text-babbage-001,1,0.022,0.0,0.23,0.0,0.208,0.0,DyckLanguage
+openai/text-davinci-003,1,0.07,0.0,0.69,0.0,0.76,0.0,DyckLanguage
+together/bloom,1,0.012,0.0,0.54,0.0,0.528,0.0,DyckLanguage
+together/opt-175b,1,0.046,0.0,0.47,0.0,0.516,0.0,DyckLanguage
+together/redpajama-incite-base-3b-v1,1,0.02,0.0,0.51,0.0,0.53,0.0,DyckLanguage
+writer/palmyra-x,1,0.012,0.0,0.61,0.0,0.598,0.0,DyckLanguage
+AlephAlpha/luminous-base,1,0.0152,0.0,0.23,0.0,0.2148,0.0,LSAT
+ai21/j1-grande-v2-beta,1,0.0256,0.0,0.21,0.0,0.1844,0.0,LSAT
+ai21/j1-jumbo,1,0.0243,0.0,0.21,0.0,0.2343,0.0,LSAT
+ai21/j2-large,1,0.0639,0.0,0.27,0.0,0.2061,0.0,LSAT
+anthropic/stanford-online-all-v4-s3,1,0.0352,0.0,0.25,0.0,0.2148,0.0,LSAT
+cohere/command-xlarge-beta,1,0.0039,0.0,0.21,0.0,0.2061,0.0,LSAT
+cohere/xlarge-20221108,1,0.0014,0.0,0.17,0.0,0.1714,0.0,LSAT
+lmsys/vicuna-7b-v1.3,1,0.0335,0.0,0.14,0.0,0.1735,0.0,LSAT
+microsoft/TNLGv2_530B,1,0.0248,0.0,0.19,0.0,0.2148,0.0,LSAT
+microsoft/TNLGv2_7B,1,0.0039,0.0,0.21,0.0,0.2061,0.0,LSAT
+mosaicml/mpt-30b,1,0.0113,0.0,0.21,0.0,0.2213,0.0,LSAT
+openai/text-babbage-001,1,0.0444,0.0,0.14,0.0,0.1844,0.0,LSAT
+openai/text-davinci-003,1,0.0273,0.0,0.22,0.0,0.2473,0.0,LSAT
+together/bloom,1,0.0331,0.0,0.16,0.0,0.1931,0.0,LSAT
+together/opt-175b,1,0.0369,0.0,0.18,0.0,0.2169,0.0,LSAT
+together/redpajama-incite-base-3b-v1,1,0.0218,0.0,0.23,0.0,0.2082,0.0,LSAT
+writer/palmyra-x,1,0.0018,0.0,0.21,0.0,0.2082,0.0,LSAT
+AlephAlpha/luminous-base,1,0.019,0.0,0.01,0.0,0.029,0.0,GSM8K-Classic
+ai21/j1-grande-v2-beta,1,0.012,0.0,0.07,0.0,0.082,0.0,GSM8K-Classic
+ai21/j1-jumbo,1,0.002,0.0,0.05,0.0,0.052,0.0,GSM8K-Classic
+ai21/j2-large,1,0.01,0.0,0.01,0.0,0.02,0.0,GSM8K-Classic
+anthropic/stanford-online-all-v4-s3,1,0.079,0.0,0.23,0.0,0.151,0.0,GSM8K-Classic
+cohere/command-xlarge-beta,1,0.003,0.0,0.13,0.0,0.127,0.0,GSM8K-Classic
+cohere/xlarge-20221108,1,0.037,0.0,0.12,0.0,0.083,0.0,GSM8K-Classic
+lmsys/vicuna-7b-v1.3,1,0.026,0.0,0.16,0.0,0.134,0.0,GSM8K-Classic
+microsoft/TNLGv2_530B,1,0.056,0.0,0.08,0.0,0.136,0.0,GSM8K-Classic
+microsoft/TNLGv2_7B,1,0.001,0.0,0.02,0.0,0.019,0.0,GSM8K-Classic
+mosaicml/mpt-30b,1,0.046,0.0,0.21,0.0,0.164,0.0,GSM8K-Classic
+openai/text-babbage-001,1,0.0,0.0,0.0,0.0,0.0,0.0,GSM8K-Classic
+openai/text-davinci-003,1,0.039,0.0,0.56,0.0,0.521,0.0,GSM8K-Classic
+together/bloom,1,0.017,0.0,0.07,0.0,0.087,0.0,GSM8K-Classic
+together/opt-175b,1,0.004,0.0,0.03,0.0,0.034,0.0,GSM8K-Classic
+together/redpajama-incite-base-3b-v1,1,0.01,0.0,0.0,0.0,0.01,0.0,GSM8K-Classic
+writer/palmyra-x,1,0.025,0.0,0.65,0.0,0.625,0.0,GSM8K-Classic
+AlephAlpha/luminous-base,1,0.0255,0.0,0.35,0.0,0.3245,0.0,BabiQA
+ai21/j1-grande-v2-beta,1,0.017,0.0,0.51,0.0,0.527,0.0,BabiQA
+ai21/j1-jumbo,1,0.0151,0.0,0.51,0.0,0.4949,0.0,BabiQA
+ai21/j2-large,1,0.0052,0.0,0.38,0.0,0.3852,0.0,BabiQA
+anthropic/stanford-online-all-v4-s3,1,0.0218,0.0,0.48,0.0,0.4582,0.0,BabiQA
+cohere/command-xlarge-beta,1,0.0001,0.0,0.43,0.0,0.4301,0.0,BabiQA
+cohere/xlarge-20221108,1,0.0584,0.0,0.44,0.0,0.3816,0.0,BabiQA
+lmsys/vicuna-7b-v1.3,1,0.0213,0.0,0.42,0.0,0.4413,0.0,BabiQA
+microsoft/TNLGv2_530B,1,0.0041,0.0,0.4,0.0,0.4041,0.0,BabiQA
+microsoft/TNLGv2_7B,1,0.0461,0.0,0.31,0.0,0.3561,0.0,BabiQA
+mosaicml/mpt-30b,1,0.0129,0.0,0.52,0.0,0.5071,0.0,BabiQA
+openai/text-babbage-001,1,0.0009,0.0,0.28,0.0,0.2791,0.0,BabiQA
+openai/text-davinci-003,1,0.0393,0.0,0.55,0.0,0.5893,0.0,BabiQA
+together/bloom,1,0.0847,0.0,0.45,0.0,0.3653,0.0,BabiQA
+together/opt-175b,1,0.0192,0.0,0.36,0.0,0.3408,0.0,BabiQA
+together/redpajama-incite-base-3b-v1,1,0.0599,0.0,0.39,0.0,0.3301,0.0,BabiQA
+writer/palmyra-x,1,0.0045,0.0,0.73,0.0,0.7255,0.0,BabiQA
+ai21/j1-grande-v2-beta,1,0.0116,0.0,0.2664,0.0,0.2547,0.0,MS MARCO
+ai21/j1-jumbo,1,0.0393,0.0,0.1601,0.0,0.1994,0.0,MS MARCO
+ai21/j2-large,1,0.0148,0.0,0.2067,0.0,0.2215,0.0,MS MARCO
+anthropic/stanford-online-all-v4-s3,1,0.0,0.0,0.3762,0.0,0.3762,0.0,MS MARCO
+cohere/command-xlarge-beta,1,0.0195,0.0,0.453,0.0,0.4725,0.0,MS MARCO
+cohere/xlarge-20221108,1,0.0482,0.0,0.1904,0.0,0.2386,0.0,MS MARCO
+microsoft/TNLGv2_530B,1,0.0193,0.0,0.3505,0.0,0.3313,0.0,MS MARCO
+microsoft/TNLGv2_7B,1,0.0263,0.0,0.1341,0.0,0.1078,0.0,MS MARCO
+openai/text-babbage-001,1,0.011,0.0,0.1892,0.0,0.1781,0.0,MS MARCO
+openai/text-davinci-003,1,0.039,0.0,0.3185,0.0,0.3575,0.0,MS MARCO
+together/bloom,1,0.0058,0.0,0.1932,0.0,0.199,0.0,MS MARCO
+together/opt-175b,1,0.0311,0.0,0.2078,0.0,0.2389,0.0,MS MARCO
