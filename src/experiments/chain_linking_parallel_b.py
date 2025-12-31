@@ -608,8 +608,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
 
     # ==========================================================================
     # Validation 3 POOLED Random: N random questions from combined Base+Chain pool
+    # Computes BOTH simple error and GP-IRT error for fair comparison
     # ==========================================================================
     random_simple_pooled_new_model_old_data = {}
+    random_irt_pooled_new_model_old_data = {}
     if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         print(f"      Task {task.task_id}: Running Validation 3 POOLED Random...")
 
@@ -617,10 +619,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         n_pooled_anchors = min(task.n_anchors_per_dataset, len(all_pooled_questions))
 
         np.random.seed(task.seed + task.distance * 100 + 1000)
-        pooled_random_questions = set(np.random.choice(all_pooled_questions, size=n_pooled_anchors, replace=False))
+        pooled_random_questions = list(np.random.choice(all_pooled_questions, size=n_pooled_anchors, replace=False))
 
         score_col = 'normalized_score' if 'normalized_score' in base_chain_test_df.columns else 'score'
-        pooled_per_dataset_errors = {}  # Save per-dataset errors
+        pooled_per_dataset_errors = {}  # Save per-dataset errors (simple)
 
         for ds_name in base_chain_test_df['dataset'].unique():
             ds_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name]
@@ -643,11 +645,42 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 'per_dataset_errors': pooled_per_dataset_errors,
             }
 
+        # --- POOLED RANDOM with GP-IRT (for fair comparison with Pooled IRT) ---
+        # Use random questions as anchors and compute GP-IRT error
+        pooled_random_anchors = pooled_random_questions
+        pooled_random_weights = [1.0] * len(pooled_random_anchors)  # Equal weights for random
+
+        if pooled_random_anchors:
+            precomputed_thetas_pooled_random = precompute_thetas_from_all_anchors(
+                base_chain_test_df, irt_params, pooled_random_anchors, A_matrix, B_matrix
+            )
+            pooled_random_irt_results = run_validation(
+                base_chain_test_df, irt_params, pooled_random_anchors, pooled_random_weights,
+                final_df, A_matrix, B_matrix, precomputed_thetas_pooled_random
+            )
+            if pooled_random_irt_results:
+                pooled_random_df = pd.DataFrame(pooled_random_irt_results)
+                # Find dataset column
+                pr_dataset_col = None
+                for col in ['dataset', 'dataset_name', 'scenario_name']:
+                    if col in pooled_random_df.columns:
+                        pr_dataset_col = col
+                        break
+
+                if pr_dataset_col is not None:
+                    for metric in ERROR_METRICS:
+                        if metric in pooled_random_df.columns:
+                            means = pooled_random_df.groupby(pr_dataset_col)[metric].mean()
+                            random_irt_pooled_new_model_old_data[f'pooled_random_irt_{metric}_mean'] = means.mean()
+                            random_irt_pooled_new_model_old_data[f'pooled_random_irt_{metric}_std'] = means.std()
+                    random_irt_pooled_new_model_old_data['n_pooled_random_anchors'] = len(pooled_random_anchors)
+
     # ==========================================================================
     # Validation 3 PROPORTIONAL: N total anchors distributed by dataset size
     # ==========================================================================
     proportional_irt_new_model_old_data = {}
     proportional_random_new_model_old_data = {}
+    proportional_random_irt_new_model_old_data = {}
     if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         print(f"      Task {task.task_id}: Running Validation 3 PROPORTIONAL...")
 
@@ -710,15 +743,17 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                     proportional_irt_new_model_old_data['allocation'] = alloc
                     proportional_irt_new_model_old_data['per_dataset_errors'] = prop_irt_per_dataset_errors
 
-        # --- PROPORTIONAL RANDOM ---
+        # --- PROPORTIONAL RANDOM (Simple Error) ---
         prop_random_per_dataset_errors = {}
+        prop_random_anchors_all = []
         for ds_name, n_ds in alloc.items():
             if n_ds < 1:
                 continue
             ds_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name]
             ds_questions = list(ds_df['question_id'].unique())
             n_sample = min(n_ds, len(ds_questions))
-            random_qs = set(np.random.choice(ds_questions, size=n_sample, replace=False))
+            random_qs = list(np.random.choice(ds_questions, size=n_sample, replace=False))
+            prop_random_anchors_all.extend(random_qs)
 
             ds_sampled = ds_df[ds_df['question_id'].isin(random_qs)]
             true_perf = ds_df.groupby('model_name')[score_col].mean()
@@ -736,6 +771,33 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 'allocation': alloc,
                 'per_dataset_errors': prop_random_per_dataset_errors,
             }
+
+        # --- PROPORTIONAL RANDOM with GP-IRT (for fair comparison with Proportional IRT) ---
+        if prop_random_anchors_all:
+            prop_random_weights = [1.0] * len(prop_random_anchors_all)  # Equal weights for random
+            precomputed_thetas_prop_random = precompute_thetas_from_all_anchors(
+                base_chain_test_df, irt_params, prop_random_anchors_all, A_matrix, B_matrix
+            )
+            prop_random_irt_results = run_validation(
+                base_chain_test_df, irt_params, prop_random_anchors_all, prop_random_weights,
+                final_df, A_matrix, B_matrix, precomputed_thetas_prop_random
+            )
+            if prop_random_irt_results:
+                prop_random_df = pd.DataFrame(prop_random_irt_results)
+                # Find dataset column
+                pr_ds_col = None
+                for col in ['dataset', 'dataset_name', 'scenario_name']:
+                    if col in prop_random_df.columns:
+                        pr_ds_col = col
+                        break
+
+                if pr_ds_col is not None:
+                    for metric in ERROR_METRICS:
+                        if metric in prop_random_df.columns:
+                            means = prop_random_df.groupby(pr_ds_col)[metric].mean()
+                            proportional_random_irt_new_model_old_data[f'proportional_random_irt_{metric}_mean'] = means.mean()
+                            proportional_random_irt_new_model_old_data[f'proportional_random_irt_{metric}_std'] = means.std()
+                    proportional_random_irt_new_model_old_data['n_proportional_random_anchors'] = len(prop_random_anchors_all)
 
     # ==========================================================================
     # Build result
@@ -844,6 +906,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     for key, val in random_simple_pooled_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
 
+    # Add POOLED Random with GP-IRT for Validation 3 (fair comparison with Pooled IRT)
+    for key, val in random_irt_pooled_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+
     # Add POOLED IRT results for Validation 3 (New Model + Old Data)
     for key, val in pooled_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
@@ -852,6 +918,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     for key, val in proportional_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
     for key, val in proportional_random_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+
+    # Add PROPORTIONAL Random with GP-IRT for Validation 3 (fair comparison with Proportional IRT)
+    for key, val in proportional_random_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
 
     # Backward compatibility - also add without prefix for main metric
