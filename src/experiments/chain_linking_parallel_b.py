@@ -454,11 +454,19 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             )
             val_test_on_base_pooled_df = pd.DataFrame(test_on_base_pooled_results) if test_on_base_pooled_results else None
             
-            if val_test_on_base_pooled_df is not None and 'dataset' in val_test_on_base_pooled_df.columns:
+            # Find dataset column (may be 'dataset', 'dataset_name', or 'scenario_name')
+            dataset_col = None
+            if val_test_on_base_pooled_df is not None:
+                for col in ['dataset', 'dataset_name', 'scenario_name']:
+                    if col in val_test_on_base_pooled_df.columns:
+                        dataset_col = col
+                        break
+            
+            if val_test_on_base_pooled_df is not None and dataset_col is not None:
                 pooled_irt_per_dataset_errors = {}
                 for metric in ERROR_METRICS:
                     if metric in val_test_on_base_pooled_df.columns:
-                        means = val_test_on_base_pooled_df.groupby('dataset')[metric].mean()
+                        means = val_test_on_base_pooled_df.groupby(dataset_col)[metric].mean()
                         pooled_irt_per_dataset_errors = means.to_dict()
                         pooled_irt_new_model_old_data[f'pooled_irt_{metric}_mean'] = means.mean()
                         pooled_irt_new_model_old_data[f'pooled_irt_{metric}_std'] = means.std()
@@ -678,10 +686,17 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             )
             if prop_results:
                 prop_df = pd.DataFrame(prop_results)
-                if 'dataset' in prop_df.columns:
+                # Find dataset column (may be 'dataset', 'dataset_name', or 'scenario_name')
+                prop_dataset_col = None
+                for col in ['dataset', 'dataset_name', 'scenario_name']:
+                    if col in prop_df.columns:
+                        prop_dataset_col = col
+                        break
+                
+                if prop_dataset_col is not None:
                     for metric in ERROR_METRICS:
                         if metric in prop_df.columns:
-                            means = prop_df.groupby('dataset')[metric].mean()
+                            means = prop_df.groupby(prop_dataset_col)[metric].mean()
                             prop_irt_per_dataset_errors = means.to_dict()
                             proportional_irt_new_model_old_data[f'proportional_irt_{metric}_mean'] = means.mean()
                             proportional_irt_new_model_old_data[f'proportional_irt_{metric}_std'] = means.std()
@@ -1014,12 +1029,40 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                     break
 
                 if all_results_file.exists():
-                    # Complete experiment exists with same parameters - skip to next seed
+                    # Complete experiment exists with same parameters - try next seed
                     print(f"   ⏭️ Target '{target_name}' already has complete results with same parameters, trying next seed...")
                     current_seed += 1
+                    continue  # Go back to the beginning of the loop with new seed
                 else:
-                    # Directory exists but no complete results - resume this experiment
-                    print(f"   🔄 Target '{target_name}' directory exists but incomplete - resuming with current seed")
+                    # Directory exists but no complete results - create versioned directory
+                    print(f"   🔄 Target '{target_name}' directory exists but incomplete - creating versioned directory")
+
+                    # Find next available version number
+                    existing_versions = []
+                    for d in output_parent.glob(f"*_target_{target_name}*"):
+                        dir_name = d.name
+                        # Extract version from patterns like: ..._target_DatasetName_v2
+                        if '_v' in dir_name:
+                            try:
+                                version_part = dir_name.split('_v')[-1]
+                                version_num = int(version_part)
+                                existing_versions.append(version_num)
+                            except ValueError:
+                                pass
+
+                    next_version = max(existing_versions) + 1 if existing_versions else 2
+
+                    # Modify config to use versioned directory
+                    original_output_dir = config.output_dir
+                    if f"_target_{target_name}" in original_output_dir:
+                        # Replace the target part with versioned one
+                        config.output_dir = original_output_dir.replace(f"_target_{target_name}", f"_target_{target_name}_v{next_version}")
+                        print(f"      Using versioned directory: {config.output_dir}")
+                    else:
+                        # Fallback: append version to the end
+                        config.output_dir = f"{original_output_dir}_v{next_version}"
+                        print(f"      Using versioned directory: {config.output_dir}")
+
                     break
             else:
                 break
@@ -1033,10 +1076,15 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     target_n_questions = int(datasets[target_name]['question_id'].nunique())
 
-    # Update output directory with target name
+    # Update output directory with target name (unless already versioned)
     initial_output_dir = Path(config.output_dir)
     # Check if target name is already in the path to avoid duplication if run multiple times or manually named
-    if f"target_{target_name}" not in initial_output_dir.name:
+    # Also skip if already has version (from incomplete experiment handling)
+    if f"_v" in initial_output_dir.name:
+        # Already versioned, use as-is
+        output_dir = initial_output_dir
+        print(f"   Using versioned output directory: {output_dir}")
+    elif f"target_{target_name}" not in initial_output_dir.name:
         new_name = f"{initial_output_dir.name}_target_{target_name}"
         output_dir = initial_output_dir.parent / new_name
         config.output_dir = str(output_dir)
