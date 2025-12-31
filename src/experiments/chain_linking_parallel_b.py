@@ -1128,16 +1128,29 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         base_models.update(datasets[ds_name]['model_name'].unique())
     
     base_models_list = sorted(list(base_models))
-    np.random.seed(config.seed)
+
+    # Calculate seed for model splitting (different for versioned experiments)
+    model_split_seed = config.seed
+    if '_v' in config.output_dir:
+        # Extract version number and add as offset to ensure different model splits
+        try:
+            version_part = config.output_dir.split('_v')[-1].split('_')[0]  # Get number after _v
+            version_num = int(version_part)
+            model_split_seed += (version_num - 1) * 10000  # Same large offset as random samples
+        except (ValueError, IndexError):
+            # If can't parse version, add a small offset
+            model_split_seed += 1000
+
+    np.random.seed(model_split_seed)
     n_test = max(1, int(len(base_models_list) * config.test_ratio))
     test_models = set(np.random.choice(base_models_list, size=n_test, replace=False))
     train_models = base_models - test_models
-    
+
     # Subset of train_models for chain steps (if specified)
     if config.n_models_per_chain is not None:
         n_chain_models = min(config.n_models_per_chain, len(train_models))
         train_models_list = sorted(list(train_models))
-        np.random.seed(config.seed + 1000)  # Different seed for chain model selection
+        np.random.seed(model_split_seed + 1000)  # Different seed for chain model selection
         chain_train_models = set(np.random.choice(train_models_list, size=n_chain_models, replace=False))
         print(f"   Train: {len(train_models)}, Test: {len(test_models)}, Chain models: {len(chain_train_models)}")
     else:
@@ -1425,6 +1438,18 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             A = chain_cache[distance][1]
             dims = [A.shape[1] if A.ndim == 3 else A.shape[0]] if A is not None else config.dims_search
         
+        # Calculate seed for this task (different for versioned experiments to ensure different random samples)
+        task_seed = config.seed
+        if '_v' in config.output_dir:
+            # Extract version number and add as offset to ensure different random samples
+            try:
+                version_part = config.output_dir.split('_v')[-1].split('_')[0]  # Get number after _v
+                version_num = int(version_part)
+                task_seed += (version_num - 1) * 10000  # Large offset per version (v2=10000, v3=20000, etc.)
+            except (ValueError, IndexError):
+                # If can't parse version, add a small offset
+                task_seed += 1000
+
         # Create tasks for both methods
         for method in ['fixed', 'concurrent']:
             task_epochs = config.epochs_fixed if method == 'fixed' else config.epochs
@@ -1453,7 +1478,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 target_name=target_name,
                 test_models=list(test_models),
                 train_models=list(train_models),  # ALL train_models for generalization test
-                seed=config.seed,
+                seed=task_seed,
                 cumulative_chain_time=cumulative_chain_time,
             )
             tasks.append(task)
