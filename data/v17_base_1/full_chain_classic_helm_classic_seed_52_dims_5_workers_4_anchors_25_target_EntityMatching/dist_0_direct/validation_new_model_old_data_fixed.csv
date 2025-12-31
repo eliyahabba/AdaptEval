@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,NaturalQA-Classic,NaturalQA-Classic,1000,25,0.2187,0.1766,0.1304,0.4885,0.3562,0.4879,0.0461,0.312,0.1796,0.3113,0.3686,0.025
+ai21/j1-grande-v2-beta,NaturalQA-Classic,NaturalQA-Classic,1000,25,-13.7802,0.2748,0.29,0.8727,0.6575,0.8721,0.0152,0.5979,0.3827,0.5973,0.3686,0.025
+ai21/j1-jumbo,NaturalQA-Classic,NaturalQA-Classic,1000,25,-11.1378,0.2471,0.2624,0.8348,0.6235,0.8342,0.0153,0.5877,0.3764,0.5871,0.3686,0.025
+ai21/j2-large,NaturalQA-Classic,NaturalQA-Classic,1000,25,-8.407,0.2324,0.2537,0.8338,0.6196,0.8332,0.0214,0.6014,0.3872,0.6008,0.3686,0.025
+cohere/command-xlarge-beta,NaturalQA-Classic,NaturalQA-Classic,1000,25,-9.3447,0.3191,0.3017,0.8179,0.6275,0.8177,0.0175,0.4988,0.3084,0.4986,0.3686,0.025
+cohere/small-20220720,NaturalQA-Classic,NaturalQA-Classic,1000,25,8.4707,0.0619,0.027,0.0988,0.0723,0.0987,0.0349,0.0369,0.0104,0.0368,0.3686,0.025
+meta/llama-2-70b,NaturalQA-Classic,NaturalQA-Classic,1000,25,-0.2297,0.4152,0.4658,0.5061,0.4908,0.5053,0.0506,0.0909,0.0755,0.0901,0.3686,0.025
+meta/llama-65b,NaturalQA-Classic,NaturalQA-Classic,1000,25,-1.8745,0.3915,0.5185,0.7834,0.6856,0.7831,0.127,0.3919,0.2941,0.3917,0.3686,0.025
+mosaicml/mpt-instruct-30b,NaturalQA-Classic,NaturalQA-Classic,1000,25,2.7353,0.2476,0.1866,0.1048,0.1333,0.1021,0.061,0.1428,0.1143,0.1455,0.3686,0.025
+openai/babbage,NaturalQA-Classic,NaturalQA-Classic,1000,25,0.9346,0.0968,0.0932,0.3751,0.2712,0.3752,0.0037,0.2783,0.1744,0.2783,0.3686,0.025
+openai/gpt-3.5-turbo-0613,NaturalQA-Classic,NaturalQA-Classic,1000,25,-0.8782,0.2943,0.3308,0.5968,0.4979,0.5955,0.0365,0.3025,0.2036,0.3012,0.3686,0.025
+openai/text-davinci-003,NaturalQA-Classic,NaturalQA-Classic,1000,25,-2.6963,0.3683,0.3064,0.6971,0.5524,0.6959,0.0618,0.3289,0.1841,0.3277,0.3686,0.025
+together/redpajama-incite-instruct-3b-v1,NaturalQA-Classic,NaturalQA-Classic,1000,25,-3.0511,0.1689,0.131,0.6727,0.4724,0.6717,0.0379,0.5038,0.3035,0.5028,0.3686,0.025
+together/t0pp,NaturalQA-Classic,NaturalQA-Classic,1000,25,4.84,0.0391,0.0383,0.0686,0.057,0.0679,0.0008,0.0295,0.0179,0.0288,0.3686,0.025
+together/t5-11b,NaturalQA-Classic,NaturalQA-Classic,1000,25,0.4033,0.1645,0.222,0.4313,0.3537,0.4305,0.0575,0.2669,0.1892,0.266,0.3686,0.025
+together/yalm,NaturalQA-Classic,NaturalQA-Classic,1000,25,5.4051,0.0598,0.0608,0.0777,0.0709,0.0768,0.0009,0.0179,0.0111,0.017,0.3686,0.025
