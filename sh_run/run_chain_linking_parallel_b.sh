@@ -23,11 +23,13 @@
 # Usage:
 #   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [n_anchors] [dims] [num_workers] [n_models_per_chain] [target_dataset]
 #
+# Note: This script is configured for 1 base dataset (fixed)
+#
 # Examples:
-#   sbatch run_chain_linking_parallel_b.sh                                                # All defaults (100 anchors, dim=5, 4 workers)
+#   sbatch run_chain_linking_parallel_b.sh                                                # All defaults (1 base, 100 anchors, dim=5, 4 workers)
 #   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic                   # Default anchors, dims & workers
 #   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50                   # 50 anchors experiment
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50 "5" 8             # 50 anchors, dim=5, 8 workers
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 100 "5" 8            # 100 anchors, dim=5, 8 workers
 #   sbatch run_chain_linking_parallel_b.sh /path/output 43 helm_classic 25 "5" 4 "" "QuAC"   # Specific target dataset
 #   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 100 "5" 4 50         # 50 models for chain training
 #
@@ -90,8 +92,10 @@ NUM_WORKERS="${6:-4}"
 N_MODELS_PER_CHAIN="${7:-}"
 TARGET_DATASET="${8:-}"
 
+# Fixed configuration for this experiment
+N_BASE=1  # Fixed: 1 base dataset
+
 # Configuration (can override via environment variables)
-N_BASE=${N_BASE:-6}
 MAX_CHAIN=${MAX_CHAIN:-10}
 EPOCHS=${EPOCHS:-2000}
 
@@ -118,7 +122,7 @@ echo "Configuration:"
 echo "  NUM_WORKERS: ${NUM_WORKERS}"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
 echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
-echo "  N_BASE: ${N_BASE}"
+echo "  N_BASE: ${N_BASE} (fixed)"
 echo "  MAX_CHAIN: ${MAX_CHAIN}"
 echo "  N_ANCHORS: ${N_ANCHORS}"
 echo "  EPOCHS: ${EPOCHS}"
@@ -135,11 +139,6 @@ if [ -n "${TARGET_DATASET}" ]; then
     TARGET_ARG="--target-dataset ${TARGET_DATASET}"
 fi
 
-N_MODELS_ARG=""
-if [ -n "$N_MODELS_PER_CHAIN" ]; then
-    N_MODELS_ARG="--n-models-per-chain ${N_MODELS_PER_CHAIN}"
-fi
-
 # Run parallel experiment
 python src/experiments/chain_linking_parallel_b.py \
     --output-dir "${OUTPUT_DIR}" \
@@ -153,7 +152,7 @@ python src/experiments/chain_linking_parallel_b.py \
     --epochs ${EPOCHS} \
     --data-source-mode ${DATA_SOURCE_MODE} \
     --num-workers ${NUM_WORKERS} \
-    ${N_MODELS_ARG} \
+    --n-models-per-chain ${N_MODELS_PER_CHAIN} \
     ${TARGET_ARG}
 
 # Print resource usage
