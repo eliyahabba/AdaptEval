@@ -129,7 +129,7 @@ echo "========================================"
 # Build optional arguments
 TARGET_ARG=""
 if [ -n "${TARGET_DATASET}" ]; then
-    TARGET_ARG="--target-dataset ${TARGET_DATASET}"
+    TARGET_ARG="--target-dataset \"${TARGET_DATASET}\""
 fi
 
 MODELS_ARG=""

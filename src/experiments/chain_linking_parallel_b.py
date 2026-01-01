@@ -139,7 +139,7 @@ class ParallelChainConfig(ExperimentConfig):
     num_workers: int = 4  # Number of parallel workers
     target_dataset: str | None = None  # Specific target dataset (if None, use shuffled[n_base])
     n_models_per_chain: int | None = None  # Number of models to use for chain steps (None = all train models)
-
+    
     def __post_init__(self):
         # Auto-adjust for tinybenchmarks/lb (only 6 datasets available)
         if self.data_source_mode in ["tinybenchmarks", "lb_only", "lb"]:
@@ -147,7 +147,7 @@ class ParallelChainConfig(ExperimentConfig):
                 self.n_base_datasets = 1
             if self.max_chain_length == 10:
                 self.max_chain_length = 5
-
+        
         # Auto-adjust for mmlu_fields (57 datasets, recommend smaller base)
         if self.data_source_mode in ["mmlu_split", "mmlu_fields"]:
             self.n_base_datasets = 1
@@ -182,20 +182,20 @@ class ScenarioTask:
     chain_list: list
     chain_str: str
     scenario_dir: str
-
+    
     # Data (will be serialized/deserialized)
     final_df_path: str  # Path to pickled DataFrame
     target_test_df_path: str
     base_chain_test_df_path: str | None  # Path to test models' responses on Base+Chain (for cross-dataset theta)
     target_train_df_path: str | None  # Path to train models' responses on Target (for old model + new data)
-
+    
     # IRT parameters (for Fixed-Anchor)
     prev_irt_path: str | None  # Path to pickled IRT params
     prev_A_path: str | None
     prev_B_path: str | None
     prev_anchors: list | None
     prev_weights: list | None
-
+    
     # Config values
     dims: list[int]
     epochs: int
@@ -207,7 +207,7 @@ class ScenarioTask:
     test_models: list  # Serialized as list
     train_models: list  # Serialized as list (for old model validation)
     seed: int  # Base seed for random sampling
-
+    
     # Timing info
     cumulative_chain_time: float
 
@@ -225,34 +225,34 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Set GPU for this worker
     if gpu_id is not None:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
-
+    
     # Import inside worker to ensure fresh CUDA context
-
+    
     # Load data from disk
     final_df = pd.read_pickle(task.final_df_path)
     target_test_df = pd.read_pickle(task.target_test_df_path)
     test_models = set(task.test_models)
     train_models = set(task.train_models) if task.train_models else set()
-
+    
     # Load additional data for extra validations
     target_train_df = None
     if task.target_train_df_path:
         target_train_df = pd.read_pickle(task.target_train_df_path)
-
+    
     base_chain_test_df = None
     if task.base_chain_test_df_path:
         base_chain_test_df = pd.read_pickle(task.base_chain_test_df_path)
-
+    
     # Load IRT params if Fixed-Anchor
     anchor_items = None
     prev_anchors = None
     prev_weights = None
-
+    
     if task.method == 'fixed' and task.prev_irt_path:
         prev_irt = pd.read_pickle(task.prev_irt_path)
         prev_A = np.load(task.prev_A_path) if task.prev_A_path else None
         prev_B = np.load(task.prev_B_path) if task.prev_B_path else None
-
+        
         available_questions = set(final_df['question_id'].astype(str).unique())
         anchor_items = build_anchor_items_for_fixed_calibration(
             prev_irt, available_questions, prev_A, prev_B, task.prev_anchors
@@ -263,11 +263,11 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         # For concurrent: still need prev_anchors for validation (not training)
         prev_anchors = task.prev_anchors
         prev_weights = task.prev_weights
-
+    
     # Create output directory
     output_dir = Path(task.scenario_dir) / f"irt_{task.method}"
     output_dir.mkdir(parents=True, exist_ok=True)
-
+    
     # Train IRT with retry
     irt_config = TrainingConfig(
         dims_search=task.dims,
@@ -278,7 +278,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         filter_zero_variance=task.filter_zero_variance,
         validate_dimensions=task.validate_dimensions,
     )
-
+    
     start_time = time.time()
     irt_params = None
     for attempt in range(MAX_RETRIES):
@@ -294,15 +294,15 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             print(f"      ⚠️ Task {task.task_id} attempt {attempt+1}/{MAX_RETRIES} failed: {str(e)[:100]}")
             if attempt == MAX_RETRIES - 1:
                 print(f"      ❌ Task {task.task_id} all retries failed")
-                return {'task_id': task.task_id, 'distance': task.distance, 'method': task.method,
+                return {'task_id': task.task_id, 'distance': task.distance, 'method': task.method, 
                         'chain': task.chain_list, 'chain_str': task.chain_str, 'failed': True}
     training_time = time.time() - start_time
-
+    
     # Extract info
     n_items = len(irt_params)
     best_dimension = None
     A_matrix, B_matrix = None, None
-
+    
     if hasattr(irt_params, 'attrs') and irt_params.attrs:
         best_dimension = irt_params.attrs.get('best_dimension')
         A_list = irt_params.attrs.get('A_matrix')
@@ -310,12 +310,12 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         if A_list is not None and B_list is not None:
             A_matrix = np.array(A_list)
             B_matrix = np.array(B_list)
-
+    
     # Select anchors
     target_anchors, target_weights = select_anchors_for_dataset(
         irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix
     )
-
+    
     # Combine anchors
     if prev_anchors is not None:
         all_anchors = list(prev_anchors) + target_anchors
@@ -342,7 +342,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             f"Need >= {MIN_ANCHORS_PER_DATASET} anchors per dataset. "
             f"Low: {low_anchor_datasets}"
         )
-
+    
     # Prepare test data for theta precomputation
     # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
     # This enables cross-dataset theta estimation using historical anchor responses
@@ -350,7 +350,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         test_df = pd.concat([base_chain_test_df, target_test_df], ignore_index=True)
     else:
         test_df = target_test_df.copy()
-
+    
     # Precompute thetas for Validation 1 & 2 (uses ALL anchors including Target)
     precomputed_thetas = precompute_thetas_from_all_anchors(
         test_df=test_df,
@@ -359,7 +359,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         A_matrix=A_matrix,
         B_matrix=B_matrix,
     )
-
+    
     # Precompute thetas for Validation 3: New Model + Old Data
     # IMPORTANT: Use only Base+Chain anchors (without Target) to avoid "cheating"
     precomputed_thetas_base_chain = None
@@ -371,7 +371,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             A_matrix=A_matrix,
             B_matrix=B_matrix,
         )
-
+    
     # ==========================================================================
     # Validation 1: New Models + New Dataset (test_models on target)
     # ==========================================================================
@@ -386,7 +386,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         precomputed_thetas=precomputed_thetas,
     )
     validation_df = pd.DataFrame(validation_results) if validation_results else None
-
+    
     # ==========================================================================
     # Validation 2: Old Models + New Dataset (train_models on target)
     # ==========================================================================
@@ -410,7 +410,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             precomputed_thetas=precomputed_thetas_train,
         )
         val_train_on_target_df = pd.DataFrame(train_on_target_results) if train_on_target_results else None
-
+    
     # ==========================================================================
     # Validation 3: New Models + Old Datasets (test_models on Base+Chain)
     # Uses only Base+Chain anchors for theta estimation (no Target "cheating")
@@ -428,7 +428,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             precomputed_thetas=precomputed_thetas_base_chain,  # Theta without Target
         )
         val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
-
+    
     # ==========================================================================
     # Validation 3 POOLED: IRT with N anchors from combined Base+Chain pool
     # ==========================================================================
@@ -436,7 +436,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     pooled_irt_new_model_old_data = {}
     if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         print(f"      Task {task.task_id}: Running Validation 3 POOLED IRT...")
-
+        
         # Filter to Base+Chain questions
         base_chain_questions = base_chain_test_df['question_id'].unique()
         pooled_irt_params = irt_params[irt_params.index.isin(base_chain_questions)].copy()
@@ -444,12 +444,12 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         pooled_indices = [all_question_ids.index(q) for q in pooled_irt_params.index if q in all_question_ids]
         pooled_A = A_matrix[:, :, pooled_indices] if A_matrix is not None else None
         pooled_B = B_matrix[:, :, pooled_indices] if B_matrix is not None else None
-
+        
         # Select N anchors using IRT clustering on combined pool
         pooled_anchors, pooled_weights = select_anchors_pooled(
             pooled_irt_params, task.n_anchors_per_dataset, final_df, pooled_A, pooled_B
         )
-
+        
         if pooled_anchors:
             precomputed_thetas_pooled = precompute_thetas_from_all_anchors(
                 base_chain_test_df, irt_params, pooled_anchors, A_matrix, B_matrix
@@ -459,7 +459,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 final_df, A_matrix, B_matrix, precomputed_thetas_pooled
             )
             val_test_on_base_pooled_df = pd.DataFrame(test_on_base_pooled_results) if test_on_base_pooled_results else None
-
+            
             # Find dataset column (may be 'dataset', 'dataset_name', or 'scenario_name')
             dataset_col = None
             if val_test_on_base_pooled_df is not None:
@@ -478,7 +478,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                         pooled_irt_new_model_old_data[f'pooled_irt_{metric}_std'] = means.std()
                 pooled_irt_new_model_old_data['n_pooled_anchors'] = len(pooled_anchors)
                 pooled_irt_new_model_old_data['per_dataset_errors'] = pooled_irt_per_dataset_errors
-
+    
     # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
     # ==========================================================================
@@ -504,7 +504,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         base_seed=task.seed + task.distance * 100,  # Different seed per distance
         return_per_model=True,
     )
-
+    
     # ==========================================================================
     # Random Baselines for Validation 2: Old Model + New Data
     # ==========================================================================
@@ -535,7 +535,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             base_seed=task.seed + task.distance * 100,  # Different seed per distance
             return_per_model=True,
         )
-
+    
     # ==========================================================================
     # Random Baselines for Validation 3: New Model + Old Data
     # ==========================================================================
@@ -548,12 +548,12 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         base_chain_datasets = base_chain_test_df['dataset'].unique()
         all_random_irt_errors = []
         all_random_simple_errors = []
-
+        
         for ds_name in base_chain_datasets:
             ds_test_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name].copy()
             if len(ds_test_df) == 0:
                 continue
-
+            
             ds_random_irt, ds_random_irt_per_model = run_random_baseline_validation(
                 test_df=ds_test_df,
                 item_params=irt_params,
@@ -575,12 +575,12 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 base_seed=task.seed + task.distance * 100,  # Different seed per distance
                 return_per_model=True,
             )
-
+            
             if 'random_gp_irt_error_mean' in ds_random_irt:
                 all_random_irt_errors.append(ds_random_irt['random_gp_irt_error_mean'])
             if 'simple_random_error_mean' in ds_random_simple:
                 all_random_simple_errors.append(ds_random_simple['simple_random_error_mean'])
-
+            
             # Collect per-model results per dataset
             if len(ds_random_irt_per_model) > 0:
                 ds_random_irt_per_model['dataset'] = ds_name
@@ -588,7 +588,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             if len(ds_random_simple_per_model) > 0:
                 ds_random_simple_per_model['dataset'] = ds_name
                 random_simple_new_model_old_data_per_model_dfs.append(ds_random_simple_per_model)
-
+        
         # Aggregate across datasets
         if all_random_irt_errors:
             random_baseline_new_model_old_data = {
@@ -601,11 +601,11 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 'simple_random_error_mean': np.mean(all_random_simple_errors),
                 'simple_random_error_std': np.std(all_random_simple_errors),
             }
-
+    
     # Combine Validation 3 per-model DataFrames
     random_baseline_new_model_old_data_per_model_df = pd.concat(random_baseline_new_model_old_data_per_model_dfs) if random_baseline_new_model_old_data_per_model_dfs else pd.DataFrame()
     random_simple_new_model_old_data_per_model_df = pd.concat(random_simple_new_model_old_data_per_model_dfs) if random_simple_new_model_old_data_per_model_dfs else pd.DataFrame()
-
+    
     # ==========================================================================
     # Validation 3 POOLED Random: N random questions from combined Base+Chain pool
     # Computes BOTH simple error and GP-IRT error for fair comparison
@@ -614,29 +614,29 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     random_irt_pooled_new_model_old_data = {}
     if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         print(f"      Task {task.task_id}: Running Validation 3 POOLED Random...")
-
+        
         all_pooled_questions = list(base_chain_test_df['question_id'].unique())
         n_pooled_anchors = min(task.n_anchors_per_dataset, len(all_pooled_questions))
-
+        
         np.random.seed(task.seed + task.distance * 100 + 1000)
         pooled_random_questions = list(np.random.choice(all_pooled_questions, size=n_pooled_anchors, replace=False))
-
+        
         score_col = 'normalized_score' if 'normalized_score' in base_chain_test_df.columns else 'score'
         pooled_per_dataset_errors = {}  # Save per-dataset errors (simple)
-
+        
         for ds_name in base_chain_test_df['dataset'].unique():
             ds_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name]
             ds_pooled = ds_df[ds_df['question_id'].isin(pooled_random_questions)]
             if len(ds_pooled) == 0:
                 continue
-
+            
             true_perf = ds_df.groupby('model_name')[score_col].mean()
             pred_perf = ds_pooled.groupby('model_name')[score_col].mean()
             common_models = set(true_perf.index) & set(pred_perf.index) & set(test_models)
             if common_models:
                 errors = [abs(pred_perf[m] - true_perf[m]) for m in common_models]
                 pooled_per_dataset_errors[ds_name] = np.mean(errors)
-
+        
         if pooled_per_dataset_errors:
             random_simple_pooled_new_model_old_data = {
                 'pooled_simple_random_error_mean': np.mean(list(pooled_per_dataset_errors.values())),
@@ -644,7 +644,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 'n_pooled_anchors': n_pooled_anchors,
                 'per_dataset_errors': pooled_per_dataset_errors,
             }
-
+    
         # --- POOLED RANDOM with GP-IRT (for fair comparison with Pooled IRT) ---
         # Use random questions as anchors and compute GP-IRT error
         pooled_random_anchors = pooled_random_questions
@@ -683,13 +683,13 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     proportional_random_irt_new_model_old_data = {}
     if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         print(f"      Task {task.task_id}: Running Validation 3 PROPORTIONAL...")
-
+        
         # Calculate proportional allocation per dataset
         datasets = base_chain_test_df['dataset'].unique()
         dataset_sizes = {ds: base_chain_test_df[base_chain_test_df['dataset'] == ds]['question_id'].nunique() for ds in datasets}
         total_questions = sum(dataset_sizes.values())
         n_total = task.n_anchors_per_dataset
-
+        
         # Allocate proportionally with rounding (ensure exact total)
         raw_alloc = {ds: n_total * size / total_questions for ds, size in dataset_sizes.items()}
         alloc = {ds: int(np.floor(v)) for ds, v in raw_alloc.items()}
@@ -698,10 +698,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         fractional = {ds: raw_alloc[ds] - alloc[ds] for ds in datasets}
         for ds in sorted(fractional, key=fractional.get, reverse=True)[:remainder]:
             alloc[ds] += 1
-
+        
         score_col = 'normalized_score' if 'normalized_score' in base_chain_test_df.columns else 'score'
         np.random.seed(task.seed + task.distance * 100 + 2000)
-
+        
         # --- PROPORTIONAL IRT ---
         prop_irt_per_dataset_errors = {}
         prop_anchors_all = []
@@ -714,7 +714,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             )
             prop_anchors_all.extend(ds_anchors)
             prop_weights_all.extend(ds_weights)
-
+        
         if prop_anchors_all:
             prop_thetas = precompute_thetas_from_all_anchors(
                 base_chain_test_df, irt_params, prop_anchors_all, A_matrix, B_matrix
@@ -742,7 +742,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                     proportional_irt_new_model_old_data['n_proportional_anchors'] = len(prop_anchors_all)
                     proportional_irt_new_model_old_data['allocation'] = alloc
                     proportional_irt_new_model_old_data['per_dataset_errors'] = prop_irt_per_dataset_errors
-
+        
         # --- PROPORTIONAL RANDOM (Simple Error) ---
         prop_random_per_dataset_errors = {}
         prop_random_anchors_all = []
@@ -754,7 +754,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             n_sample = min(n_ds, len(ds_questions))
             random_qs = list(np.random.choice(ds_questions, size=n_sample, replace=False))
             prop_random_anchors_all.extend(random_qs)
-
+            
             ds_sampled = ds_df[ds_df['question_id'].isin(random_qs)]
             true_perf = ds_df.groupby('model_name')[score_col].mean()
             pred_perf = ds_sampled.groupby('model_name')[score_col].mean()
@@ -762,7 +762,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             if common_models:
                 errors = [abs(pred_perf[m] - true_perf[m]) for m in common_models]
                 prop_random_per_dataset_errors[ds_name] = np.mean(errors)
-
+        
         if prop_random_per_dataset_errors:
             proportional_random_new_model_old_data = {
                 'proportional_random_error_mean': np.mean(list(prop_random_per_dataset_errors.values())),
@@ -771,7 +771,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 'allocation': alloc,
                 'per_dataset_errors': prop_random_per_dataset_errors,
             }
-
+    
         # --- PROPORTIONAL RANDOM with GP-IRT (for fair comparison with Proportional IRT) ---
         if prop_random_anchors_all:
             prop_random_weights = [1.0] * len(prop_random_anchors_all)  # Equal weights for random
@@ -816,7 +816,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         'gpu_id': gpu_id,
         'min_anchors_per_eval_dataset': int(min(anchor_counts_by_dataset.values())) if anchor_counts_by_dataset else 0,
     }
-
+    
     # Helper to add metrics from a validation DataFrame (flat mean across all rows)
     def add_metrics(df, prefix):
         if df is not None and len(df) > 0:
@@ -830,29 +830,29 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             if 'true_performance' in df.columns:
                 result[f'{prefix}_true_perf_mean'] = df['true_performance'].mean()
                 result[f'{prefix}_true_perf_std'] = df['true_performance'].std()
-
+    
     # Helper to add metrics using mean-of-means (first average per dataset, then across datasets)
     # This ensures each dataset has equal weight regardless of size
     def add_metrics_mean_of_means(df, prefix):
         if df is None or len(df) == 0:
             return
-
+        
         # Find the dataset column
         dataset_col = None
         for col in ['scenario_name', 'dataset', 'dataset_name']:
             if col in df.columns:
                 dataset_col = col
                 break
-
+        
         if dataset_col is None:
             # Fallback to flat mean if no dataset column
             add_metrics(df, prefix)
             return
-
+        
         datasets = df[dataset_col].unique()
         result[f'{prefix}_n_models'] = df['model_name'].nunique() if 'model_name' in df.columns else len(df)
         result[f'{prefix}_n_datasets'] = len(datasets)
-
+        
         for metric in ERROR_METRICS:
             if metric not in df.columns:
                 continue
@@ -862,11 +862,11 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 ds_vals = df[df[dataset_col] == ds][metric].dropna()
                 if len(ds_vals) > 0:
                     per_dataset_means.append(ds_vals.mean())
-
+            
             if per_dataset_means:
                 result[f'{prefix}_{metric}_mean'] = np.mean(per_dataset_means)
                 result[f'{prefix}_{metric}_std'] = np.std(per_dataset_means)
-
+        
         if 'true_performance' in df.columns:
             per_dataset_perf = []
             for ds in datasets:
@@ -876,36 +876,36 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             if per_dataset_perf:
                 result[f'{prefix}_true_perf_mean'] = np.mean(per_dataset_perf)
                 result[f'{prefix}_true_perf_std'] = np.std(per_dataset_perf)
-
+    
     # Add metrics for all three validation types
     # Validation 1 & 2: single dataset (target) - use flat mean
     add_metrics(validation_df, 'new_model_new_data')
     add_metrics(val_train_on_target_df, 'old_model_new_data')
     # Validation 3: multiple datasets (Base+Chain) - use mean-of-means for consistency with random baselines
     add_metrics_mean_of_means(val_test_on_base_df, 'new_model_old_data')
-
+    
     # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
         result[key] = val
     for key, val in random_simple_results.items():
         result[key] = val
-
+    
     # Add Random baselines for Validation 2 (Old Model + New Data)
     for key, val in random_baseline_old_model.items():
         result[f'old_model_new_data_{key}'] = val
     for key, val in random_simple_old_model.items():
         result[f'old_model_new_data_{key}'] = val
-
+    
     # Add Random baselines for Validation 3 (New Model + Old Data)
     for key, val in random_baseline_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
     for key, val in random_simple_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
-
+    
     # Add POOLED Random baselines for Validation 3 (New Model + Old Data)
     for key, val in random_simple_pooled_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
-
+    
     # Add POOLED Random with GP-IRT for Validation 3 (fair comparison with Pooled IRT)
     for key, val in random_irt_pooled_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
@@ -913,13 +913,13 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Add POOLED IRT results for Validation 3 (New Model + Old Data)
     for key, val in pooled_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
-
+    
     # Add PROPORTIONAL results for Validation 3 (New Model + Old Data)
     for key, val in proportional_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
     for key, val in proportional_random_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
-
+    
     # Add PROPORTIONAL Random with GP-IRT for Validation 3 (fair comparison with Proportional IRT)
     for key, val in proportional_random_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
@@ -936,7 +936,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         if 'true_performance' in validation_df.columns:
             result['true_performance_mean'] = validation_df['true_performance'].mean()
             result['true_performance_std'] = validation_df['true_performance'].std()
-
+    
     # Helper to save DataFrame as CSV and JSON
     def save_per_model_df(df, name):
         """Save DataFrame as CSV and JSON (dict format)."""
@@ -956,9 +956,9 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 if col in df_rounded.columns:
                     dataset_col = col
                     break
-
+            
             has_duplicates = df_rounded['model_name'].duplicated().any()
-
+            
             if dataset_col is not None:
                 # Nested structure for per-model-per-dataset results:
                 # {model_name: {dataset: {metric: value, ...}}}
@@ -968,7 +968,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                     dataset = row[dataset_col]
                     if model not in nested_dict:
                         nested_dict[model] = {}
-                    metrics = {k: (v if not pd.isna(v) else None)
+                    metrics = {k: (v if not pd.isna(v) else None) 
                                for k, v in row.items() if k not in ['model_name', dataset_col]}
                     nested_dict[model][dataset] = metrics
                 json_dict = nested_dict
@@ -983,7 +983,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 json_dict = df_rounded.set_index('model_name').to_dict(orient='index')
             with open(json_path, 'w') as f:
                 json.dump(round_for_json(json_dict), f, indent=2)
-
+    
     # Save all per-model DataFrames
     save_per_model_df(validation_df, 'validation')
     save_per_model_df(val_train_on_target_df, 'validation_old_model_new_data')
@@ -995,7 +995,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     save_per_model_df(random_simple_old_model_per_model_df, 'random_simple_old_model')
     save_per_model_df(random_baseline_new_model_old_data_per_model_df, 'random_irt_new_model_old_data')
     save_per_model_df(random_simple_new_model_old_data_per_model_df, 'random_simple_new_model_old_data')
-
+    
     # Save additional validation CSVs (already rounded via save_per_model_df)
     if val_train_on_target_df is not None:
         round_df_for_save(val_train_on_target_df).to_csv(
@@ -1003,7 +1003,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     if val_test_on_base_df is not None:
         round_df_for_save(val_test_on_base_df).to_csv(
             output_dir.parent / f"validation_{task.method}_new_model_old_data.csv", index=False)
-
+    
     return result
 
 
@@ -1019,29 +1019,29 @@ def worker_wrapper(args: tuple) -> dict:
 
 def run_chain_linking_parallel(config: ParallelChainConfig):
     """Run the parallel chain linking experiment."""
-
+    
     # output_dir creation deferred until target_name is known
 
-
+    
     experiment_start = time.time()
-
+    
     print("=" * 70)
     print("Chain Linking PARALLEL B - Full Scenario Parallelization")
     print("=" * 70)
     print(f"Workers: {config.num_workers}")
-
+    
     if DEBUG_MODE:
         print("\n⚠️  DEBUG MODE ACTIVE")
         print(f"    n_base={config.n_base_datasets}, max_chain={config.max_chain_length}, "
               f"epochs={config.epochs}")
-
+    
     # -------------------------------------------------------------------------
     # Step 1: Load datasets (sequential)
     # -------------------------------------------------------------------------
     print("\n1. Loading datasets...")
     datasets = load_all_datasets(config)
     print(f"   Loaded {len(datasets)} datasets")
-
+    
     # Filter out degenerate datasets (near-zero mean, trivial for random baseline)
     excluded_found = [ds for ds in EXCLUDED_DATASETS if ds in datasets]
     if excluded_found:
@@ -1049,16 +1049,16 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             del datasets[ds]
         print(f"   ⚠️  Excluded {len(excluded_found)} degenerate datasets: {excluded_found}")
         print(f"   Remaining: {len(datasets)} datasets")
-
+    
     skill_to_datasets = group_all_datasets_together(datasets, min_common_models=4)
     if not skill_to_datasets:
         raise ValueError("No valid dataset groups found!")
     all_dataset_names = list(skill_to_datasets.values())[0]
-
+    
     np.random.seed(config.shuffle_seed)
     shuffled = list(all_dataset_names)
     np.random.shuffle(shuffled)
-
+    
     # Handle user-specified target dataset
     if config.target_dataset:
         if config.target_dataset not in all_dataset_names:
@@ -1187,7 +1187,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             base_names = shuffled[:config.n_base_datasets]
             target_name = shuffled[config.n_base_datasets]
             chain_pool = shuffled[config.n_base_datasets + 1:]
-
+            
             # Check if target dataset already has an incomplete experiment (complete ones were pre-filtered)
             existing_dirs = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
             if existing_dirs:
@@ -1221,13 +1221,13 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                     print(f"      Using versioned directory: {config.output_dir}")
 
             # Found a valid target (new or incomplete) - exit the loop
-            break
-
+                break
+        
         # Update config to reflect the actual seed used for dataset selection
         if current_seed != config.shuffle_seed:
             print(f"   Changed shuffle_seed: {config.shuffle_seed} → {current_seed} (for unique dataset selection)")
             config.shuffle_seed = current_seed
-
+    
     target_n_questions = int(datasets[target_name]['question_id'].nunique())
 
     # Update output directory with target name (unless already versioned AND has target)
@@ -1243,15 +1243,15 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         print(f"   Using existing output directory: {output_dir}")
 
     output_dir.mkdir(parents=True, exist_ok=True)
-
+    
     temp_dir = output_dir / ".temp"
     temp_dir.mkdir(exist_ok=True)
-
+    
     print(f"\n2. Dataset assignment:")
     print(f"   Base ({len(base_names)}): {base_names}")
     print(f"   Target: {target_name}")
     print(f"   Chain pool: {chain_pool[:5]}...")
-
+    
     # Save config (initial - will be updated after train/test split)
     config_dict = {
         'n_base_datasets': config.n_base_datasets,
@@ -1267,16 +1267,16 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         'chain_pool': chain_pool,
         'target_n_questions': target_n_questions,
     }
-
+    
     # -------------------------------------------------------------------------
     # Step 2: Train/test split
     # -------------------------------------------------------------------------
     print("\n3. Defining train/test split...")
-
+    
     base_models = set()
     for ds_name in base_names:
         base_models.update(datasets[ds_name]['model_name'].unique())
-
+    
     base_models_list = sorted(list(base_models))
 
     # Calculate seed for model splitting (different for versioned experiments)
@@ -1295,7 +1295,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     n_test = max(1, int(len(base_models_list) * config.test_ratio))
     test_models = set(np.random.choice(base_models_list, size=n_test, replace=False))
     train_models = base_models - test_models
-
+    
     # Subset of train_models for chain steps (if specified)
     if config.n_models_per_chain is not None:
         n_chain_models = min(config.n_models_per_chain, len(train_models))
@@ -1305,8 +1305,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         print(f"   Train: {len(train_models)}, Test: {len(test_models)}, Chain models: {len(chain_train_models)}")
     else:
         chain_train_models = train_models
-        print(f"   Train: {len(train_models)}, Test: {len(test_models)}")
-
+    print(f"   Train: {len(train_models)}, Test: {len(test_models)}")
+    
     # Save config with model counts
     config_dict['n_train_models'] = len(train_models)
     config_dict['n_chain_train_models'] = len(chain_train_models)
@@ -1317,7 +1317,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # Step 3: Train Base IRT (sequential)
     # -------------------------------------------------------------------------
     print("\n4. Training Base IRT...")
-
+    
     base_dfs = []
     for ds_name in base_names:
         df = datasets[ds_name]
@@ -1325,10 +1325,10 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         df = df[df['model_name'].isin(train_models)].copy()
         base_dfs.append(df)
     base_df = pd.concat(base_dfs, ignore_index=True)
-
+    
     base_irt_dir = output_dir / "irt_base"
     base_irt, A_base, B_base = train_irt_on_base(base_df, config, base_irt_dir)
-
+    
     base_anchors, base_weights = select_anchors(
         base_irt, config.n_anchors_per_dataset, base_df, A_base, B_base
     )
@@ -1341,31 +1341,31 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             f"Need >= {MIN_ANCHORS_PER_DATASET} per dataset. Low: {low_base}"
         )
     print(f"   Base IRT: {len(base_irt)} items, {len(base_anchors)} anchors")
-
+    
     # -------------------------------------------------------------------------
     # Step 4: Build chain cache (sequential)
     # -------------------------------------------------------------------------
     max_chain = min(config.max_chain_length, len(chain_pool))
     print(f"\n5. Building chain cache (up to {max_chain} steps)...")
-
+    
     # Cache stores: (irt_params, A, B, anchors, weights, df, time)
     chain_cache = {}
     chain_cache_times = {}
-
+    
     current_irt = base_irt
     current_A = A_base
     current_B = B_base
     current_anchors = list(base_anchors)
     current_weights = list(base_weights)
     current_df = base_df.copy()
-
+    
     chain_cache_dir = output_dir / "chain_cache"
     chain_cache_dir.mkdir(exist_ok=True)
     checkpoint_file = chain_cache_dir / "checkpoint.pkl"
-
+    
     total_chain_time = 0
     successful_chain = []
-
+    
     # Resume: load checkpoint if exists
     if checkpoint_file.exists():
         print("   📂 Found checkpoint, loading...")
@@ -1377,35 +1377,35 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         current_irt, current_A, current_B, current_anchors, current_weights, current_df = chain_cache[len(successful_chain)]
         total_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, len(successful_chain) + 1))
         print(f"   ✅ Resumed from step {len(successful_chain)}: {successful_chain}")
-
+    
     for i in range(max_chain):
         chain_ds = chain_pool[i]
-
+        
         # Skip if already in checkpoint
         if chain_ds in successful_chain:
             print(f"   Chain step {i+1}: {chain_ds} ✅ (from checkpoint)")
             continue
-
+        
         prefix = "_".join([d.replace(' ', '_')[:10] for d in successful_chain + [chain_ds]])
         cache_dir = chain_cache_dir / f"after_{prefix}"
-
+        
         print(f"   Chain step {i+1}: adding {chain_ds}...")
-
+        
         chain_df = datasets[chain_ds]
         chain_df = chain_df[chain_df['model_name'].isin(chain_train_models)].copy()
         combined_df = pd.concat([current_df, chain_df], ignore_index=True)
-
+        
         available_questions = set(combined_df['question_id'].astype(str).unique())
         anchor_items = build_anchor_items_for_fixed_calibration(
             current_irt, available_questions, current_A, current_B, current_anchors
         )
-
+        
         if current_A is not None:
             dim = current_A.shape[1] if current_A.ndim == 3 else current_A.shape[0]
             dims = [dim]
         else:
             dims = config.dims_search
-
+        
         irt_config = TrainingConfig(
             dims_search=dims,
             epochs=config.epochs_fixed,
@@ -1415,7 +1415,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             filter_zero_variance=config.filter_zero_variance,
             validate_dimensions=config.validate_dimensions,
         )
-
+        
         chain_start = time.time()
         new_irt = None
         for attempt in range(MAX_RETRIES):
@@ -1429,14 +1429,14 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 break
             except Exception as e:
                 print(f"      ⚠️ Attempt {attempt+1}/{MAX_RETRIES} failed: {str(e)[:80]}")
-
+        
         if new_irt is None:
             print(f"      ❌ Chain step {i+1} failed, skipping {chain_ds}...")
             continue  # Skip this dataset, try the next one
-
+            
         chain_time = time.time() - chain_start
         total_chain_time += chain_time
-
+        
         new_A, new_B = None, None
         if hasattr(new_irt, 'attrs') and new_irt.attrs:
             A_list = new_irt.attrs.get('A_matrix')
@@ -1444,56 +1444,56 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             if A_list is not None and B_list is not None:
                 new_A = np.array(A_list)
                 new_B = np.array(B_list)
-
+        
         chain_anchors, chain_weights = select_anchors_for_dataset(
             new_irt, config.n_anchors_per_dataset, chain_ds, combined_df, new_A, new_B
         )
-
+        
         new_anchors = current_anchors + chain_anchors
         new_weights = current_weights + chain_weights
-
+        
         successful_chain.append(chain_ds)
         distance = len(successful_chain)
         chain_cache[distance] = (new_irt, new_A, new_B, new_anchors, new_weights, combined_df)
         chain_cache_times[distance] = chain_time
-
+        
         current_irt = new_irt
         current_A = new_A
         current_B = new_B
         current_anchors = new_anchors
         current_weights = new_weights
         current_df = combined_df
-
+        
         # Save checkpoint after each successful step
         with open(checkpoint_file, 'wb') as f:
-            pickle.dump({'successful_chain': successful_chain, 'chain_cache': chain_cache,
+            pickle.dump({'successful_chain': successful_chain, 'chain_cache': chain_cache, 
                         'chain_cache_times': chain_cache_times}, f)
-
+        
         print(f"      ✅ {len(new_irt)} items, {len(new_anchors)} anchors, {chain_time:.1f}s (checkpoint saved)")
-
+    
     # Update chain_pool to reflect actual successful chain
     chain_pool = successful_chain
     max_chain = len(successful_chain)
-
+    
     # -------------------------------------------------------------------------
     # Step 5: Prepare scenario tasks
     # -------------------------------------------------------------------------
     print(f"\n6. Preparing parallel tasks...")
-
+    
     # Get target data
     target_df = datasets[target_name]
     # Use ALL train_models for validation - test if model generalizes to models not in chain training
     target_train_df = target_df[target_df['model_name'].isin(train_models)].copy()
     target_test_df = target_df[target_df['model_name'].isin(test_models)].copy()
-
+    
     # Save target test df for workers
     target_test_path = temp_dir / "target_test.pkl"
     target_test_df.to_pickle(target_test_path)
-
+    
     # Save target train df for workers (old model + new data validation)
     target_train_path = temp_dir / "target_train.pkl"
     target_train_df.to_pickle(target_train_path)
-
+    
     # Save base IRT params
     base_irt_pkl = temp_dir / "base_irt.pkl"
     base_irt.to_pickle(base_irt_pkl)
@@ -1503,7 +1503,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         np.save(base_A_path, A_base)
     if B_base is not None:
         np.save(base_B_path, B_base)
-
+    
     # Save chain cache to disk for workers
     for dist, (irt, A, B, anchors, weights, df) in chain_cache.items():
         irt.to_pickle(temp_dir / f"chain_{dist}_irt.pkl")
@@ -1511,11 +1511,11 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             np.save(temp_dir / f"chain_{dist}_A.npy", A)
         if B is not None:
             np.save(temp_dir / f"chain_{dist}_B.npy", B)
-
+    
     tasks = []
     already_done = []
     task_id = 0
-
+    
     for distance in range(max_chain + 1):
         # Get chain info
         if distance == 0:
@@ -1541,9 +1541,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             prev_anchors = anchors
             prev_weights = weights
             cumulative_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, distance + 1))
-
+        
         scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
-
+        
         # Resume: skip if results already exist
         results_file = scenario_dir / "results.json"
         if results_file.exists():
@@ -1552,27 +1552,27 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 result = json.load(f)
             already_done.append(result)
             continue
-
+        
         scenario_dir.mkdir(exist_ok=True)
-
+        
         # Combine with target
         final_df = pd.concat([prev_df, target_train_df], ignore_index=True)
         final_df_path = temp_dir / f"final_df_dist_{distance}.pkl"
         final_df.to_pickle(final_df_path)
-
+        
         # Build test data for Base+Chain datasets (for cross-dataset theta estimation)
         # This allows computing theta from historical anchor responses, not just target
         if distance == 0:
             base_chain_datasets = base_names
         else:
             base_chain_datasets = base_names + chain_list
-
+        
         base_chain_test_dfs = []
         for ds_name in base_chain_datasets:
             ds_df = datasets[ds_name]
             ds_test_df = ds_df[ds_df['model_name'].isin(test_models)].copy()
             base_chain_test_dfs.append(ds_test_df)
-
+        
         if base_chain_test_dfs:
             base_chain_test_df = pd.concat(base_chain_test_dfs, ignore_index=True)
             base_chain_test_df_path = temp_dir / f"base_chain_test_dist_{distance}.pkl"
@@ -1580,14 +1580,14 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             base_chain_test_df_path_str = str(base_chain_test_df_path)
         else:
             base_chain_test_df_path_str = None
-
+        
         # Determine dimension
         if distance == 0:
             dims = [A_base.shape[1] if A_base.ndim == 3 else A_base.shape[0]] if A_base is not None else config.dims_search
         else:
             A = chain_cache[distance][1]
             dims = [A.shape[1] if A.ndim == 3 else A.shape[0]] if A is not None else config.dims_search
-
+        
         # Calculate seed for this task (different for versioned experiments to ensure different random samples)
         task_seed = config.seed
         if '_v' in config.output_dir:
@@ -1633,18 +1633,18 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             )
             tasks.append(task)
             task_id += 1
-
+    
     print(f"   Created {len(tasks)} new tasks ({len(already_done)} already completed)")
-
+    
     # -------------------------------------------------------------------------
     # Step 6: Run tasks in parallel
     # -------------------------------------------------------------------------
     all_results = []
     parallel_time = 0
-
+    
     if tasks:
         print(f"\n7. Running {len(tasks)} tasks with {config.num_workers} workers...")
-
+        
         # Determine available GPUs
         cuda_visible = os.environ.get('CUDA_VISIBLE_DEVICES', '')
         if cuda_visible:
@@ -1656,22 +1656,22 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 gpu_ids = list(range(torch.cuda.device_count()))
             except:
                 gpu_ids = [0]
-
+        
         print(f"   Available GPUs: {gpu_ids}")
-
+        
         # Assign GPUs round-robin to tasks
         task_args = []
         for i, task in enumerate(tasks):
             gpu_id = gpu_ids[i % len(gpu_ids)] if gpu_ids else None
             task_args.append((task, gpu_id))
-
+        
         completed = 0
-
+        
         parallel_start = time.time()
-
+        
         with ProcessPoolExecutor(max_workers=config.num_workers) as executor:
             futures = {executor.submit(worker_wrapper, args): args[0].task_id for args in task_args}
-
+            
             for future in as_completed(futures):
                 task_id = futures[future]
                 try:
@@ -1682,62 +1682,62 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                         continue
                     all_results.append(result)
                     completed += 1
-
+                    
                     # Print progress
                     dist = result['distance']
                     method = result['method']
                     err = result.get('gp_irt_error_mean', float('nan'))
                     t = result.get('training_time_sec', 0)
                     print(f"   [{completed}/{len(tasks)}] dist_{dist}/{method}: error={err:.4f}, time={t:.1f}s")
-
+                    
                 except Exception as e:
                     print(f"   ❌ Task {task_id} exception: {e}")
-
+        
         parallel_time = time.time() - parallel_start
         print(f"\n   Parallel execution: {parallel_time:.1f}s")
     else:
         print("\n7. No new tasks to run (all scenarios already completed)")
-
+    
     # -------------------------------------------------------------------------
     # Step 7: Aggregate results
     # -------------------------------------------------------------------------
     print("\n8. Aggregating results...")
-
+    
     # Sort by distance and method
     all_results.sort(key=lambda x: (x['distance'], x['method']))
-
+    
     # Combine Fixed and Concurrent for each distance
     final_results = []
-
+    
     # First add already completed results
     for result in already_done:
         final_results.append(result)
         print(f"   Distance {result['distance']}: loaded from previous run")
-
+    
     # Then process new results
     processed_distances = {r['distance'] for r in already_done}
-
+    
     for distance in range(max_chain + 1):
         if distance in processed_distances:
             continue
         if distance not in chain_cache and distance != 0:
             continue
-
+            
         dist_results = [r for r in all_results if r['distance'] == distance]
         fixed_result = next((r for r in dist_results if r['method'] == 'fixed'), None)
         concurrent_result = next((r for r in dist_results if r['method'] == 'concurrent'), None)
-
+        
         if not fixed_result and not concurrent_result:
             print(f"   Distance {distance}: ⏭️ No results (both methods failed)")
             continue
-
+        
         # Allow partial results
         fixed_result = fixed_result or {}
         concurrent_result = concurrent_result or {}
-
+        
         chain_list = fixed_result.get('chain', concurrent_result.get('chain', []))
         chain_str = fixed_result.get('chain_str', concurrent_result.get('chain_str', 'direct'))
-
+        
         result = {
             'target_dataset': target_name,
             'distance': distance,
@@ -1752,58 +1752,58 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             'cost_fixed_target_anchors': config.n_anchors_per_dataset,
             'cost_concurrent_all_anchors': config.n_anchors_per_dataset * (config.n_base_datasets + distance + 1),
         }
-
+        
         # Add Fixed results
         for key, val in fixed_result.items():
             if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
                 result[f'fixed_{key}'] = val
-
+        
         # Add Concurrent results
         for key, val in concurrent_result.items():
             if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
                 result[f'concurrent_{key}'] = val
-
+        
         # Compute deltas
         for metric in ERROR_METRICS:
             fixed_val = fixed_result.get(f'{metric}_mean')
             concurrent_val = concurrent_result.get(f'{metric}_mean')
             if fixed_val is not None and concurrent_val is not None:
                 result[f'delta_{metric}'] = fixed_val - concurrent_val
-
+        
         # Save per-scenario result
         scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
         scenario_dir.mkdir(exist_ok=True)
         with open(scenario_dir / "results.json", 'w') as f:
             result_save = {**result, 'chain': list(result['chain'])}
             json.dump(round_for_json(result_save), f, indent=2)
-
+        
         final_results.append(result)
-
+    
     # Sort final results by distance
     final_results.sort(key=lambda x: x['distance'])
-
+    
     # Save summary
     results_for_df = []
     for r in final_results:
         r_copy = r.copy()
         r_copy['chain'] = "_".join(r_copy['chain']) if r_copy['chain'] else "direct"
         results_for_df.append(r_copy)
-
+    
     results_df = pd.DataFrame(results_for_df)
     round_df_for_save(results_df).to_csv(output_dir / "all_results.csv", index=False)
-
+    
     with open(output_dir / "all_results.json", 'w') as f:
         json.dump(round_for_json([{**r, 'chain': list(r['chain'])} for r in final_results]), f, indent=2)
-
+    
     # Clean up temp files
     import shutil
     try:
         shutil.rmtree(temp_dir)
     except:
         pass
-
+    
     total_time = time.time() - experiment_start
-
+    
     # Print summary
     print("\n" + "=" * 70)
     print("SUMMARY - Parallel Execution")
@@ -1815,7 +1815,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     print(f"Total time: {total_time:.1f}s (parallel phase: {parallel_time:.1f}s)")
     print(f"\n{'Dist':<6} {'Chain':<20} {'Fixed':<10} {'Concurrent':<12} {'Delta':<10}")
     print("-" * 60)
-
+    
     for r in final_results:
         dist = r['distance']
         chain = "_".join([c[:6] for c in r['chain']]) if r['chain'] else "direct"
@@ -1825,24 +1825,24 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         concurrent_err = r.get('concurrent_gp_irt_error_mean', float('nan'))
         delta = r.get('delta_gp_irt_error', float('nan'))
         print(f"{dist:<6} {chain:<20} {fixed_err:<10.4f} {concurrent_err:<12.4f} {delta:+10.4f}")
-
+    
     # Random baseline comparison
     print("\n" + "-" * 60)
     print("RANDOM BASELINE COMPARISON:")
     print("  Method comparison (lower error = better):")
-
+    
     # Collect averages for comparison
     fixed_irt_errors = [r.get('fixed_gp_irt_error_mean') for r in final_results if r.get('fixed_gp_irt_error_mean') is not None]
     fixed_random_irt_errors = [r.get('fixed_random_gp_irt_error_mean') for r in final_results if r.get('fixed_random_gp_irt_error_mean') is not None]
     fixed_simple_errors = [r.get('fixed_simple_random_error_mean') for r in final_results if r.get('fixed_simple_random_error_mean') is not None]
-
+    
     if fixed_irt_errors:
         print(f"    IRT Anchors (smart selection):   {np.mean(fixed_irt_errors):.4f}")
     if fixed_random_irt_errors:
         print(f"    Random-IRT (random as anchors):  {np.mean(fixed_random_irt_errors):.4f}")
     if fixed_simple_errors:
         print(f"    Random-Simple (just average):    {np.mean(fixed_simple_errors):.4f}")
-
+    
     # Determine winner
     if fixed_irt_errors and fixed_random_irt_errors and fixed_simple_errors:
         methods = {
@@ -1852,9 +1852,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         }
         winner = min(methods, key=methods.get)
         print(f"\n  Winner: {winner} with error = {methods[winner]:.4f}")
-
+    
     print(f"\nResults saved to: {output_dir}")
-
+    
     return results_df
 
 
@@ -1864,7 +1864,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
 
 if __name__ == "__main__":
     import argparse
-
+    
     parser = argparse.ArgumentParser(description="Chain Linking Parallel B - Full Parallelization")
     parser.add_argument("--output-dir", default=None, help="Output directory")
     parser.add_argument("--n-base", type=int, default=6, help="Number of base datasets")
@@ -1879,13 +1879,13 @@ if __name__ == "__main__":
     parser.add_argument("--data-source-mode", type=str, default="helm_lite",
                         choices=["mixed", "helm_lite", "helm_classic", "lb_only", "lb", "reeval", "mmlu_split", "mmlu_fields", "tinybenchmarks"])
     parser.add_argument("--num-workers", type=int, default=4, help="Number of parallel workers")
-    parser.add_argument("--target-dataset", type=str, default=None,
+    parser.add_argument("--target-dataset", type=str, default=None, 
                         help="Specific target dataset name (if not specified, uses shuffled[n_base])")
     parser.add_argument("--n-models-per-chain", type=int, default=None,
                         help="Number of models to use for training (None = all train models)")
-
+    
     args = parser.parse_args()
-
+    
     config = ParallelChainConfig(
         n_base_datasets=args.n_base,
         max_chain_length=args.max_chain,
@@ -1901,7 +1901,7 @@ if __name__ == "__main__":
         target_dataset=args.target_dataset,
         n_models_per_chain=args.n_models_per_chain,
     )
-
+    
     if args.output_dir:
         config.output_dir = args.output_dir
     else:
@@ -1910,6 +1910,6 @@ if __name__ == "__main__":
         if args.n_models_per_chain is not None:
             base_name += f"_models_{args.n_models_per_chain}"
         config.output_dir = str(PROJECT_ROOT / "data" / base_name)
-
+    
     run_chain_linking_parallel(config)
 

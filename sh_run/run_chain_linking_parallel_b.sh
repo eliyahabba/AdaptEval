@@ -125,7 +125,7 @@ echo "========================================"
 # Build optional arguments
 TARGET_ARG=""
 if [ -n "${TARGET_DATASET}" ]; then
-    TARGET_ARG="--target-dataset ${TARGET_DATASET}"
+    TARGET_ARG="--target-dataset \"${TARGET_DATASET}\""
 fi
 
 N_MODELS_ARG=""
@@ -133,8 +133,8 @@ if [ -n "${N_MODELS_PER_CHAIN}" ]; then
     N_MODELS_ARG="--n-models-per-chain ${N_MODELS_PER_CHAIN}"
 fi
 
-# Run parallel experiment
-python src/experiments/chain_linking_parallel_b.py \
+# Run parallel experiment (eval needed to handle quoted target dataset names with spaces)
+eval python src/experiments/chain_linking_parallel_b.py \
     --output-dir "${OUTPUT_DIR}" \
     --n-base ${N_BASE} \
     --max-chain ${MAX_CHAIN} \
