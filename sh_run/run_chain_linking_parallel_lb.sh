@@ -26,17 +26,19 @@
 #   - Total: 12 tasks (6 distances × 2 methods)
 #
 # Usage:
-#   sbatch run_chain_linking_parallel_lb.sh [output_dir] [shuffle_seed] [n_anchors] [n_models_per_chain] [dims] [num_workers] [target_dataset]
+#   sbatch run_chain_linking_parallel_lb.sh [output_dir] [shuffle_seed] [n_anchors] [n_models_per_chain] [target_dataset]
+#
+# Note: dims=5, workers=4 are fixed
 #
 # Examples:
-#   sbatch run_chain_linking_parallel_lb.sh                                           # All defaults (all models)
+#   sbatch run_chain_linking_parallel_lb.sh                                           # All defaults (100 anchors, auto target)
 #   sbatch run_chain_linking_parallel_lb.sh /path/output 42                           # Specific output & seed
-#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 "" "5" 4              # Full config, all models
-#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 50 "5" 4                        # 50 models per chain
-#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 100 "5" 4                       # 100 models per chain
-#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 200 "5" 4                       # 200 models per chain
-#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 10 "5" 4                        # 10 models per chain
-#   sbatch run_chain_linking_parallel_lb.sh "" 42 100 50 "5" 4 "MMLU"                 # 50 models + specific target
+#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 50                        # 50 anchors experiment
+#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 50                    # 100 anchors, 50 models for chain
+#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 100                   # 100 anchors, 100 models for chain
+#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 200                   # 100 anchors, 200 models for chain
+#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 "" "MMLU"             # Specific target, all models
+#   sbatch run_chain_linking_parallel_lb.sh /path/output 42 100 50 "MMLU"             # 50 models + specific target
 
 # Set Hugging Face cache directory
 export HF_HOME=/cs/snapless/gabis/gabis/shared/huggingface/
@@ -73,17 +75,19 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $2 = shuffle seed (optional, default: 42)
 #   $3 = n_anchors (optional, default: 100)
 #   $4 = n_models_per_chain (optional, default: "" = all models)
-#   $5 = dims (optional, default: "5")
-#   $6 = num workers (optional, default: 4)
-#   $7 = target dataset (optional)
+#   $5 = target dataset (optional, default: auto) - LAST so you can skip it
 
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_parallel_lb}"
 SHUFFLE_SEED="${2:-42}"
 N_ANCHORS="${3:-100}"
 N_MODELS_PER_CHAIN="${4:-}"
-DIMS="${5:-5}"
-NUM_WORKERS="${6:-4}"
-TARGET_DATASET="${7:-}"
+
+# Target dataset - LAST argument so you can skip it if not needed
+TARGET_DATASET="${5:-}"
+
+# Fixed configuration
+DIMS="5"
+NUM_WORKERS=4
 
 # LB-specific configuration (6 datasets total)
 # The Python code auto-adjusts these when data_source_mode=lb:
@@ -95,8 +99,7 @@ EPOCHS=${EPOCHS:-2000}
 DATA_SOURCE_MODE="lb"
 
 # Build output directory name
-SANITIZED_DIMS="${DIMS// /-}"
-OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}_anchors_${N_ANCHORS}_dims_${SANITIZED_DIMS}_workers_${NUM_WORKERS}"
+OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}_anchors_${N_ANCHORS}"
 if [ -n "${N_MODELS_PER_CHAIN}" ]; then
     OUTPUT_DIR="${OUTPUT_DIR}_models_${N_MODELS_PER_CHAIN}"
 fi
@@ -114,16 +117,11 @@ echo "  - Winogrande"
 echo ""
 echo "Output directory: ${OUTPUT_DIR}"
 echo "Configuration:"
-echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
-echo "  NUM_WORKERS: ${NUM_WORKERS}"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
-echo "  N_BASE: 1 (auto-adjusted from 6)"
-echo "  MAX_CHAIN: 5 (auto-adjusted from 10)"
 echo "  N_ANCHORS: ${N_ANCHORS}"
-echo "  EPOCHS: ${EPOCHS}"
-echo "  DIMS: ${DIMS}"
-echo "  TARGET_DATASET: ${TARGET_DATASET:-auto}"
 echo "  N_MODELS_PER_CHAIN: ${N_MODELS_PER_CHAIN:-all}"
+echo "  TARGET_DATASET: ${TARGET_DATASET:-auto}"
+echo "  (Fixed: DIMS=${DIMS}, WORKERS=${NUM_WORKERS})"
 echo ""
 echo "Expected tasks: 12 (6 distances × 2 methods)"
 echo "========================================"

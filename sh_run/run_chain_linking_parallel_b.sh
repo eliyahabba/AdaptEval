@@ -21,18 +21,17 @@
 #   - CPUs: ~2 per worker (IRT training is GPU-bound)
 #
 # Usage:
-#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [target_dataset] [n_anchors] [dims] [num_workers] [n_models_per_chain]
+#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [n_anchors] [n_models_per_chain] [target_dataset]
 #
-# Note: This script is configured for 1 base dataset (fixed)
+# Note: This script is configured for 1 base dataset, dims=5, workers=4 (fixed)
 #
 # Examples:
-#   sbatch run_chain_linking_parallel_b.sh                                                # All defaults (1 base, 100 anchors, dim=5, 4 workers)
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic                   # Default target, anchors, dims & workers
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "" 50                # 50 anchors experiment
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "" 100 "5" 8         # 100 anchors, dim=5, 8 workers
-#   sbatch run_chain_linking_parallel_b.sh /path/output 43 helm_classic "QuAC" 25 "5" 4   # Specific target dataset (will auto-increment seed if directory exists)
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "" 100 "5" 4 50      # 50 models for chain training
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "MMLU" 100 "5" 4 50 # Specific target + limited chain models
+#   sbatch run_chain_linking_parallel_b.sh                                                # All defaults (100 anchors, auto target)
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic                   # Specific output & seed
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50                   # 50 anchors experiment
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 100 50               # 100 anchors, 50 models for chain
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic 25 "" "QuAC"      # Specific target dataset (will auto-increment seed if exists)
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 100 50 "MMLU"        # Specific target + 50 chain models
 #
 # Expected speedup:
 #   - With max_chain=10: 22 tasks (11 distances × 2 methods)
@@ -75,25 +74,25 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $1 = output directory (optional, default: data/chain_parallel_b)
 #   $2 = shuffle seed (optional, default: 42)
 #   $3 = data source mode (optional, default: helm_lite)
-#   $4 = target dataset (optional, default: auto from shuffle)
-#   $5 = n_anchors (optional, default: 100) - number of anchors per dataset
-#   $6 = dims (optional, default: "5")
-#   $7 = num workers (optional, default: 4)
-#   $8 = n_models_per_chain (optional, default: None) - number of models for chain training
+#   $4 = n_anchors (optional, default: 100) - number of anchors per dataset
+#   $5 = n_models_per_chain (optional, default: None) - number of models for chain training
+#   $6 = target dataset (optional, default: auto) - LAST so you can skip it
 
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_parallel_b}"
 SHUFFLE_SEED="${2:-42}"
 DATA_SOURCE_MODE="${3:-helm_lite}"
 
-# Target dataset (positional argument)
-TARGET_DATASET="${4:-}"
-
 # Number of anchors per dataset (positional argument or env variable)
-N_ANCHORS="${5:-${N_ANCHORS:-100}}"
+N_ANCHORS="${4:-${N_ANCHORS:-100}}"
 
-DIMS="${6:-5}"
-NUM_WORKERS="${7:-4}"
-N_MODELS_PER_CHAIN="${8:-}"
+N_MODELS_PER_CHAIN="${5:-}"
+
+# Target dataset - LAST argument so you can skip it if not needed
+TARGET_DATASET="${6:-}"
+
+# Fixed configuration
+DIMS="5"
+NUM_WORKERS=4
 
 # Fixed configuration for this experiment
 N_BASE=1  # Fixed: 1 base dataset
@@ -102,14 +101,8 @@ N_BASE=1  # Fixed: 1 base dataset
 MAX_CHAIN=${MAX_CHAIN:-10}
 EPOCHS=${EPOCHS:-2000}
 
-# Build output directory name (include non-default parameters)
-SANITIZED_DIMS="${DIMS// /-}"
-OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}_dims_${SANITIZED_DIMS}_workers_${NUM_WORKERS}"
-
-# Add non-default anchors
-if [ "$N_ANCHORS" != "100" ]; then
-    OUTPUT_DIR="${OUTPUT_DIR}_anchors_${N_ANCHORS}"
-fi
+# Build output directory name
+OUTPUT_DIR="${OUTPUT_DIR_BASE}_${DATA_SOURCE_MODE}_seed_${SHUFFLE_SEED}_anchors_${N_ANCHORS}"
 
 # Add n_models_per_chain if specified
 if [ -n "$N_MODELS_PER_CHAIN" ]; then
@@ -122,16 +115,12 @@ echo "Full Scenario Parallelization"
 echo "========================================"
 echo "Output directory: ${OUTPUT_DIR}"
 echo "Configuration:"
-echo "  NUM_WORKERS: ${NUM_WORKERS}"
 echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
 echo "  DATA_SOURCE_MODE: ${DATA_SOURCE_MODE}"
-echo "  N_BASE: ${N_BASE} (fixed)"
-echo "  MAX_CHAIN: ${MAX_CHAIN}"
 echo "  N_ANCHORS: ${N_ANCHORS}"
-echo "  EPOCHS: ${EPOCHS}"
-echo "  DIMS: ${DIMS}"
 echo "  N_MODELS_PER_CHAIN: ${N_MODELS_PER_CHAIN:-all}"
 echo "  TARGET_DATASET: ${TARGET_DATASET:-auto}"
+echo "  (Fixed: N_BASE=${N_BASE}, DIMS=${DIMS}, WORKERS=${NUM_WORKERS}, MAX_CHAIN=${MAX_CHAIN})"
 echo ""
 echo "Expected tasks: $((2 * (MAX_CHAIN + 1))) (${MAX_CHAIN}+1 distances × 2 methods)"
 echo "========================================"
