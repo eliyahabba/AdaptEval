@@ -1153,21 +1153,17 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
 
     target_n_questions = int(datasets[target_name]['question_id'].nunique())
 
-    # Update output directory with target name (unless already versioned)
+    # Update output directory with target name (unless already versioned AND has target)
     initial_output_dir = Path(config.output_dir)
     # Check if target name is already in the path to avoid duplication if run multiple times or manually named
-    # Also skip if already has version (from incomplete experiment handling)
-    if f"_v" in initial_output_dir.name:
-        # Already versioned, use as-is
-        output_dir = initial_output_dir
-        print(f"   Using versioned output directory: {output_dir}")
-    elif f"target_{target_name}" not in initial_output_dir.name:
+    if f"target_{target_name}" not in initial_output_dir.name:
         new_name = f"{initial_output_dir.name}_target_{target_name}"
         output_dir = initial_output_dir.parent / new_name
         config.output_dir = str(output_dir)
         print(f"   Updated output directory: {output_dir}")
     else:
         output_dir = initial_output_dir
+        print(f"   Using existing output directory: {output_dir}")
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
