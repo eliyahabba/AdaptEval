@@ -1064,9 +1064,76 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         if config.target_dataset not in all_dataset_names:
             available = ", ".join(all_dataset_names[:10]) + "..."
             raise ValueError(f"Target dataset '{config.target_dataset}' not found. Available: {available}")
-        # Remove target from shuffled list
-        shuffled = [d for d in shuffled if d != config.target_dataset]
+
+        # Check if output directory already exists for this target
+        output_parent = Path(config.output_dir).parent
+        current_seed = config.shuffle_seed
         target_name = config.target_dataset
+
+        while True:
+            # Create temporary output dir to check if it exists
+            temp_output_dir = Path(config.output_dir)
+            if f"target_{target_name}" not in temp_output_dir.name:
+                temp_check_dir = temp_output_dir.parent / f"{temp_output_dir.name}_target_{target_name}"
+            else:
+                temp_check_dir = temp_output_dir
+
+            # Check if target directory already exists
+            existing_dirs = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
+
+            if existing_dirs:
+                target_dir = existing_dirs[0]
+                all_results_file = target_dir / "all_results.json"
+                if all_results_file.exists():
+                    # Complete experiment exists - try next seed
+                    print(f"   ⏭️ Target '{target_name}' already has complete results, trying next seed...")
+                    current_seed += 1
+                    continue
+                else:
+                    # Directory exists but no complete results - create versioned directory
+                    print(f"   🔄 Target '{target_name}' directory exists but incomplete - creating versioned directory")
+
+                    # Find next available version number
+                    existing_versions = []
+                    for d in output_parent.glob(f"*_target_{target_name}*"):
+                        dir_name = d.name
+                        # Extract version from patterns like: ..._target_DatasetName_v2
+                        if '_v' in dir_name:
+                            try:
+                                version_part = dir_name.split('_v')[-1]
+                                version_num = int(version_part)
+                                existing_versions.append(version_num)
+                            except ValueError:
+                                pass
+
+                    next_version = max(existing_versions) + 1 if existing_versions else 2
+
+                    # Modify config to use versioned directory
+                    original_output_dir = config.output_dir
+                    if f"_target_{target_name}" in original_output_dir:
+                        # Replace the target part with versioned one
+                        config.output_dir = original_output_dir.replace(f"_target_{target_name}", f"_target_{target_name}_v{next_version}")
+                        print(f"      Using versioned directory: {config.output_dir}")
+                    else:
+                        # Fallback: append version to the end
+                        config.output_dir = f"{original_output_dir}_v{next_version}"
+                        print(f"      Using versioned directory: {config.output_dir}")
+
+                    break
+            else:
+                break
+
+        # Update shuffle_seed if changed
+        if current_seed != config.shuffle_seed:
+            print(f"   Changed shuffle_seed: {config.shuffle_seed} → {current_seed} (for unique dataset selection)")
+            config.shuffle_seed = current_seed
+
+        # Now select base datasets and chain with the (possibly updated) seed
+        np.random.seed(config.shuffle_seed)
+        shuffled = list(all_dataset_names)
+        np.random.shuffle(shuffled)
+        # Remove target from shuffled list
+        shuffled = [d for d in shuffled if d != target_name]
         base_names = shuffled[:config.n_base_datasets]
         chain_pool = shuffled[config.n_base_datasets:]
         print(f"   Using user-specified target: {target_name}")

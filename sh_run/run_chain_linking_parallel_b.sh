@@ -21,17 +21,18 @@
 #   - CPUs: ~2 per worker (IRT training is GPU-bound)
 #
 # Usage:
-#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [n_anchors] [dims] [num_workers] [n_models_per_chain] [target_dataset]
+#   sbatch run_chain_linking_parallel_b.sh [output_dir] [shuffle_seed] [data_source_mode] [target_dataset] [n_anchors] [dims] [num_workers] [n_models_per_chain]
 #
 # Note: This script is configured for 1 base dataset (fixed)
 #
 # Examples:
 #   sbatch run_chain_linking_parallel_b.sh                                                # All defaults (1 base, 100 anchors, dim=5, 4 workers)
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic                   # Default anchors, dims & workers
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 50                   # 50 anchors experiment
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 100 "5" 8            # 100 anchors, dim=5, 8 workers
-#   sbatch run_chain_linking_parallel_b.sh /path/output 43 helm_classic 25 "5" 4 "" "QuAC"   # Specific target dataset
-#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite 100 "5" 4 50         # 50 models for chain training
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_classic                   # Default target, anchors, dims & workers
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "" 50                # 50 anchors experiment
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "" 100 "5" 8         # 100 anchors, dim=5, 8 workers
+#   sbatch run_chain_linking_parallel_b.sh /path/output 43 helm_classic "QuAC" 25 "5" 4   # Specific target dataset (will auto-increment seed if directory exists)
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "" 100 "5" 4 50      # 50 models for chain training
+#   sbatch run_chain_linking_parallel_b.sh /path/output 42 helm_lite "MMLU" 100 "5" 4 50 # Specific target + limited chain models
 #
 # Expected speedup:
 #   - With max_chain=10: 22 tasks (11 distances × 2 methods)
@@ -74,23 +75,25 @@ export CUDA_LAUNCH_BLOCKING=1
 #   $1 = output directory (optional, default: data/chain_parallel_b)
 #   $2 = shuffle seed (optional, default: 42)
 #   $3 = data source mode (optional, default: helm_lite)
-#   $4 = n_anchors (optional, default: 100) - number of anchors per dataset
-#   $5 = dims (optional, default: "5")
-#   $6 = num workers (optional, default: 4)
-#   $7 = n_models_per_chain (optional, default: None) - number of models for chain training
-#   $8 = target dataset (optional, default: auto from shuffle)
+#   $4 = target dataset (optional, default: auto from shuffle)
+#   $5 = n_anchors (optional, default: 100) - number of anchors per dataset
+#   $6 = dims (optional, default: "5")
+#   $7 = num workers (optional, default: 4)
+#   $8 = n_models_per_chain (optional, default: None) - number of models for chain training
 
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_parallel_b}"
 SHUFFLE_SEED="${2:-42}"
 DATA_SOURCE_MODE="${3:-helm_lite}"
 
-# Number of anchors per dataset (positional argument or env variable)
-N_ANCHORS="${4:-${N_ANCHORS:-100}}"
+# Target dataset (positional argument)
+TARGET_DATASET="${4:-}"
 
-DIMS="${5:-5}"
-NUM_WORKERS="${6:-4}"
-N_MODELS_PER_CHAIN="${7:-}"
-TARGET_DATASET="${8:-}"
+# Number of anchors per dataset (positional argument or env variable)
+N_ANCHORS="${5:-${N_ANCHORS:-100}}"
+
+DIMS="${6:-5}"
+NUM_WORKERS="${7:-4}"
+N_MODELS_PER_CHAIN="${8:-}"
 
 # Fixed configuration for this experiment
 N_BASE=1  # Fixed: 1 base dataset
