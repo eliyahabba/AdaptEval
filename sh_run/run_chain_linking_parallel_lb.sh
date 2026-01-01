@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-lb
-#SBATCH --mem=12g
-#SBATCH --time=3:0:0
+#SBATCH --mem=8g
+#SBATCH --time=5:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --gres=gg:g4:4
+#SBATCH --gres=gg:g0:4
 #SBATCH --cpus-per-task=4
 #SBATCH --killable
 #SBATCH --requeue
@@ -137,8 +137,8 @@ if [ -n "${N_MODELS_PER_CHAIN}" ]; then
     MODELS_ARG="--n-models-per-chain ${N_MODELS_PER_CHAIN}"
 fi
 
-# Run parallel experiment with LB data
-python src/experiments/chain_linking_parallel_b.py \
+# Run parallel experiment with LB data (eval needed to handle quoted target dataset names with spaces)
+eval python src/experiments/chain_linking_parallel_b.py \
     --output-dir "${OUTPUT_DIR}" \
     --n-base ${N_BASE} \
     --max-chain ${MAX_CHAIN} \
