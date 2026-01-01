@@ -1140,78 +1140,88 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     else:
         # Define roles - skip targets that already have output folders
         output_parent = Path(config.output_dir).parent
+        
+        # First, build a list of datasets that already have complete results
+        completed_targets = set()
+        if output_parent.exists():
+            for ds_name in all_dataset_names:
+                existing_dirs = list(output_parent.glob(f"*_target_{ds_name}"))
+                for target_dir in existing_dirs:
+                    all_results_file = target_dir / "all_results.json"
+                    config_file = target_dir / "config.json"
+                    
+                    # Check if existing experiment has same n_models_per_chain parameter
+                    existing_n_models = None
+                    if config_file.exists():
+                        try:
+                            with open(config_file) as f:
+                                existing_config = json.load(f)
+                            existing_n_models = existing_config.get('n_models_per_chain')
+                        except:
+                            pass
+                    
+                    # Only skip if same n_models_per_chain AND has complete results
+                    if config.n_models_per_chain == existing_n_models and all_results_file.exists():
+                        completed_targets.add(ds_name)
+                        break  # Found one complete, no need to check more dirs
+        
+        if completed_targets:
+            print(f"   📋 Already completed targets: {completed_targets}")
+        
+        # Filter out completed targets from available datasets
+        available_datasets = [ds for ds in all_dataset_names if ds not in completed_targets]
+        
+        if not available_datasets:
+            raise ValueError("All datasets already have complete results! Nothing left to run.")
+        
+        if len(available_datasets) <= config.n_base_datasets:
+            raise ValueError(f"Only {len(available_datasets)} datasets available but need {config.n_base_datasets} for base + 1 for target")
+        
+        print(f"   📋 Available targets: {available_datasets}")
+        
         current_seed = config.shuffle_seed
         while True:
             np.random.seed(current_seed)
-            shuffled = list(all_dataset_names)
+            shuffled = list(available_datasets)  # Use only available datasets
             np.random.shuffle(shuffled)
             base_names = shuffled[:config.n_base_datasets]
             target_name = shuffled[config.n_base_datasets]
             chain_pool = shuffled[config.n_base_datasets + 1:]
 
-            # Check if target dataset already has any experiment (skip regardless of seed)
+            # Check if target dataset already has an incomplete experiment (complete ones were pre-filtered)
             existing_dirs = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
             if existing_dirs:
-                target_dir = existing_dirs[0]
-                all_results_file = target_dir / "all_results.json"
-                config_file = target_dir / "config.json"
+                # Directory exists but no complete results (or different n_models_per_chain) - create versioned directory
+                print(f"   🔄 Target '{target_name}' directory exists but incomplete - creating versioned directory")
 
-                # Check if existing experiment has same n_models_per_chain parameter
-                existing_n_models = None
-                if config_file.exists():
-                    try:
-                        with open(config_file) as f:
-                            existing_config = json.load(f)
-                        existing_n_models = existing_config.get('n_models_per_chain')
-                    except:
-                        pass  # If can't read config, assume it's different
+                # Find next available version number
+                existing_versions = []
+                for d in output_parent.glob(f"*_target_{target_name}*"):
+                    dir_name = d.name
+                    # Extract version from patterns like: ..._target_DatasetName_v2
+                    if '_v' in dir_name:
+                        try:
+                            version_part = dir_name.split('_v')[-1]
+                            version_num = int(version_part)
+                            existing_versions.append(version_num)
+                        except ValueError:
+                            pass
 
-                # If n_models_per_chain differs, treat as different experiment
-                if config.n_models_per_chain != existing_n_models:
-                    print(f"   🔄 Target '{target_name}' exists but with different n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain}), running new experiment")
-                    break
+                next_version = max(existing_versions) + 1 if existing_versions else 2
 
-                if all_results_file.exists():
-                    # Complete experiment exists with same parameters - try next seed
-                    print(f"   ⏭️ Target '{target_name}' already has complete results with same parameters, trying next seed...")
-                    current_seed += 1
-                    continue  # Go back to the beginning of the loop with new seed
+                # Modify config to use versioned directory
+                original_output_dir = config.output_dir
+                if f"_target_{target_name}" in original_output_dir:
+                    # Replace the target part with versioned one
+                    config.output_dir = original_output_dir.replace(f"_target_{target_name}", f"_target_{target_name}_v{next_version}")
+                    print(f"      Using versioned directory: {config.output_dir}")
                 else:
-                    # Directory exists but no complete results - create versioned directory
-                    print(f"   🔄 Target '{target_name}' directory exists but incomplete - creating versioned directory")
+                    # Fallback: append version to the end
+                    config.output_dir = f"{original_output_dir}_v{next_version}"
+                    print(f"      Using versioned directory: {config.output_dir}")
 
-                    # Find next available version number
-                    existing_versions = []
-                    for d in output_parent.glob(f"*_target_{target_name}*"):
-                        dir_name = d.name
-                        # Extract version from patterns like: ..._target_DatasetName_v2
-                        if '_v' in dir_name:
-                            try:
-                                version_part = dir_name.split('_v')[-1]
-                                version_num = int(version_part)
-                                existing_versions.append(version_num)
-                            except ValueError:
-                                pass
-
-                    next_version = max(existing_versions) + 1 if existing_versions else 2
-
-                    # Modify config to use versioned directory
-                    original_output_dir = config.output_dir
-                    if f"_target_{target_name}" in original_output_dir:
-                        # Replace the target part with versioned one
-                        config.output_dir = original_output_dir.replace(f"_target_{target_name}", f"_target_{target_name}_v{next_version}")
-                        print(f"      Using versioned directory: {config.output_dir}")
-                    else:
-                        # Fallback: append version to the end
-                        config.output_dir = f"{original_output_dir}_v{next_version}"
-                        print(f"      Using versioned directory: {config.output_dir}")
-
-                    break
-            else:
-                break
-            current_seed += 1
-            if current_seed > config.shuffle_seed + 100:
-                raise ValueError("Could not find unique target after 100 seed attempts")
+            # Found a valid target (new or incomplete) - exit the loop
+            break
 
         # Update config to reflect the actual seed used for dataset selection
         if current_seed != config.shuffle_seed:
