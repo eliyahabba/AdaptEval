@@ -1066,62 +1066,54 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             available = ", ".join(all_dataset_names[:10]) + "..."
             raise ValueError(f"Target dataset '{config.target_dataset}' not found. Available: {available}")
 
-        # Check if output directory already exists for this target
         output_parent = Path(config.output_dir).parent
         current_seed = config.shuffle_seed
         target_name = config.target_dataset
 
-        # Loop until we find a seed without an existing complete directory
+        # Loop until we find a seed without an existing directory
         while True:
-            # Build the expected directory name with current seed
-            # First update config.output_dir with current_seed if it changed
+            # Update output_dir with current_seed if it changed
             if current_seed != config.shuffle_seed:
-                config.output_dir = re.sub(
-                    r'_seed_\d+',
-                    f'_seed_{current_seed}',
-                    config.output_dir
-                )
+                config.output_dir = re.sub(r'_seed_\d+', f'_seed_{current_seed}', config.output_dir)
             
             # Build expected directory path with target name
             temp_output_dir = Path(config.output_dir)
             if f"target_{target_name}" not in temp_output_dir.name:
-                expected_dir_name = f"{temp_output_dir.name}_target_{target_name}"
+                expected_dir = output_parent / f"{temp_output_dir.name}_target_{target_name}"
             else:
-                expected_dir_name = temp_output_dir.name
-            expected_dir = output_parent / expected_dir_name
+                expected_dir = temp_output_dir
 
-            # Check if this specific directory exists
+            # Check if this specific directory exists with same parameters
             if expected_dir.exists():
-                # Check if it has same n_models_per_chain
                 config_file = expected_dir / "config.json"
                 existing_n_models = None
+                existing_n_anchors = None
                 if config_file.exists():
                     try:
                         with open(config_file) as f:
                             existing_config = json.load(f)
                         existing_n_models = existing_config.get('n_models_per_chain')
+                        existing_n_anchors = existing_config.get('n_anchors_per_dataset')
                     except:
                         pass
                 
-                if config.n_models_per_chain == existing_n_models:
-                    # Same n_models_per_chain - check if complete
-                    all_results_file = expected_dir / "all_results.json"
-                    if all_results_file.exists():
-                        # Complete experiment - increment seed and try again
-                        print(f"   ⏭️ Seed {current_seed} for target '{target_name}' already complete, trying seed {current_seed + 1}...")
-                        current_seed += 1
-                        continue
-                    else:
-                        # Directory exists but incomplete - can continue with this one
-                        print(f"   📂 Found incomplete directory for seed {current_seed}, resuming...")
-                        break
+                # Check if both n_models_per_chain AND n_anchors_per_dataset match
+                same_n_models = (config.n_models_per_chain == existing_n_models)
+                same_n_anchors = (config.n_anchors_per_dataset == existing_n_anchors)
+                
+                if same_n_models and same_n_anchors:
+                    # Same parameters - skip to next seed
+                    print(f"   ⏭️ Seed {current_seed} for target '{target_name}' exists, trying seed {current_seed + 1}...")
+                    current_seed += 1
+                    continue
                 else:
-                    # Different n_models_per_chain - this is a new experiment, can use this seed
-                    print(f"   ℹ️ Directory exists but different n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
-                    # Need to add models info to directory name to differentiate
-                    if f"models_{config.n_models_per_chain}" not in expected_dir_name:
-                        expected_dir_name = expected_dir_name.replace(f"_target_{target_name}", f"_models_{config.n_models_per_chain}_target_{target_name}")
-                        config.output_dir = str(output_parent / expected_dir_name.replace(f"_target_{target_name}", ""))
+                    # Different parameters - can use this seed (will create different directory)
+                    diff_parts = []
+                    if not same_n_models:
+                        diff_parts.append(f"n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
+                    if not same_n_anchors:
+                        diff_parts.append(f"n_anchors ({existing_n_anchors} vs {config.n_anchors_per_dataset})")
+                    print(f"   ℹ️ Found '{expected_dir.name}' but different {', '.join(diff_parts)}")
                     break
             else:
                 # Directory doesn't exist - use this seed
@@ -1133,7 +1125,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             print(f"   Updated shuffle_seed: {config.shuffle_seed} → {current_seed}")
             config.shuffle_seed = current_seed
 
-        # Now select base datasets and chain with the (possibly updated) seed
+        # Select base datasets and chain with the updated seed
         np.random.seed(config.shuffle_seed)
         shuffled = list(all_dataset_names)
         np.random.shuffle(shuffled)
@@ -1143,59 +1135,17 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         chain_pool = shuffled[config.n_base_datasets:]
         print(f"   Using user-specified target: {target_name}")
     else:
-        # Define roles - skip targets that already have output folders
+        # Auto-select target - find a seed that gives an available target
         output_parent = Path(config.output_dir).parent
-        
-        # First, build a list of datasets that already have complete results
-        completed_targets = set()
-        if output_parent.exists():
-            for ds_name in all_dataset_names:
-                existing_dirs = list(output_parent.glob(f"*_target_{ds_name}"))
-                for target_dir in existing_dirs:
-                    all_results_file = target_dir / "all_results.json"
-                    config_file = target_dir / "config.json"
-                    
-                    # Check if existing experiment has same n_models_per_chain parameter
-                    existing_n_models = None
-                    if config_file.exists():
-                        try:
-                            with open(config_file) as f:
-                                existing_config = json.load(f)
-                            existing_n_models = existing_config.get('n_models_per_chain')
-                        except:
-                            pass
-                    
-                    # Only skip if same n_models_per_chain AND has complete results
-                    if config.n_models_per_chain == existing_n_models and all_results_file.exists():
-                        completed_targets.add(ds_name)
-                        break  # Found one complete, no need to check more dirs
-        
-        if completed_targets:
-            print(f"   📋 Already completed targets: {completed_targets}")
-        
-        # Filter out completed targets from available datasets
-        available_datasets = [ds for ds in all_dataset_names if ds not in completed_targets]
-        
-        if not available_datasets:
-            raise ValueError("All datasets already have complete results! Nothing left to run.")
-        
-        if len(available_datasets) <= config.n_base_datasets:
-            raise ValueError(f"Only {len(available_datasets)} datasets available but need {config.n_base_datasets} for base + 1 for target")
-        
-        print(f"   📋 Available targets: {available_datasets}")
-        
         current_seed = config.shuffle_seed
+        
         while True:
-            # Update config.output_dir with current_seed if it changed
+            # Update output_dir with current_seed if it changed
             if current_seed != config.shuffle_seed:
-                config.output_dir = re.sub(
-                    r'_seed_\d+',
-                    f'_seed_{current_seed}',
-                    config.output_dir
-                )
+                config.output_dir = re.sub(r'_seed_\d+', f'_seed_{current_seed}', config.output_dir)
             
             np.random.seed(current_seed)
-            shuffled = list(available_datasets)  # Use only available datasets
+            shuffled = list(all_dataset_names)
             np.random.shuffle(shuffled)
             base_names = shuffled[:config.n_base_datasets]
             target_name = shuffled[config.n_base_datasets]
@@ -1204,46 +1154,48 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             # Build expected directory path with target name
             temp_output_dir = Path(config.output_dir)
             if f"target_{target_name}" not in temp_output_dir.name:
-                expected_dir_name = f"{temp_output_dir.name}_target_{target_name}"
+                expected_dir = output_parent / f"{temp_output_dir.name}_target_{target_name}"
             else:
-                expected_dir_name = temp_output_dir.name
-            expected_dir = output_parent / expected_dir_name
+                expected_dir = temp_output_dir
 
-            # Check if this specific directory exists
+            # Check if this specific directory exists with same parameters
             if expected_dir.exists():
-                # Check if it has same n_models_per_chain
                 config_file = expected_dir / "config.json"
                 existing_n_models = None
+                existing_n_anchors = None
                 if config_file.exists():
                     try:
                         with open(config_file) as f:
                             existing_config = json.load(f)
                         existing_n_models = existing_config.get('n_models_per_chain')
+                        existing_n_anchors = existing_config.get('n_anchors_per_dataset')
                     except:
                         pass
                 
-                if config.n_models_per_chain == existing_n_models:
-                    # Same n_models_per_chain - check if complete
-                    all_results_file = expected_dir / "all_results.json"
-                    if all_results_file.exists():
-                        # Complete experiment - increment seed and try again
-                        print(f"   ⏭️ Seed {current_seed} for target '{target_name}' already complete, trying seed {current_seed + 1}...")
-                        current_seed += 1
-                        continue
-                    else:
-                        # Directory exists but incomplete - can continue with this one
-                        print(f"   📂 Found incomplete directory for seed {current_seed}, resuming...")
-                        break
+                # Check if both n_models_per_chain AND n_anchors_per_dataset match
+                same_n_models = (config.n_models_per_chain == existing_n_models)
+                same_n_anchors = (config.n_anchors_per_dataset == existing_n_anchors)
+                
+                if same_n_models and same_n_anchors:
+                    # Same parameters - skip to next seed
+                    print(f"   ⏭️ Seed {current_seed} for target '{target_name}' exists, trying seed {current_seed + 1}...")
+                    current_seed += 1
+                    continue
                 else:
-                    # Different n_models_per_chain - use this seed but add models info
-                    print(f"   ℹ️ Directory exists but different n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
+                    # Different parameters - can use this seed (will create different directory)
+                    diff_parts = []
+                    if not same_n_models:
+                        diff_parts.append(f"n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
+                    if not same_n_anchors:
+                        diff_parts.append(f"n_anchors ({existing_n_anchors} vs {config.n_anchors_per_dataset})")
+                    print(f"   ℹ️ Found '{expected_dir.name}' but different {', '.join(diff_parts)}")
                     break
             else:
                 # Directory doesn't exist - use this seed
                 print(f"   ✅ Using seed {current_seed} for target '{target_name}'")
                 break
         
-        # Update config to reflect the actual seed used for dataset selection
+        # Update shuffle_seed to reflect actual seed used
         if current_seed != config.shuffle_seed:
             print(f"   Updated shuffle_seed: {config.shuffle_seed} → {current_seed}")
             config.shuffle_seed = current_seed
@@ -1299,9 +1251,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     base_models_list = sorted(list(base_models))
 
-    # Use shuffle_seed for model splitting to ensure different seeds give different splits
-    model_split_seed = config.shuffle_seed
-    np.random.seed(model_split_seed)
+    # Use shuffle_seed for model splitting - ensures different seeds give different splits
+    np.random.seed(config.shuffle_seed)
     n_test = max(1, int(len(base_models_list) * config.test_ratio))
     test_models = set(np.random.choice(base_models_list, size=n_test, replace=False))
     train_models = base_models - test_models
@@ -1310,7 +1261,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     if config.n_models_per_chain is not None:
         n_chain_models = min(config.n_models_per_chain, len(train_models))
         train_models_list = sorted(list(train_models))
-        np.random.seed(model_split_seed + 1000)  # Different seed for chain model selection
+        np.random.seed(config.shuffle_seed + 1000)  # Different seed offset for chain model selection
         chain_train_models = set(np.random.choice(train_models_list, size=n_chain_models, replace=False))
         print(f"   Train: {len(train_models)}, Test: {len(test_models)}, Chain models: {len(chain_train_models)}")
     else:
@@ -1598,7 +1549,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             A = chain_cache[distance][1]
             dims = [A.shape[1] if A.ndim == 3 else A.shape[0]] if A is not None else config.dims_search
         
-        # Use shuffle_seed for task seed to ensure different runs have different random samples
+        # Use shuffle_seed for task seed - ensures different runs have different random samples
         task_seed = config.shuffle_seed
 
         # Create tasks for both methods
