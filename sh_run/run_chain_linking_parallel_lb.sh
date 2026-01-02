@@ -93,7 +93,7 @@ NUM_WORKERS=4
 # The Python code auto-adjusts these when data_source_mode=lb:
 #   - n_base_datasets: 6 -> 1
 #   - max_chain_length: 10 -> 5
-N_BASE=6       # Will be auto-adjusted to 1 by Python
+N_BASE=4       # Will be auto-adjusted to 1 by Python
 MAX_CHAIN=10   # Will be auto-adjusted to 5 by Python
 EPOCHS=${EPOCHS:-2000}
 DATA_SOURCE_MODE="lb"

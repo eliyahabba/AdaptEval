@@ -6,7 +6,7 @@
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --gres=gg:g0:4
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=1
 #SBATCH --killable
 #SBATCH --requeue
 
@@ -81,7 +81,7 @@ NUM_WORKERS="${6:-4}"
 TARGET_FIELD="${7:-}"
 
 # MMLU Fields configuration (57 datasets)
-N_BASE=2          # Start with 2 base MMLU fields
+N_BASE=8          # Start with 2 base MMLU fields
 MAX_CHAIN=10      # Chain through up to 10 more fields
 EPOCHS=${EPOCHS:-2000}
 DATA_SOURCE_MODE="mmlu_fields"
@@ -147,9 +147,9 @@ python src/experiments/chain_linking_parallel_b.py \
     ${MODELS_ARG}
 
 # Print resource usage
-echo ""
-echo "Job resource usage:"
-sacct -j $SLURM_JOB_ID --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
+#echo ""
+#echo "Job resource usage:"
+#sacct -j $SLURM_JOB_ID --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
 
 
 
