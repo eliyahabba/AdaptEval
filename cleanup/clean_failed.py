@@ -39,4 +39,4 @@ except EOFError:
 if answer.lower() == 'y':
     for d in to_delete:
         shutil.rmtree(d)
-        print(f"{d}", sep=" ", end="", flush=True)
+        print(d, end=" ", flush=True)
