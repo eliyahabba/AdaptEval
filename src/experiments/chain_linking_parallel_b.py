@@ -1078,15 +1078,33 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             else:
                 temp_check_dir = temp_output_dir
 
-            # Check if target directory already exists
+            # Check if target directory already exists WITH SAME n_models_per_chain
             existing_dirs = list(output_parent.glob(f"*_target_{target_name}")) if output_parent.exists() else []
 
-            if existing_dirs:
-                target_dir = existing_dirs[0]
+            # Filter to only directories with same n_models_per_chain
+            matching_dirs = []
+            for target_dir in existing_dirs:
+                config_file = target_dir / "config.json"
+                existing_n_models = None
+                if config_file.exists():
+                    try:
+                        with open(config_file) as f:
+                            existing_config = json.load(f)
+                        existing_n_models = existing_config.get('n_models_per_chain')
+                    except:
+                        pass
+                
+                if config.n_models_per_chain == existing_n_models:
+                    matching_dirs.append(target_dir)
+                else:
+                    print(f"   ℹ️ Found '{target_dir.name}' but different n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
+
+            if matching_dirs:
+                target_dir = matching_dirs[0]
                 all_results_file = target_dir / "all_results.json"
                 if all_results_file.exists():
-                    # Complete experiment exists - try next seed
-                    print(f"   ⏭️ Target '{target_name}' already has complete results, trying next seed...")
+                    # Complete experiment exists with same parameters - try next seed
+                    print(f"   ⏭️ Target '{target_name}' already has complete results with same n_models_per_chain, trying next seed...")
                     current_seed += 1
                     continue
                 else:
