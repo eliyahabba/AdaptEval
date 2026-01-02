@@ -30,7 +30,12 @@ print(f"Will delete {len(to_delete)} directories:")
 for d in to_delete:
     print(f"  {d}")
 
-answer = input("\nDelete? [y/N]: ")
+try:
+    answer = input("\nDelete? [y/N]: ")
+except EOFError:
+    print("\nNo input available (non-interactive mode). Use --force flag to delete without confirmation.")
+    sys.exit(1)
+
 if answer.lower() == 'y':
     for d in to_delete:
         shutil.rmtree(d)
@@ -38,4 +43,3 @@ if answer.lower() == 'y':
     print("Done")
 else:
     print("Cancelled")
-
