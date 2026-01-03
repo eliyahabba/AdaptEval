@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,EntityDataImputation,EntityDataImputation,424,25,-4.4693,0.7075,0.7099,0.7514,0.7136,0.7516,0.0024,0.0439,0.006,0.044,0.9115,0.059
+ai21/j1-grande-v2-beta,EntityDataImputation,EntityDataImputation,424,25,-0.4031,0.7689,0.7642,0.777,0.7651,0.775,0.0047,0.0081,0.0038,0.0061,0.9115,0.059
+ai21/j1-jumbo,EntityDataImputation,EntityDataImputation,424,25,-4.4693,0.7123,0.7099,0.7514,0.7136,0.7516,0.0024,0.0392,0.0013,0.0393,0.9115,0.059
+ai21/j2-large,EntityDataImputation,EntityDataImputation,424,25,-4.4317,0.717,0.6887,0.7391,0.6931,0.7383,0.0283,0.0221,0.0239,0.0213,0.9115,0.059
+cohere/command-xlarge-beta,EntityDataImputation,EntityDataImputation,424,25,-4.42,0.7382,0.7406,0.7765,0.7439,0.778,0.0024,0.0383,0.0057,0.0398,0.9115,0.059
+cohere/small-20220720,EntityDataImputation,EntityDataImputation,424,25,2.0932,0.4245,0.4269,0.5047,0.4328,0.4939,0.0024,0.0802,0.0083,0.0693,0.9115,0.059
+meta/llama-2-70b,EntityDataImputation,EntityDataImputation,424,25,59.0768,0.8491,0.8632,0.8673,0.8636,0.8673,0.0142,0.0182,0.0145,0.0182,0.9115,0.059
+meta/llama-65b,EntityDataImputation,EntityDataImputation,424,25,-162.4187,0.842,0.816,0.7392,0.8092,0.7392,0.0259,0.1028,0.0327,0.1028,0.9115,0.059
+mosaicml/mpt-instruct-30b,EntityDataImputation,EntityDataImputation,424,25,2.7441,0.8302,0.7618,0.7665,0.7625,0.7698,0.0684,0.0637,0.0677,0.0604,0.9115,0.059
+openai/babbage,EntityDataImputation,EntityDataImputation,424,25,2.8229,0.566,0.6038,0.6967,0.6114,0.6903,0.0377,0.1307,0.0454,0.1242,0.9115,0.059
+openai/gpt-3.5-turbo-0613,EntityDataImputation,EntityDataImputation,424,25,-4.9033,0.8538,0.875,0.7926,0.8682,0.7978,0.0212,0.0612,0.0144,0.0559,0.9115,0.059
+openai/text-davinci-003,EntityDataImputation,EntityDataImputation,424,25,182.5512,0.8443,0.8491,0.8225,0.8467,0.8225,0.0047,0.0218,0.0024,0.0218,0.9115,0.059
+together/redpajama-incite-instruct-3b-v1,EntityDataImputation,EntityDataImputation,424,25,-1.2492,0.7382,0.7712,0.7944,0.7735,0.7966,0.033,0.0562,0.0353,0.0584,0.9115,0.059
+together/t0pp,EntityDataImputation,EntityDataImputation,424,25,-0.723,0.0,0.0,0.1045,0.0085,0.0964,0.0,0.1045,0.0085,0.0964,0.9115,0.059
+together/t5-11b,EntityDataImputation,EntityDataImputation,424,25,0.9366,0.5118,0.4929,0.5646,0.4987,0.5581,0.0189,0.0528,0.0131,0.0463,0.9115,0.059
+together/yalm,EntityDataImputation,EntityDataImputation,424,25,1.1994,0.3774,0.3962,0.4729,0.4027,0.4696,0.0189,0.0955,0.0254,0.0922,0.9115,0.059

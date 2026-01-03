@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-1.0769,0.5837,0.5869,0.5583,0.581,0.5586,0.0032,0.0254,0.0027,0.0252,0.7907,0.1064
+ai21/j1-jumbo,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.5615,0.6938,0.6545,0.6606,0.6551,0.6576,0.0392,0.0332,0.0386,0.0362,0.7907,0.1064
+anthropic/stanford-online-all-v4-s3,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.0693,0.7524,0.7162,0.7091,0.7146,0.7088,0.0362,0.0433,0.0377,0.0436,0.7907,0.1064
+cohere/large-20220720,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.8742,0.5876,0.6093,0.5907,0.6054,0.5907,0.0217,0.0032,0.0178,0.0031,0.7907,0.1064
+cohere/medium-20220720,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-1.3497,0.5327,0.5258,0.5075,0.5223,0.5091,0.007,0.0252,0.0104,0.0236,0.7907,0.1064
+cohere/xlarge-20220609,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.9755,0.5992,0.5961,0.5979,0.5963,0.5971,0.0032,0.0014,0.003,0.0022,0.7907,0.1064
+meta/llama-2-7b,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.0682,0.707,0.7015,0.7133,0.7037,0.7121,0.0055,0.0063,0.0033,0.0051,0.7907,0.1064
+microsoft/TNLGv2_7B,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.6478,0.6122,0.6496,0.6277,0.645,0.6277,0.0374,0.0156,0.0328,0.0156,0.7907,0.1064
+mosaicml/mpt-instruct-30b,NarrativeQA-Classic,NarrativeQA-Classic,470,50,0.3691,0.7389,0.7273,0.7211,0.7259,0.7206,0.0115,0.0178,0.0129,0.0183,0.7907,0.1064
+openai/ada,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-2.226,0.3336,0.3666,0.3992,0.3733,0.3987,0.033,0.0656,0.0398,0.0651,0.7907,0.1064
+openai/text-babbage-001,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-1.5912,0.4138,0.4327,0.4306,0.4321,0.4297,0.0189,0.0168,0.0183,0.0159,0.7907,0.1064
+stanford/alpaca-7b,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-1.8153,0.4042,0.4111,0.4046,0.4097,0.4043,0.007,0.0004,0.0055,0.0002,0.7907,0.1064
+together/opt-175b,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.8837,0.6606,0.6188,0.5945,0.6136,0.5942,0.0418,0.0661,0.047,0.0664,0.7907,0.1064
+together/ul2,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-4.8619,0.0774,0.0695,0.0786,0.0708,0.0757,0.008,0.0012,0.0067,0.0018,0.7907,0.1064
+together/yalm,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-3.505,0.2213,0.1548,0.1737,0.1587,0.1735,0.0665,0.0476,0.0626,0.0478,0.7907,0.1064
+writer/palmyra-x,NarrativeQA-Classic,NarrativeQA-Classic,470,50,-0.0822,0.7442,0.7104,0.6947,0.7073,0.6956,0.0338,0.0495,0.0369,0.0485,0.7907,0.1064

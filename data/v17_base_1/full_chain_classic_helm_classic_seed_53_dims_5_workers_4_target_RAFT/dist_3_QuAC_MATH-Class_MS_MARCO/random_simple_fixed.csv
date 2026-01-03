@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+ai21/j1-grande-v2-beta,1,0.0295,0.0,0.65,0.0,0.6795,0.0
+ai21/j1-large,1,0.0014,0.0,0.54,0.0,0.5386,0.0
+ai21/j2-jumbo,1,0.0077,0.0,0.76,0.0,0.7523,0.0
+cohere/large-20220720,1,0.015,0.0,0.59,0.0,0.575,0.0
+microsoft/TNLGv2_530B,1,0.0155,0.0,0.67,0.0,0.6545,0.0
+openai/text-ada-001,1,0.0077,0.0,0.39,0.0,0.3977,0.0
+openai/text-babbage-001,1,0.0391,0.0,0.47,0.0,0.5091,0.0
+openai/text-davinci-003,1,0.0091,0.0,0.75,0.0,0.7409,0.0
+together/bloom,1,0.0114,0.0,0.6,0.0,0.5886,0.0
+together/yalm,1,0.0159,0.0,0.35,0.0,0.3341,0.0

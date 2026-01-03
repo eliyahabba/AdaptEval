@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,MATH-Classic,MATH-Classic,866,50,-1.0874,0.0566,0.0901,0.1254,0.0953,0.1234,0.0335,0.0688,0.0387,0.0668,0.843,0.0577
+ai21/j1-jumbo,MATH-Classic,MATH-Classic,866,50,-1.5705,0.052,0.0647,0.0855,0.0679,0.0855,0.0127,0.0335,0.016,0.0335,0.843,0.0577
+anthropic/stanford-online-all-v4-s3,MATH-Classic,MATH-Classic,866,50,-0.9473,0.1617,0.142,0.1525,0.1437,0.153,0.0196,0.0091,0.0179,0.0087,0.843,0.0577
+cohere/large-20220720,MATH-Classic,MATH-Classic,866,50,-2.1,0.0462,0.0508,0.058,0.0521,0.0591,0.0046,0.0118,0.0059,0.0129,0.843,0.0577
+cohere/medium-20220720,MATH-Classic,MATH-Classic,866,50,-9.8885,0.0254,0.0266,0.0342,0.0279,0.0349,0.0012,0.0088,0.0025,0.0095,0.843,0.0577
+cohere/xlarge-20220609,MATH-Classic,MATH-Classic,866,50,-0.9461,0.1028,0.0785,0.1013,0.0821,0.1014,0.0242,0.0014,0.0207,0.0014,0.843,0.0577
+meta/llama-2-7b,MATH-Classic,MATH-Classic,866,50,-3.4717,0.1074,0.1236,0.1257,0.1239,0.1257,0.0162,0.0183,0.0165,0.0183,0.843,0.0577
+microsoft/TNLGv2_7B,MATH-Classic,MATH-Classic,866,50,-2.2064,0.0393,0.0289,0.0383,0.0303,0.0381,0.0104,0.001,0.0089,0.0011,0.843,0.0577
+mosaicml/mpt-instruct-30b,MATH-Classic,MATH-Classic,866,50,-2.0385,0.1316,0.164,0.1713,0.1647,0.1689,0.0323,0.0397,0.0331,0.0372,0.843,0.0577
+openai/ada,MATH-Classic,MATH-Classic,866,50,-45.726,0.0289,0.0,0.0029,0.0005,0.0029,0.0289,0.0259,0.0284,0.0259,0.843,0.0577
+openai/text-babbage-001,MATH-Classic,MATH-Classic,866,50,-45.726,0.0115,0.0,0.0029,0.0005,0.0029,0.0115,0.0086,0.0111,0.0086,0.843,0.0577
+stanford/alpaca-7b,MATH-Classic,MATH-Classic,866,50,-4.6525,0.0624,0.0508,0.0545,0.0515,0.0555,0.0115,0.0078,0.0108,0.0069,0.843,0.0577
+together/opt-175b,MATH-Classic,MATH-Classic,866,50,-3.5402,0.0427,0.0196,0.028,0.0209,0.0277,0.0231,0.0147,0.0218,0.015,0.843,0.0577
+together/ul2,MATH-Classic,MATH-Classic,866,50,-45.726,0.0,0.0,0.0029,0.0005,0.0029,0.0,0.0029,0.0005,0.0029,0.843,0.0577
+together/yalm,MATH-Classic,MATH-Classic,866,50,-45.726,0.0,0.0,0.0029,0.0005,0.0029,0.0,0.0029,0.0005,0.0029,0.843,0.0577
+writer/palmyra-x,MATH-Classic,MATH-Classic,866,50,-1.1434,0.3718,0.3303,0.3624,0.3351,0.3613,0.0416,0.0094,0.0367,0.0105,0.843,0.0577

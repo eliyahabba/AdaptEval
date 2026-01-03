@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,CivilComments,CivilComments,8480,25,0.0137,0.4827,0.577,0.5877,0.5778,0.5877,0.0943,0.1051,0.0952,0.1051,0.923,0.0029
+ai21/j1-grande-v2-beta,CivilComments,CivilComments,8480,25,1.4898,0.7414,0.6171,0.6744,0.6215,0.6743,0.1243,0.067,0.1199,0.0671,0.923,0.0029
+ai21/j1-jumbo,CivilComments,CivilComments,8480,25,-0.0304,0.3846,0.4092,0.4779,0.4145,0.4777,0.0246,0.0934,0.0299,0.0932,0.923,0.0029
+ai21/j2-large,CivilComments,CivilComments,8480,25,0.6836,0.64,0.6486,0.6622,0.6496,0.6622,0.0086,0.0223,0.0097,0.0222,0.923,0.0029
+cohere/command-xlarge-beta,CivilComments,CivilComments,8480,25,0.6593,0.5916,0.5575,0.5853,0.5597,0.5851,0.0341,0.0063,0.032,0.0065,0.923,0.0029
+cohere/small-20220720,CivilComments,CivilComments,8480,25,1.586,0.8015,0.8531,0.7843,0.8478,0.7844,0.0515,0.0173,0.0462,0.0171,0.923,0.0029
+meta/llama-2-70b,CivilComments,CivilComments,8480,25,2.466,0.5438,0.4857,0.4844,0.4856,0.4844,0.058,0.0594,0.0581,0.0594,0.923,0.0029
+meta/llama-65b,CivilComments,CivilComments,8480,25,0.8918,0.5893,0.5544,0.5203,0.5517,0.5204,0.0349,0.0689,0.0375,0.0689,0.923,0.0029
+mosaicml/mpt-instruct-30b,CivilComments,CivilComments,8480,25,0.0997,0.3471,0.3651,0.3155,0.3613,0.3156,0.018,0.0315,0.0142,0.0315,0.923,0.0029
+openai/babbage,CivilComments,CivilComments,8480,25,0.3387,0.5358,0.7408,0.7437,0.741,0.7438,0.205,0.2078,0.2052,0.2079,0.923,0.0029
+openai/gpt-3.5-turbo-0613,CivilComments,CivilComments,8480,25,1.6125,0.6375,0.5182,0.5378,0.5197,0.5378,0.1193,0.0997,0.1178,0.0997,0.923,0.0029
+openai/text-davinci-003,CivilComments,CivilComments,8480,25,1.0343,0.695,0.5841,0.5799,0.5838,0.5799,0.111,0.1151,0.1113,0.1151,0.923,0.0029
+together/redpajama-incite-instruct-3b-v1,CivilComments,CivilComments,8480,25,2.6345,0.8179,0.7697,0.7998,0.772,0.7998,0.0482,0.0181,0.0459,0.0182,0.923,0.0029
+together/t0pp,CivilComments,CivilComments,8480,25,0.8245,0.4392,0.4962,0.3809,0.4874,0.3811,0.0571,0.0583,0.0482,0.0581,0.923,0.0029
+together/t5-11b,CivilComments,CivilComments,8480,25,0.3303,0.5777,0.4938,0.4856,0.4931,0.4857,0.084,0.0921,0.0846,0.092,0.923,0.0029
+together/yalm,CivilComments,CivilComments,8480,25,1.7573,0.75,0.7999,0.6888,0.7913,0.6891,0.0499,0.0612,0.0413,0.0609,0.923,0.0029

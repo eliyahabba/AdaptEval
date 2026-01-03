@@ -1,0 +1,99 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+ai21/j1-grande-v2-beta,1,0.016,0.0,0.48,0.0,0.464,0.0,BBQ
+ai21/j1-large,1,0.049,0.0,0.28,0.0,0.329,0.0,BBQ
+ai21/j2-jumbo,1,0.037,0.0,0.52,0.0,0.557,0.0,BBQ
+cohere/large-20220720,1,0.157,0.0,0.48,0.0,0.323,0.0,BBQ
+microsoft/TNLGv2_530B,1,0.108,0.0,0.56,0.0,0.452,0.0,BBQ
+openai/text-ada-001,1,0.187,0.0,0.52,0.0,0.333,0.0,BBQ
+openai/text-babbage-001,1,0.096,0.0,0.44,0.0,0.344,0.0,BBQ
+openai/text-davinci-003,1,0.07,0.0,0.96,0.0,0.89,0.0,BBQ
+together/bloom,1,0.119,0.0,0.48,0.0,0.361,0.0,BBQ
+together/yalm,1,0.087,0.0,0.24,0.0,0.327,0.0,BBQ
+ai21/j1-grande-v2-beta,1,0.0446,0.0,0.4329,0.0,0.3883,0.0,QuAC
+ai21/j1-large,1,0.0348,0.0,0.363,0.0,0.3282,0.0,QuAC
+ai21/j2-jumbo,1,0.0376,0.0,0.3817,0.0,0.4193,0.0,QuAC
+cohere/large-20220720,1,0.1186,0.0,0.2172,0.0,0.3358,0.0,QuAC
+microsoft/TNLGv2_530B,1,0.0383,0.0,0.4314,0.0,0.3931,0.0,QuAC
+openai/text-ada-001,1,0.0215,0.0,0.2188,0.0,0.1973,0.0,QuAC
+openai/text-babbage-001,1,0.0174,0.0,0.288,0.0,0.2706,0.0,QuAC
+openai/text-davinci-003,1,0.0462,0.0,0.5434,0.0,0.4973,0.0,QuAC
+together/bloom,1,0.0039,0.0,0.3464,0.0,0.3425,0.0,QuAC
+together/yalm,1,0.008,0.0,0.1414,0.0,0.1494,0.0,QuAC
+ai21/j1-grande-v2-beta,1,0.0253,0.0,0.12,0.0,0.0947,0.0,MATH-Classic
+ai21/j1-large,1,0.0346,0.0,0.0,0.0,0.0346,0.0,MATH-Classic
+ai21/j2-jumbo,1,0.0024,0.0,0.12,0.0,0.1224,0.0,MATH-Classic
+cohere/large-20220720,1,0.0338,0.0,0.08,0.0,0.0462,0.0,MATH-Classic
+microsoft/TNLGv2_530B,1,0.0203,0.0,0.16,0.0,0.1397,0.0,MATH-Classic
+openai/text-ada-001,1,0.0127,0.0,0.0,0.0,0.0127,0.0,MATH-Classic
+openai/text-babbage-001,1,0.0115,0.0,0.0,0.0,0.0115,0.0,MATH-Classic
+openai/text-davinci-003,1,0.2081,0.0,0.64,0.0,0.4319,0.0,MATH-Classic
+together/bloom,1,0.0108,0.0,0.04,0.0,0.0508,0.0,MATH-Classic
+together/yalm,1,0.0,0.0,0.0,0.0,0.0,0.0,MATH-Classic
+ai21/j1-grande-v2-beta,1,0.0241,0.0,0.2789,0.0,0.2547,0.0,MS MARCO
+ai21/j1-large,1,0.0391,0.0,0.1576,0.0,0.1185,0.0,MS MARCO
+ai21/j2-jumbo,1,0.1101,0.0,0.4664,0.0,0.3564,0.0,MS MARCO
+cohere/large-20220720,1,0.0561,0.0,0.1178,0.0,0.1739,0.0,MS MARCO
+microsoft/TNLGv2_530B,1,0.0754,0.0,0.4066,0.0,0.3313,0.0,MS MARCO
+openai/text-ada-001,1,0.0504,0.0,0.1829,0.0,0.1325,0.0,MS MARCO
+openai/text-babbage-001,1,0.026,0.0,0.2042,0.0,0.1781,0.0,MS MARCO
+openai/text-davinci-003,1,0.0016,0.0,0.3591,0.0,0.3575,0.0,MS MARCO
+together/bloom,1,0.034,0.0,0.233,0.0,0.199,0.0,MS MARCO
+ai21/j1-grande-v2-beta,1,0.0585,0.0,0.8,0.0,0.8585,0.0,EntityMatching
+ai21/j1-large,1,0.0595,0.0,0.76,0.0,0.8195,0.0,EntityMatching
+ai21/j2-jumbo,1,0.0596,0.0,0.96,0.0,0.9004,0.0,EntityMatching
+cohere/large-20220720,1,0.0274,0.0,0.8,0.0,0.8274,0.0,EntityMatching
+microsoft/TNLGv2_530B,1,0.082,0.0,0.96,0.0,0.878,0.0,EntityMatching
+openai/text-ada-001,1,0.0484,0.0,0.8,0.0,0.8484,0.0,EntityMatching
+openai/text-babbage-001,1,0.0443,0.0,0.84,0.0,0.7957,0.0,EntityMatching
+openai/text-davinci-003,1,0.0066,0.0,0.92,0.0,0.9134,0.0,EntityMatching
+together/bloom,1,0.0816,0.0,0.8,0.0,0.8816,0.0,EntityMatching
+together/yalm,1,0.0505,0.0,0.2,0.0,0.1495,0.0,EntityMatching
+ai21/j1-grande-v2-beta,1,0.0097,0.0,0.44,0.0,0.4303,0.0,MMLU-Classic
+ai21/j1-large,1,0.1513,0.0,0.4,0.0,0.2487,0.0,MMLU-Classic
+ai21/j2-jumbo,1,0.0415,0.0,0.44,0.0,0.4815,0.0,MMLU-Classic
+cohere/large-20220720,1,0.0772,0.0,0.4,0.0,0.3228,0.0,MMLU-Classic
+microsoft/TNLGv2_530B,1,0.0392,0.0,0.4,0.0,0.4392,0.0,MMLU-Classic
+openai/text-ada-001,1,0.0622,0.0,0.16,0.0,0.2222,0.0,MMLU-Classic
+openai/text-babbage-001,1,0.129,0.0,0.36,0.0,0.231,0.0,MMLU-Classic
+openai/text-davinci-003,1,0.0044,0.0,0.56,0.0,0.5644,0.0,MMLU-Classic
+together/bloom,1,0.0966,0.0,0.4,0.0,0.3034,0.0,MMLU-Classic
+together/yalm,1,0.0416,0.0,0.2,0.0,0.2416,0.0,MMLU-Classic
+together/bloom,1,0.0374,0.0,0.28,0.0,0.2426,0.0,BLiMP
+ai21/j1-grande-v2-beta,1,0.182,0.0,1.0,0.0,0.818,0.0,BLiMP
+ai21/j1-large,1,0.1525,0.0,0.96,0.0,0.8075,0.0,BLiMP
+ai21/j2-jumbo,1,0.181,0.0,1.0,0.0,0.819,0.0,BLiMP
+cohere/large-20220720,1,0.0881,0.0,0.92,0.0,0.8319,0.0,BLiMP
+microsoft/TNLGv2_530B,1,0.1796,0.0,1.0,0.0,0.8204,0.0,BLiMP
+openai/text-ada-001,1,0.0333,0.0,0.76,0.0,0.7267,0.0,BLiMP
+openai/text-babbage-001,1,0.0704,0.0,0.84,0.0,0.7696,0.0,BLiMP
+openai/text-davinci-003,1,0.0973,0.0,0.92,0.0,0.8227,0.0,BLiMP
+ai21/j1-grande-v2-beta,1,0.0089,0.0,0.76,0.0,0.7689,0.0,EntityDataImputation
+ai21/j1-large,1,0.0666,0.0,0.76,0.0,0.6934,0.0,EntityDataImputation
+ai21/j2-jumbo,1,0.0639,0.0,0.92,0.0,0.8561,0.0,EntityDataImputation
+cohere/large-20220720,1,0.0572,0.0,0.76,0.0,0.7028,0.0,EntityDataImputation
+microsoft/TNLGv2_530B,1,0.0875,0.0,0.88,0.0,0.7925,0.0,EntityDataImputation
+openai/text-ada-001,1,0.1869,0.0,0.76,0.0,0.5731,0.0,EntityDataImputation
+openai/text-babbage-001,1,0.116,0.0,0.8,0.0,0.684,0.0,EntityDataImputation
+openai/text-davinci-003,1,0.0357,0.0,0.88,0.0,0.8443,0.0,EntityDataImputation
+together/bloom,1,0.0831,0.0,0.76,0.0,0.6769,0.0,EntityDataImputation
+together/yalm,1,0.1826,0.0,0.56,0.0,0.3774,0.0,EntityDataImputation
+ai21/j1-grande-v2-beta,1,0.116,0.0,0.76,0.0,0.644,0.0,DyckLanguage
+ai21/j1-large,1,0.196,0.0,0.6,0.0,0.404,0.0,DyckLanguage
+ai21/j2-jumbo,1,0.216,0.0,0.96,0.0,0.744,0.0,DyckLanguage
+cohere/large-20220720,1,0.186,0.0,0.8,0.0,0.614,0.0,DyckLanguage
+microsoft/TNLGv2_530B,1,0.142,0.0,0.92,0.0,0.778,0.0,DyckLanguage
+openai/text-ada-001,1,0.118,0.0,0.04,0.0,0.158,0.0,DyckLanguage
+openai/text-babbage-001,1,0.088,0.0,0.12,0.0,0.208,0.0,DyckLanguage
+openai/text-davinci-003,1,0.08,0.0,0.84,0.0,0.76,0.0,DyckLanguage
+together/bloom,1,0.152,0.0,0.68,0.0,0.528,0.0,DyckLanguage
+together/yalm,1,0.252,0.0,0.88,0.0,0.628,0.0,DyckLanguage
+ai21/j1-grande-v2-beta,1,0.1068,0.0,0.92,0.0,0.8132,0.0,BoolQ
+ai21/j1-large,1,0.1369,0.0,0.84,0.0,0.7031,0.0,BoolQ
+ai21/j2-jumbo,1,0.0247,0.0,0.8,0.0,0.8247,0.0,BoolQ
+cohere/large-20220720,1,0.0359,0.0,0.76,0.0,0.7241,0.0,BoolQ
+microsoft/TNLGv2_530B,1,0.0228,0.0,0.8,0.0,0.8228,0.0,BoolQ
+openai/text-ada-001,1,0.0075,0.0,0.48,0.0,0.4875,0.0,BoolQ
+openai/text-babbage-001,1,0.0926,0.0,0.56,0.0,0.4674,0.0,BoolQ
+openai/text-davinci-003,1,0.0045,0.0,0.88,0.0,0.8755,0.0,BoolQ
+together/bloom,1,0.0378,0.0,0.76,0.0,0.7222,0.0,BoolQ
+together/yalm,1,0.0164,0.0,0.64,0.0,0.6236,0.0,BoolQ

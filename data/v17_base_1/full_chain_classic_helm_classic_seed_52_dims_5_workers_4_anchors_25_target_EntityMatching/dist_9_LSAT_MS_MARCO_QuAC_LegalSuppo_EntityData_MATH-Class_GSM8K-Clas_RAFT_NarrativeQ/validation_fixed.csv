@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,EntityMatching,EntityMatching,1385,25,6.9571,0.5834,0.6736,0.6099,0.666,0.6105,0.0903,0.0265,0.0826,0.0271,0.8786,0.0181
+ai21/j1-grande-v2-beta,EntityMatching,EntityMatching,1385,25,31.6454,0.8585,0.8657,0.8686,0.8661,0.8686,0.0072,0.0101,0.0076,0.0101,0.8786,0.0181
+ai21/j1-jumbo,EntityMatching,EntityMatching,1385,25,12.1315,0.8686,0.9069,0.8975,0.9057,0.8973,0.0383,0.0289,0.0371,0.0287,0.8786,0.0181
+ai21/j2-large,EntityMatching,EntityMatching,1385,25,7.7284,0.8585,0.852,0.8506,0.8518,0.8506,0.0065,0.0078,0.0067,0.0078,0.8786,0.0181
+cohere/command-xlarge-beta,EntityMatching,EntityMatching,1385,25,15.3,0.5256,0.5495,0.5148,0.5452,0.5143,0.0238,0.0108,0.0196,0.0113,0.8786,0.0181
+cohere/small-20220720,EntityMatching,EntityMatching,1385,25,-7.2287,0.1495,0.148,0.1489,0.1481,0.1489,0.0014,0.0006,0.0013,0.0006,0.8786,0.0181
+meta/llama-2-70b,EntityMatching,EntityMatching,1385,25,2.3227,0.7285,0.6852,0.6494,0.6808,0.6487,0.0433,0.0792,0.0478,0.0798,0.8786,0.0181
+meta/llama-65b,EntityMatching,EntityMatching,1385,25,3.1672,0.8809,0.9523,0.9254,0.9491,0.9254,0.0715,0.0445,0.0682,0.0445,0.8786,0.0181
+mosaicml/mpt-instruct-30b,EntityMatching,EntityMatching,1385,25,-34.4942,0.8809,0.9061,0.9042,0.9059,0.9042,0.0253,0.0234,0.025,0.0234,0.8786,0.0181
+openai/babbage,EntityMatching,EntityMatching,1385,25,-3.6689,0.2758,0.3083,0.3437,0.3124,0.3423,0.0325,0.0679,0.0366,0.0665,0.8786,0.0181
+openai/gpt-3.5-turbo-0613,EntityMatching,EntityMatching,1385,25,8.8452,0.9343,0.9264,0.8947,0.9225,0.8948,0.0079,0.0396,0.0118,0.0395,0.8786,0.0181
+openai/text-davinci-003,EntityMatching,EntityMatching,1385,25,-1.0969,0.9134,0.9386,0.9155,0.9357,0.9147,0.0253,0.0022,0.0224,0.0014,0.8786,0.0181
+together/redpajama-incite-instruct-3b-v1,EntityMatching,EntityMatching,1385,25,7.7284,0.8513,0.852,0.8506,0.8518,0.8506,0.0007,0.0006,0.0006,0.0006,0.8786,0.0181
+together/t0pp,EntityMatching,EntityMatching,1385,25,-2.5924,0.0,0.0,0.0668,0.0079,0.0651,0.0,0.0668,0.0079,0.0651,0.8786,0.0181
+together/t5-11b,EntityMatching,EntityMatching,1385,25,4.5012,0.6274,0.5704,0.5704,0.5703,0.5692,0.057,0.0571,0.0572,0.0582,0.8786,0.0181
+together/yalm,EntityMatching,EntityMatching,1385,25,-7.2287,0.1495,0.148,0.1489,0.1481,0.1489,0.0014,0.0006,0.0013,0.0006,0.8786,0.0181

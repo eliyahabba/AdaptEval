@@ -1,0 +1,17 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,TruthfulQA-Classic,TruthfulQA-Classic,654,100,1.0213,0.1988,0.2156,0.2382,0.2243,0.2339,0.0168,0.0395,0.0255,0.0352,0.5248,0.1529
+ai21/j1-grande-v2-beta,TruthfulQA-Classic,TruthfulQA-Classic,654,100,0.5018,0.3028,0.289,0.2789,0.2855,0.2817,0.0138,0.0239,0.0172,0.021,0.5248,0.1529
+ai21/j1-jumbo,TruthfulQA-Classic,TruthfulQA-Classic,654,100,0.402,0.185,0.2446,0.2742,0.2558,0.2682,0.0596,0.0892,0.0708,0.0832,0.5248,0.1529
+ai21/j2-large,TruthfulQA-Classic,TruthfulQA-Classic,654,100,-0.7128,0.2401,0.2278,0.278,0.2509,0.2763,0.0122,0.0379,0.0108,0.0362,0.5248,0.1529
+cohere/command-xlarge-beta,TruthfulQA-Classic,TruthfulQA-Classic,654,100,0.3795,0.2584,0.2829,0.314,0.2945,0.3073,0.0245,0.0556,0.0361,0.0489,0.5248,0.1529
+cohere/small-20220720,TruthfulQA-Classic,TruthfulQA-Classic,654,100,3.0801,0.2248,0.2966,0.2992,0.2958,0.2949,0.0719,0.0744,0.071,0.0701,0.5248,0.1529
+meta/llama-2-70b,TruthfulQA-Classic,TruthfulQA-Classic,654,100,0.6768,0.4557,0.4801,0.4532,0.4675,0.4536,0.0245,0.0025,0.0119,0.002,0.5248,0.1529
+meta/llama-65b,TruthfulQA-Classic,TruthfulQA-Classic,654,100,2.5989,0.445,0.4251,0.3889,0.4094,0.3921,0.0199,0.0561,0.0356,0.0529,0.5248,0.1529
+mosaicml/mpt-instruct-30b,TruthfulQA-Classic,TruthfulQA-Classic,654,100,-0.6605,0.2187,0.2431,0.2694,0.2508,0.2594,0.0245,0.0508,0.0322,0.0407,0.5248,0.1529
+openai/babbage,TruthfulQA-Classic,TruthfulQA-Classic,654,100,3.0678,0.211,0.1896,0.1827,0.188,0.1862,0.0214,0.0283,0.023,0.0248,0.5248,0.1529
+openai/gpt-3.5-turbo-0613,TruthfulQA-Classic,TruthfulQA-Classic,654,100,2.5814,0.3012,0.3578,0.4257,0.3847,0.4145,0.0566,0.1245,0.0835,0.1133,0.5248,0.1529
+openai/text-davinci-003,TruthfulQA-Classic,TruthfulQA-Classic,654,100,1.6965,0.5581,0.6177,0.5826,0.6021,0.5848,0.0596,0.0245,0.044,0.0267,0.5248,0.1529
+together/redpajama-incite-instruct-3b-v1,TruthfulQA-Classic,TruthfulQA-Classic,654,100,-0.0023,0.211,0.2324,0.2963,0.2563,0.2827,0.0214,0.0853,0.0453,0.0717,0.5248,0.1529
+together/t0pp,TruthfulQA-Classic,TruthfulQA-Classic,654,100,0.202,0.3547,0.3869,0.3543,0.3724,0.3564,0.0321,0.0005,0.0177,0.0017,0.5248,0.1529
+together/t5-11b,TruthfulQA-Classic,TruthfulQA-Classic,654,100,-1.0422,0.1407,0.1407,0.1815,0.1548,0.1704,0.0,0.0408,0.0141,0.0298,0.5248,0.1529
+together/yalm,TruthfulQA-Classic,TruthfulQA-Classic,654,100,1.2954,0.2034,0.2278,0.2727,0.2442,0.2623,0.0245,0.0694,0.0408,0.0589,0.5248,0.1529
