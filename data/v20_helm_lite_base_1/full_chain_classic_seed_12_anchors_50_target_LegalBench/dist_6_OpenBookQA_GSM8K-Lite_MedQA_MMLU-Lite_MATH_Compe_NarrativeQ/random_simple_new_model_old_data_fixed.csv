@@ -1,0 +1,155 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+ai21/j2-jumbo,1,0.0159,0.0,0.0873,0.0,0.1032,0.0,WMT-14 Translation
+ai21/jamba-1.5-large,1,0.0019,0.0,0.1871,0.0,0.1853,0.0,WMT-14 Translation
+amazon/nova-lite-v1:0,1,0.018,0.0,0.1633,0.0,0.1812,0.0,WMT-14 Translation
+amazon/nova-pro-v1:0,1,0.0067,0.0,0.2093,0.0,0.2026,0.0,WMT-14 Translation
+anthropic/claude-2.1,1,0.0161,0.0,0.1658,0.0,0.1819,0.0,WMT-14 Translation
+anthropic/claude-3-5-haiku-20241022,1,0.0044,0.0,0.1252,0.0,0.1208,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20241022,1,0.0162,0.0,0.1861,0.0,0.2023,0.0,WMT-14 Translation
+anthropic/claude-3-opus-20240229,1,0.0134,0.0,0.1997,0.0,0.2131,0.0,WMT-14 Translation
+cohere/command-light,1,0.0034,0.0,0.0199,0.0,0.0233,0.0,WMT-14 Translation
+databricks/dbrx-instruct,1,0.0159,0.0,0.1007,0.0,0.1166,0.0,WMT-14 Translation
+deepseek-ai/deepseek-v3,1,0.0276,0.0,0.1607,0.0,0.1883,0.0,WMT-14 Translation
+google/text-bison@001,1,0.0256,0.0,0.1852,0.0,0.2108,0.0,WMT-14 Translation
+meta/llama-3.3-70b-instruct-turbo,1,0.0184,0.0,0.1762,0.0,0.1947,0.0,WMT-14 Translation
+mistralai/mistral-large-2402,1,0.0039,0.0,0.1599,0.0,0.1639,0.0,WMT-14 Translation
+mistralai/mixtral-8x7b-32kseqlen,1,0.0118,0.0,0.1594,0.0,0.1711,0.0,WMT-14 Translation
+mistralai/open-mistral-nemo-2407,1,0.0117,0.0,0.1724,0.0,0.1607,0.0,WMT-14 Translation
+openai/gpt-4-turbo-2024-04-09,1,0.0034,0.0,0.1977,0.0,0.1942,0.0,WMT-14 Translation
+qwen/qwen1.5-14b,1,0.0323,0.0,0.1281,0.0,0.1604,0.0,WMT-14 Translation
+qwen/qwen1.5-72b,1,0.0119,0.0,0.1681,0.0,0.1799,0.0,WMT-14 Translation
+qwen/qwen1.5-7b,1,0.0192,0.0,0.123,0.0,0.1422,0.0,WMT-14 Translation
+snowflake/snowflake-arctic-instruct,1,0.0111,0.0,0.1444,0.0,0.1554,0.0,WMT-14 Translation
+tiiuae/falcon-40b,1,0.0286,0.0,0.1155,0.0,0.1441,0.0,WMT-14 Translation
+ai21/j2-jumbo,1,0.052,0.0,0.74,0.0,0.688,0.0,OpenBookQA
+ai21/jamba-1.5-large,1,0.028,0.0,0.92,0.0,0.948,0.0,OpenBookQA
+amazon/nova-lite-v1:0,1,0.028,0.0,0.9,0.0,0.928,0.0,OpenBookQA
+amazon/nova-pro-v1:0,1,0.02,0.0,0.98,0.0,0.96,0.0,OpenBookQA
+anthropic/claude-2.1,1,0.072,0.0,0.8,0.0,0.872,0.0,OpenBookQA
+anthropic/claude-3-5-haiku-20241022,1,0.006,0.0,0.86,0.0,0.854,0.0,OpenBookQA
+anthropic/claude-3-5-sonnet-20241022,1,0.046,0.0,0.92,0.0,0.966,0.0,OpenBookQA
+anthropic/claude-3-opus-20240229,1,0.004,0.0,0.96,0.0,0.956,0.0,OpenBookQA
+cohere/command-light,1,0.042,0.0,0.44,0.0,0.398,0.0,OpenBookQA
+databricks/dbrx-instruct,1,0.03,0.0,0.88,0.0,0.91,0.0,OpenBookQA
+deepseek-ai/deepseek-v3,1,0.014,0.0,0.94,0.0,0.954,0.0,OpenBookQA
+google/text-bison@001,1,0.002,0.0,0.88,0.0,0.878,0.0,OpenBookQA
+meta/llama-3.3-70b-instruct-turbo,1,0.012,0.0,0.94,0.0,0.928,0.0,OpenBookQA
+mistralai/mistral-large-2402,1,0.006,0.0,0.9,0.0,0.894,0.0,OpenBookQA
+mistralai/mixtral-8x7b-32kseqlen,1,0.028,0.0,0.84,0.0,0.868,0.0,OpenBookQA
+mistralai/open-mistral-nemo-2407,1,0.022,0.0,0.8,0.0,0.822,0.0,OpenBookQA
+openai/gpt-4-turbo-2024-04-09,1,0.01,0.0,0.98,0.0,0.97,0.0,OpenBookQA
+qwen/qwen1.5-14b,1,0.042,0.0,0.82,0.0,0.862,0.0,OpenBookQA
+qwen/qwen1.5-72b,1,0.01,0.0,0.92,0.0,0.93,0.0,OpenBookQA
+qwen/qwen1.5-7b,1,0.014,0.0,0.82,0.0,0.806,0.0,OpenBookQA
+snowflake/snowflake-arctic-instruct,1,0.028,0.0,0.8,0.0,0.828,0.0,OpenBookQA
+tiiuae/falcon-40b,1,0.042,0.0,0.62,0.0,0.662,0.0,OpenBookQA
+ai21/j2-jumbo,1,0.021,0.0,0.26,0.0,0.239,0.0,GSM8K-Lite
+ai21/jamba-1.5-large,1,0.094,0.0,0.94,0.0,0.846,0.0,GSM8K-Lite
+amazon/nova-lite-v1:0,1,0.029,0.0,0.8,0.0,0.829,0.0,GSM8K-Lite
+amazon/nova-pro-v1:0,1,0.07,0.0,0.94,0.0,0.87,0.0,GSM8K-Lite
+anthropic/claude-2.1,1,0.084,0.0,0.52,0.0,0.604,0.0,GSM8K-Lite
+anthropic/claude-3-5-haiku-20241022,1,0.035,0.0,0.78,0.0,0.815,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.016,0.0,0.94,0.0,0.956,0.0,GSM8K-Lite
+anthropic/claude-3-opus-20240229,1,0.004,0.0,0.92,0.0,0.924,0.0,GSM8K-Lite
+cohere/command-light,1,0.071,0.0,0.22,0.0,0.149,0.0,GSM8K-Lite
+databricks/dbrx-instruct,1,0.011,0.0,0.66,0.0,0.671,0.0,GSM8K-Lite
+deepseek-ai/deepseek-v3,1,0.0,0.0,0.94,0.0,0.94,0.0,GSM8K-Lite
+google/text-bison@001,1,0.11,0.0,0.72,0.0,0.61,0.0,GSM8K-Lite
+meta/llama-3.3-70b-instruct-turbo,1,0.042,0.0,0.9,0.0,0.942,0.0,GSM8K-Lite
+mistralai/mistral-large-2402,1,0.106,0.0,0.8,0.0,0.694,0.0,GSM8K-Lite
+mistralai/mixtral-8x7b-32kseqlen,1,0.018,0.0,0.64,0.0,0.622,0.0,GSM8K-Lite
+mistralai/open-mistral-nemo-2407,1,0.038,0.0,0.82,0.0,0.782,0.0,GSM8K-Lite
+openai/gpt-4-turbo-2024-04-09,1,0.004,0.0,0.82,0.0,0.824,0.0,GSM8K-Lite
+qwen/qwen1.5-14b,1,0.067,0.0,0.76,0.0,0.693,0.0,GSM8K-Lite
+qwen/qwen1.5-72b,1,0.061,0.0,0.86,0.0,0.799,0.0,GSM8K-Lite
+qwen/qwen1.5-7b,1,0.16,0.0,0.76,0.0,0.6,0.0,GSM8K-Lite
+snowflake/snowflake-arctic-instruct,1,0.072,0.0,0.84,0.0,0.768,0.0,GSM8K-Lite
+tiiuae/falcon-40b,1,0.013,0.0,0.28,0.0,0.267,0.0,GSM8K-Lite
+ai21/j2-jumbo,1,0.002,0.0,0.44,0.0,0.438,0.0,MedQA
+ai21/jamba-1.5-large,1,0.043,0.0,0.74,0.0,0.697,0.0,MedQA
+amazon/nova-lite-v1:0,1,0.04,0.0,0.66,0.0,0.7,0.0,MedQA
+amazon/nova-pro-v1:0,1,0.033,0.0,0.76,0.0,0.793,0.0,MedQA
+anthropic/claude-2.1,1,0.063,0.0,0.7,0.0,0.637,0.0,MedQA
+anthropic/claude-3-5-haiku-20241022,1,0.004,0.0,0.72,0.0,0.724,0.0,MedQA
+anthropic/claude-3-5-sonnet-20241022,1,0.133,0.0,0.72,0.0,0.853,0.0,MedQA
+anthropic/claude-3-opus-20240229,1,0.064,0.0,0.84,0.0,0.776,0.0,MedQA
+cohere/command-light,1,0.066,0.0,0.36,0.0,0.294,0.0,MedQA
+databricks/dbrx-instruct,1,0.16,0.0,0.84,0.0,0.68,0.0,MedQA
+deepseek-ai/deepseek-v3,1,0.011,0.0,0.8,0.0,0.811,0.0,MedQA
+google/text-bison@001,1,0.0,0.0,0.54,0.0,0.54,0.0,MedQA
+meta/llama-3.3-70b-instruct-turbo,1,0.005,0.0,0.8,0.0,0.805,0.0,MedQA
+mistralai/mistral-large-2402,1,0.009,0.0,0.48,0.0,0.489,0.0,MedQA
+mistralai/mixtral-8x7b-32kseqlen,1,0.026,0.0,0.66,0.0,0.634,0.0,MedQA
+mistralai/open-mistral-nemo-2407,1,0.049,0.0,0.62,0.0,0.571,0.0,MedQA
+openai/gpt-4-turbo-2024-04-09,1,0.047,0.0,0.74,0.0,0.787,0.0,MedQA
+qwen/qwen1.5-14b,1,0.049,0.0,0.56,0.0,0.511,0.0,MedQA
+qwen/qwen1.5-72b,1,0.016,0.0,0.68,0.0,0.664,0.0,MedQA
+qwen/qwen1.5-7b,1,0.064,0.0,0.52,0.0,0.456,0.0,MedQA
+snowflake/snowflake-arctic-instruct,1,0.048,0.0,0.6,0.0,0.552,0.0,MedQA
+tiiuae/falcon-40b,1,0.068,0.0,0.48,0.0,0.412,0.0,MedQA
+ai21/j2-jumbo,1,0.0673,0.0,0.54,0.0,0.4727,0.0,MMLU-Lite
+ai21/jamba-1.5-large,1,0.0304,0.0,0.72,0.0,0.6896,0.0,MMLU-Lite
+amazon/nova-lite-v1:0,1,0.0851,0.0,0.78,0.0,0.6949,0.0,MMLU-Lite
+amazon/nova-pro-v1:0,1,0.0563,0.0,0.82,0.0,0.7637,0.0,MMLU-Lite
+anthropic/claude-2.1,1,0.0492,0.0,0.7,0.0,0.6508,0.0,MMLU-Lite
+anthropic/claude-3-5-haiku-20241022,1,0.0533,0.0,0.72,0.0,0.6667,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.0887,0.0,0.9,0.0,0.8113,0.0,MMLU-Lite
+anthropic/claude-3-opus-20240229,1,0.0816,0.0,0.84,0.0,0.7584,0.0,MMLU-Lite
+cohere/command-light,1,0.0027,0.0,0.38,0.0,0.3827,0.0,MMLU-Lite
+databricks/dbrx-instruct,1,0.058,0.0,0.7,0.0,0.642,0.0,MMLU-Lite
+deepseek-ai/deepseek-v3,1,0.0122,0.0,0.82,0.0,0.8078,0.0,MMLU-Lite
+google/text-bison@001,1,0.1151,0.0,0.72,0.0,0.6049,0.0,MMLU-Lite
+meta/llama-3.3-70b-instruct-turbo,1,0.0763,0.0,0.78,0.0,0.7037,0.0,MMLU-Lite
+mistralai/mistral-large-2402,1,0.118,0.0,0.76,0.0,0.642,0.0,MMLU-Lite
+mistralai/mixtral-8x7b-32kseqlen,1,0.0527,0.0,0.7,0.0,0.6473,0.0,MMLU-Lite
+mistralai/open-mistral-nemo-2407,1,0.0804,0.0,0.68,0.0,0.5996,0.0,MMLU-Lite
+openai/gpt-4-turbo-2024-04-09,1,0.1475,0.0,0.86,0.0,0.7125,0.0,MMLU-Lite
+qwen/qwen1.5-14b,1,0.0827,0.0,0.7,0.0,0.6173,0.0,MMLU-Lite
+qwen/qwen1.5-72b,1,0.1327,0.0,0.78,0.0,0.6473,0.0,MMLU-Lite
+qwen/qwen1.5-7b,1,0.1009,0.0,0.66,0.0,0.5591,0.0,MMLU-Lite
+snowflake/snowflake-arctic-instruct,1,0.0868,0.0,0.66,0.0,0.5732,0.0,MMLU-Lite
+tiiuae/falcon-40b,1,0.1191,0.0,0.62,0.0,0.5009,0.0,MMLU-Lite
+ai21/j2-jumbo,1,0.0547,0.0,0.16,0.0,0.1053,0.0,MATH Competition
+ai21/jamba-1.5-large,1,0.0563,0.0,0.8,0.0,0.7437,0.0,MATH Competition
+amazon/nova-lite-v1:0,1,0.0499,0.0,0.86,0.0,0.8101,0.0,MATH Competition
+amazon/nova-pro-v1:0,1,0.0419,0.0,0.9,0.0,0.8581,0.0,MATH Competition
+anthropic/claude-2.1,1,0.0157,0.0,0.68,0.0,0.6957,0.0,MATH Competition
+anthropic/claude-3-5-haiku-20241022,1,0.0207,0.0,0.92,0.0,0.8993,0.0,MATH Competition
+anthropic/claude-3-5-sonnet-20241022,1,0.0155,0.0,0.94,0.0,0.9245,0.0,MATH Competition
+anthropic/claude-3-opus-20240229,1,0.0695,0.0,0.72,0.0,0.7895,0.0,MATH Competition
+cohere/command-light,1,0.0207,0.0,0.08,0.0,0.1007,0.0,MATH Competition
+databricks/dbrx-instruct,1,0.0198,0.0,0.28,0.0,0.2998,0.0,MATH Competition
+deepseek-ai/deepseek-v3,1,0.0109,0.0,0.94,0.0,0.9291,0.0,MATH Competition
+google/text-bison@001,1,0.0184,0.0,0.46,0.0,0.4416,0.0,MATH Competition
+meta/llama-3.3-70b-instruct-turbo,1,0.0533,0.0,0.9,0.0,0.8467,0.0,MATH Competition
+mistralai/mistral-large-2402,1,0.0259,0.0,0.82,0.0,0.7941,0.0,MATH Competition
+mistralai/mixtral-8x7b-32kseqlen,1,0.0515,0.0,0.5,0.0,0.5515,0.0,MATH Competition
+mistralai/open-mistral-nemo-2407,1,0.0392,0.0,0.76,0.0,0.7208,0.0,MATH Competition
+openai/gpt-4-turbo-2024-04-09,1,0.0304,0.0,0.9,0.0,0.8696,0.0,MATH Competition
+qwen/qwen1.5-14b,1,0.0008,0.0,0.72,0.0,0.7208,0.0,MATH Competition
+qwen/qwen1.5-72b,1,0.0552,0.0,0.76,0.0,0.7048,0.0,MATH Competition
+qwen/qwen1.5-7b,1,0.0005,0.0,0.6,0.0,0.5995,0.0,MATH Competition
+snowflake/snowflake-arctic-instruct,1,0.0473,0.0,0.64,0.0,0.5927,0.0,MATH Competition
+tiiuae/falcon-40b,1,0.0504,0.0,0.08,0.0,0.1304,0.0,MATH Competition
+ai21/j2-jumbo,1,0.0404,0.0,0.7825,0.0,0.7421,0.0,NarrativeQA
+ai21/jamba-1.5-large,1,0.0019,0.0,0.6776,0.0,0.6794,0.0,NarrativeQA
+amazon/nova-lite-v1:0,1,0.0155,0.0,0.7826,0.0,0.767,0.0,NarrativeQA
+amazon/nova-pro-v1:0,1,0.0219,0.0,0.8141,0.0,0.7922,0.0,NarrativeQA
+anthropic/claude-2.1,1,0.0011,0.0,0.6785,0.0,0.6796,0.0,NarrativeQA
+anthropic/claude-3-5-haiku-20241022,1,0.0219,0.0,0.7974,0.0,0.7755,0.0,NarrativeQA
+anthropic/claude-3-5-sonnet-20241022,1,0.027,0.0,0.8078,0.0,0.7808,0.0,NarrativeQA
+anthropic/claude-3-opus-20240229,1,0.0882,0.0,0.4394,0.0,0.3512,0.0,NarrativeQA
+cohere/command-light,1,0.0328,0.0,0.677,0.0,0.6442,0.0,NarrativeQA
+databricks/dbrx-instruct,1,0.0334,0.0,0.5398,0.0,0.5064,0.0,NarrativeQA
+deepseek-ai/deepseek-v3,1,0.0103,0.0,0.7861,0.0,0.7964,0.0,NarrativeQA
+google/text-bison@001,1,0.0412,0.0,0.763,0.0,0.7217,0.0,NarrativeQA
+meta/llama-3.3-70b-instruct-turbo,1,0.0332,0.0,0.825,0.0,0.7918,0.0,NarrativeQA
+mistralai/mistral-large-2402,1,0.0066,0.0,0.4531,0.0,0.4598,0.0,NarrativeQA
+mistralai/mixtral-8x7b-32kseqlen,1,0.019,0.0,0.7932,0.0,0.7742,0.0,NarrativeQA
+mistralai/open-mistral-nemo-2407,1,0.0012,0.0,0.7414,0.0,0.7402,0.0,NarrativeQA
+openai/gpt-4-turbo-2024-04-09,1,0.0343,0.0,0.8076,0.0,0.7732,0.0,NarrativeQA
+qwen/qwen1.5-14b,1,0.0448,0.0,0.7632,0.0,0.7184,0.0,NarrativeQA
+qwen/qwen1.5-72b,1,0.0349,0.0,0.6405,0.0,0.6057,0.0,NarrativeQA
+qwen/qwen1.5-7b,1,0.028,0.0,0.429,0.0,0.457,0.0,NarrativeQA
+snowflake/snowflake-arctic-instruct,1,0.053,0.0,0.7034,0.0,0.6503,0.0,NarrativeQA
+tiiuae/falcon-40b,1,0.0075,0.0,0.6654,0.0,0.6729,0.0,NarrativeQA

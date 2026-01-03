@@ -1,0 +1,177 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+AlephAlpha/luminous-base,1,0.0,0.0,0.0252,0.0,0.0252,0.0,MATH Competition
+ai21/jamba-1.5-large,1,0.0,0.0,0.7437,0.0,0.7437,0.0,MATH Competition
+ai21/jamba-1.5-mini,1,0.0,0.0,0.3295,0.0,0.3295,0.0,MATH Competition
+amazon/nova-micro-v1:0,1,0.0,0.0,0.7918,0.0,0.7918,0.0,MATH Competition
+amazon/nova-pro-v1:0,1,0.0,0.0,0.8581,0.0,0.8581,0.0,MATH Competition
+anthropic/claude-2.1,1,0.0,0.0,0.6957,0.0,0.6957,0.0,MATH Competition
+anthropic/claude-3-5-sonnet-20240620,1,0.0,0.0,0.8261,0.0,0.8261,0.0,MATH Competition
+anthropic/claude-3-haiku-20240307,1,0.0,0.0,0.1968,0.0,0.1968,0.0,MATH Competition
+cohere/command,1,0.0,0.0,0.2654,0.0,0.2654,0.0,MATH Competition
+meta/llama-2-7b,1,0.0,0.0,0.103,0.0,0.103,0.0,MATH Competition
+meta/llama-3-70b,1,0.0,0.0,0.714,0.0,0.714,0.0,MATH Competition
+meta/llama-65b,1,0.0,0.0,0.3181,0.0,0.3181,0.0,MATH Competition
+mistralai/mistral-7b-instruct-v0.3,1,0.0,0.0,0.3318,0.0,0.3318,0.0,MATH Competition
+mistralai/mistral-large-2407,1,0.0,0.0,0.7208,0.0,0.7208,0.0,MATH Competition
+mistralai/mistral-small-2402,1,0.0,0.0,0.6934,0.0,0.6934,0.0,MATH Competition
+mistralai/mixtral-8x7b-32kseqlen,1,0.0,0.0,0.5515,0.0,0.5515,0.0,MATH Competition
+openai/gpt-4-1106-preview,1,0.0,0.0,0.8856,0.0,0.8856,0.0,MATH Competition
+openai/gpt-4-turbo-2024-04-09,1,0.0,0.0,0.8696,0.0,0.8696,0.0,MATH Competition
+openai/gpt-4o-mini-2024-07-18,1,0.0,0.0,0.849,0.0,0.849,0.0,MATH Competition
+qwen/qwen2.5-72b-instruct-turbo,1,0.0,0.0,0.9062,0.0,0.9062,0.0,MATH Competition
+upstage/solar-pro-241126,1,0.0,0.0,0.6133,0.0,0.6133,0.0,MATH Competition
+writer/palmyra-x-004,1,0.0,0.0,0.8169,0.0,0.8169,0.0,MATH Competition
+AlephAlpha/luminous-base,1,0.0107,0.0,0.24,0.0,0.2293,0.0,MMLU-Lite
+ai21/jamba-1.5-large,1,0.0036,0.0,0.686,0.0,0.6896,0.0,MMLU-Lite
+ai21/jamba-1.5-mini,1,0.0075,0.0,0.586,0.0,0.5785,0.0,MMLU-Lite
+amazon/nova-micro-v1:0,1,0.0037,0.0,0.64,0.0,0.6437,0.0,MMLU-Lite
+amazon/nova-pro-v1:0,1,0.0017,0.0,0.762,0.0,0.7637,0.0,MMLU-Lite
+anthropic/claude-2.1,1,0.0028,0.0,0.648,0.0,0.6508,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.0062,0.0,0.798,0.0,0.8042,0.0,MMLU-Lite
+anthropic/claude-3-haiku-20240307,1,0.0091,0.0,0.654,0.0,0.6631,0.0,MMLU-Lite
+cohere/command,1,0.004,0.0,0.526,0.0,0.522,0.0,MMLU-Lite
+meta/llama-2-7b,1,0.0007,0.0,0.412,0.0,0.4127,0.0,MMLU-Lite
+meta/llama-3-70b,1,0.0005,0.0,0.706,0.0,0.7055,0.0,MMLU-Lite
+meta/llama-65b,1,0.0025,0.0,0.576,0.0,0.5785,0.0,MMLU-Lite
+mistralai/mistral-7b-instruct-v0.3,1,0.0037,0.0,0.506,0.0,0.5097,0.0,MMLU-Lite
+mistralai/mistral-large-2407,1,0.0014,0.0,0.734,0.0,0.7354,0.0,MMLU-Lite
+mistralai/mistral-small-2402,1,0.0016,0.0,0.596,0.0,0.5944,0.0,MMLU-Lite
+mistralai/mixtral-8x7b-32kseqlen,1,0.0053,0.0,0.642,0.0,0.6473,0.0,MMLU-Lite
+openai/gpt-4-1106-preview,1,0.0032,0.0,0.704,0.0,0.7072,0.0,MMLU-Lite
+openai/gpt-4-turbo-2024-04-09,1,0.0025,0.0,0.71,0.0,0.7125,0.0,MMLU-Lite
+openai/gpt-4o-mini-2024-07-18,1,0.0033,0.0,0.67,0.0,0.6667,0.0,MMLU-Lite
+qwen/qwen2.5-72b-instruct-turbo,1,0.0027,0.0,0.768,0.0,0.7707,0.0,MMLU-Lite
+upstage/solar-pro-241126,1,0.0029,0.0,0.692,0.0,0.6949,0.0,MMLU-Lite
+writer/palmyra-x-004,1,0.0058,0.0,0.742,0.0,0.7478,0.0,MMLU-Lite
+AlephAlpha/luminous-base,1,0.0067,0.0,0.39,0.0,0.3967,0.0,LegalBench
+ai21/jamba-1.5-large,1,0.0284,0.0,0.62,0.0,0.5916,0.0,LegalBench
+ai21/jamba-1.5-mini,1,0.0035,0.0,0.428,0.0,0.4245,0.0,LegalBench
+amazon/nova-micro-v1:0,1,0.0057,0.0,0.622,0.0,0.6277,0.0,LegalBench
+amazon/nova-pro-v1:0,1,0.0075,0.0,0.688,0.0,0.6805,0.0,LegalBench
+anthropic/claude-2.1,1,0.0192,0.0,0.582,0.0,0.5628,0.0,LegalBench
+anthropic/claude-3-5-sonnet-20240620,1,0.0156,0.0,0.636,0.0,0.6204,0.0,LegalBench
+anthropic/claude-3-haiku-20240307,1,0.0303,0.0,0.342,0.0,0.3117,0.0,LegalBench
+cohere/command,1,0.0069,0.0,0.486,0.0,0.4929,0.0,LegalBench
+meta/llama-2-7b,1,0.0156,0.0,0.514,0.0,0.5296,0.0,LegalBench
+meta/llama-3-70b,1,0.0083,0.0,0.7,0.0,0.6917,0.0,LegalBench
+meta/llama-65b,1,0.0037,0.0,0.414,0.0,0.4177,0.0,LegalBench
+mistralai/mistral-7b-instruct-v0.3,1,0.0021,0.0,0.37,0.0,0.3679,0.0,LegalBench
+mistralai/mistral-large-2407,1,0.0104,0.0,0.54,0.0,0.5296,0.0,LegalBench
+mistralai/mistral-small-2402,1,0.0344,0.0,0.2565,0.0,0.2222,0.0,LegalBench
+mistralai/mixtral-8x7b-32kseqlen,1,0.0171,0.0,0.64,0.0,0.6229,0.0,LegalBench
+openai/gpt-4-1106-preview,1,0.0335,0.0,0.63,0.0,0.5965,0.0,LegalBench
+openai/gpt-4-turbo-2024-04-09,1,0.0123,0.0,0.684,0.0,0.6717,0.0,LegalBench
+openai/gpt-4o-mini-2024-07-18,1,0.0265,0.0,0.6,0.0,0.5735,0.0,LegalBench
+qwen/qwen2.5-72b-instruct-turbo,1,0.0219,0.0,0.698,0.0,0.6761,0.0,LegalBench
+upstage/solar-pro-241126,1,0.0098,0.0,0.638,0.0,0.6282,0.0,LegalBench
+writer/palmyra-x-004,1,0.0,0.0,0.64,0.0,0.64,0.0,LegalBench
+AlephAlpha/luminous-base,1,0.0088,0.0,0.1884,0.0,0.1972,0.0,NaturalQA
+ai21/jamba-1.5-large,1,0.0118,0.0,0.3819,0.0,0.3937,0.0,NaturalQA
+ai21/jamba-1.5-mini,1,0.0118,0.0,0.3761,0.0,0.3879,0.0,NaturalQA
+amazon/nova-micro-v1:0,1,0.003,0.0,0.2877,0.0,0.2847,0.0,NaturalQA
+amazon/nova-pro-v1:0,1,0.0007,0.0,0.4058,0.0,0.4052,0.0,NaturalQA
+anthropic/claude-2.1,1,0.0021,0.0,0.3772,0.0,0.3751,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0026,0.0,0.5042,0.0,0.5016,0.0,NaturalQA
+anthropic/claude-3-haiku-20240307,1,0.0041,0.0,0.1396,0.0,0.1437,0.0,NaturalQA
+cohere/command,1,0.0093,0.0,0.4004,0.0,0.3911,0.0,NaturalQA
+meta/llama-2-7b,1,0.0062,0.0,0.3388,0.0,0.3326,0.0,NaturalQA
+meta/llama-3-70b,1,0.0143,0.0,0.4896,0.0,0.4753,0.0,NaturalQA
+meta/llama-65b,1,0.0093,0.0,0.4419,0.0,0.4326,0.0,NaturalQA
+mistralai/mistral-7b-instruct-v0.3,1,0.0055,0.0,0.2478,0.0,0.2533,0.0,NaturalQA
+mistralai/mistral-large-2407,1,0.0013,0.0,0.4514,0.0,0.4527,0.0,NaturalQA
+mistralai/mistral-small-2402,1,0.0097,0.0,0.2946,0.0,0.3042,0.0,NaturalQA
+mistralai/mixtral-8x7b-32kseqlen,1,0.0002,0.0,0.4274,0.0,0.4273,0.0,NaturalQA
+openai/gpt-4-1106-preview,1,0.009,0.0,0.4257,0.0,0.4347,0.0,NaturalQA
+openai/gpt-4-turbo-2024-04-09,1,0.0073,0.0,0.4894,0.0,0.4821,0.0,NaturalQA
+openai/gpt-4o-mini-2024-07-18,1,0.0152,0.0,0.3704,0.0,0.3855,0.0,NaturalQA
+qwen/qwen2.5-72b-instruct-turbo,1,0.0059,0.0,0.3653,0.0,0.3594,0.0,NaturalQA
+upstage/solar-pro-241126,1,0.0095,0.0,0.2878,0.0,0.2973,0.0,NaturalQA
+writer/palmyra-x-004,1,0.0144,0.0,0.4422,0.0,0.4566,0.0,NaturalQA
+AlephAlpha/luminous-base,1,0.004,0.0,0.032,0.0,0.028,0.0,GSM8K-Lite
+ai21/jamba-1.5-large,1,0.018,0.0,0.864,0.0,0.846,0.0,GSM8K-Lite
+ai21/jamba-1.5-mini,1,0.029,0.0,0.72,0.0,0.691,0.0,GSM8K-Lite
+amazon/nova-micro-v1:0,1,0.004,0.0,0.798,0.0,0.794,0.0,GSM8K-Lite
+amazon/nova-pro-v1:0,1,0.006,0.0,0.876,0.0,0.87,0.0,GSM8K-Lite
+anthropic/claude-2.1,1,0.016,0.0,0.62,0.0,0.604,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.001,0.0,0.948,0.0,0.949,0.0,GSM8K-Lite
+anthropic/claude-3-haiku-20240307,1,0.019,0.0,0.718,0.0,0.699,0.0,GSM8K-Lite
+cohere/command,1,0.002,0.0,0.45,0.0,0.452,0.0,GSM8K-Lite
+meta/llama-2-7b,1,0.02,0.0,0.174,0.0,0.154,0.0,GSM8K-Lite
+meta/llama-3-70b,1,0.029,0.0,0.834,0.0,0.805,0.0,GSM8K-Lite
+meta/llama-65b,1,0.031,0.0,0.52,0.0,0.489,0.0,GSM8K-Lite
+mistralai/mistral-7b-instruct-v0.3,1,0.016,0.0,0.554,0.0,0.538,0.0,GSM8K-Lite
+mistralai/mistral-large-2407,1,0.016,0.0,0.928,0.0,0.912,0.0,GSM8K-Lite
+mistralai/mistral-small-2402,1,0.008,0.0,0.726,0.0,0.734,0.0,GSM8K-Lite
+mistralai/mixtral-8x7b-32kseqlen,1,0.026,0.0,0.648,0.0,0.622,0.0,GSM8K-Lite
+openai/gpt-4-1106-preview,1,0.01,0.0,0.678,0.0,0.668,0.0,GSM8K-Lite
+openai/gpt-4-turbo-2024-04-09,1,0.004,0.0,0.82,0.0,0.824,0.0,GSM8K-Lite
+openai/gpt-4o-mini-2024-07-18,1,0.011,0.0,0.854,0.0,0.843,0.0,GSM8K-Lite
+qwen/qwen2.5-72b-instruct-turbo,1,0.0,0.0,0.9,0.0,0.9,0.0,GSM8K-Lite
+upstage/solar-pro-241126,1,0.007,0.0,0.878,0.0,0.871,0.0,GSM8K-Lite
+writer/palmyra-x-004,1,0.009,0.0,0.914,0.0,0.905,0.0,GSM8K-Lite
+AlephAlpha/luminous-base,1,0.0,0.0,0.286,0.0,0.286,0.0,OpenBookQA
+ai21/jamba-1.5-large,1,0.0,0.0,0.948,0.0,0.948,0.0,OpenBookQA
+ai21/jamba-1.5-mini,1,0.0,0.0,0.89,0.0,0.89,0.0,OpenBookQA
+amazon/nova-micro-v1:0,1,0.0,0.0,0.888,0.0,0.888,0.0,OpenBookQA
+amazon/nova-pro-v1:0,1,0.0,0.0,0.96,0.0,0.96,0.0,OpenBookQA
+anthropic/claude-2.1,1,0.0,0.0,0.872,0.0,0.872,0.0,OpenBookQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0,0.0,0.972,0.0,0.972,0.0,OpenBookQA
+anthropic/claude-3-haiku-20240307,1,0.0,0.0,0.838,0.0,0.838,0.0,OpenBookQA
+cohere/command,1,0.0,0.0,0.774,0.0,0.774,0.0,OpenBookQA
+meta/llama-2-7b,1,0.0,0.0,0.544,0.0,0.544,0.0,OpenBookQA
+meta/llama-3-70b,1,0.0,0.0,0.934,0.0,0.934,0.0,OpenBookQA
+meta/llama-65b,1,0.0,0.0,0.754,0.0,0.754,0.0,OpenBookQA
+mistralai/mistral-7b-instruct-v0.3,1,0.0,0.0,0.79,0.0,0.79,0.0,OpenBookQA
+mistralai/mistral-large-2407,1,0.0,0.0,0.932,0.0,0.932,0.0,OpenBookQA
+mistralai/mistral-small-2402,1,0.0,0.0,0.862,0.0,0.862,0.0,OpenBookQA
+mistralai/mixtral-8x7b-32kseqlen,1,0.0,0.0,0.868,0.0,0.868,0.0,OpenBookQA
+openai/gpt-4-1106-preview,1,0.0,0.0,0.95,0.0,0.95,0.0,OpenBookQA
+openai/gpt-4-turbo-2024-04-09,1,0.0,0.0,0.97,0.0,0.97,0.0,OpenBookQA
+openai/gpt-4o-mini-2024-07-18,1,0.0,0.0,0.92,0.0,0.92,0.0,OpenBookQA
+qwen/qwen2.5-72b-instruct-turbo,1,0.0,0.0,0.962,0.0,0.962,0.0,OpenBookQA
+upstage/solar-pro-241126,1,0.0,0.0,0.922,0.0,0.922,0.0,OpenBookQA
+writer/palmyra-x-004,1,0.0,0.0,0.926,0.0,0.926,0.0,OpenBookQA
+AlephAlpha/luminous-base,1,0.006,0.0,0.242,0.0,0.236,0.0,MedQA
+ai21/jamba-1.5-large,1,0.007,0.0,0.69,0.0,0.697,0.0,MedQA
+ai21/jamba-1.5-mini,1,0.003,0.0,0.614,0.0,0.617,0.0,MedQA
+amazon/nova-micro-v1:0,1,0.013,0.0,0.578,0.0,0.591,0.0,MedQA
+amazon/nova-pro-v1:0,1,0.007,0.0,0.786,0.0,0.793,0.0,MedQA
+anthropic/claude-2.1,1,0.019,0.0,0.656,0.0,0.637,0.0,MedQA
+anthropic/claude-3-5-sonnet-20240620,1,0.013,0.0,0.818,0.0,0.831,0.0,MedQA
+anthropic/claude-3-haiku-20240307,1,0.005,0.0,0.68,0.0,0.685,0.0,MedQA
+cohere/command,1,0.017,0.0,0.452,0.0,0.435,0.0,MedQA
+meta/llama-2-7b,1,0.005,0.0,0.366,0.0,0.361,0.0,MedQA
+meta/llama-3-70b,1,0.014,0.0,0.784,0.0,0.77,0.0,MedQA
+meta/llama-65b,1,0.002,0.0,0.498,0.0,0.5,0.0,MedQA
+mistralai/mistral-7b-instruct-v0.3,1,0.0,0.0,0.496,0.0,0.496,0.0,MedQA
+mistralai/mistral-large-2407,1,0.0,0.0,0.778,0.0,0.778,0.0,MedQA
+mistralai/mistral-small-2402,1,0.003,0.0,0.602,0.0,0.605,0.0,MedQA
+mistralai/mixtral-8x7b-32kseqlen,1,0.004,0.0,0.63,0.0,0.634,0.0,MedQA
+openai/gpt-4-1106-preview,1,0.001,0.0,0.818,0.0,0.817,0.0,MedQA
+openai/gpt-4-turbo-2024-04-09,1,0.017,0.0,0.77,0.0,0.787,0.0,MedQA
+openai/gpt-4o-mini-2024-07-18,1,0.0,0.0,0.744,0.0,0.744,0.0,MedQA
+qwen/qwen2.5-72b-instruct-turbo,1,0.01,0.0,0.746,0.0,0.756,0.0,MedQA
+upstage/solar-pro-241126,1,0.006,0.0,0.692,0.0,0.686,0.0,MedQA
+writer/palmyra-x-004,1,0.012,0.0,0.766,0.0,0.778,0.0,MedQA
+AlephAlpha/luminous-base,1,0.0,0.0,0.6401,0.0,0.6401,0.0,NarrativeQA
+ai21/jamba-1.5-large,1,0.0,0.0,0.6794,0.0,0.6794,0.0,NarrativeQA
+ai21/jamba-1.5-mini,1,0.0,0.0,0.7559,0.0,0.7559,0.0,NarrativeQA
+amazon/nova-micro-v1:0,1,0.0,0.0,0.7477,0.0,0.7477,0.0,NarrativeQA
+amazon/nova-pro-v1:0,1,0.0,0.0,0.7922,0.0,0.7922,0.0,NarrativeQA
+anthropic/claude-2.1,1,0.0,0.0,0.6796,0.0,0.6796,0.0,NarrativeQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0,0.0,0.7609,0.0,0.7609,0.0,NarrativeQA
+anthropic/claude-3-haiku-20240307,1,0.0,0.0,0.242,0.0,0.242,0.0,NarrativeQA
+cohere/command,1,0.0,0.0,0.7526,0.0,0.7526,0.0,NarrativeQA
+meta/llama-2-7b,1,0.0,0.0,0.7008,0.0,0.7008,0.0,NarrativeQA
+meta/llama-3-70b,1,0.0,0.0,0.8031,0.0,0.8031,0.0,NarrativeQA
+meta/llama-65b,1,0.0,0.0,0.7663,0.0,0.7663,0.0,NarrativeQA
+mistralai/mistral-7b-instruct-v0.3,1,0.0,0.0,0.7229,0.0,0.7229,0.0,NarrativeQA
+mistralai/mistral-large-2407,1,0.0,0.0,0.7814,0.0,0.7814,0.0,NarrativeQA
+mistralai/mistral-small-2402,1,0.0,0.0,0.5384,0.0,0.5384,0.0,NarrativeQA
+mistralai/mixtral-8x7b-32kseqlen,1,0.0,0.0,0.7742,0.0,0.7742,0.0,NarrativeQA
+openai/gpt-4-1106-preview,1,0.0,0.0,0.7289,0.0,0.7289,0.0,NarrativeQA
+openai/gpt-4-turbo-2024-04-09,1,0.0,0.0,0.7732,0.0,0.7732,0.0,NarrativeQA
+openai/gpt-4o-mini-2024-07-18,1,0.0,0.0,0.7731,0.0,0.7731,0.0,NarrativeQA
+qwen/qwen2.5-72b-instruct-turbo,1,0.0,0.0,0.757,0.0,0.757,0.0,NarrativeQA
+upstage/solar-pro-241126,1,0.0,0.0,0.7623,0.0,0.7623,0.0,NarrativeQA
+writer/palmyra-x-004,1,0.0,0.0,0.7764,0.0,0.7764,0.0,NarrativeQA

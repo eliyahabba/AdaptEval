@@ -1,0 +1,133 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-34b,MATH Competition,MATH Competition,437,437,-0.1385,0.4371,0.4371,0.5243,0.4371,0.4371,0.0,0.0873,0.0,0.0,0.9782,1.0
+01-ai/yi-6b,MATH Competition,MATH Competition,437,437,-0.3414,0.1465,0.1465,0.2982,0.1465,0.1465,0.0,0.1517,0.0,0.0,0.9782,1.0
+01-ai/yi-large-preview,MATH Competition,MATH Competition,437,437,0.7339,0.746,0.746,0.6844,0.746,0.746,0.0,0.0616,0.0,0.0,0.9782,1.0
+AlephAlpha/luminous-extended,MATH Competition,MATH Competition,437,437,1.5202,0.0412,0.0412,0.0926,0.0412,0.0412,0.0,0.0514,0.0,0.0,0.9782,1.0
+ai21/j2-jumbo,MATH Competition,MATH Competition,437,437,-0.8589,0.1053,0.1053,0.2024,0.1053,0.1053,0.0,0.0971,0.0,0.0,0.9782,1.0
+ai21/jamba-1.5-mini,MATH Competition,MATH Competition,437,437,0.5731,0.3295,0.3295,0.498,0.3295,0.3295,0.0,0.1684,0.0,0.0,0.9782,1.0
+ai21/jamba-instruct,MATH Competition,MATH Competition,437,437,-1.0569,0.4256,0.4256,0.536,0.4256,0.4256,0.0,0.1104,0.0,0.0,0.9782,1.0
+anthropic/claude-3-5-sonnet-20240620,MATH Competition,MATH Competition,437,437,0.8559,0.8261,0.8261,0.8436,0.8261,0.8261,0.0,0.0175,0.0,0.0,0.9782,1.0
+anthropic/claude-3-5-sonnet-20241022,MATH Competition,MATH Competition,437,437,1.012,0.9245,0.9245,0.8603,0.9245,0.9245,0.0,0.0642,0.0,0.0,0.9782,1.0
+anthropic/claude-3-haiku-20240307,MATH Competition,MATH Competition,437,437,-1.4963,0.1968,0.1968,0.4756,0.1968,0.1968,0.0,0.2788,0.0,0.0,0.9782,1.0
+cohere/command-light,MATH Competition,MATH Competition,437,437,0.6244,0.1007,0.1007,0.1745,0.1007,0.1007,0.0,0.0739,0.0,0.0,0.9782,1.0
+cohere/command,MATH Competition,MATH Competition,437,437,-0.7824,0.2654,0.2654,0.3476,0.2654,0.2654,0.0,0.0821,0.0,0.0,0.9782,1.0
+databricks/dbrx-instruct,MATH Competition,MATH Competition,437,437,-1.116,0.2998,0.2998,0.5071,0.2998,0.2998,0.0,0.2073,0.0,0.0,0.9782,1.0
+google/gemini-1.5-flash-001,MATH Competition,MATH Competition,437,437,0.6484,0.7872,0.7872,0.7522,0.7872,0.7872,0.0,0.035,0.0,0.0,0.9782,1.0
+google/gemini-2.0-flash-exp,MATH Competition,MATH Competition,437,437,0.5329,0.9268,0.9268,0.8646,0.9268,0.9268,0.0,0.0621,0.0,0.0,0.9782,1.0
+meta/llama-2-13b,MATH Competition,MATH Competition,437,437,-0.4641,0.1281,0.1281,0.2248,0.1281,0.1281,0.0,0.0967,0.0,0.0,0.9782,1.0
+meta/llama-3.1-405b-instruct-turbo,MATH Competition,MATH Competition,437,437,-0.467,0.8604,0.8604,0.8484,0.8604,0.8604,0.0,0.012,0.0,0.0,0.9782,1.0
+meta/llama-3.1-8b-instruct-turbo,MATH Competition,MATH Competition,437,437,0.3792,0.7368,0.7368,0.6479,0.7368,0.7368,0.0,0.0889,0.0,0.0,0.9782,1.0
+meta/llama-3.2-90b-vision-instruct-turbo,MATH Competition,MATH Competition,437,437,-0.3165,0.8398,0.8398,0.8343,0.8398,0.8398,0.0,0.0056,0.0,0.0,0.9782,1.0
+openai/gpt-4-turbo-2024-04-09,MATH Competition,MATH Competition,437,437,1.1906,0.8696,0.8696,0.8394,0.8696,0.8696,0.0,0.0301,0.0,0.0,0.9782,1.0
+qwen/qwen2-72b-instruct,MATH Competition,MATH Competition,437,437,0.2192,0.8238,0.8238,0.8427,0.8238,0.8238,0.0,0.0189,0.0,0.0,0.9782,1.0
+snowflake/snowflake-arctic-instruct,MATH Competition,MATH Competition,437,437,-0.6239,0.5927,0.5927,0.6337,0.5927,0.5927,0.0,0.041,0.0,0.0,0.9782,1.0
+01-ai/yi-34b,OpenBookQA,OpenBookQA,500,500,-0.1385,0.92,0.92,0.8368,0.92,0.92,0.0,0.0832,0.0,0.0,0.9607,1.0
+01-ai/yi-6b,OpenBookQA,OpenBookQA,500,500,-0.3414,0.8,0.8,0.697,0.8,0.8,0.0,0.103,0.0,0.0,0.9607,1.0
+01-ai/yi-large-preview,OpenBookQA,OpenBookQA,500,500,0.7339,0.946,0.946,0.8109,0.946,0.946,0.0,0.1351,0.0,0.0,0.9607,1.0
+AlephAlpha/luminous-extended,OpenBookQA,OpenBookQA,500,500,1.5202,0.272,0.272,0.2828,0.272,0.272,0.0,0.0108,0.0,0.0,0.9607,1.0
+ai21/j2-jumbo,OpenBookQA,OpenBookQA,500,500,-0.8589,0.688,0.688,0.6447,0.688,0.688,0.0,0.0433,0.0,0.0,0.9607,1.0
+ai21/jamba-1.5-mini,OpenBookQA,OpenBookQA,500,500,0.5731,0.89,0.89,0.8248,0.89,0.89,0.0,0.0652,0.0,0.0,0.9607,1.0
+ai21/jamba-instruct,OpenBookQA,OpenBookQA,500,500,-1.0569,0.796,0.796,0.7946,0.796,0.796,0.0,0.0014,0.0,0.0,0.9607,1.0
+anthropic/claude-3-5-sonnet-20240620,OpenBookQA,OpenBookQA,500,500,0.8559,0.972,0.972,0.9342,0.972,0.972,0.0,0.0378,0.0,0.0,0.9607,1.0
+anthropic/claude-3-5-sonnet-20241022,OpenBookQA,OpenBookQA,500,500,1.012,0.966,0.966,0.9382,0.966,0.966,0.0,0.0278,0.0,0.0,0.9607,1.0
+anthropic/claude-3-haiku-20240307,OpenBookQA,OpenBookQA,500,500,-1.4963,0.838,0.838,0.6678,0.838,0.838,0.0,0.1702,0.0,0.0,0.9607,1.0
+cohere/command-light,OpenBookQA,OpenBookQA,500,500,0.6244,0.398,0.398,0.3697,0.398,0.398,0.0,0.0283,0.0,0.0,0.9607,1.0
+cohere/command,OpenBookQA,OpenBookQA,500,500,-0.7824,0.774,0.774,0.7459,0.774,0.774,0.0,0.0281,0.0,0.0,0.9607,1.0
+databricks/dbrx-instruct,OpenBookQA,OpenBookQA,500,500,-1.116,0.91,0.91,0.74,0.91,0.91,0.0,0.17,0.0,0.0,0.9607,1.0
+google/gemini-1.5-flash-001,OpenBookQA,OpenBookQA,500,500,0.6484,0.928,0.928,0.9097,0.928,0.928,0.0,0.0183,0.0,0.0,0.9607,1.0
+google/gemini-2.0-flash-exp,OpenBookQA,OpenBookQA,500,500,0.5329,0.946,0.946,0.9415,0.946,0.946,0.0,0.0045,0.0,0.0,0.9607,1.0
+meta/llama-2-13b,OpenBookQA,OpenBookQA,500,500,-0.4641,0.634,0.634,0.6058,0.634,0.634,0.0,0.0282,0.0,0.0,0.9607,1.0
+meta/llama-3.1-405b-instruct-turbo,OpenBookQA,OpenBookQA,500,500,-0.467,0.94,0.94,0.9358,0.94,0.94,0.0,0.0042,0.0,0.0,0.9607,1.0
+meta/llama-3.1-8b-instruct-turbo,OpenBookQA,OpenBookQA,500,500,0.3792,0.74,0.74,0.8286,0.74,0.74,0.0,0.0886,0.0,0.0,0.9607,1.0
+meta/llama-3.2-90b-vision-instruct-turbo,OpenBookQA,OpenBookQA,500,500,-0.3165,0.942,0.942,0.9377,0.942,0.942,0.0,0.0043,0.0,0.0,0.9607,1.0
+openai/gpt-4-turbo-2024-04-09,OpenBookQA,OpenBookQA,500,500,1.1906,0.97,0.97,0.9321,0.97,0.97,0.0,0.0379,0.0,0.0,0.9607,1.0
+qwen/qwen2-72b-instruct,OpenBookQA,OpenBookQA,500,500,0.2192,0.954,0.954,0.929,0.954,0.954,0.0,0.025,0.0,0.0,0.9607,1.0
+snowflake/snowflake-arctic-instruct,OpenBookQA,OpenBookQA,500,500,-0.6239,0.828,0.828,0.8517,0.828,0.828,0.0,0.0237,0.0,0.0,0.9607,1.0
+01-ai/yi-34b,LegalBench,LegalBench,2142,500,-0.1385,0.5838,0.5833,0.6182,0.5842,0.6049,0.0005,0.0344,0.0004,0.0212,0.9596,0.2334
+01-ai/yi-6b,LegalBench,LegalBench,2142,500,-0.3414,0.5222,0.5291,0.5181,0.5284,0.5119,0.0068,0.0042,0.0061,0.0103,0.9596,0.2334
+01-ai/yi-large-preview,LegalBench,LegalBench,2142,500,0.7339,0.4411,0.4362,0.5066,0.4387,0.4975,0.0049,0.0655,0.0024,0.0564,0.9596,0.2334
+AlephAlpha/luminous-extended,LegalBench,LegalBench,2142,500,1.5202,0.4255,0.4108,0.422,0.4111,0.4164,0.0147,0.0035,0.0144,0.0091,0.9596,0.2334
+ai21/j2-jumbo,LegalBench,LegalBench,2142,500,-0.8589,0.491,0.4944,0.4612,0.4931,0.4633,0.0034,0.0298,0.0022,0.0277,0.9596,0.2334
+ai21/jamba-1.5-mini,LegalBench,LegalBench,2142,500,0.5731,0.4245,0.4397,0.5003,0.4416,0.4874,0.0151,0.0758,0.0171,0.0628,0.9596,0.2334
+ai21/jamba-instruct,LegalBench,LegalBench,2142,500,-1.0569,0.446,0.4509,0.5529,0.4539,0.526,0.0049,0.1069,0.0079,0.08,0.9596,0.2334
+anthropic/claude-3-5-sonnet-20240620,LegalBench,LegalBench,2142,500,0.8559,0.6204,0.6248,0.6385,0.6253,0.6364,0.0044,0.0181,0.0049,0.016,0.9596,0.2334
+anthropic/claude-3-5-sonnet-20241022,LegalBench,LegalBench,2142,500,1.012,0.5452,0.5237,0.6199,0.5269,0.6037,0.0215,0.0747,0.0183,0.0585,0.9596,0.2334
+anthropic/claude-3-haiku-20240307,LegalBench,LegalBench,2142,500,-1.4963,0.3117,0.3229,0.384,0.3243,0.3582,0.0112,0.0723,0.0127,0.0466,0.9596,0.2334
+cohere/command-light,LegalBench,LegalBench,2142,500,0.6244,0.4001,0.3928,0.4161,0.3935,0.4098,0.0073,0.016,0.0066,0.0097,0.9596,0.2334
+cohere/command,LegalBench,LegalBench,2142,500,-0.7824,0.4929,0.5007,0.4814,0.5,0.4818,0.0078,0.0115,0.0071,0.0111,0.9596,0.2334
+databricks/dbrx-instruct,LegalBench,LegalBench,2142,500,-1.116,0.403,0.3923,0.4929,0.3953,0.4672,0.0107,0.0899,0.0077,0.0642,0.9596,0.2334
+google/gemini-1.5-flash-001,LegalBench,LegalBench,2142,500,0.6484,0.6023,0.5408,0.6362,0.5439,0.6184,0.0616,0.0339,0.0584,0.016,0.9596,0.2204
+google/gemini-2.0-flash-exp,LegalBench,LegalBench,2142,500,0.5329,0.5804,0.5852,0.6756,0.5881,0.656,0.0049,0.0953,0.0077,0.0757,0.9596,0.2334
+meta/llama-2-13b,LegalBench,LegalBench,2142,500,-0.4641,0.5892,0.5725,0.5663,0.5721,0.5606,0.0166,0.0229,0.0171,0.0286,0.9596,0.2334
+meta/llama-3.1-405b-instruct-turbo,LegalBench,LegalBench,2142,500,-0.467,0.5799,0.5789,0.6214,0.5803,0.6147,0.001,0.0416,0.0005,0.0348,0.9596,0.2334
+meta/llama-3.1-8b-instruct-turbo,LegalBench,LegalBench,2142,500,0.3792,0.2281,0.2404,0.5034,0.2487,0.4481,0.0122,0.2753,0.0206,0.22,0.9596,0.2334
+meta/llama-3.2-90b-vision-instruct-turbo,LegalBench,LegalBench,2142,500,-0.3165,0.5765,0.5896,0.6039,0.59,0.5995,0.0132,0.0274,0.0136,0.023,0.9596,0.2334
+openai/gpt-4-turbo-2024-04-09,LegalBench,LegalBench,2142,500,1.1906,0.6717,0.6702,0.6668,0.6701,0.666,0.0015,0.0049,0.0016,0.0058,0.9596,0.2334
+qwen/qwen2-72b-instruct,LegalBench,LegalBench,2142,500,0.2192,0.6668,0.6771,0.6783,0.677,0.6743,0.0103,0.0114,0.0101,0.0074,0.9596,0.2334
+snowflake/snowflake-arctic-instruct,LegalBench,LegalBench,2142,500,-0.6239,0.5603,0.5628,0.5634,0.5627,0.5606,0.0024,0.0031,0.0024,0.0003,0.9596,0.2334
+01-ai/yi-34b,WMT-14 Translation,WMT-14 Translation,5000,500,-0.1385,0.1557,0.1444,0.1898,0.1445,0.179,0.0113,0.034,0.0112,0.0232,0.9961,0.1
+01-ai/yi-6b,WMT-14 Translation,WMT-14 Translation,5000,500,-0.3414,0.1067,0.1098,0.1535,0.1099,0.1427,0.0031,0.0468,0.0032,0.036,0.9961,0.1
+01-ai/yi-large-preview,WMT-14 Translation,WMT-14 Translation,5000,500,0.7339,0.1601,0.1686,0.2241,0.1688,0.2141,0.0085,0.064,0.0087,0.054,0.9961,0.1
+AlephAlpha/luminous-extended,WMT-14 Translation,WMT-14 Translation,5000,500,1.5202,0.0769,0.0775,0.1217,0.0776,0.1125,0.0006,0.0448,0.0008,0.0356,0.9961,0.1
+ai21/j2-jumbo,WMT-14 Translation,WMT-14 Translation,5000,500,-0.8589,0.1032,0.1121,0.1458,0.1122,0.1357,0.0089,0.0426,0.009,0.0325,0.9961,0.1
+ai21/jamba-1.5-mini,WMT-14 Translation,WMT-14 Translation,5000,500,0.5731,0.1648,0.1742,0.1791,0.1742,0.1736,0.0094,0.0143,0.0094,0.0088,0.9961,0.1
+ai21/jamba-instruct,WMT-14 Translation,WMT-14 Translation,5000,500,-1.0569,0.148,0.1205,0.1688,0.1207,0.1604,0.0275,0.0207,0.0273,0.0123,0.9961,0.0772
+anthropic/claude-3-5-sonnet-20240620,WMT-14 Translation,WMT-14 Translation,5000,500,0.8559,0.205,0.2107,0.2711,0.2109,0.2588,0.0057,0.0661,0.0059,0.0539,0.9961,0.1
+anthropic/claude-3-5-sonnet-20241022,WMT-14 Translation,WMT-14 Translation,5000,500,1.012,0.2023,0.203,0.2729,0.2032,0.2598,0.0006,0.0706,0.0009,0.0575,0.9961,0.1
+anthropic/claude-3-haiku-20240307,WMT-14 Translation,WMT-14 Translation,5000,500,-1.4963,0.1299,0.1319,0.1733,0.132,0.1655,0.002,0.0435,0.0021,0.0356,0.9961,0.1
+cohere/command-light,WMT-14 Translation,WMT-14 Translation,5000,500,0.6244,0.0233,0.0296,0.1216,0.0299,0.105,0.0063,0.0984,0.0066,0.0817,0.9961,0.1
+cohere/command,WMT-14 Translation,WMT-14 Translation,5000,500,-0.7824,0.0802,0.0877,0.1554,0.0879,0.1413,0.0076,0.0752,0.0078,0.0611,0.9961,0.1
+databricks/dbrx-instruct,WMT-14 Translation,WMT-14 Translation,5000,500,-1.116,0.1166,0.1152,0.1797,0.1154,0.168,0.0014,0.0631,0.0012,0.0514,0.9961,0.1
+google/gemini-1.5-flash-001,WMT-14 Translation,WMT-14 Translation,5000,500,0.6484,0.2029,0.2074,0.2298,0.2074,0.2214,0.0045,0.0269,0.0045,0.0185,0.9961,0.1
+google/gemini-2.0-flash-exp,WMT-14 Translation,WMT-14 Translation,5000,500,0.5329,0.1908,0.1972,0.2617,0.1974,0.248,0.0064,0.0709,0.0066,0.0573,0.9961,0.1
+meta/llama-2-13b,WMT-14 Translation,WMT-14 Translation,5000,500,-0.4641,0.1518,0.1619,0.1575,0.1618,0.1527,0.0101,0.0057,0.01,0.0009,0.9961,0.1
+meta/llama-3.1-405b-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,500,-0.467,0.209,0.2129,0.2694,0.2131,0.2568,0.0039,0.0603,0.004,0.0478,0.9961,0.1
+meta/llama-3.1-8b-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,500,0.3792,0.16,0.1601,0.1748,0.1602,0.1691,0.0001,0.0148,0.0001,0.0091,0.9961,0.1
+meta/llama-3.2-90b-vision-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,500,-0.3165,0.1983,0.1961,0.2563,0.1963,0.2435,0.0022,0.058,0.002,0.0452,0.9961,0.1
+openai/gpt-4-turbo-2024-04-09,WMT-14 Translation,WMT-14 Translation,5000,500,1.1906,0.1942,0.1997,0.2349,0.1998,0.2252,0.0054,0.0406,0.0055,0.0309,0.9961,0.1
+qwen/qwen2-72b-instruct,WMT-14 Translation,WMT-14 Translation,5000,500,0.2192,0.1851,0.1917,0.2487,0.1918,0.2359,0.0066,0.0636,0.0067,0.0508,0.9961,0.1
+snowflake/snowflake-arctic-instruct,WMT-14 Translation,WMT-14 Translation,5000,500,-0.6239,0.1554,0.1638,0.1899,0.1639,0.182,0.0083,0.0345,0.0084,0.0265,0.9961,0.1
+01-ai/yi-34b,NarrativeQA,NarrativeQA,470,470,-0.1385,0.7903,0.7903,0.7648,0.7903,0.7903,0.0,0.0255,0.0,0.0,0.9979,1.0
+01-ai/yi-6b,NarrativeQA,NarrativeQA,470,470,-0.3414,0.7124,0.7124,0.7101,0.7124,0.7124,0.0,0.0023,0.0,0.0,0.9979,1.0
+01-ai/yi-large-preview,NarrativeQA,NarrativeQA,470,470,0.7339,0.381,0.381,0.6551,0.381,0.381,0.0,0.2741,0.0,0.0,0.9979,1.0
+AlephAlpha/luminous-extended,NarrativeQA,NarrativeQA,470,470,1.5202,0.6847,0.6847,0.6319,0.6847,0.6847,0.0,0.0528,0.0,0.0,0.9979,1.0
+ai21/j2-jumbo,NarrativeQA,NarrativeQA,470,470,-0.8589,0.7421,0.7421,0.6931,0.7421,0.7421,0.0,0.049,0.0,0.0,0.9979,1.0
+ai21/jamba-1.5-mini,NarrativeQA,NarrativeQA,470,470,0.5731,0.7559,0.7559,0.7236,0.7559,0.7559,0.0,0.0323,0.0,0.0,0.9979,1.0
+ai21/jamba-instruct,NarrativeQA,NarrativeQA,470,470,-1.0569,0.6678,0.6678,0.6938,0.6678,0.6678,0.0,0.026,0.0,0.0,0.9979,1.0
+anthropic/claude-3-5-sonnet-20240620,NarrativeQA,NarrativeQA,470,470,0.8559,0.7609,0.7609,0.7816,0.7609,0.7609,0.0,0.0208,0.0,0.0,0.9979,1.0
+anthropic/claude-3-5-sonnet-20241022,NarrativeQA,NarrativeQA,470,470,1.012,0.7808,0.7808,0.7706,0.7808,0.7808,0.0,0.0102,0.0,0.0,0.9979,1.0
+anthropic/claude-3-haiku-20240307,NarrativeQA,NarrativeQA,470,470,-1.4963,0.242,0.242,0.5256,0.242,0.242,0.0,0.2836,0.0,0.0,0.9979,1.0
+cohere/command-light,NarrativeQA,NarrativeQA,470,470,0.6244,0.6442,0.6442,0.592,0.6442,0.6442,0.0,0.0523,0.0,0.0,0.9979,1.0
+cohere/command,NarrativeQA,NarrativeQA,470,470,-0.7824,0.7526,0.7526,0.694,0.7526,0.7526,0.0,0.0585,0.0,0.0,0.9979,1.0
+databricks/dbrx-instruct,NarrativeQA,NarrativeQA,470,470,-1.116,0.5064,0.5064,0.638,0.5064,0.5064,0.0,0.1316,0.0,0.0,0.9979,1.0
+google/gemini-1.5-flash-001,NarrativeQA,NarrativeQA,470,470,0.6484,0.7815,0.7815,0.7793,0.7815,0.7815,0.0,0.0022,0.0,0.0,0.9979,1.0
+google/gemini-2.0-flash-exp,NarrativeQA,NarrativeQA,470,470,0.5329,0.7869,0.7869,0.789,0.7869,0.7869,0.0,0.0021,0.0,0.0,0.9979,1.0
+meta/llama-2-13b,NarrativeQA,NarrativeQA,470,470,-0.4641,0.7506,0.7506,0.7273,0.7506,0.7506,0.0,0.0233,0.0,0.0,0.9979,1.0
+meta/llama-3.1-405b-instruct-turbo,NarrativeQA,NarrativeQA,470,470,-0.467,0.7521,0.7521,0.7665,0.7521,0.7521,0.0,0.0144,0.0,0.0,0.9979,1.0
+meta/llama-3.1-8b-instruct-turbo,NarrativeQA,NarrativeQA,470,470,0.3792,0.7619,0.7619,0.6707,0.7619,0.7619,0.0,0.0911,0.0,0.0,0.9979,1.0
+meta/llama-3.2-90b-vision-instruct-turbo,NarrativeQA,NarrativeQA,470,470,-0.3165,0.7787,0.7787,0.7716,0.7787,0.7787,0.0,0.0071,0.0,0.0,0.9979,1.0
+openai/gpt-4-turbo-2024-04-09,NarrativeQA,NarrativeQA,470,470,1.1906,0.7732,0.7732,0.7834,0.7732,0.7732,0.0,0.0101,0.0,0.0,0.9979,1.0
+qwen/qwen2-72b-instruct,NarrativeQA,NarrativeQA,470,470,0.2192,0.7373,0.7373,0.7778,0.7373,0.7373,0.0,0.0405,0.0,0.0,0.9979,1.0
+snowflake/snowflake-arctic-instruct,NarrativeQA,NarrativeQA,470,470,-0.6239,0.6503,0.6503,0.716,0.6503,0.6503,0.0,0.0657,0.0,0.0,0.9979,1.0
+01-ai/yi-34b,GSM8K-Lite,GSM8K-Lite,1000,500,-0.1385,0.648,0.645,0.62,0.6449,0.6332,0.003,0.028,0.0031,0.0148,0.9885,0.5
+01-ai/yi-6b,GSM8K-Lite,GSM8K-Lite,1000,500,-0.3414,0.375,0.373,0.4167,0.3732,0.3916,0.002,0.0417,0.0018,0.0166,0.9885,0.5
+01-ai/yi-large-preview,GSM8K-Lite,GSM8K-Lite,1000,500,0.7339,0.69,0.647,0.7449,0.6476,0.7034,0.043,0.0549,0.0424,0.0134,0.9885,0.5
+AlephAlpha/luminous-extended,GSM8K-Lite,GSM8K-Lite,1000,500,1.5202,0.075,0.066,0.1381,0.0664,0.1027,0.009,0.0631,0.0086,0.0277,0.9885,0.5
+ai21/j2-jumbo,GSM8K-Lite,GSM8K-Lite,1000,500,-0.8589,0.239,0.25,0.3339,0.2505,0.2951,0.011,0.0949,0.0115,0.0561,0.9885,0.5
+ai21/jamba-1.5-mini,GSM8K-Lite,GSM8K-Lite,1000,500,0.5731,0.691,0.7,0.6436,0.6996,0.6616,0.009,0.0474,0.0086,0.0294,0.9885,0.5
+ai21/jamba-instruct,GSM8K-Lite,GSM8K-Lite,1000,500,-1.0569,0.67,0.645,0.6074,0.6447,0.6184,0.025,0.0626,0.0253,0.0516,0.9885,0.5
+anthropic/claude-3-5-sonnet-20240620,GSM8K-Lite,GSM8K-Lite,1000,500,0.8559,0.949,0.949,0.8841,0.9486,0.9179,0.0,0.0649,0.0004,0.0311,0.9885,0.5
+anthropic/claude-3-5-sonnet-20241022,GSM8K-Lite,GSM8K-Lite,1000,500,1.012,0.956,0.957,0.8987,0.9567,0.9284,0.001,0.0573,0.0007,0.0276,0.9885,0.5
+anthropic/claude-3-haiku-20240307,GSM8K-Lite,GSM8K-Lite,1000,500,-1.4963,0.699,0.685,0.5626,0.6841,0.6108,0.014,0.1364,0.0149,0.0882,0.9885,0.5
+cohere/command-light,GSM8K-Lite,GSM8K-Lite,1000,500,0.6244,0.149,0.157,0.2271,0.1573,0.1854,0.008,0.0781,0.0083,0.0364,0.9885,0.5
+cohere/command,GSM8K-Lite,GSM8K-Lite,1000,500,-0.7824,0.452,0.501,0.4942,0.5008,0.4834,0.049,0.0422,0.0488,0.0314,0.9885,0.5
+databricks/dbrx-instruct,GSM8K-Lite,GSM8K-Lite,1000,500,-1.116,0.671,0.658,0.5855,0.6574,0.6087,0.013,0.0855,0.0136,0.0623,0.9885,0.5
+google/gemini-1.5-flash-001,GSM8K-Lite,GSM8K-Lite,1000,500,0.6484,0.785,0.769,0.8102,0.7691,0.7747,0.016,0.0252,0.0159,0.0103,0.9885,0.5
+google/gemini-2.0-flash-exp,GSM8K-Lite,GSM8K-Lite,1000,500,0.5329,0.946,0.952,0.8933,0.9517,0.9226,0.006,0.0527,0.0057,0.0234,0.9885,0.5
+meta/llama-2-13b,GSM8K-Lite,GSM8K-Lite,1000,500,-0.4641,0.266,0.269,0.3039,0.2691,0.2758,0.003,0.0379,0.0031,0.0098,0.9885,0.5
+meta/llama-3.1-405b-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,500,-0.467,0.949,0.945,0.8917,0.9447,0.9196,0.004,0.0573,0.0043,0.0294,0.9885,0.5
+meta/llama-3.1-8b-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,500,0.3792,0.798,0.785,0.7159,0.7845,0.7446,0.013,0.0821,0.0135,0.0534,0.9885,0.5
+meta/llama-3.2-90b-vision-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,500,-0.3165,0.936,0.929,0.8884,0.9288,0.9113,0.007,0.0476,0.0072,0.0247,0.9885,0.5
+openai/gpt-4-turbo-2024-04-09,GSM8K-Lite,GSM8K-Lite,1000,500,1.1906,0.824,0.822,0.8688,0.8221,0.8297,0.002,0.0448,0.0019,0.0057,0.9885,0.5
+qwen/qwen2-72b-instruct,GSM8K-Lite,GSM8K-Lite,1000,500,0.2192,0.92,0.925,0.8679,0.9246,0.8888,0.005,0.0521,0.0046,0.0312,0.9885,0.5
+snowflake/snowflake-arctic-instruct,GSM8K-Lite,GSM8K-Lite,1000,500,-0.6239,0.768,0.79,0.7115,0.7895,0.7462,0.022,0.0565,0.0215,0.0218,0.9885,0.5
