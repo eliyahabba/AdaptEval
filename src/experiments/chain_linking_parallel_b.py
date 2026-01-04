@@ -9,6 +9,13 @@ Key differences from V2:
 - Each worker is assigned to a specific GPU (if multiple available)
 - Requires multiple GPUs for maximum speedup
 
+Distance scheme:
+    -1: Target only (standalone - no Base, no Chain)
+     0: Base + Target (direct linking)
+     1: Base + Chain[0] + Target
+     2: Base + Chain[0] + Chain[1] + Target
+    ...
+
 Parallelization structure:
     Sequential:
         1. Load datasets
@@ -16,12 +23,13 @@ Parallelization structure:
         3. Build Chain Cache (sequential - each step depends on previous)
     
     Parallel (all at once):
-        - dist_0/fixed, dist_0/concurrent
-        - dist_1/fixed, dist_1/concurrent
-        - dist_2/fixed, dist_2/concurrent
+        - dist_-1/concurrent (Target only)
+        - dist_0/fixed, dist_0/concurrent (Base+Target)
+        - dist_1/fixed, dist_1/concurrent (Base+Chain[0]+Target)
+        - dist_2/fixed, dist_2/concurrent (Base+Chain[0]+Chain[1]+Target)
         - ...
 
-Expected speedup: up to 2 × (max_chain + 1) with enough GPUs/workers
+Expected speedup: up to 2 × (max_chain + 2) with enough GPUs/workers
 
 Usage:
     python chain_linking_parallel_b.py --num-workers 4 --output-dir /path/to/output
@@ -1477,9 +1485,27 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     already_done = []
     task_id = 0
     
-    for distance in range(max_chain + 1):
+    # Distance scheme:
+    # -1 = Target only (no Base, no Chain)
+    #  0 = Base + Target (direct linking)
+    #  1 = Base + Chain[0] + Target
+    #  2 = Base + Chain[0] + Chain[1] + Target
+    # ...
+    for distance in range(-1, max_chain + 1):  # -1 to max_chain (inclusive)
         # Get chain info
-        if distance == 0:
+        if distance == -1:
+            # NEW: Target only (standalone)
+            chain_str = "target_only"
+            chain_list = []
+            prev_df = None  # No previous data - only target
+            prev_irt_path = None
+            prev_A_path = None
+            prev_B_path = None
+            prev_anchors = None  # No anchors from previous datasets
+            prev_weights = None
+            cumulative_chain_time = 0
+        elif distance == 0:
+            # Base + Target (direct linking) - unchanged from original
             chain_str = "direct"
             chain_list = []
             prev_df = base_df
@@ -1490,6 +1516,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             prev_weights = list(base_weights)
             cumulative_chain_time = 0
         else:
+            # Base + Chain datasets + Target - unchanged from original
             if distance not in chain_cache:
                 print(f"   Distance {distance}: ⏭️ Skipped (chain not built)")
                 continue
@@ -1517,15 +1544,25 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         scenario_dir.mkdir(exist_ok=True)
         
         # Combine with target
-        final_df = pd.concat([prev_df, target_train_df], ignore_index=True)
+        if distance == -1:
+            # Target only - no previous datasets
+            final_df = target_train_df.copy()
+        else:
+            # Combine previous datasets with target
+            final_df = pd.concat([prev_df, target_train_df], ignore_index=True)
         final_df_path = temp_dir / f"final_df_dist_{distance}.pkl"
         final_df.to_pickle(final_df_path)
         
         # Build test data for Base+Chain datasets (for cross-dataset theta estimation)
         # This allows computing theta from historical anchor responses, not just target
-        if distance == 0:
+        if distance == -1:
+            # Target only - no base/chain datasets
+            base_chain_datasets = []
+        elif distance == 0:
+            # Base + Target
             base_chain_datasets = base_names
         else:
+            # Base + Chain + Target
             base_chain_datasets = base_names + chain_list
         
         base_chain_test_dfs = []
@@ -1543,9 +1580,14 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             base_chain_test_df_path_str = None
         
         # Determine dimension
-        if distance == 0:
+        if distance == -1:
+            # Target only - use full dimension search
+            dims = config.dims_search
+        elif distance == 0:
+            # Base + Target
             dims = [A_base.shape[1] if A_base.ndim == 3 else A_base.shape[0]] if A_base is not None else config.dims_search
         else:
+            # Base + Chain + Target
             A = chain_cache[distance][1]
             dims = [A.shape[1] if A.ndim == 3 else A.shape[0]] if A is not None else config.dims_search
         
@@ -1553,8 +1595,19 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         task_seed = config.shuffle_seed
 
         # Create tasks for both methods
-        for method in ['fixed', 'concurrent']:
-            task_epochs = config.epochs_fixed if method == 'fixed' else config.epochs
+        # For distance=-1 (Target only), Fixed-Anchor doesn't make sense (no prev anchors)
+        # So we only run Concurrent
+        if distance == -1:
+            methods = ['concurrent']  # Target-only: no fixed-anchor baseline
+        else:
+            methods = ['fixed', 'concurrent']
+        
+        for method in methods:
+            # For distance=-1, always use full epochs (no fixed-anchor shortcut)
+            if distance == -1:
+                task_epochs = config.epochs
+            else:
+                task_epochs = config.epochs_fixed if method == 'fixed' else config.epochs
             task = ScenarioTask(
                 task_id=task_id,
                 distance=distance,
@@ -1669,17 +1722,21 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # Then process new results
     processed_distances = {r['distance'] for r in already_done}
     
-    for distance in range(max_chain + 1):
+    for distance in range(-1, max_chain + 1):  # -1 to max_chain (inclusive)
         if distance in processed_distances:
             continue
-        if distance not in chain_cache and distance != 0:
+        if distance not in chain_cache and distance not in [-1, 0]:
             continue
             
         dist_results = [r for r in all_results if r['distance'] == distance]
         fixed_result = next((r for r in dist_results if r['method'] == 'fixed'), None)
         concurrent_result = next((r for r in dist_results if r['method'] == 'concurrent'), None)
         
-        if not fixed_result and not concurrent_result:
+        # For distance=-1 (Target-only), we only have concurrent results
+        if distance == -1 and not concurrent_result:
+            print(f"   Distance {distance}: ⏭️ No results (concurrent failed)")
+            continue
+        elif distance >= 0 and not fixed_result and not concurrent_result:
             print(f"   Distance {distance}: ⏭️ No results (both methods failed)")
             continue
         
@@ -1688,39 +1745,61 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         concurrent_result = concurrent_result or {}
         
         chain_list = fixed_result.get('chain', concurrent_result.get('chain', []))
-        chain_str = fixed_result.get('chain_str', concurrent_result.get('chain_str', 'direct'))
+        chain_str = fixed_result.get('chain_str', concurrent_result.get('chain_str', 'target_only' if distance == -1 else 'direct'))
+        
+        # Calculate n_datasets_in_training based on distance
+        if distance == -1:
+            n_datasets_in_training = 1  # Target only
+        elif distance == 0:
+            n_datasets_in_training = config.n_base_datasets + 1  # Base + Target
+        else:
+            n_datasets_in_training = config.n_base_datasets + distance + 1  # Base + Chain + Target
         
         result = {
             'target_dataset': target_name,
             'distance': distance,
             'chain': chain_list,
-            'n_datasets_in_training': config.n_base_datasets + distance + 1,
+            'n_datasets_in_training': n_datasets_in_training,
             # For correct cost reporting: Full evaluation is only the Target dataset size
             'target_n_questions': target_n_questions,
             'n_anchors_per_dataset': config.n_anchors_per_dataset,
             'n_base_datasets': config.n_base_datasets,
             # Cost model (per target addition) in #questions / API calls
             'cost_full_eval_target': target_n_questions,
-            'cost_fixed_target_anchors': config.n_anchors_per_dataset,
-            'cost_concurrent_all_anchors': config.n_anchors_per_dataset * (config.n_base_datasets + distance + 1),
         }
         
-        # Add Fixed results
-        for key, val in fixed_result.items():
-            if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
-                result[f'fixed_{key}'] = val
+        # Cost calculations depend on distance
+        if distance == -1:
+            # Target only - need to evaluate all target questions
+            result['cost_fixed_target_anchors'] = 0  # No fixed method for distance=-1
+            result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset
+        elif distance == 0:
+            # Base + Target
+            result['cost_fixed_target_anchors'] = config.n_anchors_per_dataset
+            result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset * (config.n_base_datasets + 1)
+        else:
+            # Base + Chain + Target
+            result['cost_fixed_target_anchors'] = config.n_anchors_per_dataset
+            result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset * (config.n_base_datasets + distance + 1)
+        
+        # Add Fixed results (only for distance >= 0)
+        if distance >= 0:
+            for key, val in fixed_result.items():
+                if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
+                    result[f'fixed_{key}'] = val
         
         # Add Concurrent results
         for key, val in concurrent_result.items():
             if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
                 result[f'concurrent_{key}'] = val
         
-        # Compute deltas
-        for metric in ERROR_METRICS:
-            fixed_val = fixed_result.get(f'{metric}_mean')
-            concurrent_val = concurrent_result.get(f'{metric}_mean')
-            if fixed_val is not None and concurrent_val is not None:
-                result[f'delta_{metric}'] = fixed_val - concurrent_val
+        # Compute deltas (only for distance >= 0 where we have both methods)
+        if distance >= 0:
+            for metric in ERROR_METRICS:
+                fixed_val = fixed_result.get(f'{metric}_mean')
+                concurrent_val = concurrent_result.get(f'{metric}_mean')
+                if fixed_val is not None and concurrent_val is not None:
+                    result[f'delta_{metric}'] = fixed_val - concurrent_val
         
         # Save per-scenario result
         scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
@@ -1738,7 +1817,12 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     results_for_df = []
     for r in final_results:
         r_copy = r.copy()
-        r_copy['chain'] = "_".join(r_copy['chain']) if r_copy['chain'] else "direct"
+        if r_copy['distance'] == -1:
+            r_copy['chain'] = "target_only"
+        elif r_copy['distance'] == 0:
+            r_copy['chain'] = "direct"
+        else:
+            r_copy['chain'] = "_".join(r_copy['chain']) if r_copy['chain'] else "direct"
         results_for_df.append(r_copy)
     
     results_df = pd.DataFrame(results_for_df)
@@ -1770,13 +1854,23 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     for r in final_results:
         dist = r['distance']
-        chain = "_".join([c[:6] for c in r['chain']]) if r['chain'] else "direct"
+        if dist == -1:
+            chain = "target_only"
+        elif dist == 0:
+            chain = "direct"
+        else:
+            chain = "_".join([c[:6] for c in r['chain']]) if r['chain'] else "direct"
         if len(chain) > 18:
             chain = chain[:15] + "..."
         fixed_err = r.get('fixed_gp_irt_error_mean', float('nan'))
         concurrent_err = r.get('concurrent_gp_irt_error_mean', float('nan'))
         delta = r.get('delta_gp_irt_error', float('nan'))
-        print(f"{dist:<6} {chain:<20} {fixed_err:<10.4f} {concurrent_err:<12.4f} {delta:+10.4f}")
+        
+        # For distance=-1, show only concurrent (no fixed method)
+        if dist == -1:
+            print(f"{dist:<6} {chain:<20} {'N/A':<10} {concurrent_err:<12.4f} {'N/A':<10}")
+        else:
+            print(f"{dist:<6} {chain:<20} {fixed_err:<10.4f} {concurrent_err:<12.4f} {delta:+10.4f}")
     
     # Random baseline comparison
     print("\n" + "-" * 60)

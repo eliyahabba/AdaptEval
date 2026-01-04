@@ -739,17 +739,29 @@ def run_disjoint_chain_experiment(config: DisjointChainConfig):
         chain_ds = successful_chain[i]
         
         # Get anchors available for this chain step
-        if i == 0:
-            step_anchors = list(base_anchors)
-        else:
-            _, _, _, step_anchors, _, _, _ = chain_cache[i]
-        
-        # Also include anchors from this step's dataset
+        # Always include base anchors (all isolated models participated in base training)
+        # Plus anchors from their specific chain dataset
         step_dataset_anchors = [a for a in final_anchors if a.startswith(f"{chain_ds}:")]
-        available_anchors = list(set(step_anchors) | set(step_dataset_anchors))
         
-        # Get responses for this group's models on the chain dataset
-        group_df = datasets[chain_ds][datasets[chain_ds]['model_name'].isin(group)].copy()
+        # Combine: base anchors + chain dataset anchors
+        available_anchors = list(set(base_anchors) | set(step_dataset_anchors))
+        
+        # Get responses for this group's models on BOTH base AND their chain dataset
+        # Isolated models participated in base training, so they have responses on base too!
+        chain_responses = datasets[chain_ds][datasets[chain_ds]['model_name'].isin(group)].copy()
+        
+        # Also get base dataset responses
+        base_responses_list = []
+        for base_ds in base_names:
+            if base_ds in datasets:
+                base_df = datasets[base_ds][datasets[base_ds]['model_name'].isin(group)].copy()
+                base_responses_list.append(base_df)
+        
+        # Combine base + chain responses
+        if base_responses_list:
+            group_df = pd.concat([chain_responses] + base_responses_list, ignore_index=True)
+        else:
+            group_df = chain_responses
         
         if len(group_df) == 0:
             print(f"   ⚠️ No data for isolated group {i+1}")
