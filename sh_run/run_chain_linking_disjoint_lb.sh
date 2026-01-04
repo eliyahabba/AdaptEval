@@ -31,21 +31,25 @@
 #   2. Isolated Test: Chain linking effect (trained on 1 dataset, tested on target)
 #
 # Usage:
-#   sbatch run_chain_linking_disjoint_lb.sh [output_dir] [shuffle_seed] [n_bridge] [n_isolated] [bridge_mode]
+#   sbatch run_chain_linking_disjoint_lb.sh [output_dir] [shuffle_seed] [n_anchors] [n_bridge] [n_isolated] [target_dataset] [bridge_mode]
 #
 # Arguments:
 #   $1 = output directory (optional)
 #   $2 = shuffle seed (optional, default: 42)
-#   $3 = n_bridge_models (optional, default: 20)
-#   $4 = n_isolated_per_chain (optional, default: 50)
-#   $5 = bridge_mode: "fixed" or "random" (optional, default: "fixed")
+#   $3 = n_anchors (optional, default: 100)
+#   $4 = n_bridge_models (optional, default: 20)
+#   $5 = n_isolated_per_chain (optional, default: 50)
+#   $6 = target_dataset (optional, default: auto = Winogrande)
+#   $7 = bridge_mode: "fixed" or "random" (optional, default: "fixed")
 #
 # Examples:
-#   sbatch run_chain_linking_disjoint_lb.sh                                    # All defaults
-#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42                    # Specific output & seed
-#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 20 50              # 20 bridge, 50 isolated
-#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 20 50 random       # Random bridge mode
-#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 30 40 fixed        # 30 bridge, 40 isolated, fixed
+#   sbatch run_chain_linking_disjoint_lb.sh                                              # All defaults
+#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42                              # Specific output & seed
+#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100                          # 100 anchors
+#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50                    # 100 anchors, 20 bridge, 50 isolated
+#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50 "MMLU"             # Specific target
+#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50 "ARC Challenge"    # ARC as target
+#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50 "" random          # Random bridge mode
 
 # Set Hugging Face cache directory
 export HF_HOME=/cs/snapless/gabis/gabis/shared/huggingface/
@@ -80,20 +84,21 @@ export CUDA_LAUNCH_BLOCKING=1
 # Parse arguments
 OUTPUT_DIR_BASE="${1:-${PROJECT_DIR}/data/chain_disjoint_lb}"
 SHUFFLE_SEED="${2:-42}"
-N_BRIDGE="${3:-20}"
-N_ISOLATED="${4:-50}"
-BRIDGE_MODE="${5:-fixed}"
+N_ANCHORS="${3:-100}"
+N_BRIDGE="${4:-20}"
+N_ISOLATED="${5:-50}"
+TARGET_DATASET="${6:-}"
+BRIDGE_MODE="${7:-fixed}"
 
 # Fixed configuration
 DIMS="5"
 NUM_WORKERS=4
-N_ANCHORS=100
 UNSEEN_TEST_RATIO=0.15
 EPOCHS=${EPOCHS:-2000}
 DATA_SOURCE_MODE="lb"
 
 # Build output directory name
-OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}_bridge_${N_BRIDGE}_${BRIDGE_MODE}_isolated_${N_ISOLATED}"
+OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}_anchors_${N_ANCHORS}_bridge_${N_BRIDGE}_${BRIDGE_MODE}_isolated_${N_ISOLATED}"
 
 # Determine bridge mode flag
 if [ "${BRIDGE_MODE}" == "random" ]; then
@@ -102,15 +107,20 @@ else
     BRIDGE_FLAG="--fixed-bridge"
 fi
 
+# Build optional target argument
+TARGET_ARG=""
+if [ -n "${TARGET_DATASET}" ]; then
+    TARGET_ARG="--target-dataset \"${TARGET_DATASET}\""
+fi
+
 echo "========================================"
 echo "Chain Linking DISJOINT - LB (Leaderboard)"
 echo "========================================"
 echo "🔬 ZERO OVERLAP EXPERIMENT"
 echo ""
 echo "LB Datasets (6 total):"
-echo "  Base:   ARC Challenge"
-echo "  Chain:  GSM8K → HellaSwag → MMLU → TruthfulQA"
-echo "  Target: Winogrande"
+echo "  ARC Challenge, GSM8K, HellaSwag, MMLU, TruthfulQA, Winogrande"
+echo "  Target: ${TARGET_DATASET:-auto (last dataset)}"
 echo ""
 echo "📊 Model Allocation (395 models):"
 echo "  Unseen Test: ~$((395 * 15 / 100)) models (${UNSEEN_TEST_RATIO} ratio)"
@@ -119,12 +129,13 @@ echo "  Isolated:    4 × ${N_ISOLATED} = $((4 * N_ISOLATED)) models"
 echo "  Base-only:   ~$((395 - 395 * 15 / 100 - N_BRIDGE - 4 * N_ISOLATED)) models"
 echo ""
 echo "Configuration:"
-echo "  Output:       ${OUTPUT_DIR}"
-echo "  SHUFFLE_SEED: ${SHUFFLE_SEED}"
-echo "  N_BRIDGE:     ${N_BRIDGE}"
-echo "  N_ISOLATED:   ${N_ISOLATED}"
-echo "  BRIDGE_MODE:  ${BRIDGE_MODE}"
-echo "  N_ANCHORS:    ${N_ANCHORS}"
+echo "  Output:        ${OUTPUT_DIR}"
+echo "  SHUFFLE_SEED:  ${SHUFFLE_SEED}"
+echo "  N_ANCHORS:     ${N_ANCHORS}"
+echo "  N_BRIDGE:      ${N_BRIDGE}"
+echo "  N_ISOLATED:    ${N_ISOLATED}"
+echo "  BRIDGE_MODE:   ${BRIDGE_MODE}"
+echo "  TARGET:        ${TARGET_DATASET:-auto}"
 echo "  (Fixed: DIMS=${DIMS}, WORKERS=${NUM_WORKERS})"
 echo ""
 echo "📈 Expected outputs:"
@@ -133,8 +144,8 @@ echo "  - Unseen Test:   Spearman ρ (true generalization)"
 echo "  - Pairwise Accuracy"
 echo "========================================"
 
-# Run disjoint experiment
-python src/experiments/chain_linking_disjoint.py \
+# Run disjoint experiment (eval needed for quoted target dataset names)
+eval python src/experiments/chain_linking_disjoint.py \
     --output-dir "${OUTPUT_DIR}" \
     --n-base 1 \
     --max-chain 4 \
@@ -148,7 +159,8 @@ python src/experiments/chain_linking_disjoint.py \
     --n-bridge-models ${N_BRIDGE} \
     --n-isolated-per-chain ${N_ISOLATED} \
     --unseen-test-ratio ${UNSEEN_TEST_RATIO} \
-    ${BRIDGE_FLAG}
+    ${BRIDGE_FLAG} \
+    ${TARGET_ARG}
 
 # Print resource usage
 echo ""
