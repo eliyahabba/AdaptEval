@@ -67,9 +67,9 @@ from llm_eval.training import train_item_parameters
 
 DEBUG_MODE = False  # Set to True for quick test runs
 
-DEBUG_N_BASE = 2
+DEBUG_N_BASE = 1
 DEBUG_MAX_CHAIN = 2
-DEBUG_EPOCHS = 10
+DEBUG_EPOCHS = 1
 DEBUG_N_ANCHORS = 10
 
 ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
@@ -176,6 +176,31 @@ class DisjointChainConfig(ExperimentConfig):
             self.n_anchors_per_dataset = DEBUG_N_ANCHORS
             self.n_bridge_models = 5
             self.n_isolated_per_chain = 5
+
+
+# =============================================================================
+# Helper Functions
+# =============================================================================
+
+def flatten_thetas(thetas: Dict[str, any]) -> Dict[str, float]:
+    """Convert multi-dimensional thetas to scalars (mean across dimensions).
+    
+    For MIRT models, theta can be a multi-dimensional array (e.g., shape (1, D, 1)).
+    This function converts each theta to a scalar by taking the mean across dimensions.
+    
+    Args:
+        thetas: Dict mapping model_name -> theta (can be scalar or ndarray)
+    
+    Returns:
+        Dict mapping model_name -> scalar theta
+    """
+    flattened = {}
+    for model_name, theta in thetas.items():
+        if isinstance(theta, np.ndarray):
+            flattened[model_name] = float(np.mean(theta))
+        else:
+            flattened[model_name] = float(theta)
+    return flattened
 
 
 # =============================================================================
@@ -738,6 +763,8 @@ def run_disjoint_chain_experiment(config: DisjointChainConfig):
             A_matrix=final_A,
             B_matrix=final_B,
         )
+        # Flatten multi-dimensional thetas to scalars for ranking
+        group_thetas = flatten_thetas(group_thetas)
         
         all_thetas.update(group_thetas)
         print(f"   Chain {i+1} ({chain_ds}): {len(group_thetas)}/{len(group)} models got theta")
@@ -782,13 +809,37 @@ def run_disjoint_chain_experiment(config: DisjointChainConfig):
     unseen_target_df = target_df[target_df['model_name'].isin(unseen_test_models)].copy()
     
     if len(unseen_target_df) > 0 and final_irt is not None:
-        # Estimate theta for unseen models using target dataset responses
-        unseen_thetas = estimate_theta_for_models(
-            unseen_target_df,
-            final_irt,
-            A_matrix=final_A,
-            B_matrix=final_B,
-        )
+        # For unseen models, we estimate theta using items from the CHAIN (not target)
+        # because the IRT model only has parameters for chain datasets
+        # Then we compare their theta ranking to their actual performance on target
+        
+        # Get all available items from chain datasets for unseen models
+        chain_datasets = successful_chain
+        unseen_chain_dfs = []
+        for chain_ds in chain_datasets:
+            chain_df = datasets[chain_ds]
+            unseen_chain_df = chain_df[chain_df['model_name'].isin(unseen_test_models)].copy()
+            unseen_chain_dfs.append(unseen_chain_df)
+        
+        if unseen_chain_dfs:
+            unseen_all_df = pd.concat(unseen_chain_dfs, ignore_index=True)
+            
+            # Use all IRT items as potential anchors
+            irt_items = list(final_irt.index.astype(str)) if hasattr(final_irt, 'index') else []
+            print(f"      Using {len(irt_items)} chain items for theta estimation")
+            
+            # Estimate theta for unseen models using chain dataset responses
+            unseen_thetas = precompute_thetas_from_all_anchors(
+                test_df=unseen_all_df,
+                item_params=final_irt,
+                anchor_ids=irt_items,
+                A_matrix=final_A,
+                B_matrix=final_B,
+            )
+            # Flatten multi-dimensional thetas to scalars for ranking
+            unseen_thetas = flatten_thetas(unseen_thetas)
+        else:
+            unseen_thetas = {}
         print(f"      Unseen models: {len(unseen_test_models)}")
         print(f"      Models with theta: {len(unseen_thetas)}")
         
