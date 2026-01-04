@@ -95,7 +95,7 @@ def estimate_theta_from_anchors(
     anchor_responses = pd.to_numeric(anchor_responses, errors="coerce")
     anchor_responses = anchor_responses.dropna()
     # Remove duplicate indices - .loc[q] returns Series if duplicates exist, causing array errors
-    # anchor_responses = anchor_responses[~anchor_responses.index.duplicated(keep='first')]
+    anchor_responses = anchor_responses[~anchor_responses.index.duplicated(keep='first')]
 
     common = item_params.index.intersection(anchor_responses.index)
     if len(common) == 0:
