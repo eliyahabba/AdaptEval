@@ -1,2399 +1,0 @@
-Current directory: /cs/labs/gabis/eliyahabba/AdaptEval
-PYTHONPATH: /cs/labs/gabis/eliyahabba/AdaptEval/src:/cs/labs/gabis/eliyahabba/AdaptEval:/cs/labs/gabis/eliyahabba/LLM-Evaluation/
-Python: /cs/snapless/gabis/eliyahabba/venvs/AdaptEval/bin/python
-Python version: Python 3.11.2
-Job ID: 28953959
-Node: dumfries-010
-/var/spool/slurmd/job28953959/slurm_script: line 56: module: command not found
-Available GPUs:
-/var/spool/slurmd/job28953959/slurm_script: line 61: nvidia-smi: command not found
-========================================
-Chain Linking PARALLEL B
-Full Scenario Parallelization
-========================================
-Output directory: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4
-Configuration:
-  NUM_WORKERS: 4
-  SHUFFLE_SEED: 42
-  DATA_SOURCE_MODE: helm_classic
-  N_BASE: 6
-  MAX_CHAIN: 10
-  N_ANCHORS: 100
-  EPOCHS: 2000
-  DIMS: 5
-
-Expected tasks: 22 (10+1 distances × 2 methods)
-========================================
-======================================================================
-Chain Linking PARALLEL B - Full Scenario Parallelization
-======================================================================
-Workers: 4
-
-1. Loading datasets...
-   Data source mode: helm_classic
-   Available datasets in config: 30
-  ✓ BBQ: 1000 questions, 42 models from aggregated/helm_classic_aggregated.parquet
-  ✓ BLiMP: 2956 questions, 32 models from aggregated/helm_classic_aggregated.parquet
-  ✓ BOLD: 1000 questions, 42 models from aggregated/helm_classic_aggregated.parquet
-  ✓ BabiQA: 1960 questions, 70 models from aggregated/helm_classic_aggregated.parquet
-  ✓ BoolQ: 1044 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ CivilComments: 8480 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ Code: 1164 questions, 2 models from aggregated/helm_classic_aggregated.parquet
-  ✓ CommonSense: 1500 questions, 32 models from aggregated/helm_classic_aggregated.parquet
-  ✓ Copyright: 1652 questions, 44 models from aggregated/helm_classic_aggregated.parquet
-  ✓ Disinformation: 48 questions, 42 models from aggregated/helm_classic_aggregated.parquet
-  ✓ DyckLanguage: 500 questions, 69 models from aggregated/helm_classic_aggregated.parquet
-  ✓ EntityDataImputation: 424 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ EntityMatching: 1385 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ GSM8K-Classic: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
-  ✓ IMDB: 1698 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ LSAT: 461 questions, 69 models from aggregated/helm_classic_aggregated.parquet
-  ✓ LegalSupport: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
-  ✓ MATH-Classic: 866 questions, 69 models from aggregated/helm_classic_aggregated.parquet
-  ✓ MMLU-Classic: 567 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ MS MARCO: 1032 questions, 31 models from aggregated/helm_classic_aggregated.parquet
-  ✓ NarrativeQA-Classic: 470 questions, 66 models from aggregated/helm_classic_aggregated.parquet
-  ✓ NaturalQA-Classic: 1000 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ QuAC: 1000 questions, 66 models from aggregated/helm_classic_aggregated.parquet
-  ✓ RAFT: 440 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ RealToxicityPrompts: 1000 questions, 42 models from aggregated/helm_classic_aggregated.parquet
-  ✓ SRN: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
-  ✓ Summarization: 1962 questions, 42 models from aggregated/helm_classic_aggregated.parquet
-  ✓ SyntheticReasoning: 1000 questions, 69 models from aggregated/helm_classic_aggregated.parquet
-  ✓ TruthfulQA-Classic: 654 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-  ✓ WikiFact: 7927 questions, 67 models from aggregated/helm_classic_aggregated.parquet
-   Loaded 30 datasets
-
-   Finding common models across 30 datasets...
-   ✓ Found subset of 29 datasets with 30 common models
-   Datasets: ['BBQ', 'BLiMP', 'BOLD', 'BabiQA', 'BoolQ', 'CivilComments', 'CommonSense', 'Copyright', 'Disinformation', 'DyckLanguage', 'EntityDataImputation', 'EntityMatching', 'GSM8K-Classic', 'IMDB', 'LSAT', 'LegalSupport', 'MATH-Classic', 'MMLU-Classic', 'MS MARCO', 'NarrativeQA-Classic', 'NaturalQA-Classic', 'QuAC', 'RAFT', 'RealToxicityPrompts', 'SRN', 'Summarization', 'SyntheticReasoning', 'TruthfulQA-Classic', 'WikiFact']
-
-2. Dataset assignment:
-   Base (6): ['TruthfulQA-Classic', 'MATH-Classic', 'GSM8K-Classic', 'RAFT', 'Disinformation', 'DyckLanguage']
-   Target: QuAC
-   Chain pool: ['BBQ', 'SyntheticReasoning', 'IMDB', 'LegalSupport', 'EntityMatching']...
-
-3. Defining train/test split...
-   Train: 52, Test: 17
-
-4. Training Base IRT...
-      ✓ Loaded cached IRT params from irt_base
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ Disinformation: 48 anchors selected
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ DyckLanguage: 100 anchors selected
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ GSM8K-Classic: 100 anchors selected
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ MATH-Classic: 100 anchors selected
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ RAFT: 100 anchors selected
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ TruthfulQA-Classic: 100 anchors selected
-   Base IRT: 3508 items, 548 anchors
-
-5. Building chain cache (up to 10 steps)...
-   📂 Found checkpoint, loading...
-   ✅ Resumed from step 10: ['BBQ', 'SyntheticReasoning', 'IMDB', 'LegalSupport', 'EntityMatching', 'MMLU-Classic', 'BLiMP', 'BoolQ', 'CivilComments', 'BOLD']
-   Chain step 1: BBQ ✅ (from checkpoint)
-   Chain step 2: SyntheticReasoning ✅ (from checkpoint)
-   Chain step 3: IMDB ✅ (from checkpoint)
-   Chain step 4: LegalSupport ✅ (from checkpoint)
-   Chain step 5: EntityMatching ✅ (from checkpoint)
-   Chain step 6: MMLU-Classic ✅ (from checkpoint)
-   Chain step 7: BLiMP ✅ (from checkpoint)
-   Chain step 8: BoolQ ✅ (from checkpoint)
-   Chain step 9: CivilComments ✅ (from checkpoint)
-   Chain step 10: BOLD ✅ (from checkpoint)
-
-6. Preparing parallel tasks...
-   Created 22 new tasks (0 already completed)
-
-7. Running 22 tasks with 4 workers...
-   Available GPUs: [0, 1, 2, 3]
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 4508 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/7 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  29%|██▊       | 2/7 [00:00<00:00,  8.70it/s]Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 5508 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/8 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  12%|█▎        | 1/8 [00:00<00:02,  3.11it/s]Finding optimal thresholds per dataset:  43%|████▎     | 3/7 [00:00<00:00,  4.25it/s]Finding optimal thresholds per dataset:  38%|███▊      | 3/8 [00:00<00:00,  6.40it/s]Finding optimal thresholds per dataset:  57%|█████▋    | 4/7 [00:00<00:00,  4.29it/s]Finding optimal thresholds per dataset:  50%|█████     | 4/8 [00:00<00:00,  5.59it/s]Finding optimal thresholds per dataset:  71%|███████▏  | 5/7 [00:01<00:00,  3.38it/s]Finding optimal thresholds per dataset:  62%|██████▎   | 5/8 [00:01<00:00,  4.17it/s]Finding optimal thresholds per dataset: 100%|██████████| 7/7 [00:01<00:00,  4.99it/s]Finding optimal thresholds per dataset: 100%|██████████| 7/7 [00:01<00:00,  4.71it/s]
-Finding optimal thresholds per dataset:  75%|███████▌  | 6/8 [00:01<00:00,  4.45it/s]   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_0_direct/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 6508 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/9 [00:00<?, ?it/s]     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  11%|█         | 1/9 [00:00<00:01,  4.51it/s]Finding optimal thresholds per dataset: 100%|██████████| 8/8 [00:01<00:00,  5.68it/s]Finding optimal thresholds per dataset: 100%|██████████| 8/8 [00:01<00:00,  5.19it/s]
-Finding optimal thresholds per dataset:  33%|███▎      | 3/9 [00:00<00:00,  9.64it/s]     📊 BBQ: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]Finding optimal thresholds per dataset:  56%|█████▌    | 5/9 [00:00<00:00,  5.60it/s]Finding optimal thresholds per dataset:  67%|██████▋   | 6/9 [00:01<00:00,  4.74it/s]Finding optimal thresholds per dataset:  89%|████████▉ | 8/9 [00:01<00:00,  5.09it/s]Finding optimal thresholds per dataset: 100%|██████████| 9/9 [00:01<00:00,  5.36it/s]Finding optimal thresholds per dataset: 100%|██████████| 9/9 [00:01<00:00,  5.44it/s]
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_1_BBQ/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_2_BBQ_SyntheticR/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 8206 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/10 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_0_direct/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:16:35] amortized: False                                       dataset.py:212
-[23:16:35] Vocab size: None                                      training.py:105
-   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_1_BBQ/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:16:35] amortized: False                                       dataset.py:212
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           4508, 'num_subjects': 41, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:16:35] Vocab size: None                                      training.py:105
-Finding optimal thresholds per dataset:  10%|█         | 1/10 [00:00<00:01,  4.65it/s]           args: {'device': 'cuda', 'num_items': 5508,           training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           5508, 'num_subjects': 41, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-Finding optimal thresholds per dataset:  30%|███       | 3/10 [00:00<00:00, 10.03it/s]Finding optimal thresholds per dataset:  50%|█████     | 5/10 [00:00<00:00,  5.54it/s]Finding optimal thresholds per dataset:  60%|██████    | 6/10 [00:01<00:00,  5.28it/s]Finding optimal thresholds per dataset:  70%|███████   | 7/10 [00:01<00:00,  5.12it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_2_BBQ_SyntheticR/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:16:36] amortized: False                                       dataset.py:212
-[23:16:36] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-[23:16:36] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-[23:16:36] Vocab size: None                                      training.py:105
-Finding optimal thresholds per dataset:  90%|█████████ | 9/10 [00:01<00:00,  5.50it/s][23:16:37] args: {'device': 'cuda', 'num_items': 6508,           training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           6508, 'num_subjects': 41, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-Finding optimal thresholds per dataset: 100%|██████████| 10/10 [00:01<00:00,  5.82it/s]Finding optimal thresholds per dataset: 100%|██████████| 10/10 [00:01<00:00,  5.74it/s]
-[23:16:37] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_3_BBQ_SyntheticR_IMDB/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:16:39] amortized: False                                       dataset.py:212
-[23:16:39] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 8206,           training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           8206, 'num_subjects': 41, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:16:40] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 329303247.0865 │ 329303247.0865 │ 0.1000 │
-│ 101   │ 137970.0057    │ 120702.3735    │ 0.0990 │
-│ 201   │ 101830.0332    │ 92568.8849     │ 0.0980 │
-│ 301   │ 94961.7625     │ 90474.1808     │ 0.0970 │
-│ 401   │ 92245.5002     │ 87464.2316     │ 0.0961 │
-│ 501   │ 89340.1245     │ 86091.0734     │ 0.0951 │
-│ 601   │ 86594.3633     │ 86059.7922     │ 0.0942 │
-│ 701   │ 86560.3568     │ 85702.8648     │ 0.0932 │
-│ 801   │ 87486.8509     │ 85390.0921     │ 0.0923 │
-│ 901   │ 86153.2243     │ 85159.9331     │ 0.0914 │
-│ 1000  │ 86150.7363     │ 85159.9331     │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
-  0%|          | 0/7 [00:00<?, ?it/s][A┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 969697781.5872 │ 969697781.5872 │ 0.1000 │
-│ 101   │ 188244.0728    │ 165213.8516    │ 0.0990 │
-│ 201   │ 142552.9219    │ 123266.9253    │ 0.0980 │
-│ 301   │ 120577.3263    │ 116922.0015    │ 0.0970 │
-│ 401   │ 117042.7838    │ 114214.5506    │ 0.0961 │
-│ 501   │ 121726.5587    │ 113142.7374    │ 0.0951 │
-│ 601   │ 117435.0101    │ 113142.7374    │ 0.0942 │
-│ 701   │ 114291.6513    │ 112576.3934    │ 0.0932 │
-│ 801   │ 113677.2525    │ 112342.2457    │ 0.0923 │
-│ 901   │ 118263.6576    │ 112090.2124    │ 0.0914 │
-│ 1000  │ 115308.8048    │ 111850.2227    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
-  0%|          | 0/9 [00:00<?, ?it/s][A┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 427708687.5341 │ 427708687.5341 │ 0.1000 │
-│ 101   │ 160085.4116    │ 153187.2932    │ 0.0990 │
-│ 201   │ 118956.9138    │ 111831.8711    │ 0.0980 │
-│ 301   │ 116405.2357    │ 109625.6193    │ 0.0970 │
-│ 401   │ 111112.4016    │ 106753.8733    │ 0.0961 │
-│ 501   │ 109608.1697    │ 106298.6446    │ 0.0951 │
-│ 601   │ 108691.7471    │ 104653.0768    │ 0.0942 │
-│ 701   │ 106890.2627    │ 104653.0768    │ 0.0932 │
-│ 801   │ 106224.0026    │ 104235.0898    │ 0.0923 │
-│ 901   │ 105675.6608    │ 104235.0898    │ 0.0914 │
-│ 1000  │ 104066.4526    │ 104066.4526    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
-  0%|          | 0/8 [00:00<?, ?it/s][A
- 14%|█▍        | 1/7 [00:01<00:09,  1.53s/it][A
- 12%|█▎        | 1/8 [00:02<00:15,  2.19s/it][A
- 11%|█         | 1/9 [00:02<00:20,  2.59s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 558837653.3909 │ 558837653.3909 │ 0.1000 │
-│ 101   │ 218815.1641    │ 217414.1397    │ 0.0990 │
-│ 201   │ 173490.5864    │ 158262.7149    │ 0.0980 │
-│ 301   │ 150856.2472    │ 145711.3955    │ 0.0970 │
-│ 401   │ 144343.9105    │ 143396.8500    │ 0.0961 │
-│ 501   │ 144843.1124    │ 140478.9171    │ 0.0951 │
-│ 601   │ 148532.6769    │ 139166.4467    │ 0.0942 │
-│ 701   │ 141262.4517    │ 138363.9321    │ 0.0932 │
-│ 801   │ 138766.7983    │ 137250.0037    │ 0.0923 │
-│ 901   │ 138684.2780    │ 137240.0410    │ 0.0914 │
-│ 1000  │ 138720.3583    │ 136883.3505    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
-  0%|          | 0/10 [00:00<?, ?it/s][A
- 29%|██▊       | 2/7 [00:03<00:09,  1.98s/it][A
- 25%|██▌       | 2/8 [00:03<00:10,  1.79s/it][A
- 22%|██▏       | 2/9 [00:04<00:15,  2.15s/it][A
- 43%|████▎     | 3/7 [00:05<00:08,  2.06s/it][A
- 10%|█         | 1/10 [00:02<00:25,  2.82s/it][A
- 38%|███▊      | 3/8 [00:06<00:11,  2.22s/it][A
- 57%|█████▋    | 4/7 [00:08<00:06,  2.16s/it][A
- 33%|███▎      | 3/9 [00:07<00:16,  2.78s/it][A
- 20%|██        | 2/10 [00:05<00:22,  2.82s/it][A
- 50%|█████     | 4/8 [00:09<00:10,  2.53s/it][A
- 71%|███████▏  | 5/7 [00:10<00:04,  2.17s/it][A
- 86%|████████▌ | 6/7 [00:12<00:02,  2.08s/it][A
- 44%|████▍     | 4/9 [00:11<00:15,  3.18s/it][A
- 62%|██████▎   | 5/8 [00:12<00:08,  2.70s/it][A
-100%|██████████| 7/7 [00:14<00:00,  2.12s/it][A100%|██████████| 7/7 [00:14<00:00,  2.08s/it]
-Validating dimensions: 100%|██████████| 1/1 [02:09<00:00, 129.78s/it]Validating dimensions: 100%|██████████| 1/1 [02:09<00:00, 129.78s/it]
-
- 30%|███       | 3/10 [00:10<00:27,  3.91s/it][ABest dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_0_direct/irt_fixed/irt_dataset_final.jsonlines
-[23:18:44] amortized: False                                       dataset.py:212
-   🔗 Mapped 548/548 anchor items to IRT dataset
-           Added 548 anchor items                                 dataset.py:165
-[23:18:44] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 4508,           training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           4508, 'num_subjects': 52, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:18:44] Initializing 548 anchor items:                    initializers.py:139
-[23:18:44] AnchorGradientZeroer initialized with 548 anchor   anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-
- 75%|███████▌  | 6/8 [00:15<00:05,  2.85s/it][A
- 56%|█████▌    | 5/9 [00:15<00:13,  3.49s/it][A
- 88%|████████▊ | 7/8 [00:18<00:02,  2.78s/it][A
- 40%|████      | 4/10 [00:16<00:27,  4.54s/it][A
- 67%|██████▋   | 6/9 [00:19<00:10,  3.61s/it][A
-100%|██████████| 8/8 [00:21<00:00,  2.84s/it][A100%|██████████| 8/8 [00:21<00:00,  2.65s/it]
-Validating dimensions: 100%|██████████| 1/1 [02:16<00:00, 136.87s/it]Validating dimensions: 100%|██████████| 1/1 [02:16<00:00, 136.87s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_1_BBQ/irt_fixed/irt_dataset_final.jsonlines
-[23:18:51] amortized: False                                       dataset.py:212
-   🔗 Mapped 648/648 anchor items to IRT dataset
-[23:18:52] Added 648 anchor items                                 dataset.py:165
-[23:18:52] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 5508,           training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           5508, 'num_subjects': 52, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:18:52] Initializing 648 anchor items:                    initializers.py:139
-[23:18:52] AnchorGradientZeroer initialized with 648 anchor   anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-
- 78%|███████▊  | 7/9 [00:23<00:07,  3.59s/it][A
- 50%|█████     | 5/10 [00:21<00:24,  4.94s/it][A
- 89%|████████▉ | 8/9 [00:27<00:03,  3.89s/it][A
- 60%|██████    | 6/10 [00:28<00:21,  5.36s/it][A
-100%|██████████| 9/9 [00:31<00:00,  3.86s/it][A100%|██████████| 9/9 [00:31<00:00,  3.50s/it]
-Validating dimensions: 100%|██████████| 1/1 [02:25<00:00, 145.66s/it]Validating dimensions: 100%|██████████| 1/1 [02:25<00:00, 145.66s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_2_BBQ_SyntheticR/irt_fixed/irt_dataset_final.jsonlines
-[23:19:02] amortized: False                                       dataset.py:212
-   🔗 Mapped 748/748 anchor items to IRT dataset
-           Added 748 anchor items                                 dataset.py:165
-[23:19:02] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 6508,           training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           6508, 'num_subjects': 52, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:19:02] Initializing 748 anchor items:                    initializers.py:139
-[23:19:02] AnchorGradientZeroer initialized with 748 anchor   anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-
- 70%|███████   | 7/10 [00:34<00:17,  5.72s/it][A
- 80%|████████  | 8/10 [00:40<00:11,  5.68s/it][A
- 90%|█████████ | 9/10 [00:47<00:06,  6.21s/it][A
-100%|██████████| 10/10 [00:53<00:00,  6.16s/it][A100%|██████████| 10/10 [00:53<00:00,  5.37s/it]
-Validating dimensions: 100%|██████████| 1/1 [02:48<00:00, 168.85s/it]Validating dimensions: 100%|██████████| 1/1 [02:48<00:00, 168.85s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_3_BBQ_SyntheticR_IMDB/irt_fixed/irt_dataset_final.jsonlines
-[23:19:27] amortized: False                                       dataset.py:212
-   🔗 Mapped 847/847 anchor items to IRT dataset
-           Added 847 anchor items                                 dataset.py:165
-[23:19:27] Vocab size: None                                      training.py:105
-[23:19:28] args: {'device': 'cuda', 'num_items': 8206,           training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           8206, 'num_subjects': 52, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:19:28] Initializing 847 anchor items:                    initializers.py:139
-[23:19:28] AnchorGradientZeroer initialized with 847 anchor   anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 183908674.2907 │ 183908674.2907 │ 0.1000 │
-│ 101   │ 251328.0929    │ 236191.0398    │ 0.0990 │
-│ 201   │ 211879.6160    │ 208818.9684    │ 0.0980 │
-│ 301   │ 207792.2458    │ 204295.7449    │ 0.0970 │
-│ 401   │ 205793.2683    │ 203300.6101    │ 0.0961 │
-│ 501   │ 205580.7089    │ 202658.3372    │ 0.0951 │
-│ 601   │ 203635.6179    │ 202234.0532    │ 0.0942 │
-│ 701   │ 202185.9844    │ 201370.4376    │ 0.0932 │
-│ 801   │ 201829.2372    │ 201080.1376    │ 0.0923 │
-│ 901   │ 201997.8366    │ 200787.7934    │ 0.0914 │
-│ 1000  │ 201213.1450    │ 200439.3193    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 7 datasets: {'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.7636722889951749, 'GSM8K-Classic': 0.38915956739109586, 'MATH-Classic': 0.26133331356161466, 'QuAC': 0.8230673731442841, 'RAFT': 0.646198730140915, 'TruthfulQA-Classic': 0.6984999828747183}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_0_direct/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 4508 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-   ✅ Theta estimation path: FULL MIRT matrices (D=5)
-      Precomputed thetas: 17 success, 0 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0289 (n=16)
-      IRT:         0.3384 (n=16)
-      p-IRT:       0.3085 (n=16)
-      gp-IRT:      0.0295 (n=16)
-      → Best method: Anchor-only (0.0289)
-      Precomputed thetas: 52 success, 0 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0255 (n=50)
-      IRT:         0.3301 (n=50)
-      p-IRT:       0.2998 (n=50)
-      gp-IRT:      0.0247 (n=50)
-      → Best method: gp-IRT (0.0247)
-   Validating 17 models × 6 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 99
-      Skipped (no anchors): 0
-      Skipped (no data): 3
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0226 (n=99)
-      IRT:         0.2591 (n=99)
-      p-IRT:       0.2483 (n=99)
-      gp-IRT:      0.0517 (n=99)
-      → Best method: Anchor-only (0.0226)
-      Task 0: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0573 ± 0.0101
-      Task 0: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_3_BBQ_SyntheticR_IMDB/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 9206 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/11 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   9%|▉         | 1/11 [00:00<00:01,  9.88it/s]Finding optimal thresholds per dataset:  27%|██▋       | 3/11 [00:00<00:00, 15.40it/s]Finding optimal thresholds per dataset:  45%|████▌     | 5/11 [00:00<00:00,  6.89it/s]Finding optimal thresholds per dataset:  64%|██████▎   | 7/11 [00:01<00:00,  5.78it/s]Finding optimal thresholds per dataset:  73%|███████▎  | 8/11 [00:01<00:00,  5.50it/s]Finding optimal thresholds per dataset:  82%|████████▏ | 9/11 [00:01<00:00,  5.73it/s]Finding optimal thresholds per dataset:  91%|█████████ | 10/11 [00:01<00:00,  5.45it/s]Finding optimal thresholds per dataset: 100%|██████████| 11/11 [00:01<00:00,  5.53it/s]Finding optimal thresholds per dataset: 100%|██████████| 11/11 [00:01<00:00,  6.06it/s]
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_4_BBQ_SyntheticR_IMDB_LegalSuppo/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:25:55] amortized: False                                       dataset.py:212
-[23:25:55] Vocab size: None                                      training.py:105
-[23:25:56] args: {'device': 'cuda', 'num_items': 9206,           training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           9206, 'num_subjects': 41, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:25:56] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 438868628.2995 │ 438868628.2995 │ 0.1000 │
-│ 101   │ 279537.9723    │ 279537.9723    │ 0.0990 │
-│ 201   │ 247192.2389    │ 247192.2389    │ 0.0980 │
-│ 301   │ 257011.9914    │ 244473.8142    │ 0.0970 │
-│ 401   │ 241928.6109    │ 238013.8860    │ 0.0961 │
-│ 501   │ 238705.0708    │ 235359.1149    │ 0.0951 │
-│ 601   │ 237109.0767    │ 234603.3508    │ 0.0942 │
-│ 701   │ 236962.4729    │ 234042.1764    │ 0.0932 │
-│ 801   │ 235138.2617    │ 234042.1764    │ 0.0923 │
-│ 901   │ 237372.3955    │ 233535.4568    │ 0.0914 │
-│ 1000  │ 234780.6940    │ 233231.6661    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 281470176.6431 │ 281470176.6431 │ 0.1000 │
-│ 101   │ 249979.7513    │ 249979.7513    │ 0.0990 │
-│ 201   │ 199551.5602    │ 187333.2054    │ 0.0980 │
-│ 301   │ 186769.3050    │ 176544.1014    │ 0.0970 │
-│ 401   │ 179208.8927    │ 169780.1336    │ 0.0961 │
-│ 501   │ 165924.7966    │ 165924.7966    │ 0.0951 │
-│ 601   │ 172342.5754    │ 165924.7966    │ 0.0942 │
-│ 701   │ 170555.3447    │ 165211.8400    │ 0.0932 │
-│ 801   │ 167328.0323    │ 164972.4824    │ 0.0923 │
-│ 901   │ 167278.9862    │ 164239.1953    │ 0.0914 │
-│ 1000  │ 165292.9651    │ 164101.4280    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
-  0%|          | 0/11 [00:00<?, ?it/s][A
-  9%|▉         | 1/11 [00:03<00:38,  3.83s/it][A
- 18%|█▊        | 2/11 [00:07<00:33,  3.67s/it][A
- 27%|██▋       | 3/11 [00:14<00:40,  5.05s/it][AIRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 8 datasets: {'BBQ': 0.5202564729427763, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.7683083889056068, 'GSM8K-Classic': 0.21787146445127986, 'MATH-Classic': 0.14249816442932917, 'QuAC': 0.7794650433759557, 'RAFT': 0.6292489966547565, 'TruthfulQA-Classic': 0.6588580891747158}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_1_BBQ/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 5508 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-   ✅ Theta estimation path: FULL MIRT matrices (D=5)
-      Precomputed thetas: 17 success, 0 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0251 (n=16)
-      IRT:         0.0614 (n=16)
-      p-IRT:       0.0568 (n=16)
-      gp-IRT:      0.0246 (n=16)
-      → Best method: gp-IRT (0.0246)
-      Precomputed thetas: 52 success, 0 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0247 (n=50)
-      IRT:         0.0396 (n=50)
-      p-IRT:       0.0359 (n=50)
-      gp-IRT:      0.0244 (n=50)
-      → Best method: gp-IRT (0.0244)
-   Validating 17 models × 7 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 113
-      Skipped (no anchors): 0
-      Skipped (no data): 6
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0228 (n=113)
-      IRT:         0.0492 (n=113)
-      p-IRT:       0.0369 (n=113)
-      gp-IRT:      0.0210 (n=113)
-      → Best method: gp-IRT (0.0210)
-      Task 2: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0257 ± 0.0055
-      Task 2: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_4_BBQ_SyntheticR_IMDB_LegalSuppo/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 10591 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/12 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   8%|▊         | 1/12 [00:00<00:01,  5.94it/s]Finding optimal thresholds per dataset:  25%|██▌       | 3/12 [00:00<00:00, 11.67it/s]Finding optimal thresholds per dataset:  42%|████▏     | 5/12 [00:00<00:01,  5.76it/s]Finding optimal thresholds per dataset:  50%|█████     | 6/12 [00:01<00:01,  5.19it/s]Finding optimal thresholds per dataset:  58%|█████▊    | 7/12 [00:01<00:00,  5.25it/s]Finding optimal thresholds per dataset:  67%|██████▋   | 8/12 [00:01<00:00,  5.11it/s]Finding optimal thresholds per dataset:  75%|███████▌  | 9/12 [00:01<00:00,  5.27it/s]Finding optimal thresholds per dataset:  92%|█████████▏| 11/12 [00:01<00:00,  5.84it/s]Finding optimal thresholds per dataset: 100%|██████████| 12/12 [00:02<00:00,  6.34it/s]Finding optimal thresholds per dataset: 100%|██████████| 12/12 [00:02<00:00,  5.93it/s]
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 EntityMatching: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]
- 36%|███▋      | 4/11 [00:21<00:42,  6.11s/it][A   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_5_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:27:30] amortized: False                                       dataset.py:212
-[23:27:30] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 10591,          training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           10591, 'num_subjects': 41, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:27:30] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-
- 45%|████▌     | 5/11 [00:29<00:40,  6.76s/it][A
- 55%|█████▍    | 6/11 [00:39<00:38,  7.70s/it][A
- 64%|██████▎   | 7/11 [00:48<00:33,  8.30s/it][A
- 73%|███████▎  | 8/11 [00:58<00:26,  8.74s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss          ┃ Best Loss     ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 59799221.3757 │ 59799221.3757 │ 0.1000 │
-│ 101   │ 392551.3948   │ 321670.6654   │ 0.0990 │
-│ 201   │ 284196.9692   │ 281220.4681   │ 0.0980 │
-│ 301   │ 279142.8244   │ 273096.5062   │ 0.0970 │
-│ 401   │ 265088.4546   │ 265088.4546   │ 0.0961 │
-│ 501   │ 265210.6770   │ 261232.6534   │ 0.0951 │
-│ 601   │ 262202.1653   │ 260557.1578   │ 0.0942 │
-│ 701   │ 263101.8170   │ 259325.6265   │ 0.0932 │
-│ 801   │ 261569.3970   │ 259003.0126   │ 0.0923 │
-│ 901   │ 260912.7656   │ 259003.0126   │ 0.0914 │
-│ 1000  │ 260343.2270   │ 258657.9848   │ 0.0905 │
-└───────┴───────────────┴───────────────┴────────┘
- 82%|████████▏ | 9/11 [01:07<00:17,  8.88s/it][A
- 91%|█████████ | 10/11 [01:17<00:09,  9.22s/it][A
-100%|██████████| 11/11 [01:26<00:00,  9.02s/it][A100%|██████████| 11/11 [01:26<00:00,  7.84s/it]
-Validating dimensions: 100%|██████████| 1/1 [02:39<00:00, 159.68s/it]Validating dimensions: 100%|██████████| 1/1 [02:39<00:00, 159.68s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_4_BBQ_SyntheticR_IMDB_LegalSuppo/irt_fixed/irt_dataset_final.jsonlines
-[23:28:35] amortized: False                                       dataset.py:212
-   🔗 Mapped 947/947 anchor items to IRT dataset
-[23:28:36] Added 947 anchor items                                 dataset.py:165
-[23:28:36] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 9206,           training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           9206, 'num_subjects': 52, 'priors': 'hierarchical',                  
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:28:36] Initializing 947 anchor items:                    initializers.py:139
-[23:28:36] AnchorGradientZeroer initialized with 947 anchor   anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 9 datasets: {'BBQ': 0.6429051711163434, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.7821238831646067, 'GSM8K-Classic': 0.29243492749885963, 'MATH-Classic': 0.14334823529067994, 'QuAC': 0.7789145922826483, 'RAFT': 0.6800577538433495, 'SyntheticReasoning': 0.7928301805613343, 'TruthfulQA-Classic': 0.6404263868802951}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_2_BBQ_SyntheticR/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 6508 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-   ✅ Theta estimation path: FULL MIRT matrices (D=5)
-      Precomputed thetas: 17 success, 0 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0229 (n=16)
-      IRT:         0.0547 (n=16)
-      p-IRT:       0.0499 (n=16)
-      gp-IRT:      0.0232 (n=16)
-      → Best method: Anchor-only (0.0229)
-      Precomputed thetas: 52 success, 0 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0247 (n=50)
-      IRT:         0.0388 (n=50)
-      p-IRT:       0.0353 (n=50)
-      gp-IRT:      0.0240 (n=50)
-      → Best method: gp-IRT (0.0240)
-   Validating 17 models × 8 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 130
-      Skipped (no anchors): 0
-      Skipped (no data): 6
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0210 (n=130)
-      IRT:         0.0463 (n=130)
-      p-IRT:       0.0359 (n=130)
-      gp-IRT:      0.0192 (n=130)
-      → Best method: gp-IRT (0.0192)
-      Task 4: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0254 ± 0.0059
-      Task 4: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_5_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 11158 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/13 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   8%|▊         | 1/13 [00:00<00:01,  8.57it/s]Finding optimal thresholds per dataset:  23%|██▎       | 3/13 [00:00<00:00, 11.60it/s]Finding optimal thresholds per dataset:  38%|███▊      | 5/13 [00:00<00:01,  5.02it/s]Finding optimal thresholds per dataset:  46%|████▌     | 6/13 [00:01<00:01,  4.44it/s]Finding optimal thresholds per dataset:  54%|█████▍    | 7/13 [00:01<00:01,  4.51it/s]Finding optimal thresholds per dataset:  62%|██████▏   | 8/13 [00:01<00:01,  4.65it/s]Finding optimal thresholds per dataset:  69%|██████▉   | 9/13 [00:01<00:00,  5.32it/s]Finding optimal thresholds per dataset:  77%|███████▋  | 10/13 [00:01<00:00,  4.81it/s]Finding optimal thresholds per dataset:  92%|█████████▏| 12/13 [00:02<00:00,  5.25it/s]Finding optimal thresholds per dataset: 100%|██████████| 13/13 [00:02<00:00,  5.21it/s]Finding optimal thresholds per dataset: 100%|██████████| 13/13 [00:02<00:00,  5.20it/s]
-┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 535952681.1234 │ 535952681.1234 │ 0.1000 │
-│ 101   │ 326391.5581    │ 291260.9849    │ 0.0990 │
-│ 201   │ 227717.5539    │ 222649.1789    │ 0.0980 │
-│ 301   │ 234209.5810    │ 203308.4181    │ 0.0970 │
-│ 401   │ 199417.3177    │ 198812.7447    │ 0.0961 │
-│ 501   │ 199594.2666    │ 194782.0196    │ 0.0951 │
-│ 601   │ 199394.9328    │ 194782.0196    │ 0.0942 │
-│ 701   │ 196934.1833    │ 194089.8781    │ 0.0932 │
-│ 801   │ 198870.6694    │ 194089.8781    │ 0.0923 │
-│ 901   │ 196577.7072    │ 193103.9483    │ 0.0914 │
-│ 1000  │ 195121.2009    │ 193103.9483    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
-  0%|          | 0/12 [00:00<?, ?it/s][A     📊 BBQ: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 EntityMatching: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 MMLU-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_6_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:28:43] amortized: False                                       dataset.py:212
-[23:28:44] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 11158,          training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           11158, 'num_subjects': 41, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:28:44] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-
-  8%|▊         | 1/12 [00:05<00:57,  5.22s/it][A
- 17%|█▋        | 2/12 [00:10<00:55,  5.50s/it][A
- 25%|██▌       | 3/12 [00:22<01:12,  8.09s/it][A
- 33%|███▎      | 4/12 [00:33<01:14,  9.34s/it][A
- 42%|████▏     | 5/12 [00:45<01:11, 10.22s/it][A
- 50%|█████     | 6/12 [00:56<01:03, 10.55s/it][A
- 58%|█████▊    | 7/12 [01:09<00:56, 11.28s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 1018823287.3026 │ 1018823287.3026 │ 0.1000 │
-│ 101   │ 310028.5888     │ 310028.5888     │ 0.0990 │
-│ 201   │ 244188.9758     │ 233026.4605     │ 0.0980 │
-│ 301   │ 219824.7565     │ 219760.3732     │ 0.0970 │
-│ 401   │ 219936.9288     │ 212490.9077     │ 0.0961 │
-│ 501   │ 216932.6020     │ 212148.7794     │ 0.0951 │
-│ 601   │ 215970.9296     │ 208837.6071     │ 0.0942 │
-│ 701   │ 211681.3232     │ 208837.6071     │ 0.0932 │
-│ 801   │ 215054.1720     │ 208727.3430     │ 0.0923 │
-│ 901   │ 212793.9679     │ 207772.1071     │ 0.0914 │
-│ 1000  │ 212482.4136     │ 207772.1071     │ 0.0905 │
-└───────┴─────────────────┴─────────────────┴────────┘
-  0%|          | 0/13 [00:00<?, ?it/s][A
-  8%|▊         | 1/13 [00:05<01:04,  5.38s/it][A
- 67%|██████▋   | 8/12 [01:19<00:44, 11.06s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 214960157.0392 │ 214960157.0392 │ 0.1000 │
-│ 101   │ 444838.3359    │ 385830.0681    │ 0.0990 │
-│ 201   │ 337046.2769    │ 332310.7193    │ 0.0980 │
-│ 301   │ 319775.4548    │ 313275.9920    │ 0.0970 │
-│ 401   │ 324671.3002    │ 310663.7318    │ 0.0961 │
-│ 501   │ 317764.4786    │ 309062.9868    │ 0.0951 │
-│ 601   │ 315833.7160    │ 308134.7851    │ 0.0942 │
-│ 701   │ 309279.2768    │ 306826.2731    │ 0.0932 │
-│ 801   │ 309089.4272    │ 306826.2731    │ 0.0923 │
-│ 901   │ 306810.9071    │ 306810.9071    │ 0.0914 │
-│ 1000  │ 311136.3218    │ 306323.1729    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
- 15%|█▌        | 2/13 [00:10<00:58,  5.30s/it][A
- 75%|███████▌  | 9/12 [01:29<00:31, 10.64s/it][A
- 23%|██▎       | 3/13 [00:21<01:18,  7.87s/it][A/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-
- 83%|████████▎ | 10/12 [01:38<00:20, 10.19s/it][A
- 31%|███       | 4/13 [00:31<01:17,  8.61s/it][A
- 92%|█████████▏| 11/12 [01:48<00:10, 10.16s/it][AIRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 10 datasets: {'BBQ': 0.5757979307285489, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.7621833521461936, 'GSM8K-Classic': 0.30425584817727297, 'IMDB': 0.3365019635439998, 'MATH-Classic': 0.14457510922302733, 'QuAC': 0.7891437922231136, 'RAFT': 0.5980436400186967, 'SyntheticReasoning': 0.8182678414160819, 'TruthfulQA-Classic': 0.6015814938952349}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_3_BBQ_SyntheticR_IMDB/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 8206 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-   ✅ Theta estimation path: FULL MIRT matrices (D=5)
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0294 (n=16)
-      IRT:         0.0384 (n=16)
-      p-IRT:       0.0373 (n=16)
-      gp-IRT:      0.0296 (n=16)
-      → Best method: Anchor-only (0.0294)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0219 (n=50)
-      IRT:         0.0307 (n=50)
-      p-IRT:       0.0289 (n=50)
-      gp-IRT:      0.0216 (n=50)
-      → Best method: gp-IRT (0.0216)
-   Validating 17 models × 9 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 137
-      Skipped (no anchors): 0
-      Skipped (no data): 6
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0339 (n=137)
-      IRT:         0.0436 (n=137)
-      p-IRT:       0.0390 (n=137)
-      gp-IRT:      0.0320 (n=137)
-      → Best method: gp-IRT (0.0320)
-      Task 6: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0274 ± 0.0069
-      Task 6: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_6_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 14114 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/14 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   7%|▋         | 1/14 [00:00<00:01,  9.88it/s]
- 38%|███▊      | 5/13 [00:41<01:13,  9.19s/it][AFinding optimal thresholds per dataset:  14%|█▍        | 2/14 [00:00<00:01,  6.24it/s]Finding optimal thresholds per dataset:  29%|██▊       | 4/14 [00:00<00:00, 10.57it/s]Finding optimal thresholds per dataset:  43%|████▎     | 6/14 [00:00<00:01,  6.42it/s]Finding optimal thresholds per dataset:  50%|█████     | 7/14 [00:01<00:01,  5.43it/s]Finding optimal thresholds per dataset:  57%|█████▋    | 8/14 [00:01<00:01,  5.18it/s]Finding optimal thresholds per dataset:  64%|██████▍   | 9/14 [00:01<00:00,  5.45it/s]Finding optimal thresholds per dataset:  71%|███████▏  | 10/14 [00:01<00:00,  6.13it/s]Finding optimal thresholds per dataset:  79%|███████▊  | 11/14 [00:01<00:00,  5.91it/s]Finding optimal thresholds per dataset:  93%|█████████▎| 13/14 [00:02<00:00,  6.63it/s]Finding optimal thresholds per dataset: 100%|██████████| 14/14 [00:02<00:00,  6.98it/s]Finding optimal thresholds per dataset: 100%|██████████| 14/14 [00:02<00:00,  6.43it/s]
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 BLiMP: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 EntityMatching: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 MMLU-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]
-100%|██████████| 12/12 [01:57<00:00,  9.77s/it][A100%|██████████| 12/12 [01:57<00:00,  9.80s/it]
-Validating dimensions: 100%|██████████| 1/1 [03:11<00:00, 191.30s/it]Validating dimensions: 100%|██████████| 1/1 [03:11<00:00, 191.30s/it]
-   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_7_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:30:41] amortized: False                                       dataset.py:212
-[23:30:41] Vocab size: None                                      training.py:105
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_5_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc/irt_fixed/irt_dataset_final.jsonlines
-[23:30:41] amortized: False                                       dataset.py:212
-           args: {'device': 'cuda', 'num_items': 14114,          training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           14114, 'num_subjects': 41, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:30:42] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-   🔗 Mapped 1047/1047 anchor items to IRT dataset
-[23:30:42] Added 1047 anchor items                                dataset.py:165
-[23:30:42] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 10591,          training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           10591, 'num_subjects': 52, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:30:42] Initializing 1047 anchor items:                   initializers.py:139
-[23:30:42] AnchorGradientZeroer initialized with 1047 anchor  anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-
- 46%|████▌     | 6/13 [00:52<01:07,  9.68s/it][A
- 54%|█████▍    | 7/13 [01:05<01:05, 10.92s/it][A
- 62%|██████▏   | 8/13 [01:18<00:57, 11.51s/it][A
- 69%|██████▉   | 9/13 [01:29<00:46, 11.52s/it][A
- 77%|███████▋  | 10/13 [01:42<00:35, 11.83s/it][A
- 85%|████████▍ | 11/13 [01:53<00:23, 11.67s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 655946189.1908 │ 655946189.1908 │ 0.1000 │
-│ 101   │ 441658.8556    │ 373357.3585    │ 0.0990 │
-│ 201   │ 327648.7444    │ 277485.1197    │ 0.0980 │
-│ 301   │ 291528.7737    │ 266145.3726    │ 0.0970 │
-│ 401   │ 259743.7839    │ 255020.5137    │ 0.0961 │
-│ 501   │ 270188.0448    │ 247952.2071    │ 0.0951 │
-│ 601   │ 253486.7077    │ 246318.8147    │ 0.0942 │
-│ 701   │ 250334.6893    │ 244966.5730    │ 0.0932 │
-│ 801   │ 255649.2206    │ 244966.5730    │ 0.0923 │
-│ 901   │ 258451.0441    │ 244209.6271    │ 0.0914 │
-│ 1000  │ 250781.9012    │ 243235.9696    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
-  0%|          | 0/14 [00:00<?, ?it/s][A
- 92%|█████████▏| 12/13 [02:06<00:11, 11.99s/it][A
-  7%|▋         | 1/14 [00:08<01:45,  8.14s/it][A
- 14%|█▍        | 2/14 [00:13<01:20,  6.75s/it][A
-100%|██████████| 13/13 [02:16<00:00, 11.34s/it][A100%|██████████| 13/13 [02:16<00:00, 10.49s/it]
-Validating dimensions: 100%|██████████| 1/1 [03:29<00:00, 209.27s/it]Validating dimensions: 100%|██████████| 1/1 [03:29<00:00, 209.27s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_6_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class/irt_fixed/irt_dataset_final.jsonlines
-[23:32:13] amortized: False                                       dataset.py:212
-   🔗 Mapped 1147/1147 anchor items to IRT dataset
-           Added 1147 anchor items                                dataset.py:165
-[23:32:13] Vocab size: None                                      training.py:105
-[23:32:14] args: {'device': 'cuda', 'num_items': 11158,          training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           11158, 'num_subjects': 52, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:32:14] Initializing 1147 anchor items:                   initializers.py:139
-[23:32:14] AnchorGradientZeroer initialized with 1147 anchor  anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-
- 21%|██▏       | 3/14 [00:22<01:21,  7.41s/it][A
- 29%|██▊       | 4/14 [00:37<01:46, 10.66s/it][A
- 36%|███▌      | 5/14 [00:52<01:49, 12.15s/it][A
- 43%|████▎     | 6/14 [01:08<01:48, 13.56s/it][A
- 50%|█████     | 7/14 [01:23<01:37, 13.95s/it][A
- 57%|█████▋    | 8/14 [01:40<01:28, 14.77s/it][A
- 64%|██████▍   | 9/14 [01:56<01:16, 15.31s/it][A
- 71%|███████▏  | 10/14 [02:11<01:00, 15.11s/it][A
- 79%|███████▊  | 11/14 [02:26<00:45, 15.29s/it][A
- 86%|████████▌ | 12/14 [02:41<00:29, 14.98s/it][A
- 93%|█████████▎| 13/14 [02:58<00:15, 15.68s/it][A
-100%|██████████| 14/14 [03:13<00:00, 15.58s/it][A100%|██████████| 14/14 [03:13<00:00, 13.85s/it]
-Validating dimensions: 100%|██████████| 1/1 [04:30<00:00, 270.82s/it]Validating dimensions: 100%|██████████| 1/1 [04:30<00:00, 270.82s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_7_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP/irt_fixed/irt_dataset_final.jsonlines
-[23:35:13] amortized: False                                       dataset.py:212
-   🔗 Mapped 1247/1247 anchor items to IRT dataset
-           Added 1247 anchor items                                dataset.py:165
-[23:35:13] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 14114,          training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           14114, 'num_subjects': 52, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:35:13] Initializing 1247 anchor items:                   initializers.py:139
-[23:35:14] AnchorGradientZeroer initialized with 1247 anchor  anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-[23:35:14] Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 314982823.6859 │ 314982823.6859 │ 0.1000 │
-│ 101   │ 442088.8312    │ 442088.8312    │ 0.0990 │
-│ 201   │ 400551.4525    │ 377326.1959    │ 0.0980 │
-│ 301   │ 373341.3297    │ 360412.5406    │ 0.0970 │
-│ 401   │ 383509.4212    │ 358673.3610    │ 0.0961 │
-│ 501   │ 365228.3259    │ 358135.4271    │ 0.0951 │
-│ 601   │ 358857.6466    │ 356838.4794    │ 0.0942 │
-│ 701   │ 358582.0145    │ 356096.0176    │ 0.0932 │
-│ 801   │ 358690.6882    │ 354930.1498    │ 0.0923 │
-│ 901   │ 358604.6204    │ 354930.1498    │ 0.0914 │
-│ 1000  │ 356864.9261    │ 354930.1498    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 11 datasets: {'BBQ': 0.6053336778252877, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.840138225562425, 'GSM8K-Classic': 0.1911679567822873, 'IMDB': 0.3620470657613717, 'LegalSupport': 0.5857321287757906, 'MATH-Classic': 0.12079882997220323, 'QuAC': 0.7819683490257152, 'RAFT': 0.6854178916806547, 'SyntheticReasoning': 0.816985282226011, 'TruthfulQA-Classic': 0.5916867370156031}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_4_BBQ_SyntheticR_IMDB_LegalSuppo/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 9206 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0213 (n=16)
-      IRT:         0.0362 (n=16)
-      p-IRT:       0.0340 (n=16)
-      gp-IRT:      0.0211 (n=16)
-      → Best method: gp-IRT (0.0211)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0189 (n=50)
-      IRT:         0.0311 (n=50)
-      p-IRT:       0.0287 (n=50)
-      gp-IRT:      0.0184 (n=50)
-      → Best method: gp-IRT (0.0184)
-   Validating 17 models × 10 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-   Processing LegalSupport: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 154
-      Skipped (no anchors): 0
-      Skipped (no data): 6
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0333 (n=154)
-      IRT:         0.0470 (n=154)
-      p-IRT:       0.0421 (n=154)
-      gp-IRT:      0.0322 (n=154)
-      → Best method: gp-IRT (0.0322)
-      Task 8: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0266 ± 0.0070
-      Task 8: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_7_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 15158 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/15 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   7%|▋         | 1/15 [00:00<00:01,  9.73it/s]Finding optimal thresholds per dataset:  13%|█▎        | 2/15 [00:00<00:02,  6.16it/s]Finding optimal thresholds per dataset:  20%|██        | 3/15 [00:00<00:02,  5.51it/s]Finding optimal thresholds per dataset:  33%|███▎      | 5/15 [00:00<00:01,  8.55it/s]Finding optimal thresholds per dataset:  40%|████      | 6/15 [00:00<00:01,  6.51it/s]Finding optimal thresholds per dataset:  47%|████▋     | 7/15 [00:01<00:01,  5.98it/s]Finding optimal thresholds per dataset:  53%|█████▎    | 8/15 [00:01<00:01,  4.85it/s]Finding optimal thresholds per dataset:  60%|██████    | 9/15 [00:01<00:01,  5.00it/s]Finding optimal thresholds per dataset:  67%|██████▋   | 10/15 [00:01<00:00,  5.27it/s]Finding optimal thresholds per dataset:  73%|███████▎  | 11/15 [00:01<00:00,  6.07it/s]Finding optimal thresholds per dataset:  80%|████████  | 12/15 [00:02<00:00,  5.47it/s]Finding optimal thresholds per dataset:  93%|█████████▎| 14/15 [00:02<00:00,  6.25it/s]Finding optimal thresholds per dataset: 100%|██████████| 15/15 [00:02<00:00,  6.35it/s]Finding optimal thresholds per dataset: 100%|██████████| 15/15 [00:02<00:00,  6.03it/s]
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 BLiMP: threshold=0.010, error=0.0000
-     📊 BoolQ: threshold=0.010, error=0.0144
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 EntityMatching: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 MMLU-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_8_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:40:23] amortized: False                                       dataset.py:212
-[23:40:23] Vocab size: None                                      training.py:105
-[23:40:24] args: {'device': 'cuda', 'num_items': 15158,          training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           15158, 'num_subjects': 41, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:40:24] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 2185342216.8610 │ 2185342216.8610 │ 0.1000 │
-└───────┴─────────────────┴─────────────────┴────────┘Validating dimensions: 100%|██████████| 1/1 [00:06<00:00,  6.09s/it]Validating dimensions: 100%|██████████| 1/1 [00:06<00:00,  6.09s/it]
-
-   ⚠️ Dimension D=5 failed with numerical error: Expected parameter concentration (Tensor of shape (5,)) of distribution Gamma(concentration: torch.S...
-      ⚠️ Task 16 attempt 1/3 failed: All IRT dimensions failed validation. Failures: D=5: Expected parameter concentration (Tensor of sha
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 15158 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/15 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   7%|▋         | 1/15 [00:00<00:02,  5.23it/s]Finding optimal thresholds per dataset:  13%|█▎        | 2/15 [00:00<00:02,  4.60it/s]Finding optimal thresholds per dataset:  20%|██        | 3/15 [00:00<00:02,  4.99it/s]Finding optimal thresholds per dataset:  33%|███▎      | 5/15 [00:00<00:01,  8.58it/s]Finding optimal thresholds per dataset:  47%|████▋     | 7/15 [00:01<00:01,  5.66it/s]Finding optimal thresholds per dataset:  53%|█████▎    | 8/15 [00:01<00:01,  5.08it/s]Finding optimal thresholds per dataset:  60%|██████    | 9/15 [00:01<00:01,  5.01it/s]Finding optimal thresholds per dataset:  67%|██████▋   | 10/15 [00:01<00:00,  5.30it/s]Finding optimal thresholds per dataset:  73%|███████▎  | 11/15 [00:01<00:00,  6.04it/s]Finding optimal thresholds per dataset:  80%|████████  | 12/15 [00:02<00:00,  6.01it/s]Finding optimal thresholds per dataset:  93%|█████████▎| 14/15 [00:02<00:00,  6.33it/s]Finding optimal thresholds per dataset: 100%|██████████| 15/15 [00:02<00:00,  6.79it/s]Finding optimal thresholds per dataset: 100%|██████████| 15/15 [00:02<00:00,  5.95it/s]
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 BLiMP: threshold=0.010, error=0.0000
-     📊 BoolQ: threshold=0.010, error=0.0144
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 EntityMatching: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 MMLU-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_8_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:40:33] amortized: False                                       dataset.py:212
-[23:40:33] Vocab size: None                                      training.py:105
-[23:40:34] args: {'device': 'cuda', 'num_items': 15158,          training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           15158, 'num_subjects': 41, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:40:34] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 2187122283.1785 │ 2187122283.1785 │ 0.1000 │
-│ 101   │ 414054.2805     │ 401464.8660     │ 0.0990 │
-│ 201   │ 307494.9091     │ 307494.9091     │ 0.0980 │
-│ 301   │ 285891.9279     │ 279881.5069     │ 0.0970 │
-│ 401   │ 279258.4816     │ 274609.1178     │ 0.0961 │
-│ 501   │ 282514.4745     │ 268923.3949     │ 0.0951 │
-│ 601   │ 274132.9367     │ 268333.9503     │ 0.0942 │
-│ 701   │ 278320.5610     │ 266461.3916     │ 0.0932 │
-│ 801   │ 267557.4108     │ 265607.4674     │ 0.0923 │
-│ 901   │ 267095.4088     │ 265525.8325     │ 0.0914 │
-│ 1000  │ 270448.5322     │ 263958.9059     │ 0.0905 │
-└───────┴─────────────────┴─────────────────┴────────┘
-  0%|          | 0/15 [00:00<?, ?it/s][A
-  7%|▋         | 1/15 [00:09<02:13,  9.57s/it][A
- 13%|█▎        | 2/15 [00:16<01:41,  7.82s/it][A
- 20%|██        | 3/15 [00:32<02:19, 11.60s/it][A
- 27%|██▋       | 4/15 [00:41<01:56, 10.60s/it][A
- 33%|███▎      | 5/15 [00:58<02:09, 12.98s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss          ┃ Best Loss     ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 25770392.3172 │ 25770392.3172 │ 0.1000 │
-│ 101   │ 584954.2342   │ 535695.9751   │ 0.0990 │
-│ 201   │ 460334.6051   │ 446078.6097   │ 0.0980 │
-│ 301   │ 432334.6560   │ 425675.8536   │ 0.0970 │
-│ 401   │ 418255.5867   │ 415036.9417   │ 0.0961 │
-│ 501   │ 424011.3864   │ 412285.5615   │ 0.0951 │
-│ 601   │ 419565.3639   │ 410814.7862   │ 0.0942 │
-│ 701   │ 416437.0753   │ 410814.7862   │ 0.0932 │
-│ 801   │ 411440.8730   │ 408639.0322   │ 0.0923 │
-│ 901   │ 411989.5167   │ 408605.7872   │ 0.0914 │
-│ 1000  │ 409851.3600   │ 408605.7872   │ 0.0905 │
-└───────┴───────────────┴───────────────┴────────┘
- 40%|████      | 6/15 [01:14<02:06, 14.10s/it][A/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-
- 47%|████▋     | 7/15 [01:31<02:00, 15.05s/it][A
- 53%|█████▎    | 8/15 [01:48<01:50, 15.72s/it][AIRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 12 datasets: {'BBQ': 0.6815044853493368, 'Disinformation': 0.9785077756421456, 'DyckLanguage': 0.871040897697194, 'EntityMatching': 0.23675514572753473, 'GSM8K-Classic': 0.35663074602122624, 'IMDB': 0.6211062769533718, 'LegalSupport': 0.7901324085405925, 'MATH-Classic': 0.10458763628223096, 'QuAC': 0.7226080878336105, 'RAFT': 0.6256798171095685, 'SyntheticReasoning': 0.3772360622868462, 'TruthfulQA-Classic': 0.6686320159915344}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_5_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 10591 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0194 (n=16)
-      IRT:         0.0340 (n=16)
-      p-IRT:       0.0312 (n=16)
-      gp-IRT:      0.0191 (n=16)
-      → Best method: gp-IRT (0.0191)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0207 (n=50)
-      IRT:         0.0306 (n=50)
-      p-IRT:       0.0282 (n=50)
-      gp-IRT:      0.0201 (n=50)
-      → Best method: gp-IRT (0.0201)
-   Validating 17 models × 11 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-   Processing LegalSupport: 1000 questions, 100 anchors
-   Processing EntityMatching: 1385 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 171
-      Skipped (no anchors): 0
-      Skipped (no data): 6
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0326 (n=171)
-      IRT:         0.0550 (n=171)
-      p-IRT:       0.0504 (n=171)
-      gp-IRT:      0.0324 (n=171)
-      → Best method: gp-IRT (0.0324)
-      Task 10: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0270 ± 0.0063
-      Task 10: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_8_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 23638 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/16 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   6%|▋         | 1/16 [00:00<00:01,  9.70it/s]Finding optimal thresholds per dataset:  12%|█▎        | 2/16 [00:00<00:02,  5.87it/s]Finding optimal thresholds per dataset:  19%|█▉        | 3/16 [00:00<00:02,  5.82it/s]Finding optimal thresholds per dataset:  25%|██▌       | 4/16 [00:02<00:08,  1.42it/s]Finding optimal thresholds per dataset:  38%|███▊      | 6/16 [00:02<00:03,  2.76it/s]Finding optimal thresholds per dataset:  44%|████▍     | 7/16 [00:02<00:03,  2.98it/s]Finding optimal thresholds per dataset:  50%|█████     | 8/16 [00:02<00:02,  3.45it/s]Finding optimal thresholds per dataset:  56%|█████▋    | 9/16 [00:02<00:01,  3.67it/s]Finding optimal thresholds per dataset:  62%|██████▎   | 10/16 [00:02<00:01,  4.06it/s]Finding optimal thresholds per dataset:  69%|██████▉   | 11/16 [00:03<00:01,  4.48it/s]Finding optimal thresholds per dataset:  75%|███████▌  | 12/16 [00:03<00:00,  5.20it/s]Finding optimal thresholds per dataset:  81%|████████▏ | 13/16 [00:03<00:00,  5.41it/s]Finding optimal thresholds per dataset:  94%|█████████▍| 15/16 [00:03<00:00,  6.19it/s]Finding optimal thresholds per dataset: 100%|██████████| 16/16 [00:03<00:00,  6.56it/s]Finding optimal thresholds per dataset: 100%|██████████| 16/16 [00:03<00:00,  4.18it/s]
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 BLiMP: threshold=0.010, error=0.0000
-     📊 BoolQ: threshold=0.010, error=0.0144
-     📊 CivilComments: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 EntityMatching: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 MMLU-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_9_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:43:47] amortized: False                                       dataset.py:212
-[23:43:47] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 23638,          training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           23638, 'num_subjects': 41, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:43:48] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-
- 60%|██████    | 9/15 [02:08<01:41, 16.95s/it][A
- 67%|██████▋   | 10/15 [02:30<01:32, 18.47s/it][A
- 73%|███████▎  | 11/15 [02:49<01:14, 18.72s/it][A
- 80%|████████  | 12/15 [03:11<00:58, 19.50s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 1408347935.1208 │ 1408347935.1208 │ 0.1000 │
-│ 101   │ 732239.9741     │ 668834.8183     │ 0.0990 │
-│ 201   │ 553372.0558     │ 497419.3193     │ 0.0980 │
-│ 301   │ 483836.8705     │ 475705.6189     │ 0.0970 │
-│ 401   │ 493886.0722     │ 465427.2890     │ 0.0961 │
-│ 501   │ 474228.3149     │ 459778.3224     │ 0.0951 │
-│ 601   │ 463360.6903     │ 459778.3224     │ 0.0942 │
-│ 701   │ 460777.8277     │ 457380.0839     │ 0.0932 │
-│ 801   │ 469012.2456     │ 456771.2719     │ 0.0923 │
-│ 901   │ 468295.8988     │ 455709.0960     │ 0.0914 │
-│ 1000  │ 464389.8275     │ 453595.3702     │ 0.0905 │
-└───────┴─────────────────┴─────────────────┴────────┘
-  0%|          | 0/16 [00:00<?, ?it/s][A┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 858627366.3125 │ 858627366.3125 │ 0.1000 │
-│ 101   │ 589132.3948    │ 585260.4164    │ 0.0990 │
-│ 201   │ 565052.9818    │ 486538.9728    │ 0.0980 │
-│ 301   │ 472051.1925    │ 472051.1925    │ 0.0970 │
-│ 401   │ 496084.8100    │ 465825.2881    │ 0.0961 │
-│ 501   │ 464457.3951    │ 464457.3951    │ 0.0951 │
-│ 601   │ 461553.5624    │ 459619.5183    │ 0.0942 │
-│ 701   │ 463278.5061    │ 458022.2983    │ 0.0932 │
-│ 801   │ 462665.6037    │ 455296.3635    │ 0.0923 │
-│ 901   │ 455100.2197    │ 453861.9487    │ 0.0914 │
-│ 1000  │ 457883.3918    │ 453187.3016    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘
- 87%|████████▋ | 13/15 [03:29<00:38, 19.05s/it][A/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-
-  6%|▋         | 1/16 [00:21<05:16, 21.10s/it][A
- 93%|█████████▎| 14/15 [03:47<00:18, 18.81s/it][A
- 12%|█▎        | 2/16 [00:36<04:08, 17.78s/it][A
-100%|██████████| 15/15 [04:03<00:00, 17.96s/it][A100%|██████████| 15/15 [04:03<00:00, 16.22s/it]
-Validating dimensions: 100%|██████████| 1/1 [05:20<00:00, 320.55s/it]Validating dimensions: 100%|██████████| 1/1 [05:20<00:00, 320.55s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_8_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ/irt_fixed/irt_dataset_final.jsonlines
-[23:45:54] amortized: False                                       dataset.py:212
-   🔗 Mapped 1347/1347 anchor items to IRT dataset
-[23:45:55] Added 1347 anchor items                                dataset.py:165
-[23:45:55] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 15158,          training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           15158, 'num_subjects': 52, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:45:55] Initializing 1347 anchor items:                   initializers.py:139
-[23:45:55] AnchorGradientZeroer initialized with 1347 anchor  anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 13 datasets: {'BBQ': 0.6735835973312077, 'Disinformation': 0.9785077756421456, 'DyckLanguage': 0.7872707591008529, 'EntityMatching': 0.10148597539580613, 'GSM8K-Classic': 0.36595081861663875, 'IMDB': 0.5443899189432345, 'LegalSupport': 0.7059950214703001, 'MATH-Classic': 0.10954094152336369, 'MMLU-Classic': 0.5433984932654703, 'QuAC': 0.8012667622065315, 'RAFT': 0.6730076225737642, 'SyntheticReasoning': 0.8481832184584047, 'TruthfulQA-Classic': 0.56633523451288}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_6_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 11158 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0175 (n=16)
-      IRT:         0.0486 (n=16)
-      p-IRT:       0.0451 (n=16)
-      gp-IRT:      0.0172 (n=16)
-      → Best method: gp-IRT (0.0172)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0192 (n=50)
-      IRT:         0.0642 (n=50)
-      p-IRT:       0.0590 (n=50)
-      gp-IRT:      0.0191 (n=50)
-      → Best method: gp-IRT (0.0191)
-   Validating 17 models × 12 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-   Processing LegalSupport: 1000 questions, 100 anchors
-   Processing EntityMatching: 1385 questions, 100 anchors
-   Processing MMLU-Classic: 567 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 188
-      Skipped (no anchors): 0
-      Skipped (no data): 6
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0315 (n=188)
-      IRT:         0.1396 (n=188)
-      p-IRT:       0.1370 (n=188)
-      gp-IRT:      0.0388 (n=188)
-      → Best method: Anchor-only (0.0315)
-      Task 12: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0283 ± 0.0083
-      Task 12: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_9_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-Starting IRT training following TinyBenchmarks methodology...
-Step 1: Computing balance weights...
-Balance weights computed for 24638 questions
-Step 2: Binarizing responses...
-   🔄 Data has 1133 unique scores, applying thresholding...
-Finding optimal thresholds per dataset:   0%|          | 0/17 [00:00<?, ?it/s]Finding optimal thresholds per dataset:   6%|▌         | 1/17 [00:00<00:01,  9.45it/s]Finding optimal thresholds per dataset:  12%|█▏        | 2/17 [00:00<00:02,  5.63it/s]Finding optimal thresholds per dataset:  24%|██▎       | 4/17 [00:00<00:02,  6.33it/s]Finding optimal thresholds per dataset:  29%|██▉       | 5/17 [00:02<00:07,  1.69it/s]Finding optimal thresholds per dataset:  41%|████      | 7/17 [00:02<00:03,  2.94it/s]Finding optimal thresholds per dataset:  47%|████▋     | 8/17 [00:02<00:02,  3.04it/s]Finding optimal thresholds per dataset:  53%|█████▎    | 9/17 [00:02<00:02,  3.44it/s]Finding optimal thresholds per dataset:  59%|█████▉    | 10/17 [00:03<00:01,  3.65it/s]Finding optimal thresholds per dataset:  65%|██████▍   | 11/17 [00:03<00:01,  3.95it/s]Finding optimal thresholds per dataset:  71%|███████   | 12/17 [00:03<00:01,  4.40it/s]Finding optimal thresholds per dataset:  76%|███████▋  | 13/17 [00:03<00:00,  5.21it/s]Finding optimal thresholds per dataset:  82%|████████▏ | 14/17 [00:03<00:00,  5.37it/s]Finding optimal thresholds per dataset:  94%|█████████▍| 16/17 [00:03<00:00,  6.00it/s]Finding optimal thresholds per dataset: 100%|██████████| 17/17 [00:04<00:00,  6.45it/s]Finding optimal thresholds per dataset: 100%|██████████| 17/17 [00:04<00:00,  4.19it/s]
-     📊 BBQ: threshold=0.010, error=0.0000
-     📊 BLiMP: threshold=0.010, error=0.0000
-     📊 BOLD: threshold=0.010, error=0.0000
-     📊 BoolQ: threshold=0.010, error=0.0144
-     📊 CivilComments: threshold=0.010, error=0.0000
-     📊 Disinformation: threshold=0.208, error=0.0054
-     📊 DyckLanguage: threshold=0.010, error=0.0000
-     📊 EntityMatching: threshold=0.010, error=0.0000
-     📊 GSM8K-Classic: threshold=0.010, error=0.0000
-     📊 IMDB: threshold=0.010, error=0.2593
-     📊 LegalSupport: threshold=0.010, error=0.0000
-     📊 MATH-Classic: threshold=0.010, error=0.0000
-     📊 MMLU-Classic: threshold=0.010, error=0.0000
-     📊 QuAC: threshold=0.396, error=0.0189
-     📊 RAFT: threshold=0.010, error=0.0000
-     📊 SyntheticReasoning: threshold=0.010, error=0.0000
-     📊 TruthfulQA-Classic: threshold=0.010, error=0.0000
-Responses binarized with optimal thresholds per dataset
-Step 2b: Skipping zero-variance filtering (disabled)
-Step 3: Validating dimensions...
-Validating dimensions:   0%|          | 0/1 [00:00<?, ?it/s]   📁 Saved validation dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_10_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme_BOLD/irt_fixed/irt_val_dataset_dim5.jsonlines
-[23:46:11] amortized: False                                       dataset.py:212
-[23:46:11] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 24638,          training.py:155
-           'num_subjects': 41}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           24638, 'num_subjects': 41, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:46:12] No anchor items found, gradient zeroer will be a  anchor_utils.py:172
-           no-op                                                                
-Training Pyro IRT Model for 1000 epochs
-
- 19%|█▉        | 3/16 [01:16<06:02, 27.88s/it][A
- 25%|██▌       | 4/16 [02:17<08:12, 41.07s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 7311710574.3293 │ 7311710574.3293 │ 0.1000 │
-│ 101   │ 828613.9872     │ 663378.7825     │ 0.0990 │
-│ 201   │ 583679.6433     │ 538592.0725     │ 0.0980 │
-│ 301   │ 502382.1580     │ 488657.2809     │ 0.0970 │
-│ 401   │ 489568.4863     │ 484971.5513     │ 0.0961 │
-│ 501   │ 488045.2501     │ 477780.5657     │ 0.0951 │
-│ 601   │ 479011.4234     │ 473753.0100     │ 0.0942 │
-│ 701   │ 480860.3009     │ 472815.8826     │ 0.0932 │
-│ 801   │ 472767.4419     │ 472477.6107     │ 0.0923 │
-│ 901   │ 478471.1428     │ 471506.7209     │ 0.0914 │
-│ 1000  │ 471211.9251     │ 470832.5588     │ 0.0905 │
-└───────┴─────────────────┴─────────────────┴────────┘
-  0%|          | 0/17 [00:00<?, ?it/s][A
- 31%|███▏      | 5/16 [02:40<06:20, 34.58s/it][A
-  6%|▌         | 1/17 [00:23<06:10, 23.17s/it][A
- 12%|█▏        | 2/17 [00:39<04:46, 19.08s/it][A
- 38%|███▊      | 6/16 [03:20<06:04, 36.47s/it][A
- 18%|█▊        | 3/17 [01:03<04:57, 21.25s/it][A
- 44%|████▍     | 7/16 [04:00<05:36, 37.43s/it][A
- 24%|██▎       | 4/17 [01:43<06:13, 28.70s/it][A┏━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss           ┃ Best Loss      ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 223138520.9042 │ 223138520.9042 │ 0.1000 │
-│ 101   │ 712324.0642    │ 655286.1470    │ 0.0990 │
-│ 201   │ 570773.8538    │ 552685.8978    │ 0.0980 │
-│ 301   │ 552206.1059    │ 534506.6851    │ 0.0970 │
-│ 401   │ 526454.1185    │ 523545.0021    │ 0.0961 │
-│ 501   │ 523006.7906    │ 517185.4331    │ 0.0951 │
-│ 601   │ 519338.5797    │ 515504.5441    │ 0.0942 │
-│ 701   │ 517954.5906    │ 510827.2161    │ 0.0932 │
-│ 801   │ 516953.3938    │ 510827.2161    │ 0.0923 │
-│ 901   │ 518035.5776    │ 508985.7294    │ 0.0914 │
-│ 1000  │ 506357.0531    │ 505859.3128    │ 0.0905 │
-└───────┴────────────────┴────────────────┴────────┘/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-
- 50%|█████     | 8/16 [04:42<05:11, 38.94s/it][A
- 29%|██▉       | 5/17 [02:35<07:27, 37.31s/it][A
- 56%|█████▋    | 9/16 [05:20<04:31, 38.75s/it][A
- 35%|███▌      | 6/17 [02:58<05:54, 32.19s/it][A
- 62%|██████▎   | 10/16 [06:00<03:54, 39.16s/it][A
- 41%|████      | 7/17 [03:38<05:49, 34.90s/it][A
- 69%|██████▉   | 11/16 [06:40<03:16, 39.30s/it][A
- 47%|████▋     | 8/17 [04:17<05:26, 36.23s/it][A
- 75%|███████▌  | 12/16 [07:15<02:32, 38.08s/it][A
- 53%|█████▎    | 9/17 [04:59<05:03, 37.95s/it][A
- 81%|████████▏ | 13/16 [07:52<01:52, 37.55s/it][A
- 59%|█████▉    | 10/17 [05:38<04:28, 38.39s/it][A
- 88%|████████▊ | 14/16 [08:26<01:13, 36.68s/it][A
- 65%|██████▍   | 11/17 [06:21<03:57, 39.61s/it][A
- 94%|█████████▍| 15/16 [09:07<00:37, 37.76s/it][A
- 71%|███████   | 12/17 [07:03<03:21, 40.36s/it][A
-100%|██████████| 16/16 [09:42<00:00, 37.19s/it][A100%|██████████| 16/16 [09:42<00:00, 36.44s/it]
-Validating dimensions: 100%|██████████| 1/1 [11:08<00:00, 668.97s/it]Validating dimensions: 100%|██████████| 1/1 [11:08<00:00, 668.97s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_9_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme/irt_fixed/irt_dataset_final.jsonlines
-[23:54:57] amortized: False                                       dataset.py:212
-   🔗 Mapped 1447/1447 anchor items to IRT dataset
-           Added 1447 anchor items                                dataset.py:165
-[23:54:57] Vocab size: None                                      training.py:105
-[23:54:58] args: {'device': 'cuda', 'num_items': 23638,          training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           23638, 'num_subjects': 52, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:54:58] Initializing 1447 anchor items:                   initializers.py:139
-[23:54:58] AnchorGradientZeroer initialized with 1447 anchor  anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-           Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-
- 76%|███████▋  | 13/17 [07:41<02:38, 39.70s/it][A
- 82%|████████▏ | 14/17 [08:21<01:59, 39.74s/it][A
- 88%|████████▊ | 15/17 [08:59<01:18, 39.15s/it][A
- 94%|█████████▍| 16/17 [09:42<00:40, 40.54s/it][A
-100%|██████████| 17/17 [10:21<00:00, 40.07s/it][A100%|██████████| 17/17 [10:21<00:00, 36.58s/it]
-Validating dimensions: 100%|██████████| 1/1 [11:47<00:00, 707.61s/it]Validating dimensions: 100%|██████████| 1/1 [11:47<00:00, 707.61s/it]
-Best dimension: 5
-Step 4: Training final IRT model...
-   📁 Saved final training dataset: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_10_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme_BOLD/irt_fixed/irt_dataset_final.jsonlines
-[23:57:59] amortized: False                                       dataset.py:212
-   🔗 Mapped 1547/1547 anchor items to IRT dataset
-[23:58:00] Added 1547 anchor items                                dataset.py:165
-[23:58:00] Vocab size: None                                      training.py:105
-           args: {'device': 'cuda', 'num_items': 24638,          training.py:155
-           'num_subjects': 52}                                                  
-           Parsed Model Args: {'device': 'cuda', 'num_items':    training.py:168
-           24638, 'num_subjects': 52, 'priors': 'hierarchical',                 
-           'dims': 5, 'dropout': 0.5, 'hidden': 100,                            
-           'vocab_size': None}                                                  
-[23:58:01] Initializing 1547 anchor items:                   initializers.py:139
-[23:58:01] AnchorGradientZeroer initialized with 1547 anchor  anchor_utils.py:73
-           items                                                                
-           Will zero gradients for parameters: ['loc_diff',   anchor_utils.py:74
-           'scale_diff', 'loc_slope', 'scale_slope',                            
-           'loc_disc', 'scale_disc', 'loc_guess',                               
-           'scale_guess', 'loc_slip', 'scale_slip']                             
-[23:58:01] Registering gradient hooks for anchor items           training.py:207
-           Registered gradient hook for loc_diff (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_diff (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for loc_disc (on         anchor_utils.py:106
-           unconstrained parameter)                                             
-           Registered gradient hook for scale_disc (on       anchor_utils.py:106
-           unconstrained parameter)                                             
-Training Pyro IRT Model for 1000 epochs
-┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 6918305069.4044 │ 6918305069.4044 │ 0.1000 │
-│ 101   │ 710692.8574     │ 680205.3224     │ 0.0990 │
-│ 201   │ 604214.2804     │ 592785.5140     │ 0.0980 │
-│ 301   │ 587219.5435     │ 573972.8668     │ 0.0970 │
-│ 401   │ 572551.8777     │ 565120.6318     │ 0.0961 │
-│ 501   │ 557404.8287     │ 550707.2356     │ 0.0951 │
-│ 601   │ 561301.9101     │ 549708.2486     │ 0.0942 │
-│ 701   │ 553503.0500     │ 549708.2486     │ 0.0932 │
-│ 801   │ 554072.9395     │ 547528.2033     │ 0.0923 │
-│ 901   │ 549636.9410     │ 547528.2033     │ 0.0914 │
-│ 1000  │ 554750.9917     │ 546494.2574     │ 0.0905 │
-└───────┴─────────────────┴─────────────────┴────────┘/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 1482577909.6096 │ 1482577909.6096 │ 0.1000 │
-│ 101   │ 1383119.9290    │ 996492.6124     │ 0.0990 │
-│ 201   │ 898912.3554     │ 841936.7366     │ 0.0980 │
-│ 301   │ 848559.6006     │ 827158.3092     │ 0.0970 │
-│ 401   │ 871319.1222     │ 811547.9836     │ 0.0961 │
-│ 501   │ 817588.4514     │ 803559.0740     │ 0.0951 │
-│ 601   │ 809519.4820     │ 795423.6524     │ 0.0942 │
-│ 701   │ 798671.9698     │ 792492.8342     │ 0.0932 │
-│ 801   │ 807652.9528     │ 789571.7019     │ 0.0923 │
-│ 901   │ 794687.7945     │ 787932.8473     │ 0.0914 │
-│ 1000  │ 797548.7848     │ 786450.6448     │ 0.0905 │
-└───────┴─────────────────┴─────────────────┴────────┘/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-┏━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ Epoch ┃ Loss            ┃ Best Loss       ┃ New LR ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ 1     │ 8467099999.0978 │ 8467099999.0978 │ 0.1000 │
-│ 101   │ 1273347.2133    │ 1067048.8476    │ 0.0990 │
-│ 201   │ 895727.1633     │ 871878.9810     │ 0.0980 │
-│ 301   │ 901143.2644     │ 859248.1007     │ 0.0970 │
-│ 401   │ 885648.4716     │ 849518.7827     │ 0.0961 │
-│ 501   │ 864611.9040     │ 842946.4130     │ 0.0951 │
-│ 601   │ 844670.4687     │ 836794.7526     │ 0.0942 │
-│ 701   │ 842357.7776     │ 833041.4982     │ 0.0932 │
-│ 801   │ 845167.0517     │ 833041.4982     │ 0.0923 │
-│ 901   │ 835011.6897     │ 832102.8435     │ 0.0914 │
-│ 1000  │ 841913.9923     │ 831191.5762     │ 0.0905 │
-└───────┴─────────────────┴─────────────────┴────────┘/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-grande-v2-beta (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for ai21/j1-jumbo (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for anthropic/stanford-online-all-v4-s3 (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for cohere/xlarge-20221108 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_530B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for microsoft/TNLGv2_7B (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-babbage-001 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for openai/text-davinci-003 (n_anchors=87): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (86,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/bloom (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-/cs/labs/gabis/eliyahabba/AdaptEval/src/llm_eval/selection/tinyBenchmarks/estimation.py:430: UserWarning: Theta estimation failed for together/opt-175b (n_anchors=86): setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (85,) + inhomogeneous part.
-  warnings.warn(f"Theta estimation failed for {model_name} (n_anchors={n_anchors}): {e}")
-IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 17 datasets: {'BBQ': 0.5993226384921833, 'BLiMP': 0.6243657338853166, 'BOLD': 0.41110432856916196, 'BoolQ': 0.8452523278435943, 'CivilComments': 0.5573290842774912, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.9263713365992119, 'EntityMatching': 0.18042438128618368, 'GSM8K-Classic': 0.5577906968138736, 'IMDB': 0.9082247054273259, 'LegalSupport': 0.7063774754585525, 'MATH-Classic': 0.7739124771223422, 'MMLU-Classic': 0.5278598409891881, 'QuAC': 0.7648602572872066, 'RAFT': 0.7604345343469904, 'SyntheticReasoning': 0.8615333279450165, 'TruthfulQA-Classic': 0.7321250073757768}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_10_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme_BOLD/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 24638 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0261 (n=16)
-      IRT:         0.0506 (n=16)
-      p-IRT:       0.0470 (n=16)
-      gp-IRT:      0.0261 (n=16)
-      → Best method: gp-IRT (0.0261)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0210 (n=50)
-      IRT:         0.0867 (n=50)
-      p-IRT:       0.0786 (n=50)
-      gp-IRT:      0.0207 (n=50)
-      → Best method: gp-IRT (0.0207)
-   Validating 17 models × 16 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-   Processing LegalSupport: 1000 questions, 100 anchors
-   Processing EntityMatching: 1385 questions, 100 anchors
-   Processing MMLU-Classic: 567 questions, 100 anchors
-   Processing BLiMP: 2956 questions, 100 anchors
-   Processing BoolQ: 1044 questions, 100 anchors
-   Processing CivilComments: 8480 questions, 100 anchors
-   Processing BOLD: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 248
-      Skipped (no anchors): 0
-      Skipped (no data): 14
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0276 (n=248)
-      IRT:         0.1180 (n=248)
-      p-IRT:       0.1158 (n=248)
-      gp-IRT:      0.0282 (n=248)
-      → Best method: Anchor-only (0.0276)
-      Task 20: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0275 ± 0.0073
-      Task 20: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 16 datasets: {'BBQ': 0.53033760029881, 'BLiMP': 0.43873665704606263, 'BoolQ': 0.6714931014761064, 'CivilComments': 0.4216480966502734, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.9022366962360484, 'EntityMatching': 0.24901299661585577, 'GSM8K-Classic': 0.4896175662425527, 'IMDB': 0.49455986120659756, 'LegalSupport': 0.6010777389202968, 'MATH-Classic': 0.3064123808336364, 'MMLU-Classic': 0.45856689004846785, 'QuAC': 0.8143300501859141, 'RAFT': 0.6788416423192193, 'SyntheticReasoning': 0.8760394778360616, 'TruthfulQA-Classic': 0.6397711169182024}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_9_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 23638 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0255 (n=16)
-      IRT:         0.0304 (n=16)
-      p-IRT:       0.0287 (n=16)
-      gp-IRT:      0.0255 (n=16)
-      → Best method: Anchor-only (0.0255)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0234 (n=50)
-      IRT:         0.0314 (n=50)
-      p-IRT:       0.0295 (n=50)
-      gp-IRT:      0.0233 (n=50)
-      → Best method: gp-IRT (0.0233)
-   Validating 17 models × 15 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-   Processing LegalSupport: 1000 questions, 100 anchors
-   Processing EntityMatching: 1385 questions, 100 anchors
-   Processing MMLU-Classic: 567 questions, 100 anchors
-   Processing BLiMP: 2956 questions, 100 anchors
-   Processing BoolQ: 1044 questions, 100 anchors
-   Processing CivilComments: 8480 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 234
-      Skipped (no anchors): 0
-      Skipped (no data): 11
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0291 (n=234)
-      IRT:         0.0555 (n=234)
-      p-IRT:       0.0524 (n=234)
-      gp-IRT:      0.0293 (n=234)
-      → Best method: Anchor-only (0.0291)
-      Task 18: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0265 ± 0.0074
-      Task 18: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 15 datasets: {'BBQ': 0.5734665985141578, 'BLiMP': 0.4295641226580955, 'BoolQ': 0.6878448829933688, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.7440004493815823, 'EntityMatching': 0.16356403884266052, 'GSM8K-Classic': 0.43374103969319255, 'IMDB': 0.5441460045599804, 'LegalSupport': 0.67652154232249, 'MATH-Classic': 0.28899961244797456, 'MMLU-Classic': 0.5179336971041212, 'QuAC': 0.8119161047643746, 'RAFT': 0.6670340692035783, 'SyntheticReasoning': 0.776524148515127, 'TruthfulQA-Classic': 0.6112253072191955}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_8_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 15158 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0250 (n=16)
-      IRT:         0.0367 (n=16)
-      p-IRT:       0.0345 (n=16)
-      gp-IRT:      0.0250 (n=16)
-      → Best method: gp-IRT (0.0250)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0234 (n=50)
-      IRT:         0.0313 (n=50)
-      p-IRT:       0.0295 (n=50)
-      gp-IRT:      0.0231 (n=50)
-      → Best method: gp-IRT (0.0231)
-   Validating 17 models × 14 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-   Processing LegalSupport: 1000 questions, 100 anchors
-   Processing EntityMatching: 1385 questions, 100 anchors
-   Processing MMLU-Classic: 567 questions, 100 anchors
-   Processing BLiMP: 2956 questions, 100 anchors
-   Processing BoolQ: 1044 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 217
-      Skipped (no anchors): 0
-      Skipped (no data): 11
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0295 (n=217)
-      IRT:         0.0451 (n=217)
-      p-IRT:       0.0413 (n=217)
-      gp-IRT:      0.0290 (n=217)
-      → Best method: gp-IRT (0.0290)
-      Task 16: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0269 ± 0.0073
-      Task 16: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-IRT model training completed
-Step 5: Computing lambda values...
-Lambda values computed for 14 datasets: {'BBQ': 0.5608964223550372, 'BLiMP': 0.37575792122411045, 'Disinformation': 0.9785077756421457, 'DyckLanguage': 0.8127501979386403, 'EntityMatching': 0.25619407237579583, 'GSM8K-Classic': 0.40843659221124384, 'IMDB': 0.558463567112731, 'LegalSupport': 0.6970408866165255, 'MATH-Classic': 0.28694749544265213, 'MMLU-Classic': 0.5827131891101412, 'QuAC': 0.8260280903817586, 'RAFT': 0.6641981814156098, 'SyntheticReasoning': 0.8449852954408591, 'TruthfulQA-Classic': 0.6680626874087545}
-   📁 Saved item params: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_7_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP/irt_fixed/item_params.parquet
-IRT training completed successfully. Parameters for 14114 questions.
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-      Precomputed thetas: 7 success, 10 failed
-   Validating 16 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 16
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0245 (n=16)
-      IRT:         0.0448 (n=16)
-      p-IRT:       0.0414 (n=16)
-      gp-IRT:      0.0246 (n=16)
-      → Best method: Anchor-only (0.0245)
-      Precomputed thetas: 30 success, 22 failed
-   Validating 50 models × 1 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing QuAC: 1000 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 50
-      Skipped (no anchors): 0
-      Skipped (no data): 0
-      Theta estimation failures: 0
-
-   📈 Results Summary:
-      Anchor-only: 0.0271 (n=50)
-      IRT:         0.0461 (n=50)
-      p-IRT:       0.0429 (n=50)
-      gp-IRT:      0.0269 (n=50)
-      → Best method: gp-IRT (0.0269)
-   Validating 17 models × 13 datasets
-   ✓ Using full MIRT matrices (D=5)
-   Processing TruthfulQA-Classic: 654 questions, 100 anchors
-   Processing MATH-Classic: 866 questions, 100 anchors
-   Processing GSM8K-Classic: 1000 questions, 100 anchors
-   Processing RAFT: 440 questions, 100 anchors
-   Processing Disinformation: 48 questions, 48 anchors
-   Processing DyckLanguage: 500 questions, 100 anchors
-   Processing BBQ: 1000 questions, 100 anchors
-   Processing SyntheticReasoning: 1000 questions, 100 anchors
-   Processing IMDB: 1698 questions, 100 anchors
-   Processing LegalSupport: 1000 questions, 100 anchors
-   Processing EntityMatching: 1385 questions, 100 anchors
-   Processing MMLU-Classic: 567 questions, 100 anchors
-   Processing BLiMP: 2956 questions, 100 anchors
-
-   📊 Validation Statistics:
-      Processed: 200
-      Skipped (no anchors): 0
-      Skipped (no data): 11
-      Theta estimation failures: 10
-
-   📈 Results Summary:
-      Anchor-only: 0.0304 (n=200)
-      IRT:         0.0744 (n=200)
-      p-IRT:       0.0712 (n=200)
-      gp-IRT:      0.0311 (n=200)
-      → Best method: Anchor-only (0.0304)
-      Task 14: Running Random-IRT baseline validation...
-      Random baseline: 10/10 seeds successful
-         anchor_error: 0.0281 ± 0.0091
-         gp_irt_error: 0.0280 ± 0.0074
-      Task 14: Running Random-Simple baseline validation...
-      Simple random baseline: 10/10 seeds successful
-         simple_random_error: 0.0281 ± 0.0091
-   ✓ Loaded cached IRT params from /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4/dist_10_BBQ_SyntheticR_IMDB_LegalSuppo_EntityMatc_MMLU-Class_BLiMP_BoolQ_CivilComme_BOLD/irt_concurrent/item_params.parquet
-   🎯 Anchor clustering using full MIRT parameters: 10 features (D=5)
-      ✓ QuAC: 100 anchors selected
-   ❌ Task 1 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'Disinformation': 0, 'DyckLanguage': 0, 'GSM8K-Classic': 0, 'MATH-Classic': 0, 'RAFT': 0, 'TruthfulQA-Classic': 0}
-   ❌ Task 3 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'GSM8K-Classic': 0, 'MATH-Classic': 0, 'RAFT': 0, 'TruthfulQA-Classic': 0}
-   ❌ Task 5 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'GSM8K-Classic': 0, 'MATH-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [1/22] dist_0/fixed: error=0.0295, time=542.5s
-   ❌ Task 7 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'MATH-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [2/22] dist_1/fixed: error=0.0246, time=633.6s
-   ❌ Task 9 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'LegalSupport': 0, 'MATH-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [3/22] dist_2/fixed: error=0.0232, time=697.8s
-   ❌ Task 11 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'EntityMatching': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'LegalSupport': 0, 'MATH-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [4/22] dist_3/fixed: error=0.0296, time=810.6s
-   ❌ Task 13 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'EntityMatching': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'LegalSupport': 0, 'MATH-Classic': 0, 'MMLU-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [5/22] dist_4/fixed: error=0.0211, time=828.1s
-   ❌ Task 15 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'BLiMP': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'EntityMatching': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'LegalSupport': 0, 'MATH-Classic': 0, 'MMLU-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [6/22] dist_5/fixed: error=0.0191, time=929.3s
-   ❌ Task 17 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'BLiMP': 0, 'BoolQ': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'EntityMatching': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'LegalSupport': 0, 'MATH-Classic': 0, 'MMLU-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [7/22] dist_6/fixed: error=0.0172, time=995.1s
-   ❌ Task 19 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'BLiMP': 0, 'BoolQ': 0, 'CivilComments': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'EntityMatching': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'LegalSupport': 0, 'MATH-Classic': 0, 'MMLU-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [8/22] dist_7/fixed: error=0.0246, time=1131.8s
-   ❌ Task 21 exception: Anchor coverage check failed (too few local anchors for some evaluated datasets). Need >= 5 anchors per dataset. Low: {'BBQ': 0, 'BLiMP': 0, 'BOLD': 0, 'BoolQ': 0, 'CivilComments': 0, 'Disinformation': 0, 'DyckLanguage': 0, 'EntityMatching': 0, 'GSM8K-Classic': 0, 'IMDB': 0, 'LegalSupport': 0, 'MATH-Classic': 0, 'MMLU-Classic': 0, 'RAFT': 0, 'SyntheticReasoning': 0, 'TruthfulQA-Classic': 0}
-   [9/22] dist_8/fixed: error=0.0250, time=1162.9s
-   [10/22] dist_9/fixed: error=0.0255, time=1552.6s
-   [11/22] dist_10/fixed: error=0.0261, time=1610.1s
-
-   Parallel execution: 3467.7s
-
-8. Aggregating results...
-
-======================================================================
-SUMMARY - Parallel Execution
-======================================================================
-Target: QuAC
-Workers: 4
-Total time: 3599.8s (parallel phase: 3467.7s)
-
-Dist   Chain                Fixed      Concurrent   Delta     
-------------------------------------------------------------
-0      direct               0.0295     nan                +nan
-1      BBQ                  0.0246     nan                +nan
-2      BBQ_Synthe           0.0232     nan                +nan
-3      BBQ_Synthe_IMDB      0.0296     nan                +nan
-4      BBQ_Synthe_IMDB...   0.0211     nan                +nan
-5      BBQ_Synthe_IMDB...   0.0191     nan                +nan
-6      BBQ_Synthe_IMDB...   0.0172     nan                +nan
-7      BBQ_Synthe_IMDB...   0.0246     nan                +nan
-8      BBQ_Synthe_IMDB...   0.0250     nan                +nan
-9      BBQ_Synthe_IMDB...   0.0255     nan                +nan
-10     BBQ_Synthe_IMDB...   0.0261     nan                +nan
-
-------------------------------------------------------------
-RANDOM BASELINE COMPARISON:
-  Method comparison (lower error = better):
-    IRT Anchors (smart selection):   0.0241
-    Random-IRT (random as anchors):  0.0297
-    Random-Simple (just average):    0.0281
-
-  Winner: IRT Anchors with error = 0.0241
-
-Results saved to: /cs/labs/gabis/eliyahabba/AdaptEval/data/v5_lamdas_parallel_new_exps/full_chain_classic_helm_classic_seed_42_dims_5_workers_4
-
-Job resource usage:
-     User        JobID    JobName  Partition      State  Timelimit               Start                 End    Elapsed     MaxRSS  MaxVMSize   NNodes      NCPUS        NodeList 
---------- ------------ ---------- ---------- ---------- ---------- ------------------- ------------------- ---------- ---------- ---------- -------- ---------- --------------- 
-eliyahab+ 28953959     chain-par+   killable    RUNNING 1-00:00:00 2025-12-24T23:13:49             Unknown   01:00:26                              1          8    dumfries-010 
-          28953959.ba+      batch               RUNNING            2025-12-24T23:13:49             Unknown   01:00:26                              1          8    dumfries-010 
-          28953959.ex+     extern               RUNNING            2025-12-24T23:13:49             Unknown   01:00:26                              1          8    dumfries-010 

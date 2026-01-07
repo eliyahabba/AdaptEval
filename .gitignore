@@ -8,3 +8,6 @@
 /src/download_helm/
 __pycache__/**/chain_cache/
 /src/experiments/old_visualization/
+/paper/
+/src/reeval_dataset/
+/src/data_analysis/

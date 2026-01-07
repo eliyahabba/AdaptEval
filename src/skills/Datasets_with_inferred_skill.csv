@@ -1,0 +1,143 @@
+dataset_name,skill
+anthropichhrlhfscenario.hh,Instruction Following Gen.
+anthropichhrlhfscenario.red_team,Instruction Following Gen.
+grammarscenario,General NLU
+koalascenario,Instruction Following Gen.
+openassistantscenario,Instruction Following Gen.
+selfinstructscenario,Instruction Following Gen.
+vicunascenario.all,Instruction Following Gen.
+unitxtscenario,Instruction Following Gen.
+babiqascenario,Instruction Following Gen.
+bbqscenario.all,Entailment & Bias
+blimpscenario,Entailment & Bias
+boldscenario.all,General NLU
+boolqscenario,Domain-Knowledge QA
+civilcommentsscenario,General NLU
+codescenario,Grad-Level Reasoning
+commonsensescenario,General NLU
+copyrightscenario,Instruction Following Gen.
+disinformationscenario,Social & Ethical Judgment
+dycklanguagescenario,Entailment & Bias
+entitydataimputationscenario,Precision & Fidelity
+entitymatchingscenario,Precision & Fidelity
+gsm8kscenario,Precision & Fidelity
+imdbscenario,General NLU
+legalsupportscenario,Grad-Level Reasoning
+lsatscenario,Grad-Level Reasoning
+mathscenario.algebra,Precision & Fidelity
+mathscenario.counting_and_probability,Precision & Fidelity
+mathscenario.geometry,Precision & Fidelity
+mathscenario.intermediate_algebra,Precision & Fidelity
+mathscenario.number_theory,Precision & Fidelity
+mathscenario.prealgebra,Precision & Fidelity
+mathscenario.precalculus,Precision & Fidelity
+mmluscenario.abstract_algebra,Domain-Knowledge QA
+mmluscenario.college_chemistry,Domain-Knowledge QA
+mmluscenario.computer_security,Domain-Knowledge QA
+mmluscenario.econometrics,Domain-Knowledge QA
+mmluscenario.us_foreign_policy,Domain-Knowledge QA
+msmarcoscenario,Long Document Comprehension
+narrativeqascenario,General NLU
+naturalqascenario,Long Document Comprehension
+quacscenario,Long Document Comprehension
+raftscenario.ade_corpus_v2,Grad-Level Reasoning
+raftscenario.banking_77,Grad-Level Reasoning
+raftscenario.neurips_impact_statement_risks,Social & Ethical Judgment
+raftscenario.one_stop_english,Grad-Level Reasoning
+raftscenario.overruling,Grad-Level Reasoning
+raftscenario.semiconductor_org_types,Grad-Level Reasoning
+raftscenario.systematic_review_inclusion,Grad-Level Reasoning
+raftscenario.tai_safety_research,Social & Ethical Judgment
+raftscenario.terms_of_service,Social & Ethical Judgment
+raftscenario.tweet_eval_hate,Social & Ethical Judgment
+raftscenario.twitter_complaints,Grad-Level Reasoning
+realtoxicitypromptsscenario,Entailment & Bias
+summarizationscenario,Long Document Comprehension
+syntheticreasoningscenario,Precision & Fidelity
+srnscenario,Long Document Comprehension
+truthfulqascenario,Instruction Following Gen.
+wikifactscenario.author,Domain-Knowledge QA
+wikifactscenario.currency,Domain-Knowledge QA
+wikifactscenario.discoverer_or_inventor,Domain-Knowledge QA
+wikifactscenario.instance_of,Domain-Knowledge QA
+wikifactscenario.medical_condition_treated,Domain-Knowledge QA
+wikifactscenario.part_of,Domain-Knowledge QA
+wikifactscenario.place_of_birth,Domain-Knowledge QA
+wikifactscenario.plaintiff,Domain-Knowledge QA
+wikifactscenario.position_held,Domain-Knowledge QA
+wikifactscenario.symptoms_and_signs,Domain-Knowledge QA
+openbookqa,Domain-Knowledge QA
+legalbenchscenario.abercrombie,Grad-Level Reasoning
+legalbenchscenario.corporate_lobbying,Grad-Level Reasoning
+legalbenchscenario.function_of_decision_section,Grad-Level Reasoning
+legalbenchscenario.international_citizenship_questions,Grad-Level Reasoning
+legalbenchscenario.proa,Grad-Level Reasoning
+legalbench.proa,Grad-Level Reasoning
+medqascenario,Domain-Knowledge QA
+wmt14scenario.cs-en,Long Document Comprehension
+wmt14scenario.de-en,Long Document Comprehension
+wmt14scenario.fr-en,Long Document Comprehension
+wmt14scenario.hi-en,Long Document Comprehension
+wmt14scenario.ru-en,Long Document Comprehension
+mmluscenario.anatomy,Domain-Knowledge QA
+mmluscenario.astronomy,Domain-Knowledge QA
+mmluscenario.business_ethics,Domain-Knowledge QA
+mmluscenario.clinical_knowledge,Domain-Knowledge QA
+mmluscenario.college_biology,Domain-Knowledge QA
+mmluscenario.college_computer_science,Domain-Knowledge QA
+mmluscenario.college_mathematics,Domain-Knowledge QA
+mmluscenario.college_medicine,Domain-Knowledge QA
+mmluscenario.college_physics,Domain-Knowledge QA
+mmluscenario.conceptual_physics,Domain-Knowledge QA
+mmluscenario.electrical_engineering,Domain-Knowledge QA
+mmluscenario.elementary_mathematics,Domain-Knowledge QA
+mmluscenario.formal_logic,Domain-Knowledge QA
+mmluscenario.global_facts,Domain-Knowledge QA
+mmluscenario.high_school_biology,Domain-Knowledge QA
+mmluscenario.high_school_chemistry,Domain-Knowledge QA
+mmluscenario.high_school_computer_science,Domain-Knowledge QA
+mmluscenario.high_school_european_history,Domain-Knowledge QA
+mmluscenario.high_school_geography,Domain-Knowledge QA
+mmluscenario.high_school_government_and_politics,Domain-Knowledge QA
+mmluscenario.high_school_macroeconomics,Domain-Knowledge QA
+mmluscenario.high_school_mathematics,Domain-Knowledge QA
+mmluscenario.high_school_microeconomics,Domain-Knowledge QA
+mmluscenario.high_school_physics,Domain-Knowledge QA
+mmluscenario.high_school_psychology,Domain-Knowledge QA
+mmluscenario.high_school_statistics,Domain-Knowledge QA
+mmluscenario.high_school_us_history,Domain-Knowledge QA
+mmluscenario.high_school_world_history,Domain-Knowledge QA
+mmluscenario.human_aging,Domain-Knowledge QA
+mmluscenario.human_sexuality,Domain-Knowledge QA
+mmluscenario.international_law,Domain-Knowledge QA
+mmluscenario.jurisprudence,Domain-Knowledge QA
+mmluscenario.logical_fallacies,Domain-Knowledge QA
+mmluscenario.machine_learning,Domain-Knowledge QA
+mmluscenario.management,Domain-Knowledge QA
+mmluscenario.marketing,Domain-Knowledge QA
+mmluscenario.medical_genetics,Domain-Knowledge QA
+mmluscenario.miscellaneous,Domain-Knowledge QA
+mmluscenario.moral_disputes,Domain-Knowledge QA
+mmluscenario.moral_scenarios,Domain-Knowledge QA
+mmluscenario.nutrition,Domain-Knowledge QA
+mmluscenario.philosophy,Domain-Knowledge QA
+mmluscenario.prehistory,Domain-Knowledge QA
+mmluscenario.professional_accounting,Domain-Knowledge QA
+mmluscenario.professional_law,Domain-Knowledge QA
+mmluscenario.professional_medicine,Domain-Knowledge QA
+mmluscenario.professional_psychology,Domain-Knowledge QA
+mmluscenario.public_relations,Domain-Knowledge QA
+mmluscenario.security_studies,Domain-Knowledge QA
+mmluscenario.sociology,Domain-Knowledge QA
+mmluscenario.virology,Domain-Knowledge QA
+mmluscenario.world_religions,Domain-Knowledge QA
+infinitebenchenmcscenario,Long Document Comprehension
+infinitebenchensumscenario,Long Document Comprehension
+openaimrcrscenario,Long Document Comprehension
+rulerhotpotqascenario,Long Document Comprehension
+rulersquadscenario,Long Document Comprehension
+gpqascenario.gpqa_main,Grad-Level Reasoning
+ifevalscenario,Instruction Following Gen.
+mmluproscenario.all,Domain-Knowledge QA
+omnimathscenario,Precision & Fidelity
+wildbenchscenario.v2,Instruction Following Gen.
