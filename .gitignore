@@ -11,3 +11,10 @@ __pycache__/**/chain_cache/
 /paper/
 /src/reeval_dataset/
 /src/data_analysis/
+**/combined_figures/
+**/figures_paper/
+/papers/
+/src/llm_eval/selection/exact_notebook_anchors.py
+/src/llm_eval/selection/exact_notebook_estimation.py
+/src/llm_eval/selection/exact_notebook_irt.py
+/sh_run/old/
