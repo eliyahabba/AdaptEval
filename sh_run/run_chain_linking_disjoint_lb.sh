@@ -145,7 +145,7 @@ echo "  - Pairwise Accuracy"
 echo "========================================"
 
 # Run disjoint experiment (eval needed for quoted target dataset names)
-eval python src/experiments/chain_linking_disjoint.py \
+eval python src/experiments/chain_linking/chain_linking_disjoint.py \
     --output-dir "${OUTPUT_DIR}" \
     --n-base 1 \
     --max-chain 4 \
