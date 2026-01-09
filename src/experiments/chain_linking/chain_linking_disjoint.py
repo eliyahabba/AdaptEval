@@ -42,7 +42,7 @@ from scipy.stats import spearmanr, kendalltau
 
 multiprocessing.set_start_method('spawn', force=True)
 
-from cross_dataset_equating import (
+from src.experiments.equating.cross_dataset_equating import (
     PROJECT_ROOT,
     ExperimentConfig,
     load_all_datasets,

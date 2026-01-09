@@ -38,7 +38,7 @@ from llm_eval.training import train_item_parameters, save_item_parameters
 # =============================================================================
 
 # Project root (src/experiments/cross_dataset_equating.py -> project root)
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 
 
 @dataclass
@@ -143,7 +143,7 @@ def load_data_source_config(config_path: str | None = None) -> dict:
         config = json.load(f)
     
     # Resolve relative paths to absolute (relative to project root)
-    project_root = Path(__file__).resolve().parents[2]  # src/experiments -> project root
+    project_root = PROJECT_ROOT  # resolve once to avoid off-by-one mistakes
     if "paths" in config:
         for key, value in config["paths"].items():
             if key.startswith("_"):  # skip notes
@@ -157,7 +157,7 @@ def load_data_source_config(config_path: str | None = None) -> dict:
 
 def build_helm_classic_config() -> dict:
     """Build data source config for HELM Classic datasets only (70 models, 30 datasets)."""
-    project_root = Path(__file__).resolve().parents[2]
+    project_root = PROJECT_ROOT
     
     # Dataset patterns in helm_classic_aggregated.parquet
     classic_datasets = {
@@ -213,7 +213,7 @@ def build_helm_classic_config() -> dict:
 
 def build_helm_lite_config() -> dict:
     """Build data source config for HELM Lite datasets only (91 models, 9 datasets)."""
-    project_root = Path(__file__).resolve().parents[2]
+    project_root = PROJECT_ROOT
     
     lite_datasets = {
         "GSM8K-Lite": "gsm8kscenario",
@@ -247,7 +247,7 @@ def build_helm_lite_config() -> dict:
 
 def build_lb_only_config() -> dict:
     """Build data source config for Open LLM Leaderboard datasets only (395 models, 6 datasets)."""
-    project_root = Path(__file__).resolve().parents[2]
+    project_root = PROJECT_ROOT
     
     datasets_config = {
         "ARC Challenge": {
@@ -311,7 +311,7 @@ def build_reeval_config() -> dict:
     Returns:
         Configuration dict with all reeval scenarios
     """
-    project_root = Path(__file__).resolve().parents[2]
+    project_root = PROJECT_ROOT
     reeval_dir = project_root / "aggregated_data" / "reeval"
     
     # Check for split files (preferred)
@@ -368,7 +368,7 @@ def build_reeval_config() -> dict:
 
 def build_mmlu_split_config() -> dict:
     """Build config that treats every MMLU subtask as a separate dataset."""
-    project_root = Path(__file__).resolve().parents[2]
+    project_root = PROJECT_ROOT
     tinybenchmarks_dir = project_root / "aggregated_data/tinybenchmarks"
     pickle_path = tinybenchmarks_dir / "mmlu_fields.pickle"
     
