@@ -14,13 +14,19 @@ defaults:
   num_workers: 4        # Number of parallel workers
 
 # SLURM resource defaults
+# NOTE: These are documentation only - actual SLURM directives are in the shell script
+# Override at submission time: sbatch --mem=8g --time=24:0:0 script.sh
 slurm_defaults:
-  memory: 8g
+  memory: 16g      # LB and HELM Lite need more memory
   gpus: 4
-  cpus: 4
-  time: "5:0:0"
+  cpus: 2
+  time: "6:0:0"
   mail_user: eliya.habba@mail.huji.ac.il
   mail_type: END,FAIL,TIME_LIMIT
+  
+  # MMLU Fields overrides:
+  # memory: 8g (less memory needed)
+  # time: "24:0:0" (longer runtime)
 
 # Named experiment configurations
 presets:
@@ -92,8 +98,6 @@ presets:
     n_base: 1
     max_chain: 10
     n_anchors: 50
-    slurm:
-      memory: 12g
       
   helm_lite_base4:
     description: "HELM Lite with 4 base datasets, 25 anchors"
@@ -101,8 +105,6 @@ presets:
     n_base: 4
     max_chain: 10
     n_anchors: 25
-    slurm:
-      memory: 12g
 
   # ============================================================================
   # MMLU Fields - 57 datasets (MMLU subdomains), 428 models
@@ -114,8 +116,8 @@ presets:
     n_base: 8
     max_chain: 10
     n_anchors: 10  # Lower for many small datasets (10*57 = 570 total)
-    slurm:
-      time: "24:0:0"
+    # IMPORTANT: Use --mem=8g --time=24:0:0 when submitting
+    # Example: sbatch --mem=8g --time=24:0:0 run_chain_linking_unified.sh --preset mmlu_fields
       
   # ============================================================================
   # Disjoint Experiments (Zero-overlap model allocation)

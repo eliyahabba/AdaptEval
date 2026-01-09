@@ -1,27 +1,42 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-unified
+#SBATCH --mem=16g
+#SBATCH --time=6:0:0
+#SBATCH --mail-user=eliya.habba@mail.huji.ac.il
+#SBATCH --mail-type=END,FAIL,TIME_LIMIT
+#SBATCH --gres=gg:g0:4
+#SBATCH --cpus-per-task=2
 #SBATCH --killable
 #SBATCH --requeue
 
 # Unified Chain Linking Experiment Runner
+#
+# IMPORTANT: To override SLURM resources at submission time:
+#   sbatch --mem=8g --time=24:0:0 run_chain_linking_unified.sh [options]
+#
+# Default resources (16g RAM, 6 hours, 4 GPUs, 2 CPUs):
+#   - Sufficient for LB and HELM Lite
+#   - Override with --mem=8g for MMLU fields (less memory needed)
+#   - Override with --time=24:0:0 for MMLU fields (longer runtime)
 #
 # This script provides a single entry point for all chain linking experiments.
 # It supports preset configurations, parameter overrides, and auto-incrementing seeds
 # to avoid conflicts with parallel workers.
 #
 # Usage Examples:
-#   # Using preset
-#   sbatch run_chain_linking_unified.sh --preset lb_standard --seed 11 --target "MMLU"
+#   # Basic usage
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11
+#
+#   # Override SLURM resources for MMLU
+#   sbatch --mem=8g --time=24:0:0 run_chain_linking_unified.sh \
+#       --output-dir data/v24_mmlu --preset mmlu_fields --seed 11
 #
 #   # Override preset values
-#   sbatch run_chain_linking_unified.sh --preset lb_standard --n-anchors 50
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --n-anchors 50
 #
 #   # Fully custom (no preset)
-#   sbatch run_chain_linking_unified.sh --data-source lb --n-anchors 100 --n-models 50
-#
-#   # With version tag
-#   sbatch run_chain_linking_unified.sh --preset lb_standard --version v23_lb --seed 11
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_custom --data-source lb --n-anchors 100
 
 # =============================================================================
 # Configuration
@@ -296,29 +311,15 @@ RANDOM_SEED="${RANDOM_SEED:-1000}"
 if [ -z "$OUTPUT_BASE_DIR" ]; then
     echo "Error: --output-dir is required"
     echo ""
-    echo "Usage: $0 --output-dir /path/to/experiments --preset lb_standard [options]"
+    echo "Usage: $0 --output-dir /path/to/experiments --preset <preset_name> [options]"
     echo ""
     echo "Example:"
     echo "  sbatch $0 --output-dir data/v24_lb --preset lb_standard --seed 11"
+    echo ""
+    echo "For MMLU (needs less memory but more time):"
+    echo "  sbatch --mem=8g --time=24:0:0 $0 --output-dir data/v24_mmlu --preset mmlu_fields --seed 11"
     exit 1
 fi
-
-# SLURM defaults
-SLURM_MEMORY="${SLURM_MEMORY:-8g}"
-SLURM_GPUS="${SLURM_GPUS:-4}"
-SLURM_CPUS="${SLURM_CPUS:-4}"
-SLURM_TIME="${SLURM_TIME:-5:0:0}"
-
-# =============================================================================
-# Set SLURM Parameters
-# =============================================================================
-
-#SBATCH --mem=${SLURM_MEMORY}
-#SBATCH --time=${SLURM_TIME}
-#SBATCH --gres=gg:g0:${SLURM_GPUS}
-#SBATCH --cpus-per-task=${SLURM_CPUS}
-#SBATCH --mail-user=eliya.habba@mail.huji.ac.il
-#SBATCH --mail-type=END,FAIL,TIME_LIMIT
 
 # =============================================================================
 # Build Output Directory Name
@@ -417,11 +418,9 @@ echo "  EPOCHS: $EPOCHS"
 echo "  EPOCHS_FIXED: $EPOCHS_FIXED"
 echo "  NUM_WORKERS: $NUM_WORKERS"
 echo ""
-echo "Resources:"
-echo "  Memory: $SLURM_MEMORY"
-echo "  GPUs: $SLURM_GPUS"
-echo "  CPUs: $SLURM_CPUS"
-echo "  Time: $SLURM_TIME"
+echo "SLURM Resources (override at submission with sbatch --mem=Xg --time=H:M:S):"
+echo "  Defaults: 16g RAM, 6 hours, 4 GPUs, 2 CPUs"
+echo "  Current job: $SLURM_JOB_ID"
 echo "========================================"
 
 # =============================================================================
