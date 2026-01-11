@@ -1534,11 +1534,18 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         with open(checkpoint_file, 'rb') as f:
             checkpoint = pickle.load(f)
         successful_chain = checkpoint['successful_chain']
-        chain_cache = checkpoint['chain_cache']
-        chain_cache_times = checkpoint.get('chain_cache_times', {})
-        current_irt, current_A, current_B, current_anchors, current_weights, current_df = chain_cache[len(successful_chain)]
-        total_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, len(successful_chain) + 1))
-        print(f"   ✅ Resumed from step {len(successful_chain)}: {successful_chain}")
+        
+        # Update (not replace) to avoid scope issues
+        chain_cache.update(checkpoint['chain_cache'])
+        chain_cache_times.update(checkpoint.get('chain_cache_times', {}))
+        
+        # Only restore state if we have a successful chain
+        if len(successful_chain) > 0:
+            current_irt, current_A, current_B, current_anchors, current_weights, current_df = chain_cache[len(successful_chain)]
+            total_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, len(successful_chain) + 1))
+            print(f"   ✅ Resumed from step {len(successful_chain)}: {successful_chain}")
+        else:
+            print(f"   📂 Checkpoint loaded but chain is empty, starting from base")
     
     for i in range(max_chain):
         chain_ds = chain_pool[i]
