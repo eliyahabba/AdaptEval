@@ -13,12 +13,14 @@
 #   bash run_all_experiments.sh                    # Run all 92 experiments
 #   bash run_all_experiments.sh --category 1       # Run only category 1 (baseline)
 #   bash run_all_experiments.sh --setup-only       # Test configurations without running
+#   bash run_all_experiments.sh --skip-existing    # Skip experiments where output dir exists (resume failures)
 
 set -e  # Stop on first error
 
 # Base output directory
 BASE_DIR="data/v25_comprehensive"
 SETUP_ONLY=""
+SKIP_EXISTING=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -31,9 +33,13 @@ while [[ $# -gt 0 ]]; do
             SETUP_ONLY="--setup-only"
             shift
             ;;
+        --skip-existing)
+            SKIP_EXISTING="--skip-existing"
+            shift
+            ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--category N] [--setup-only]"
+            echo "Usage: $0 [--category N] [--setup-only] [--skip-existing]"
             exit 1
             ;;
     esac
@@ -52,6 +58,11 @@ if [ -n "$SETUP_ONLY" ]; then
     echo ""
 fi
 
+if [ -n "$SKIP_EXISTING" ]; then
+    echo "⚠️  SKIP-EXISTING MODE: Will skip experiments where output directory already exists"
+    echo ""
+fi
+
 # ============================================================
 # CATEGORY 1: Baseline Coverage (35 experiments)
 # ============================================================
@@ -67,8 +78,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo "   Seeds 11-16, anchors=100, models=all"
     for seed in 11 12 13 14 15 16; do
         echo "   Submitting seed $seed..."
-        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_baseline --preset lb_standard --seed $seed --random-seed 1000"
-        sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+        echo "   → sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_baseline --preset lb_standard --seed $seed --random-seed 1000"
+        sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
             --output-dir ${BASE_DIR}/lb_baseline \
             --preset lb_standard \
             --seed $seed \
@@ -81,8 +92,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo "   Seeds 11-19, anchors=50, base=1"
     for seed in 11 12 13 14 15 16 17 18 19; do
         echo "   Submitting seed $seed..."
-        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/helm_lite_baseline --preset helm_lite_base1 --seed $seed --random-seed 1000"
-        sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+        echo "   → sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/helm_lite_baseline --preset helm_lite_base1 --seed $seed --random-seed 1000"
+        sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
             --output-dir ${BASE_DIR}/helm_lite_baseline \
             --preset helm_lite_base1 \
             --seed $seed \
@@ -96,8 +107,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo "   Using: --mem=8g --time=8:0:0 (MMLU needs less memory, more time)"
     for seed in $(seq 11 30); do
         echo "   Submitting seed $seed..."
-        echo "   → sbatch --mem=8g --time=8:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/mmlu_baseline --preset mmlu_fields --seed $seed --random-seed 1000"
-        sbatch --mem=8g --time=8:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+        echo "   → sbatch --mem=8g --time=8:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/mmlu_baseline --preset mmlu_fields --seed $seed --random-seed 1000"
+        sbatch --mem=8g --time=8:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
             --output-dir ${BASE_DIR}/mmlu_baseline \
             --preset mmlu_fields \
             --seed $seed \
@@ -123,8 +134,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
         echo "   Seeds 21-26, models=all"
         for seed in 21 22 23 24 25 26; do
             echo "   Submitting seed $seed, anchors $anchors..."
-            echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_anchor_sweep --preset lb_standard --n-anchors $anchors --seed $seed --random-seed $((1000 + anchors))"
-            sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+            echo "   → sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_anchor_sweep --preset lb_standard --n-anchors $anchors --seed $seed --random-seed $((1000 + anchors))"
+            sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/lb_anchor_sweep \
                 --preset lb_standard \
                 --n-anchors $anchors \
@@ -152,8 +163,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
         echo "   Seeds 31-36, anchors=100"
         for seed in 31 32 33 34 35 36; do
             echo "   Submitting seed $seed, models $models..."
-            echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_model_sweep --preset lb_standard --n-models $models --seed $seed --random-seed $((2000 + models))"
-            sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+            echo "   → sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_model_sweep --preset lb_standard --n-models $models --seed $seed --random-seed $((2000 + models))"
+            sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/lb_model_sweep \
                 --preset lb_standard \
                 --n-models $models \
@@ -180,8 +191,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
     echo "   Seeds 11-19, anchors=25"
     for seed in 11 12 13 14 15 16 17 18 19; do
         echo "   Submitting seed $seed, n_base=4..."
-        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/helm_lite_base4 --preset helm_lite_base4 --seed $seed --random-seed 3000"
-        sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+        echo "   → sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/helm_lite_base4 --preset helm_lite_base4 --seed $seed --random-seed 3000"
+        sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
             --output-dir ${BASE_DIR}/helm_lite_base4 \
             --preset helm_lite_base4 \
             --seed $seed \
@@ -205,20 +216,30 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
     echo "-- Fixed Bridge (6 experiments) --"
     echo "   Seeds 41-46, bridge=20, isolated=50"
     for seed in 41 42 43 44 45 46; do
+        # Determine skip mode for disjoint script (positional arg)
+        DISJOINT_SKIP_ARG=""
+        if [ -n "$SKIP_EXISTING" ]; then
+            DISJOINT_SKIP_ARG="skip"
+        fi
         echo "   Submitting seed $seed, bridge=fixed..."
-        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 \"\" fixed"
+        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 \"\" fixed $DISJOINT_SKIP_ARG"
         sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-            ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed
+            ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_SKIP_ARG
     done
 
     echo ""
     echo "-- Random Bridge (6 experiments) --"
     echo "   Seeds 41-46, bridge=20, isolated=50"
     for seed in 41 42 43 44 45 46; do
+        # Determine skip mode for disjoint script (positional arg)
+        DISJOINT_SKIP_ARG=""
+        if [ -n "$SKIP_EXISTING" ]; then
+            DISJOINT_SKIP_ARG="skip"
+        fi
         echo "   Submitting seed $seed, bridge=random..."
-        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 \"\" random"
+        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 \"\" random $DISJOINT_SKIP_ARG"
         sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-            ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random
+            ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_SKIP_ARG
     done
 
     echo ""
@@ -247,6 +268,10 @@ echo "  ls -la ${BASE_DIR}/*/"
 echo ""
 if [ -n "$SETUP_ONLY" ]; then
     echo "⚠️  SETUP-ONLY MODE was enabled - configs created, experiments NOT run"
+    echo ""
+fi
+if [ -n "$SKIP_EXISTING" ]; then
+    echo "⚠️  SKIP-EXISTING MODE was enabled - existing experiments were skipped"
     echo ""
 fi
 echo "=========================================="

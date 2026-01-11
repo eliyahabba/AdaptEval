@@ -31,7 +31,7 @@
 #   2. Isolated Test: Chain linking effect (trained on 1 dataset, tested on target)
 #
 # Usage:
-#   sbatch run_chain_linking_disjoint_lb.sh [output_dir] [shuffle_seed] [n_anchors] [n_bridge] [n_isolated] [target_dataset] [bridge_mode]
+#   sbatch run_chain_linking_disjoint_lb.sh [output_dir] [shuffle_seed] [n_anchors] [n_bridge] [n_isolated] [target_dataset] [bridge_mode] [skip_existing]
 #
 # Arguments:
 #   $1 = output directory (optional)
@@ -41,6 +41,7 @@
 #   $5 = n_isolated_per_chain (optional, default: 50)
 #   $6 = target_dataset (optional, default: auto = Winogrande)
 #   $7 = bridge_mode: "fixed" or "random" (optional, default: "fixed")
+#   $8 = skip_existing: "skip" to skip if dir exists (optional)
 #
 # Examples:
 #   sbatch run_chain_linking_disjoint_lb.sh                                              # All defaults
@@ -50,6 +51,7 @@
 #   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50 "MMLU"             # Specific target
 #   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50 "ARC Challenge"    # ARC as target
 #   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50 "" random          # Random bridge mode
+#   sbatch run_chain_linking_disjoint_lb.sh /path/output 42 100 20 50 "" fixed skip      # Skip if exists
 
 # Set Hugging Face cache directory
 export HF_HOME=/cs/snapless/gabis/gabis/shared/huggingface/
@@ -89,6 +91,7 @@ N_BRIDGE="${4:-20}"
 N_ISOLATED="${5:-50}"
 TARGET_DATASET="${6:-}"
 BRIDGE_MODE="${7:-fixed}"
+SKIP_EXISTING="${8:-}"
 
 # Fixed configuration
 DIMS="5"
@@ -99,6 +102,21 @@ DATA_SOURCE_MODE="lb"
 
 # Build output directory name
 OUTPUT_DIR="${OUTPUT_DIR_BASE}_seed_${SHUFFLE_SEED}_anchors_${N_ANCHORS}_bridge_${N_BRIDGE}_${BRIDGE_MODE}_isolated_${N_ISOLATED}"
+
+# Check if we should skip existing experiments
+if [ "$SKIP_EXISTING" = "skip" ]; then
+    # Check if directory exists (either exact match OR with any target suffix)
+    if [ -d "$OUTPUT_DIR" ] || ls -d "${OUTPUT_DIR}_target_"* 2>/dev/null | grep -q .; then
+        if [ -d "$OUTPUT_DIR" ]; then
+            echo "⏭️  SKIP: Output directory already exists: ${OUTPUT_DIR}"
+        else
+            existing=$(ls -d "${OUTPUT_DIR}_target_"* 2>/dev/null | head -1 | xargs -n1 basename)
+            echo "⏭️  SKIP: Output directory already exists: $(dirname ${OUTPUT_DIR})/${existing}"
+        fi
+        echo "   (Run without 'skip' argument to run anyway)"
+        exit 0
+    fi
+fi
 
 # Determine bridge mode flag
 if [ "${BRIDGE_MODE}" == "random" ]; then

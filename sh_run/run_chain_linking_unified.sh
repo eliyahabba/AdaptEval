@@ -35,6 +35,9 @@
 #   # Override preset values
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --n-anchors 50
 #
+#   # Skip experiments that already exist (resume failures only)
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11 --skip-existing
+#
 #   # Fully custom (no preset)
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_custom --data-source lb --n-anchors 100
 
@@ -145,6 +148,7 @@ OUTPUT_BASE_DIR=""  # User must specify base output directory
 EXPERIMENT_TYPE="parallel"  # parallel or disjoint
 AUTO_INCREMENT_SEED=true
 SETUP_ONLY=false  # If true, only create directory and config, don't run experiment
+SKIP_EXISTING=false  # If true, skip if output dir already exists (no auto-increment)
 
 # Experiment parameters (will be filled from preset or CLI)
 SHUFFLE_SEED=""
@@ -265,6 +269,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         --setup-only|--dry-run)
             SETUP_ONLY=true
+            shift
+            ;;
+        --skip-existing)
+            SKIP_EXISTING=true
+            AUTO_INCREMENT_SEED=false  # Don't auto-increment when skipping existing
             shift
             ;;
         *)
@@ -416,6 +425,21 @@ fi
 OUTPUT_DIR_NAME=$(build_output_dir_name $SHUFFLE_SEED)
 OUTPUT_DIR="${OUTPUT_BASE_DIR}/${OUTPUT_DIR_NAME}"
 
+# Check if we should skip existing experiments
+if [ "$SKIP_EXISTING" = true ]; then
+    # Check if directory exists (either exact match OR with any target suffix)
+    if [ -d "$OUTPUT_DIR" ] || ls -d "${OUTPUT_DIR}_target_"* 2>/dev/null | grep -q .; then
+        if [ -d "$OUTPUT_DIR" ]; then
+            echo "⏭️  SKIP: Output directory already exists: ${OUTPUT_DIR}"
+        else
+            existing=$(ls -d "${OUTPUT_DIR}_target_"* 2>/dev/null | head -1 | xargs -n1 basename)
+            echo "⏭️  SKIP: Output directory already exists: ${OUTPUT_BASE_DIR}/${existing}"
+        fi
+        echo "   (Use without --skip-existing to auto-increment seed and create a new experiment)"
+        exit 0
+    fi
+fi
+
 # =============================================================================
 # Print Configuration
 # =============================================================================
@@ -427,6 +451,11 @@ echo "Job ID: $SLURM_JOB_ID"
 echo "Node: $SLURMD_NODENAME"
 echo "Preset: ${PRESET:-none}"
 echo "Experiment Type: $EXPERIMENT_TYPE"
+if [ "$SKIP_EXISTING" = true ]; then
+    echo "Mode: SKIP-EXISTING (will not auto-increment seed)"
+elif [ "$AUTO_INCREMENT_SEED" = true ]; then
+    echo "Mode: AUTO-INCREMENT (finds next available seed)"
+fi
 echo ""
 echo "Output: ${OUTPUT_DIR}"
 echo ""
