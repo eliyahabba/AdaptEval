@@ -2225,6 +2225,9 @@ if __name__ == "__main__":
             base_name += f"_models_{args.n_models_per_chain}"
         config.output_dir = str(PROJECT_ROOT / "data" / base_name)
     
+    # Setup crash handlers first
+    setup_crash_handlers()
+    
     # Run with exception handling for cleanup
     try:
         run_chain_linking_parallel(config)
