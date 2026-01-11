@@ -206,9 +206,9 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
     echo "   Seeds 41-46, bridge=20, isolated=50"
     for seed in 41 42 43 44 45 46; do
         echo "   Submitting seed $seed, bridge=fixed..."
-        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_fixed $seed 100 20 50 \"\" fixed"
+        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 \"\" fixed"
         sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-            ${BASE_DIR}/lb_disjoint_fixed $seed 100 20 50 "" fixed
+            ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed
     done
 
     echo ""
@@ -216,9 +216,9 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
     echo "   Seeds 41-46, bridge=20, isolated=50"
     for seed in 41 42 43 44 45 46; do
         echo "   Submitting seed $seed, bridge=random..."
-        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_random $seed 100 20 50 \"\" random"
+        echo "   → sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 \"\" random"
         sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-            ${BASE_DIR}/lb_disjoint_random $seed 100 20 50 "" random
+            ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random
     done
 
     echo ""

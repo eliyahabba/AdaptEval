@@ -2226,7 +2226,7 @@ if __name__ == "__main__":
         config.output_dir = str(PROJECT_ROOT / "data" / base_name)
     
     # Setup crash handlers first
-    setup_crash_handlers()
+    setup_cleanup_handlers()
     
     # Run with exception handling for cleanup
     try:
