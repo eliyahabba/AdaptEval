@@ -9,11 +9,11 @@ Key differences from V2:
 - Each worker is assigned to a specific GPU (if multiple available)
 - Requires multiple GPUs for maximum speedup
 
-Distance scheme:
-    -1: Base only (no Chain, no Target) - for Validation 3 baseline
-     0: Base + Target (direct linking)
-     1: Base + Chain[0] + Target
-     2: Base + Chain[0] + Chain[1] + Target
+Distance scheme (distance = number of datasets added beyond Base):
+     0: Base only (no additions) - for Validation 3 baseline
+     1: Base + Target (1 dataset added: Target)
+     2: Base + Chain[0] + Target (1 chain + Target)
+     3: Base + Chain[0] + Chain[1] + Target (2 chains + Target)
     ...
 
 Parallelization structure:
@@ -23,10 +23,10 @@ Parallelization structure:
         3. Build Chain Cache (sequential - each step depends on previous)
     
     Parallel (all at once):
-        - dist_-1/concurrent (Base only - Validation 3 baseline)
-        - dist_0/fixed, dist_0/concurrent (Base+Target)
-        - dist_1/fixed, dist_1/concurrent (Base+Chain[0]+Target)
-        - dist_2/fixed, dist_2/concurrent (Base+Chain[0]+Chain[1]+Target)
+        - dist_0/concurrent (Base only - Validation 3 baseline)
+        - dist_1/fixed, dist_1/concurrent (Base+Target)
+        - dist_2/fixed, dist_2/concurrent (Base+Chain[0]+Target)
+        - dist_3/fixed, dist_3/concurrent (Base+Chain[0]+Chain[1]+Target)
         - ...
 
 Expected speedup: up to 2 × (max_chain + 2) with enough GPUs/workers
@@ -255,7 +255,7 @@ class ScenarioTask:
 def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     """Execute a single scenario task. This runs in a worker process.
     
-    Special case for distance=-1 (Base only):
+    Special case for distance=0 (Base only):
         - Only runs Validation 3 (new model + old data)
         - Validations 1 & 2 are skipped (no target dataset involved)
         - Used as baseline for Validation 3 to measure improvement from adding Target
@@ -276,8 +276,8 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Load data from disk
     final_df = pd.read_pickle(task.final_df_path)
     
-    # For distance=-1 (Base only), we don't need target test/train data
-    if task.distance >= 0:
+    # For distance=0 (Base only), we don't need target test/train data
+    if task.distance >= 1:
         target_test_df = pd.read_pickle(task.target_test_df_path)
     else:
         target_test_df = pd.DataFrame()  # Empty - not used for Base only
@@ -287,7 +287,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # Load additional data for extra validations
     target_train_df = None
-    if task.distance >= 0 and task.target_train_df_path:
+    if task.distance >= 1 and task.target_train_df_path:
         target_train_df = pd.read_pickle(task.target_train_df_path)
     
     base_chain_test_df = None
@@ -386,14 +386,14 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Paper-grade sanity: ensure every dataset we evaluate has enough LOCAL anchors (prefix-based).
     datasets_to_check = set()
     
-    # For distance=-1 (Base only): only check base datasets
-    # For distance>=0: check target + base/chain datasets
-    if task.distance >= 0:
+    # For distance=0 (Base only): only check base datasets
+    # For distance>=1: check target + base/chain datasets
+    if task.distance >= 1:
         datasets_to_check.update(target_test_df['dataset'].unique())
     
     if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         datasets_to_check.update(base_chain_test_df['dataset'].unique())
-    if task.distance >= 0 and target_train_df is not None and len(target_train_df) > 0:
+    if task.distance >= 1 and target_train_df is not None and len(target_train_df) > 0:
         datasets_to_check.update(target_train_df['dataset'].unique())
 
     anchor_counts_by_dataset = {
@@ -411,14 +411,14 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Prepare test data for theta precomputation
     # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
     # This enables cross-dataset theta estimation using historical anchor responses
-    if task.distance >= 0:
-        # For distance>=0: include both target and base/chain datasets
+    if task.distance >= 1:
+        # For distance>=1: include both target and base/chain datasets
         if base_chain_test_df is not None and len(base_chain_test_df) > 0:
             test_df = pd.concat([base_chain_test_df, target_test_df], ignore_index=True)
         else:
             test_df = target_test_df.copy()
     else:
-        # For distance=-1 (Base only): only base datasets
+        # For distance=0 (Base only): only base datasets
         test_df = base_chain_test_df.copy() if base_chain_test_df is not None else pd.DataFrame()
     
     # Precompute thetas for Validation 1 & 2 (uses ALL anchors including Target)
@@ -444,11 +444,11 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Validation 1: New Models + New Dataset (test_models on target)
-    # SKIP for distance=-1 (Base only - no target dataset)
+    # SKIP for distance=0 (Base only - no target dataset)
     # ==========================================================================
     validation_results = []
     validation_df = None
-    if task.distance >= 0:  # Only run if target is involved
+    if task.distance >= 1:  # Only run if target is involved
         validation_results = run_validation(
             test_df=target_test_df,
             item_params=irt_params,
@@ -463,10 +463,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Validation 2: Old Models + New Dataset (train_models on target)
-    # SKIP for distance=-1 (Base only - no target dataset)
+    # SKIP for distance=0 (Base only - no target dataset)
     # ==========================================================================
     val_train_on_target_df = None
-    if task.distance >= 0 and target_train_df is not None and len(target_train_df) > 0:
+    if task.distance >= 1 and target_train_df is not None and len(target_train_df) > 0:
         precomputed_thetas_train = precompute_thetas_from_all_anchors(
             test_df=final_df,  # final_df contains train_models on all datasets
             item_params=irt_params,
@@ -506,7 +506,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Validation 3 POOLED: IRT with N anchors from combined Base+Chain pool
-    # Also runs for distance=-1 (Base only)
+    # Also runs for distance=0 (Base only)
     # ==========================================================================
     val_test_on_base_pooled_df = None
     pooled_irt_new_model_old_data = {}
@@ -557,13 +557,13 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
-    # SKIP for distance=-1 (Base only - no target dataset)
+    # SKIP for distance=0 (Base only - no target dataset)
     # ==========================================================================
     random_baseline_results = {}
     random_simple_results = {}
     random_baseline_per_model_df = pd.DataFrame()
     random_simple_per_model_df = pd.DataFrame()
-    if task.distance >= 0:  # Only run if target is involved
+    if task.distance >= 1:  # Only run if target is involved
         print(f"      Task {task.task_id}: Running random baselines for Validation 1...")
         random_baseline_results, random_baseline_per_model_df = run_random_baseline_validation(
             test_df=target_test_df,
@@ -589,13 +589,13 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Random Baselines for Validation 2: Old Model + New Data
-    # SKIP for distance=-1 (Base only - no target dataset)
+    # SKIP for distance=0 (Base only - no target dataset)
     # ==========================================================================
     random_baseline_old_model = {}
     random_simple_old_model = {}
     random_baseline_old_model_per_model_df = pd.DataFrame()
     random_simple_old_model_per_model_df = pd.DataFrame()
-    if task.distance >= 0 and target_train_df is not None and len(target_train_df) > 0:
+    if task.distance >= 1 and target_train_df is not None and len(target_train_df) > 0:
         print(f"      Task {task.task_id}: Running random baselines for Validation 2...")
         random_baseline_old_model, random_baseline_old_model_per_model_df = run_random_baseline_validation(
             test_df=target_train_df,
@@ -1576,16 +1576,16 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     already_done = []
     task_id = 0
     
-    # Distance scheme:
-    # -1 = Target only (no Base, no Chain)
-    #  0 = Base + Target (direct linking)
-    #  1 = Base + Chain[0] + Target
-    #  2 = Base + Chain[0] + Chain[1] + Target
+    # Distance scheme (distance = number of datasets added beyond Base):
+    #  0 = Base only (no additions) - for Validation 3 baseline
+    #  1 = Base + Target (1 dataset added)
+    #  2 = Base + Chain[0] + Target (1 chain + Target)
+    #  3 = Base + Chain[0] + Chain[1] + Target (2 chains + Target)
     # ...
-    for distance in range(-1, max_chain + 1):  # -1 to max_chain (inclusive)
+    for distance in range(0, max_chain + 2):  # 0 to max_chain+1 (inclusive)
         # Get chain info
-        if distance == -1:
-            # NEW: Base only (for Validation 3 baseline)
+        if distance == 0:
+            # Base only (for Validation 3 baseline)
             chain_str = "base_only"
             chain_list = []
             prev_df = base_df  # Only base data
@@ -1595,8 +1595,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             prev_anchors = list(base_anchors)
             prev_weights = list(base_weights)
             cumulative_chain_time = 0
-        elif distance == 0:
-            # Base + Target (direct linking) - unchanged from original
+        elif distance == 1:
+            # Base + Target (direct linking)
             chain_str = "direct"
             chain_list = []
             prev_df = base_df
@@ -1607,19 +1607,21 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             prev_weights = list(base_weights)
             cumulative_chain_time = 0
         else:
-            # Base + Chain datasets + Target - unchanged from original
-            if distance not in chain_cache:
+            # Base + Chain datasets + Target
+            # Chain cache uses 1-based indexing (chain_cache[1] = first chain dataset)
+            cache_idx = distance - 1
+            if cache_idx not in chain_cache:
                 print(f"   Distance {distance}: ⏭️ Skipped (chain not built)")
                 continue
-            chain_list = chain_pool[:distance]
+            chain_list = chain_pool[:cache_idx]
             chain_str = "_".join([d.replace(' ', '_')[:10] for d in chain_list])
-            irt, A, B, anchors, weights, prev_df = chain_cache[distance]
-            prev_irt_path = str(temp_dir / f"chain_{distance}_irt.pkl")
-            prev_A_path = str(temp_dir / f"chain_{distance}_A.npy") if A is not None else None
-            prev_B_path = str(temp_dir / f"chain_{distance}_B.npy") if B is not None else None
+            irt, A, B, anchors, weights, prev_df = chain_cache[cache_idx]
+            prev_irt_path = str(temp_dir / f"chain_{cache_idx}_irt.pkl")
+            prev_A_path = str(temp_dir / f"chain_{cache_idx}_A.npy") if A is not None else None
+            prev_B_path = str(temp_dir / f"chain_{cache_idx}_B.npy") if B is not None else None
             prev_anchors = anchors
             prev_weights = weights
-            cumulative_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, distance + 1))
+            cumulative_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, cache_idx + 1))
         
         scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
         
@@ -1635,7 +1637,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         scenario_dir.mkdir(exist_ok=True)
         
         # Combine with target
-        if distance == -1:
+        if distance == 0:
             # Base only - no target (Validation 3 baseline)
             final_df = prev_df.copy()
         else:
@@ -1646,10 +1648,10 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         
         # Build test data for Base+Chain datasets (for cross-dataset theta estimation)
         # This allows computing theta from historical anchor responses, not just target
-        if distance == -1:
+        if distance == 0:
             # Base only - test on base datasets
             base_chain_datasets = base_names
-        elif distance == 0:
+        elif distance == 1:
             # Base + Target
             base_chain_datasets = base_names
         else:
@@ -1671,31 +1673,32 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             base_chain_test_df_path_str = None
         
         # Determine dimension
-        if distance == -1:
+        if distance == 0:
             # Base only - use base dimension (already trained)
             dims = [A_base.shape[1] if A_base.ndim == 3 else A_base.shape[0]] if A_base is not None else config.dims_search
-        elif distance == 0:
+        elif distance == 1:
             # Base + Target
             dims = [A_base.shape[1] if A_base.ndim == 3 else A_base.shape[0]] if A_base is not None else config.dims_search
         else:
             # Base + Chain + Target
-            A = chain_cache[distance][1]
+            cache_idx = distance - 1
+            A = chain_cache[cache_idx][1]
             dims = [A.shape[1] if A.ndim == 3 else A.shape[0]] if A is not None else config.dims_search
         
         # Use shuffle_seed for task seed - ensures different runs have different random samples
         task_seed = config.shuffle_seed
 
         # Create tasks for both methods
-        # For distance=-1 (Base only), we only evaluate on Base datasets (Validation 3)
+        # For distance=0 (Base only), we only evaluate on Base datasets (Validation 3)
         # No need for Fixed-Anchor vs Concurrent since we're not adding new data
-        if distance == -1:
+        if distance == 0:
             methods = ['concurrent']  # Base-only: just one run (no fixed vs concurrent distinction)
         else:
             methods = ['fixed', 'concurrent']
         
         for method in methods:
-            # For distance=-1 (Base only), use fixed epochs (base already trained, just evaluating)
-            if distance == -1:
+            # For distance=0 (Base only), use fixed epochs (base already trained, just evaluating)
+            if distance == 0:
                 task_epochs = config.epochs_fixed  # Just re-run validation on base
             else:
                 task_epochs = config.epochs_fixed if method == 'fixed' else config.epochs
@@ -1827,21 +1830,22 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # Then process new results
     processed_distances = {r['distance'] for r in already_done}
     
-    for distance in range(-1, max_chain + 1):  # -1 to max_chain (inclusive)
+    for distance in range(0, max_chain + 2):  # 0 to max_chain+1 (inclusive)
         if distance in processed_distances:
             continue
-        if distance not in chain_cache and distance not in [-1, 0]:
+        cache_idx = distance - 1
+        if cache_idx not in chain_cache and distance not in [0, 1]:
             continue
             
         dist_results = [r for r in all_results if r['distance'] == distance]
         fixed_result = next((r for r in dist_results if r['method'] == 'fixed'), None)
         concurrent_result = next((r for r in dist_results if r['method'] == 'concurrent'), None)
         
-        # For distance=-1 (Target-only), we only have concurrent results
-        if distance == -1 and not concurrent_result:
+        # For distance=0 (Base-only), we only have concurrent results
+        if distance == 0 and not concurrent_result:
             print(f"   Distance {distance}: ⏭️ No results (concurrent failed)")
             continue
-        elif distance >= 0 and not fixed_result and not concurrent_result:
+        elif distance >= 1 and not fixed_result and not concurrent_result:
             print(f"   Distance {distance}: ⏭️ No results (both methods failed)")
             continue
         
@@ -1850,15 +1854,15 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         concurrent_result = concurrent_result or {}
         
         chain_list = fixed_result.get('chain', concurrent_result.get('chain', []))
-        chain_str = fixed_result.get('chain_str', concurrent_result.get('chain_str', 'target_only' if distance == -1 else 'direct'))
+        chain_str = fixed_result.get('chain_str', concurrent_result.get('chain_str', 'base_only' if distance == 0 else 'direct'))
         
-        # Calculate n_datasets_in_training based on distance
-        if distance == -1:
+        # Calculate n_datasets_in_training based on distance (distance = number of datasets added beyond Base)
+        if distance == 0:
             n_datasets_in_training = config.n_base_datasets  # Base only
-        elif distance == 0:
+        elif distance == 1:
             n_datasets_in_training = config.n_base_datasets + 1  # Base + Target
         else:
-            n_datasets_in_training = config.n_base_datasets + distance + 1  # Base + Chain + Target
+            n_datasets_in_training = config.n_base_datasets + distance  # Base + (distance-1) chains + Target
         
         result = {
             'target_dataset': target_name,
@@ -1873,22 +1877,22 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             'cost_full_eval_target': target_n_questions,
         }
         
-        # Cost calculations depend on distance
-        if distance == -1:
+        # Cost calculations depend on distance (distance = number of datasets added beyond Base)
+        if distance == 0:
             # Base only - for Validation 3 baseline (evaluate on base datasets)
             result['cost_fixed_target_anchors'] = 0  # No target involved
             result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset * config.n_base_datasets
-        elif distance == 0:
+        elif distance == 1:
             # Base + Target
             result['cost_fixed_target_anchors'] = config.n_anchors_per_dataset
             result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset * (config.n_base_datasets + 1)
         else:
-            # Base + Chain + Target
+            # Base + Chain + Target (distance-1 chains + Target)
             result['cost_fixed_target_anchors'] = config.n_anchors_per_dataset
-            result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset * (config.n_base_datasets + distance + 1)
+            result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset * (config.n_base_datasets + distance)
         
-        # Add Fixed results (only for distance >= 0)
-        if distance >= 0:
+        # Add Fixed results (only for distance >= 1)
+        if distance >= 1:
             for key, val in fixed_result.items():
                 if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
                     result[f'fixed_{key}'] = val
@@ -1898,8 +1902,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             if key not in ['task_id', 'distance', 'method', 'chain', 'chain_str', 'gpu_id', 'failed']:
                 result[f'concurrent_{key}'] = val
         
-        # Compute deltas (only for distance >= 0 where we have both methods)
-        if distance >= 0:
+        # Compute deltas (only for distance >= 1 where we have both methods)
+        if distance >= 1:
             for metric in ERROR_METRICS:
                 fixed_val = fixed_result.get(f'{metric}_mean')
                 concurrent_val = concurrent_result.get(f'{metric}_mean')
@@ -1922,9 +1926,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     results_for_df = []
     for r in final_results:
         r_copy = r.copy()
-        if r_copy['distance'] == -1:
+        if r_copy['distance'] == 0:
             r_copy['chain'] = "base_only"
-        elif r_copy['distance'] == 0:
+        elif r_copy['distance'] == 1:
             r_copy['chain'] = "direct"
         else:
             r_copy['chain'] = "_".join(r_copy['chain']) if r_copy['chain'] else "direct"
@@ -1984,9 +1988,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     for r in final_results:
         dist = r['distance']
-        if dist == -1:
+        if dist == 0:
             chain = "base_only"
-        elif dist == 0:
+        elif dist == 1:
             chain = "direct"
         else:
             chain = "_".join([c[:6] for c in r['chain']]) if r['chain'] else "direct"
@@ -1996,8 +2000,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         concurrent_err = r.get('concurrent_gp_irt_error_mean', float('nan'))
         delta = r.get('delta_gp_irt_error', float('nan'))
         
-        # For distance=-1, show only concurrent (Base only - no fixed vs concurrent)
-        if dist == -1:
+        # For distance=0, show only concurrent (Base only - no fixed vs concurrent)
+        if dist == 0:
             print(f"{dist:<6} {chain:<20} {'N/A':<10} {concurrent_err:<12.4f} {'N/A':<10}")
         else:
             print(f"{dist:<6} {chain:<20} {fixed_err:<10.4f} {concurrent_err:<12.4f} {delta:+10.4f}")
