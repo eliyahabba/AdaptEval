@@ -10,7 +10,7 @@ Key differences from V2:
 - Requires multiple GPUs for maximum speedup
 
 Distance scheme:
-    -1: Target only (standalone - no Base, no Chain)
+    -1: Base only (no Chain, no Target) - for Validation 3 baseline
      0: Base + Target (direct linking)
      1: Base + Chain[0] + Target
      2: Base + Chain[0] + Chain[1] + Target
@@ -23,7 +23,7 @@ Parallelization structure:
         3. Build Chain Cache (sequential - each step depends on previous)
     
     Parallel (all at once):
-        - dist_-1/concurrent (Target only)
+        - dist_-1/concurrent (Base only - Validation 3 baseline)
         - dist_0/fixed, dist_0/concurrent (Base+Target)
         - dist_1/fixed, dist_1/concurrent (Base+Chain[0]+Target)
         - dist_2/fixed, dist_2/concurrent (Base+Chain[0]+Chain[1]+Target)
@@ -132,6 +132,32 @@ def round_df_for_save(df: pd.DataFrame, decimals: int = 4) -> pd.DataFrame:
     return df_rounded
 
 
+def cleanup_training_datasets(output_dir: Path) -> int:
+    """Remove training dataset files (*.jsonlines) from an IRT output directory.
+    
+    These files are only needed during training and can be safely deleted after
+    training completes to save ~88% storage in IRT directories.
+    
+    Args:
+        output_dir: Path to IRT output directory
+        
+    Returns:
+        Number of bytes freed
+    """
+    total_freed = 0
+    jsonlines_files = list(output_dir.glob("*.jsonlines"))
+    
+    for jsonlines_file in jsonlines_files:
+        try:
+            size = jsonlines_file.stat().st_size
+            jsonlines_file.unlink()
+            total_freed += size
+        except Exception:
+            pass  # Silently ignore errors
+    
+    return total_freed
+
+
 @dataclass
 class ParallelChainConfig(ExperimentConfig):
     """Configuration for parallel chain linking experiments."""
@@ -149,6 +175,9 @@ class ParallelChainConfig(ExperimentConfig):
     num_workers: int = 4  # Number of parallel workers
     target_dataset: str | None = None  # Specific target dataset (if None, use shuffled[n_base])
     n_models_per_chain: int | None = None  # Number of models to use for chain steps (None = all train models)
+    cleanup_cache: bool = True  # Remove chain_cache after successful completion
+    cleanup_models: bool = False  # Remove IRT model files from dist_* directories (saves space, keeps only metrics)
+    cleanup_training_data: bool = True  # Remove training datasets (*.jsonlines) immediately after training (saves ~88% per IRT dir)
     
     def __post_init__(self):
         # Auto-adjust for tinybenchmarks/lb (only 6 datasets available)
@@ -226,6 +255,11 @@ class ScenarioTask:
 def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     """Execute a single scenario task. This runs in a worker process.
     
+    Special case for distance=-1 (Base only):
+        - Only runs Validation 3 (new model + old data)
+        - Validations 1 & 2 are skipped (no target dataset involved)
+        - Used as baseline for Validation 3 to measure improvement from adding Target
+    
     Args:
         task: The scenario task definition
         gpu_id: Which GPU to use (if None, uses default)
@@ -241,13 +275,19 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # Load data from disk
     final_df = pd.read_pickle(task.final_df_path)
-    target_test_df = pd.read_pickle(task.target_test_df_path)
+    
+    # For distance=-1 (Base only), we don't need target test/train data
+    if task.distance >= 0:
+        target_test_df = pd.read_pickle(task.target_test_df_path)
+    else:
+        target_test_df = pd.DataFrame()  # Empty - not used for Base only
+    
     test_models = set(task.test_models)
     train_models = set(task.train_models) if task.train_models else set()
     
     # Load additional data for extra validations
     target_train_df = None
-    if task.target_train_df_path:
+    if task.distance >= 0 and task.target_train_df_path:
         target_train_df = pd.read_pickle(task.target_train_df_path)
     
     base_chain_test_df = None
@@ -309,6 +349,14 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                         'chain': task.chain_list, 'chain_str': task.chain_str, 'failed': True}
     training_time = time.time() - start_time
     
+    # Clean up training datasets immediately after training (saves ~88% space)
+    # Only keep item_params.parquet and metadata - training data no longer needed
+    if output_dir.exists():
+        freed_bytes = cleanup_training_datasets(output_dir)
+        if freed_bytes > 0:
+            freed_mb = freed_bytes / (1024 * 1024)
+            print(f"      🧹 Cleaned training data: {freed_mb:.1f}MB freed")
+    
     # Extract info
     n_items = len(irt_params)
     best_dimension = None
@@ -336,10 +384,16 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         all_weights = target_weights
 
     # Paper-grade sanity: ensure every dataset we evaluate has enough LOCAL anchors (prefix-based).
-    datasets_to_check = set(target_test_df['dataset'].unique())
+    datasets_to_check = set()
+    
+    # For distance=-1 (Base only): only check base datasets
+    # For distance>=0: check target + base/chain datasets
+    if task.distance >= 0:
+        datasets_to_check.update(target_test_df['dataset'].unique())
+    
     if base_chain_test_df is not None and len(base_chain_test_df) > 0:
         datasets_to_check.update(base_chain_test_df['dataset'].unique())
-    if target_train_df is not None and len(target_train_df) > 0:
+    if task.distance >= 0 and target_train_df is not None and len(target_train_df) > 0:
         datasets_to_check.update(target_train_df['dataset'].unique())
 
     anchor_counts_by_dataset = {
@@ -357,10 +411,15 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Prepare test data for theta precomputation
     # CRITICAL: Include test_models' responses on Base+Chain datasets (not just target)
     # This enables cross-dataset theta estimation using historical anchor responses
-    if base_chain_test_df is not None and len(base_chain_test_df) > 0:
-        test_df = pd.concat([base_chain_test_df, target_test_df], ignore_index=True)
+    if task.distance >= 0:
+        # For distance>=0: include both target and base/chain datasets
+        if base_chain_test_df is not None and len(base_chain_test_df) > 0:
+            test_df = pd.concat([base_chain_test_df, target_test_df], ignore_index=True)
+        else:
+            test_df = target_test_df.copy()
     else:
-        test_df = target_test_df.copy()
+        # For distance=-1 (Base only): only base datasets
+        test_df = base_chain_test_df.copy() if base_chain_test_df is not None else pd.DataFrame()
     
     # Precompute thetas for Validation 1 & 2 (uses ALL anchors including Target)
     precomputed_thetas = precompute_thetas_from_all_anchors(
@@ -385,24 +444,29 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Validation 1: New Models + New Dataset (test_models on target)
+    # SKIP for distance=-1 (Base only - no target dataset)
     # ==========================================================================
-    validation_results = run_validation(
-        test_df=target_test_df,
-        item_params=irt_params,
-        anchor_ids=all_anchors,
-        anchor_weights=all_weights,
-        train_df=final_df,
-        A_matrix=A_matrix,
-        B_matrix=B_matrix,
-        precomputed_thetas=precomputed_thetas,
-    )
-    validation_df = pd.DataFrame(validation_results) if validation_results else None
+    validation_results = []
+    validation_df = None
+    if task.distance >= 0:  # Only run if target is involved
+        validation_results = run_validation(
+            test_df=target_test_df,
+            item_params=irt_params,
+            anchor_ids=all_anchors,
+            anchor_weights=all_weights,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas,
+        )
+        validation_df = pd.DataFrame(validation_results) if validation_results else None
     
     # ==========================================================================
     # Validation 2: Old Models + New Dataset (train_models on target)
+    # SKIP for distance=-1 (Base only - no target dataset)
     # ==========================================================================
     val_train_on_target_df = None
-    if target_train_df is not None and len(target_train_df) > 0:
+    if task.distance >= 0 and target_train_df is not None and len(target_train_df) > 0:
         precomputed_thetas_train = precompute_thetas_from_all_anchors(
             test_df=final_df,  # final_df contains train_models on all datasets
             item_params=irt_params,
@@ -442,6 +506,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Validation 3 POOLED: IRT with N anchors from combined Base+Chain pool
+    # Also runs for distance=-1 (Base only)
     # ==========================================================================
     val_test_on_base_pooled_df = None
     pooled_irt_new_model_old_data = {}
@@ -492,38 +557,45 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
+    # SKIP for distance=-1 (Base only - no target dataset)
     # ==========================================================================
-    print(f"      Task {task.task_id}: Running random baselines for Validation 1...")
-    random_baseline_results, random_baseline_per_model_df = run_random_baseline_validation(
-        test_df=target_test_df,
-        item_params=irt_params,
-        n_random_questions=task.n_anchors_per_dataset,
-        target_name=task.target_name,
-        train_df=final_df,
-        A_matrix=A_matrix,
-        B_matrix=B_matrix,
-        precomputed_thetas=precomputed_thetas,
-        n_seeds=1,
-        base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
-        return_per_model=True,
-    )
-    random_simple_results, random_simple_per_model_df = run_random_simple_baseline(
-        test_df=target_test_df,
-        target_name=task.target_name,
-        n_random_questions=task.n_anchors_per_dataset,
-        n_seeds=1,
-        base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
-        return_per_model=True,
-    )
+    random_baseline_results = {}
+    random_simple_results = {}
+    random_baseline_per_model_df = pd.DataFrame()
+    random_simple_per_model_df = pd.DataFrame()
+    if task.distance >= 0:  # Only run if target is involved
+        print(f"      Task {task.task_id}: Running random baselines for Validation 1...")
+        random_baseline_results, random_baseline_per_model_df = run_random_baseline_validation(
+            test_df=target_test_df,
+            item_params=irt_params,
+            n_random_questions=task.n_anchors_per_dataset,
+            target_name=task.target_name,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas,
+            n_seeds=1,
+            base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
+            return_per_model=True,
+        )
+        random_simple_results, random_simple_per_model_df = run_random_simple_baseline(
+            test_df=target_test_df,
+            target_name=task.target_name,
+            n_random_questions=task.n_anchors_per_dataset,
+            n_seeds=1,
+            base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
+            return_per_model=True,
+        )
     
     # ==========================================================================
     # Random Baselines for Validation 2: Old Model + New Data
+    # SKIP for distance=-1 (Base only - no target dataset)
     # ==========================================================================
     random_baseline_old_model = {}
     random_simple_old_model = {}
     random_baseline_old_model_per_model_df = pd.DataFrame()
     random_simple_old_model_per_model_df = pd.DataFrame()
-    if target_train_df is not None and len(target_train_df) > 0:
+    if task.distance >= 0 and target_train_df is not None and len(target_train_df) > 0:
         print(f"      Task {task.task_id}: Running random baselines for Validation 2...")
         random_baseline_old_model, random_baseline_old_model_per_model_df = run_random_baseline_validation(
             test_df=target_train_df,
@@ -1300,6 +1372,13 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     base_irt_dir = output_dir / "irt_base"
     base_irt, A_base, B_base = train_irt_on_base(base_df, config, base_irt_dir)
     
+    # Clean up training datasets from base IRT
+    if config.cleanup_training_data and base_irt_dir.exists():
+        freed_bytes = cleanup_training_datasets(base_irt_dir)
+        if freed_bytes > 0:
+            freed_mb = freed_bytes / (1024 * 1024)
+            print(f"   🧹 Cleaned base training data: {freed_mb:.1f}MB freed")
+    
     base_anchors, base_weights = select_anchors(
         base_irt, config.n_anchors_per_dataset, base_df, A_base, B_base
     )
@@ -1408,6 +1487,13 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         chain_time = time.time() - chain_start
         total_chain_time += chain_time
         
+        # Clean up training datasets from chain cache
+        if config.cleanup_training_data and cache_dir.exists():
+            freed_bytes = cleanup_training_datasets(cache_dir)
+            if freed_bytes > 0:
+                freed_mb = freed_bytes / (1024 * 1024)
+                print(f"      🧹 Cleaned chain training data: {freed_mb:.1f}MB freed")
+        
         new_A, new_B = None, None
         if hasattr(new_irt, 'attrs') and new_irt.attrs:
             A_list = new_irt.attrs.get('A_matrix')
@@ -1496,15 +1582,15 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     for distance in range(-1, max_chain + 1):  # -1 to max_chain (inclusive)
         # Get chain info
         if distance == -1:
-            # NEW: Target only (standalone)
-            chain_str = "target_only"
+            # NEW: Base only (for Validation 3 baseline)
+            chain_str = "base_only"
             chain_list = []
-            prev_df = None  # No previous data - only target
-            prev_irt_path = None
-            prev_A_path = None
-            prev_B_path = None
-            prev_anchors = None  # No anchors from previous datasets
-            prev_weights = None
+            prev_df = base_df  # Only base data
+            prev_irt_path = str(base_irt_pkl)
+            prev_A_path = str(base_A_path) if A_base is not None else None
+            prev_B_path = str(base_B_path) if B_base is not None else None
+            prev_anchors = list(base_anchors)
+            prev_weights = list(base_weights)
             cumulative_chain_time = 0
         elif distance == 0:
             # Base + Target (direct linking) - unchanged from original
@@ -1547,8 +1633,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         
         # Combine with target
         if distance == -1:
-            # Target only - no previous datasets
-            final_df = target_train_df.copy()
+            # Base only - no target (Validation 3 baseline)
+            final_df = prev_df.copy()
         else:
             # Combine previous datasets with target
             final_df = pd.concat([prev_df, target_train_df], ignore_index=True)
@@ -1558,8 +1644,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         # Build test data for Base+Chain datasets (for cross-dataset theta estimation)
         # This allows computing theta from historical anchor responses, not just target
         if distance == -1:
-            # Target only - no base/chain datasets
-            base_chain_datasets = []
+            # Base only - test on base datasets
+            base_chain_datasets = base_names
         elif distance == 0:
             # Base + Target
             base_chain_datasets = base_names
@@ -1583,8 +1669,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         
         # Determine dimension
         if distance == -1:
-            # Target only - use full dimension search
-            dims = config.dims_search
+            # Base only - use base dimension (already trained)
+            dims = [A_base.shape[1] if A_base.ndim == 3 else A_base.shape[0]] if A_base is not None else config.dims_search
         elif distance == 0:
             # Base + Target
             dims = [A_base.shape[1] if A_base.ndim == 3 else A_base.shape[0]] if A_base is not None else config.dims_search
@@ -1597,17 +1683,17 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         task_seed = config.shuffle_seed
 
         # Create tasks for both methods
-        # For distance=-1 (Target only), Fixed-Anchor doesn't make sense (no prev anchors)
-        # So we only run Concurrent
+        # For distance=-1 (Base only), we only evaluate on Base datasets (Validation 3)
+        # No need for Fixed-Anchor vs Concurrent since we're not adding new data
         if distance == -1:
-            methods = ['concurrent']  # Target-only: no fixed-anchor baseline
+            methods = ['concurrent']  # Base-only: just one run (no fixed vs concurrent distinction)
         else:
             methods = ['fixed', 'concurrent']
         
         for method in methods:
-            # For distance=-1, always use full epochs (no fixed-anchor shortcut)
+            # For distance=-1 (Base only), use fixed epochs (base already trained, just evaluating)
             if distance == -1:
-                task_epochs = config.epochs
+                task_epochs = config.epochs_fixed  # Just re-run validation on base
             else:
                 task_epochs = config.epochs_fixed if method == 'fixed' else config.epochs
             task = ScenarioTask(
@@ -1752,7 +1838,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         
         # Calculate n_datasets_in_training based on distance
         if distance == -1:
-            n_datasets_in_training = 1  # Target only
+            n_datasets_in_training = config.n_base_datasets  # Base only
         elif distance == 0:
             n_datasets_in_training = config.n_base_datasets + 1  # Base + Target
         else:
@@ -1773,9 +1859,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         
         # Cost calculations depend on distance
         if distance == -1:
-            # Target only - need to evaluate all target questions
-            result['cost_fixed_target_anchors'] = 0  # No fixed method for distance=-1
-            result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset
+            # Base only - for Validation 3 baseline (evaluate on base datasets)
+            result['cost_fixed_target_anchors'] = 0  # No target involved
+            result['cost_concurrent_all_anchors'] = config.n_anchors_per_dataset * config.n_base_datasets
         elif distance == 0:
             # Base + Target
             result['cost_fixed_target_anchors'] = config.n_anchors_per_dataset
@@ -1821,7 +1907,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     for r in final_results:
         r_copy = r.copy()
         if r_copy['distance'] == -1:
-            r_copy['chain'] = "target_only"
+            r_copy['chain'] = "base_only"
         elif r_copy['distance'] == 0:
             r_copy['chain'] = "direct"
         else:
@@ -1836,10 +1922,35 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     # Clean up temp files
     import shutil
+    print("\n9. Cleaning up temporary files...")
     try:
-        shutil.rmtree(temp_dir)
-    except:
-        pass
+        if temp_dir.exists():
+            shutil.rmtree(temp_dir)
+            print(f"   ✅ Removed temp directory: {temp_dir}")
+    except Exception as e:
+        print(f"   ⚠️ Failed to remove temp directory: {e}")
+    
+    # Optionally clean up chain cache (only needed for resuming failed runs)
+    if config.cleanup_cache:
+        try:
+            if chain_cache_dir.exists():
+                shutil.rmtree(chain_cache_dir)
+                print(f"   ✅ Removed chain cache: {chain_cache_dir}")
+        except Exception as e:
+            print(f"   ⚠️ Failed to remove chain cache: {e}")
+    
+    # Optionally clean up IRT model files from dist_* directories
+    if config.cleanup_models:
+        print("   Cleaning up IRT model files from scenario directories...")
+        for scenario_dir in output_dir.glob("dist_*"):
+            if scenario_dir.is_dir():
+                for irt_dir in scenario_dir.glob("irt_*"):
+                    if irt_dir.is_dir():
+                        try:
+                            shutil.rmtree(irt_dir)
+                            print(f"     ✅ Removed {irt_dir.relative_to(output_dir)}")
+                        except Exception as e:
+                            print(f"     ⚠️ Failed to remove {irt_dir}: {e}")
     
     total_time = time.time() - experiment_start
     
@@ -1858,7 +1969,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     for r in final_results:
         dist = r['distance']
         if dist == -1:
-            chain = "target_only"
+            chain = "base_only"
         elif dist == 0:
             chain = "direct"
         else:
@@ -1869,7 +1980,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         concurrent_err = r.get('concurrent_gp_irt_error_mean', float('nan'))
         delta = r.get('delta_gp_irt_error', float('nan'))
         
-        # For distance=-1, show only concurrent (no fixed method)
+        # For distance=-1, show only concurrent (Base only - no fixed vs concurrent)
         if dist == -1:
             print(f"{dist:<6} {chain:<20} {'N/A':<10} {concurrent_err:<12.4f} {'N/A':<10}")
         else:
@@ -1933,6 +2044,16 @@ if __name__ == "__main__":
                         help="Specific target dataset name (if not specified, uses shuffled[n_base])")
     parser.add_argument("--n-models-per-chain", type=int, default=None,
                         help="Number of models to use for training (None = all train models)")
+    parser.add_argument("--cleanup-cache", action="store_true", default=True,
+                        help="Remove chain_cache after successful completion (default: True)")
+    parser.add_argument("--no-cleanup-cache", dest="cleanup_cache", action="store_false",
+                        help="Keep chain_cache (useful for debugging or resuming)")
+    parser.add_argument("--cleanup-models", action="store_true", default=False,
+                        help="Remove IRT model files from dist_* directories to save space")
+    parser.add_argument("--cleanup-training-data", action="store_true", default=True,
+                        help="Remove training datasets (*.jsonlines) immediately after training (default: True, saves ~88%% per IRT dir)")
+    parser.add_argument("--no-cleanup-training-data", dest="cleanup_training_data", action="store_false",
+                        help="Keep training datasets (useful for debugging)")
     
     args = parser.parse_args()
     
@@ -1951,6 +2072,9 @@ if __name__ == "__main__":
         num_workers=args.num_workers,
         target_dataset=args.target_dataset,
         n_models_per_chain=args.n_models_per_chain,
+        cleanup_cache=args.cleanup_cache,
+        cleanup_models=args.cleanup_models,
+        cleanup_training_data=args.cleanup_training_data,
     )
     
     if args.output_dir:

@@ -2,6 +2,28 @@
 
 ## 🎯 Quick Start
 
+### NEW: Automatic Cleanup (No Manual Steps Needed!)
+
+Starting now, **new experiments automatically clean up training data** during execution:
+
+```bash
+python src/experiments/chain_linking/chain_linking_parallel.py \
+  --data-source-mode helm_classic \
+  --n-base 6
+```
+
+**What happens automatically**:
+- ✅ Training completes → Parameters saved
+- 🧹 **Immediately after**: Deletes `*.jsonlines` (training datasets)
+- 💾 **Savings**: 17MB → 1.7MB per IRT directory (90%)
+- 📦 **Keeps**: `item_params.parquet` + metadata (can still use models!)
+
+**Result**: Experiments now use **~150MB instead of 11GB** from the start! 🎉
+
+---
+
+### For Existing Experiments (Manual Cleanup):
+
 ```bash
 # Check what will be deleted (dry run):
 ./scripts/batch_cleanup.sh /path/to/data/v3
@@ -11,6 +33,29 @@
 ```
 
 **Result**: Saves ~90% storage by removing temporary files while keeping all important results!
+
+### 💡 NEW: Keep IRT Parameters, Delete Training Data
+
+Save even more space while keeping the ability to use trained models:
+
+```bash
+# Remove only training datasets (*.jsonlines) - saves ~88% from IRT dirs:
+./scripts/clean_training_datasets.sh /path/to/experiment --force
+
+# Or via Python:
+python scripts/cleanup_chain_results.py /path/to/experiment --models --keep-params
+
+# Compress metadata for additional ~70% savings:
+python scripts/compress_irt_metadata.py /path/to/experiment --force --recursive
+```
+
+**What's kept**:
+- ✅ `item_params.parquet` - Model parameters (needed!)
+- ✅ `item_params.meta.json.gz` - Compressed metadata
+- 🗑️ `irt_dataset_final.jsonlines` - Training data (not needed after training!)
+- 🗑️ `irt_val_dataset_dim5.jsonlines` - Validation data (not needed!)
+
+**Savings**: 17MB → ~1.5MB per IRT directory (91%)
 
 ---
 
@@ -74,6 +119,29 @@ python scripts/cleanup_chain_results.py /path/to/experiment --models
 
 ---
 
+### 4. **`clean_training_datasets.sh`** - Remove only training data (SAFE!)
+```bash
+# Remove *.jsonlines files, keep item_params:
+./scripts/clean_training_datasets.sh /path/to/experiment --force
+```
+
+Saves ~88% space from IRT directories while keeping model parameters intact.
+
+---
+
+### 5. **`compress_irt_metadata.py`** - Compress metadata files
+```bash
+# Compress item_params.meta.json → item_params.meta.json.gz:
+python scripts/compress_irt_metadata.py /path/to/experiment --force
+
+# Recursive (all experiments):
+python scripts/compress_irt_metadata.py /path/to/data --recursive --force
+```
+
+Saves ~70% space from metadata files.
+
+---
+
 ## 🚀 Automatic Cleanup (New Experiments)
 
 When running new experiments, use these flags:
@@ -96,6 +164,8 @@ python src/experiments/chain_linking/chain_linking_parallel.py \
 
 Your case (`full_chain_classic_seed_26_anchors_100_target_TruthfulQA`):
 
+### Option A: Full Cleanup (Delete all IRT models)
+
 | Directory | Before | After | Savings |
 |-----------|--------|-------|---------|
 | `.temp/` | 7.1GB | 0 | 7.1GB |
@@ -104,6 +174,23 @@ Your case (`full_chain_classic_seed_26_anchors_100_target_TruthfulQA`):
 | `dist_*/irt_*/` | ~500MB | 0 | ~500MB |
 | **Results** | ~100MB | ~100MB | 0 |
 | **Total** | **11GB** | **~100MB** | **~10.9GB (99%)** |
+
+### Option B: Keep IRT Parameters (RECOMMENDED!)
+
+| Directory | Before | After | Savings |
+|-----------|--------|-------|---------|
+| `.temp/` | 7.1GB | 0 | 7.1GB |
+| `chain_cache/` | 2.7GB | 0 | 2.7GB |
+| `irt_base/` | 119MB | 0 | 119MB |
+| `dist_*/irt_*/*.jsonlines` | ~440MB | 0 | ~440MB |
+| `dist_*/irt_*/item_params.*` | ~60MB | ~20MB | ~40MB |
+| **Results** | ~100MB | ~100MB | 0 |
+| **Total** | **11GB** | **~140MB** | **~10.86GB (98.7%)** |
+
+**Option B Benefits**:
+- ✅ Can still use trained models
+- ✅ Minimal storage penalty (~40MB extra vs Option A)
+- ✅ Enables future analysis without retraining
 
 ---
 
