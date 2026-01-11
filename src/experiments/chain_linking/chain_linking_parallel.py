@@ -1688,8 +1688,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         if B is not None:
             np.save(temp_dir / f"chain_{dist}_B.npy", B)
     
-    # Free chain cache memory after saving to disk
-    del chain_cache
+    # Note: We keep chain_cache in memory because we need it for the loop below
+    # Memory will be freed when the function exits
     
     tasks = []
     already_done = []

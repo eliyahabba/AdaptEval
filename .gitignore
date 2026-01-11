@@ -18,3 +18,4 @@ __pycache__/**/chain_cache/
 /src/llm_eval/selection/exact_notebook_estimation.py
 /src/llm_eval/selection/exact_notebook_irt.py
 /sh_run/old/
+**/__pycache__/
