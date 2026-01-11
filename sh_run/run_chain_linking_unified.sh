@@ -39,6 +39,25 @@
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_custom --data-source lb --n-anchors 100
 
 # =============================================================================
+# Cleanup Handler (runs on exit, error, or interrupt)
+# =============================================================================
+
+cleanup_on_exit() {
+    local exit_code=$?
+    
+    if [ $exit_code -ne 0 ]; then
+        echo ""
+        echo "🚨 Script terminated with error (exit code: $exit_code)"
+        echo "   Python emergency cleanup should have run automatically"
+        echo "   If you see leftover .temp directories, run:"
+        echo "   ./scripts/batch_cleanup.sh ${OUTPUT_BASE_DIR} --force"
+    fi
+}
+
+# Register cleanup handler
+trap cleanup_on_exit EXIT
+
+# =============================================================================
 # Configuration
 # =============================================================================
 
