@@ -1569,6 +1569,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         if B is not None:
             np.save(temp_dir / f"chain_{dist}_B.npy", B)
     
+    # Free chain cache memory after saving to disk
+    del chain_cache
+    
     tasks = []
     already_done = []
     task_id = 0
@@ -1735,6 +1738,19 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # -------------------------------------------------------------------------
     all_results = []
     parallel_time = 0
+    
+    # Free memory before spawning worker processes
+    # Workers will load data from disk (.temp/*.pkl files), they don't need the in-memory datasets
+    print("\n   🧹 Freeing main process memory before spawning workers...")
+    del datasets  # Large dict of all datasets - no longer needed
+    del target_df, target_train_df, target_test_df  # Already saved to disk
+    if 'base_chain_test_dfs' in locals():
+        del base_chain_test_dfs
+    if 'base_chain_test_df' in locals():
+        del base_chain_test_df
+    import gc
+    gc.collect()
+    print("   ✅ Memory freed")
     
     if tasks:
         print(f"\n7. Running {len(tasks)} tasks with {config.num_workers} workers...")
