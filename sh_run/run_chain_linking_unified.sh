@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-unified
-#SBATCH --mem=16g
+#SBATCH --mem=10g
 #SBATCH --time=6:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
@@ -15,7 +15,7 @@
 # IMPORTANT: To override SLURM resources at submission time:
 #   sbatch --mem=8g --time=24:0:0 run_chain_linking_unified.sh [options]
 #
-# Default resources (16g RAM, 6 hours, 4 GPUs, 2 CPUs):
+# Default resources (10g RAM, 6 hours, 4 GPUs, 2 CPUs):
 #   - Sufficient for LB and HELM Lite
 #   - Override with --mem=8g for MMLU fields (less memory needed)
 #   - Override with --time=24:0:0 for MMLU fields (longer runtime)
@@ -427,7 +427,7 @@ echo "  EPOCHS_FIXED: $EPOCHS_FIXED"
 echo "  NUM_WORKERS: $NUM_WORKERS"
 echo ""
 echo "SLURM Resources (override at submission with sbatch --mem=Xg --time=H:M:S):"
-echo "  Defaults: 16g RAM, 6 hours, 4 GPUs, 2 CPUs"
+echo "  Defaults: 10g RAM, 6 hours, 4 GPUs, 2 CPUs"
 echo "  Current job: $SLURM_JOB_ID"
 echo "========================================"
 
