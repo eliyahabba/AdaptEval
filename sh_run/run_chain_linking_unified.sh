@@ -362,13 +362,21 @@ find_next_available_seed() {
         local output_dir_name=$(build_output_dir_name $current_seed)
         local full_path="${base_dir}/${output_dir_name}"
         
-        # Check if directory exists
-        if [ ! -d "$full_path" ]; then
+        # Check if directory exists (either exact match OR with any target suffix)
+        # This handles the case where Python script appends _target_<name> to the directory
+        if [ ! -d "$full_path" ] && ! ls -d "${full_path}_target_"* 2>/dev/null | grep -q .; then
             echo $current_seed
             return
         fi
         
-        echo "  Seed $current_seed exists (${output_dir_name}), trying next..." >&2
+        # Determine which directory caused the conflict
+        if [ -d "$full_path" ]; then
+            echo "  Seed $current_seed exists (${output_dir_name}), trying next..." >&2
+        else
+            local existing=$(ls -d "${full_path}_target_"* 2>/dev/null | head -1 | xargs -n1 basename)
+            echo "  Seed $current_seed exists (${existing}), trying next..." >&2
+        fi
+        
         current_seed=$((current_seed + 1))
         
         # Safety limit
@@ -437,10 +445,16 @@ fi
 # Create Output Directory and Save Config
 # =============================================================================
 
-mkdir -p "$OUTPUT_DIR"
+# NOTE: We do NOT create the output directory here because the Python script
+# will append the target name and create the final directory.
+# Creating it here would leave behind empty directories without target suffixes.
 
-# Save configuration to JSON
-cat > "${OUTPUT_DIR}/config.json" << EOF
+# However, in setup-only mode, we create it for demonstration purposes
+if [ "$SETUP_ONLY" = true ]; then
+    mkdir -p "$OUTPUT_DIR"
+    
+    # Save configuration to JSON
+    cat > "${OUTPUT_DIR}/config.json" << EOF
 {
   "experiment_type": "$EXPERIMENT_TYPE",
   "preset": "${PRESET:-none}",
@@ -464,18 +478,26 @@ cat > "${OUTPUT_DIR}/config.json" << EOF
 }
 EOF
 
-echo ""
-echo "Configuration saved to: ${OUTPUT_DIR}/config.json"
-
-if [ "$SETUP_ONLY" = true ]; then
+    echo ""
+    echo "Configuration saved to: ${OUTPUT_DIR}/config.json"
     echo ""
     echo "======================================"
     echo "SETUP-ONLY MODE: Stopping here"
     echo "======================================"
     echo "Directory created: $OUTPUT_DIR"
     echo "Config saved, experiment NOT run"
+    echo ""
+    echo "NOTE: When running for real (without --setup-only), the Python script"
+    echo "      will append '_target_<name>' to the directory after determining"
+    echo "      the target dataset."
     exit 0
 fi
+
+# If not setup-only mode, Python script will create the directory with target suffix
+echo ""
+echo "NOTE: Python script will create output directory with target suffix"
+echo "      Final directory will be: ${OUTPUT_DIR}_target_<dataset_name>"
+echo ""
 
 # =============================================================================
 # Run Experiment

@@ -115,13 +115,13 @@ All presets are defined in [`experiment_presets.yaml`](experiment_presets.yaml).
 
 ## Auto-Increment Seed Feature
 
-The unified runner automatically finds the next available seed to avoid conflicts with running experiments:
+The unified runner automatically finds the next available seed to avoid conflicts with running experiments. It checks for both exact directory matches AND directories with target suffixes:
 
 ```bash
 # Request seed 11
-sbatch run_chain_linking_unified.sh --preset lb_standard --seed 11
+sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11
 
-# If seed_11 directory exists, automatically uses seed_12, seed_13, etc.
+# If seed_11_target_* directory exists, automatically uses seed_12, seed_13, etc.
 # Output: "Using shuffle_seed: 17" (next available)
 ```
 
@@ -129,6 +129,7 @@ sbatch run_chain_linking_unified.sh --preset lb_standard --seed 11
 - Multiple workers can submit jobs in parallel without conflicts
 - No need to manually track which seeds have been used
 - Each experiment gets a unique output directory
+- Correctly detects existing experiments even with `_target_<name>` suffix
 
 To disable this behavior:
 ```bash
@@ -137,15 +138,17 @@ sbatch run_chain_linking_unified.sh --preset lb_standard --seed 11 --no-auto-inc
 
 ## Output Directory Structure
 
-You **must** specify `--output-dir` for all experiments. The script will create subdirectories based on parameters:
+You **must** specify `--output-dir` for all experiments. The Python script will automatically append the target dataset name to the directory:
 
 ```
 data/v24_lb/  (your specified output-dir)
-  ├── full_chain_classic_seed_11_anchors_100/
-  ├── full_chain_classic_seed_12_anchors_100_models_50/
-  ├── full_chain_classic_seed_13_anchors_50/
-  └── full_chain_classic_seed_21_anchors_100_target_MMLU/
+  ├── full_chain_classic_seed_11_anchors_100_target_TruthfulQA/
+  ├── full_chain_classic_seed_12_anchors_100_models_50_target_MMLU/
+  ├── full_chain_classic_seed_13_anchors_50_target_HellaSwag/
+  └── full_chain_classic_seed_21_anchors_100_target_ARC/
 ```
+
+**Important:** The Python script creates the final directory with the `_target_<name>` suffix after determining which dataset will be the target. This ensures each experiment directory clearly shows its target dataset.
 
 Each experiment directory contains:
 - `config.json` - Experiment configuration
