@@ -40,12 +40,14 @@ Usage:
 
 from __future__ import annotations
 
+import atexit
 import json
 # Set multiprocessing start method before any other imports that might use it
 import multiprocessing
 import os
 import pickle
 import re
+import signal
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -156,6 +158,108 @@ def cleanup_training_datasets(output_dir: Path) -> int:
             pass  # Silently ignore errors
     
     return total_freed
+
+
+# Global cleanup state for crash recovery
+_cleanup_paths = {
+    'temp_dir': None,
+    'chain_cache_dir': None,
+    'output_dir': None,
+    'cleanup_training_data': True,
+    'cleanup_cache': True,
+}
+
+
+def register_cleanup_paths(temp_dir: Path, chain_cache_dir: Path, output_dir: Path,
+                          cleanup_training_data: bool, cleanup_cache: bool):
+    """Register paths for cleanup in case of crash."""
+    _cleanup_paths['temp_dir'] = temp_dir
+    _cleanup_paths['chain_cache_dir'] = chain_cache_dir
+    _cleanup_paths['output_dir'] = output_dir
+    _cleanup_paths['cleanup_training_data'] = cleanup_training_data
+    _cleanup_paths['cleanup_cache'] = cleanup_cache
+
+
+def emergency_cleanup():
+    """Emergency cleanup function - called on crash/interrupt."""
+    import shutil
+    
+    temp_dir = _cleanup_paths.get('temp_dir')
+    chain_cache_dir = _cleanup_paths.get('chain_cache_dir')
+    output_dir = _cleanup_paths.get('output_dir')
+    cleanup_training_data = _cleanup_paths.get('cleanup_training_data', True)
+    cleanup_cache = _cleanup_paths.get('cleanup_cache', True)
+    
+    print("\n🚨 Emergency cleanup triggered...")
+    
+    # Always clean .temp
+    if temp_dir and temp_dir.exists():
+        try:
+            shutil.rmtree(temp_dir)
+            print(f"   ✅ Removed temp directory: {temp_dir}")
+        except Exception as e:
+            print(f"   ⚠️ Failed to remove temp: {e}")
+    
+    # Clean training data if enabled
+    if cleanup_training_data and output_dir and output_dir.exists():
+        try:
+            freed_total = 0
+            # Clean from irt_base
+            irt_base = output_dir / "irt_base"
+            if irt_base.exists():
+                freed = cleanup_training_datasets(irt_base)
+                freed_total += freed
+            
+            # Clean from chain_cache
+            if chain_cache_dir and chain_cache_dir.exists():
+                for cache_subdir in chain_cache_dir.glob("after_*"):
+                    if cache_subdir.is_dir():
+                        freed = cleanup_training_datasets(cache_subdir)
+                        freed_total += freed
+            
+            # Clean from dist_* directories
+            for dist_dir in output_dir.glob("dist_*"):
+                if dist_dir.is_dir():
+                    for irt_dir in dist_dir.glob("irt_*"):
+                        if irt_dir.is_dir():
+                            freed = cleanup_training_datasets(irt_dir)
+                            freed_total += freed
+            
+            if freed_total > 0:
+                freed_mb = freed_total / (1024 * 1024)
+                print(f"   🧹 Cleaned training data: {freed_mb:.1f}MB freed")
+        except Exception as e:
+            print(f"   ⚠️ Failed to clean training data: {e}")
+    
+    # Clean cache if enabled
+    if cleanup_cache and chain_cache_dir and chain_cache_dir.exists():
+        try:
+            shutil.rmtree(chain_cache_dir)
+            print(f"   ✅ Removed chain cache: {chain_cache_dir}")
+        except Exception as e:
+            print(f"   ⚠️ Failed to remove cache: {e}")
+    
+    print("   Emergency cleanup complete")
+
+
+def setup_cleanup_handlers():
+    """Setup handlers to cleanup on crash/interrupt."""
+    # Register atexit handler (called on normal exit and some crashes)
+    atexit.register(lambda: None)  # Dummy to ensure atexit is initialized
+    
+    # Register signal handlers for graceful shutdown
+    def signal_handler(signum, frame):
+        print(f"\n🛑 Received signal {signum}, cleaning up...")
+        emergency_cleanup()
+        # Re-raise to allow normal signal handling
+        signal.signal(signum, signal.SIG_DFL)
+        os.kill(os.getpid(), signum)
+    
+    # Handle common termination signals
+    signal.signal(signal.SIGTERM, signal_handler)  # SLURM job cancellation
+    signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
+    if hasattr(signal, 'SIGHUP'):
+        signal.signal(signal.SIGHUP, signal_handler)  # Terminal closed
 
 
 @dataclass
@@ -1103,6 +1207,9 @@ def worker_wrapper(args: tuple) -> dict:
 def run_chain_linking_parallel(config: ParallelChainConfig):
     """Run the parallel chain linking experiment."""
     
+    # Setup cleanup handlers for crash recovery
+    setup_cleanup_handlers()
+    
     # output_dir creation deferred until target_name is known
 
     
@@ -1301,6 +1408,13 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     temp_dir = output_dir / ".temp"
     temp_dir.mkdir(exist_ok=True)
     
+    chain_cache_dir = output_dir / "chain_cache"
+    chain_cache_dir.mkdir(exist_ok=True)
+    
+    # Register cleanup paths for crash recovery
+    register_cleanup_paths(temp_dir, chain_cache_dir, output_dir, 
+                          config.cleanup_training_data, config.cleanup_cache)
+    
     print(f"\n2. Dataset assignment:")
     print(f"   Base ({len(base_names)}): {base_names}")
     print(f"   Target: {target_name}")
@@ -1409,8 +1523,6 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     current_weights = list(base_weights)
     current_df = base_df.copy()
     
-    chain_cache_dir = output_dir / "chain_cache"
-    chain_cache_dir.mkdir(exist_ok=True)
     checkpoint_file = chain_cache_dir / "checkpoint.pkl"
     
     total_chain_time = 0
@@ -2106,5 +2218,12 @@ if __name__ == "__main__":
             base_name += f"_models_{args.n_models_per_chain}"
         config.output_dir = str(PROJECT_ROOT / "data" / base_name)
     
-    run_chain_linking_parallel(config)
+    # Run with exception handling for cleanup
+    try:
+        run_chain_linking_parallel(config)
+    except Exception as e:
+        print(f"\n❌ Experiment failed with error: {e}")
+        print("   Running emergency cleanup...")
+        emergency_cleanup()
+        raise  # Re-raise to preserve stack trace
 
