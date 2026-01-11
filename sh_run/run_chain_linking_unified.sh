@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=chain-unified
 #SBATCH --mem=10g
-#SBATCH --time=6:0:0
+#SBATCH --time=9:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --gres=gg:g0:4

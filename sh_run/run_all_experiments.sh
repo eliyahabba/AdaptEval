@@ -104,11 +104,11 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo ""
     echo "-- MMLU Fields Baseline (20 experiments) --"
     echo "   Seeds 11-30, anchors=10, base=8"
-    echo "   Using: --mem=8g --time=8:0:0 (MMLU needs less memory, more time)"
+    echo "   Using: --mem=8g --time=10:0:0 (MMLU needs less memory, more time)"
     for seed in $(seq 11 30); do
         echo "   Submitting seed $seed..."
-        echo "   → sbatch --mem=8g --time=8:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/mmlu_baseline --preset mmlu_fields --seed $seed --random-seed 1000"
-        sbatch --mem=8g --time=8:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
+        echo "   → sbatch --mem=8g --time=10:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/mmlu_baseline --preset mmlu_fields --seed $seed --random-seed 1000"
+        sbatch --mem=8g --time=10:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
             --output-dir ${BASE_DIR}/mmlu_baseline \
             --preset mmlu_fields \
             --seed $seed \
