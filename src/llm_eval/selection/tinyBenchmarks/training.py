@@ -198,65 +198,102 @@ def binarize_responses(matrix_df: pd.DataFrame) -> pd.DataFrame:
         return matrix_df.copy()
     
     print(f"   🔄 Data has {len(unique_scores)} unique scores, applying thresholding...")
-    
-    result_data = []
-    cs = np.linspace(0.01, 0.99, 1000)  # Threshold values to consider
-    
-    # If no dataset column, treat all as one dataset
+
+    # NOTE (memory):
+    # The original notebook approach built a dense (models x questions) matrix and then
+    # tried many thresholds by creating temporary boolean matrices repeatedly.
+    # On large scenarios this can OOM (especially under multiprocessing).
+    #
+    # This implementation avoids dense matrices and avoids duplicating the full DataFrame
+    # per dataset. It finds the threshold by working in the long-form table:
+    # for each model, sort its scores once; binary mean for threshold c is computed via
+    # searchsorted without allocating a giant (models x questions) boolean matrix.
+
+    # Keep the original candidate grid to preserve behavior as closely as possible.
+    # (We change only the implementation to avoid dense matrices / large temporary allocations.)
+    n_thresholds = 1000
+
+    # Build dataset iterator without materializing copies of each slice up-front
     if "dataset" not in matrix_df.columns:
+        dataset_iter = [("all", matrix_df)]
         datasets = ["all"]
-        dataset_groups = {"all": matrix_df}
     else:
         datasets = sorted(matrix_df["dataset"].unique())
-        dataset_groups = {d: matrix_df[matrix_df["dataset"] == d] for d in datasets}
-    
-    for dataset in tqdm(datasets, desc="Finding optimal thresholds per dataset"):
-        dataset_df = dataset_groups[dataset]
-        
-        # Create model x question matrix for this dataset
-        models = sorted(dataset_df["model_name"].unique())
-        questions = sorted(dataset_df["question_id"].unique())
-        
-        # Build matrix
-        Y_dataset = np.full((len(models), len(questions)), np.nan)
-        model_to_idx = {m: i for i, m in enumerate(models)}
-        question_to_idx = {q: i for i, q in enumerate(questions)}
-        
-        # Vectorized filling - much faster than iterrows
-        model_indices = dataset_df["model_name"].map(model_to_idx).values
-        question_indices = dataset_df["question_id"].map(question_to_idx).values
-        scores = dataset_df["normalized_score"].values
-        Y_dataset[model_indices, question_indices] = scores
-        
-        # Find optimal threshold for this dataset
-        best_error = float('inf')
-        best_threshold = 0.5
-        
-        for c in cs:
-            # Calculate error: difference between binary and continuous averages per model
-            binary_avg = (Y_dataset > c).mean(axis=1)  # Average per model (binary)
-            continuous_avg = np.nanmean(Y_dataset, axis=1)  # Average per model (continuous)
-            
-            # Only consider models with data
-            valid_models = ~np.isnan(continuous_avg)
-            if valid_models.sum() == 0:
+        dataset_iter = ((d, matrix_df[matrix_df["dataset"] == d]) for d in datasets)
+
+    result_frames: list[pd.DataFrame] = []
+
+    for dataset, dataset_df in tqdm(dataset_iter, total=len(datasets), desc="Finding optimal thresholds per dataset"):
+        if dataset_df.empty:
+            continue
+
+        # Stabilize duplicates: original code implicitly overwrote duplicates when filling the dense matrix.
+        # Using mean is deterministic and usually the intended behavior (also matches pivot_table defaults).
+        dataset_df = (
+            dataset_df.groupby(["model_name", "question_id"], as_index=False, sort=False)["normalized_score"]
+            .mean()
+        )
+
+        # Denominator matches the original dense-matrix width: total unique questions in this dataset.
+        # Missing entries are treated as 0 in the original implementation because (np.nan > c) is False.
+        n_questions_total = int(dataset_df["question_id"].nunique())
+        if n_questions_total <= 0:
+            result_frames.append(dataset_df.copy())
+            continue
+
+        # Collect per-model score arrays (drop NaNs) and precompute continuous means (nanmean on row)
+        grouped = dataset_df.groupby("model_name", sort=False)["normalized_score"]
+        sorted_scores_per_model: list[np.ndarray] = []
+        continuous_avg: list[float] = []
+
+        for _, s in grouped:
+            arr = s.to_numpy(dtype=np.float32, copy=False)
+            if np.isnan(arr).any():
+                arr = arr[~np.isnan(arr)]
+            if arr.size == 0:
                 continue
-                
-            error = np.mean(np.abs(binary_avg[valid_models] - continuous_avg[valid_models]))
-            
+            arr.sort()  # in-place sort
+            sorted_scores_per_model.append(arr)
+            continuous_avg.append(float(arr.mean()))
+
+        if not sorted_scores_per_model:
+            # Nothing to threshold; keep as-is
+            result_frames.append(dataset_df.copy())
+            continue
+
+        cont = np.asarray(continuous_avg, dtype=np.float32)
+
+        # Original candidate thresholds
+        cs = np.linspace(0.01, 0.99, n_thresholds, dtype=np.float32)
+
+        best_error = float("inf")
+        best_threshold = float(cs[0])
+
+        # Evaluate thresholds without allocating (models x questions) matrices
+        for c in cs:
+            bin_means = np.empty(len(sorted_scores_per_model), dtype=np.float32)
+            for i, arr in enumerate(sorted_scores_per_model):
+                # fraction > c, with missing treated as 0 => divide by total #questions in dataset
+                idx = int(np.searchsorted(arr, c, side="right"))
+                bin_means[i] = (arr.size - idx) / n_questions_total
+            error = float(np.mean(np.abs(bin_means - cont)))
             if error < best_error:
                 best_error = error
-                best_threshold = c
-        
-        print(f"     📊 {dataset}: threshold={best_threshold:.3f}, error={best_error:.4f}")
-        
-        # Apply the optimal threshold to create binary responses - vectorized
-        binary_scores = (dataset_df["normalized_score"] > best_threshold).astype(float)
-        dataset_binary = dataset_df.copy()
-        dataset_binary["normalized_score"] = binary_scores
-        result_data.extend(dataset_binary.to_dict('records'))
-    
-    return pd.DataFrame(result_data)
+                best_threshold = float(c)
+
+        print(f"     📊 {dataset}: threshold={best_threshold:.3f}, error={best_error:.4f} (candidates={cs.size})")
+
+        # Apply threshold to the ORIGINAL slice (not the de-duplicated one), so downstream keeps full rows/metadata.
+        # (This preserves earlier behavior which operated on the original long-form table.)
+        dataset_orig = matrix_df if "dataset" not in matrix_df.columns else matrix_df[matrix_df["dataset"] == dataset]
+        dataset_binary = dataset_orig.copy()
+        dataset_binary["normalized_score"] = (dataset_binary["normalized_score"] > best_threshold).astype(float)
+        result_frames.append(dataset_binary)
+
+        # Help Python free temp arrays earlier (useful under SLURM memory limits)
+        del dataset_binary, dataset_df, dataset_orig, sorted_scores_per_model, continuous_avg, cont, cs
+
+    return pd.concat(result_frames, ignore_index=True) if result_frames else matrix_df.copy()
 
 
 def get_lambda(b: float, v: float) -> float:
