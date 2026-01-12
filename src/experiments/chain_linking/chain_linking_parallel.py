@@ -1250,154 +1250,41 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     shuffled = list(all_dataset_names)
     np.random.shuffle(shuffled)
     
-    # Handle user-specified target dataset
+    # -------------------------------------------------------------------------
+    # Deterministic dataset assignment (NO Python-side auto-increment)
+    #
+    # Rationale: resuming a crashed run must be 100% reproducible. The bash layer
+    # may choose to auto-increment seeds when launching *new* experiments, but
+    # this Python script should never change the requested seed just because an
+    # output directory exists.
+    # -------------------------------------------------------------------------
     if config.target_dataset:
-        if config.target_dataset not in all_dataset_names:
-            available = ", ".join(all_dataset_names[:10]) + "..."
-            raise ValueError(f"Target dataset '{config.target_dataset}' not found. Available: {available}")
-
-        output_parent = Path(config.output_dir).parent
-        current_seed = config.shuffle_seed
+        # User-specified target: keep seed fixed, just pick base/chain deterministically.
         target_name = config.target_dataset
+        if target_name not in all_dataset_names:
+            available = ", ".join(all_dataset_names[:10]) + "..."
+            raise ValueError(f"Target dataset '{target_name}' not found. Available: {available}")
 
-        # Loop until we find a seed without an existing directory
-        # UNLESS force_resume is True - then use the provided seed/dir as-is
-        if not config.force_resume:
-            while True:
-                # Update output_dir with current_seed if it changed
-                if current_seed != config.shuffle_seed:
-                    config.output_dir = re.sub(r'_seed_\d+', f'_seed_{current_seed}', config.output_dir)
-                
-                # Build expected directory path with target name
-                temp_output_dir = Path(config.output_dir)
-                if f"target_{target_name}" not in temp_output_dir.name:
-                    expected_dir = output_parent / f"{temp_output_dir.name}_target_{target_name}"
-                else:
-                    expected_dir = temp_output_dir
-
-                # Check if this specific directory exists with same parameters
-                if expected_dir.exists():
-                    config_file = expected_dir / "config.json"
-                    existing_n_models = None
-                    existing_n_anchors = None
-                    if config_file.exists():
-                        try:
-                            with open(config_file) as f:
-                                existing_config = json.load(f)
-                            existing_n_models = existing_config.get('n_models_per_chain')
-                            existing_n_anchors = existing_config.get('n_anchors_per_dataset')
-                        except:
-                            pass
-                    
-                    # Check if both n_models_per_chain AND n_anchors_per_dataset match
-                    same_n_models = (config.n_models_per_chain == existing_n_models)
-                    same_n_anchors = (config.n_anchors_per_dataset == existing_n_anchors)
-                    
-                    if same_n_models and same_n_anchors:
-                        # Same parameters - skip to next seed
-                        print(f"   ⏭️ Seed {current_seed} for target '{target_name}' exists, trying seed {current_seed + 1}...")
-                        current_seed += 1
-                        continue
-                    else:
-                        # Different parameters - can use this seed (will create different directory)
-                        diff_parts = []
-                        if not same_n_models:
-                            diff_parts.append(f"n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
-                        if not same_n_anchors:
-                            diff_parts.append(f"n_anchors ({existing_n_anchors} vs {config.n_anchors_per_dataset})")
-                        print(f"   ℹ️ Found '{expected_dir.name}' but different {', '.join(diff_parts)}")
-                        break
-                else:
-                    # Directory doesn't exist - use this seed
-                    print(f"   ✅ Using seed {current_seed} for target '{target_name}'")
-                    break
-
-            # Update shuffle_seed to reflect actual seed used
-            if current_seed != config.shuffle_seed:
-                print(f"   Updated shuffle_seed: {config.shuffle_seed} → {current_seed}")
-                config.shuffle_seed = current_seed
-        else:
-            # Force resume mode - use the provided seed as-is
-            print(f"   🔄 FORCE RESUME: Using provided seed {current_seed} for target '{target_name}'")
-
-        # Select base datasets and chain with the updated seed
         np.random.seed(config.shuffle_seed)
         shuffled = list(all_dataset_names)
         np.random.shuffle(shuffled)
-        # Remove target from shuffled list
         shuffled = [d for d in shuffled if d != target_name]
         base_names = shuffled[:config.n_base_datasets]
         chain_pool = shuffled[config.n_base_datasets:]
         print(f"   Using user-specified target: {target_name}")
     else:
-        # Auto-select target - find a seed that gives an available target
-        output_parent = Path(config.output_dir).parent
-        current_seed = config.shuffle_seed
-        
-        while True:
-            # Update output_dir with current_seed if it changed
-            if current_seed != config.shuffle_seed:
-                config.output_dir = re.sub(r'_seed_\d+', f'_seed_{current_seed}', config.output_dir)
-            
-            np.random.seed(current_seed)
-            shuffled = list(all_dataset_names)
-            np.random.shuffle(shuffled)
-            base_names = shuffled[:config.n_base_datasets]
-            target_name = shuffled[config.n_base_datasets]
-            chain_pool = shuffled[config.n_base_datasets + 1:]
-            
-            # Build expected directory path with target name
-            temp_output_dir = Path(config.output_dir)
-            if f"target_{target_name}" not in temp_output_dir.name:
-                expected_dir = output_parent / f"{temp_output_dir.name}_target_{target_name}"
-            else:
-                expected_dir = temp_output_dir
-
-            # Check if this specific directory exists with same parameters
-            if expected_dir.exists():
-                config_file = expected_dir / "config.json"
-                existing_n_models = None
-                existing_n_anchors = None
-                if config_file.exists():
-                    try:
-                        with open(config_file) as f:
-                            existing_config = json.load(f)
-                        existing_n_models = existing_config.get('n_models_per_chain')
-                        existing_n_anchors = existing_config.get('n_anchors_per_dataset')
-                    except:
-                        pass
-                
-                # Check if both n_models_per_chain AND n_anchors_per_dataset match
-                same_n_models = (config.n_models_per_chain == existing_n_models)
-                same_n_anchors = (config.n_anchors_per_dataset == existing_n_anchors)
-                
-                if same_n_models and same_n_anchors:
-                    # Same parameters - skip to next seed
-                    print(f"   ⏭️ Seed {current_seed} for target '{target_name}' exists, trying seed {current_seed + 1}...")
-                    current_seed += 1
-                    continue
-                else:
-                    # Different parameters - can use this seed (will create different directory)
-                    diff_parts = []
-                    if not same_n_models:
-                        diff_parts.append(f"n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
-                    if not same_n_anchors:
-                        diff_parts.append(f"n_anchors ({existing_n_anchors} vs {config.n_anchors_per_dataset})")
-                    print(f"   ℹ️ Found '{expected_dir.name}' but different {', '.join(diff_parts)}")
-                    break
-            else:
-                # Directory doesn't exist - use this seed
-                print(f"   ✅ Using seed {current_seed} for target '{target_name}'")
-                break
-        
-        # Update shuffle_seed to reflect actual seed used
-        if current_seed != config.shuffle_seed:
-            print(f"   Updated shuffle_seed: {config.shuffle_seed} → {current_seed}")
-            config.shuffle_seed = current_seed
+        # Auto-select target: deterministic given shuffle_seed.
+        np.random.seed(config.shuffle_seed)
+        shuffled = list(all_dataset_names)
+        np.random.shuffle(shuffled)
+        base_names = shuffled[:config.n_base_datasets]
+        target_name = shuffled[config.n_base_datasets]
+        chain_pool = shuffled[config.n_base_datasets + 1:]
+        print(f"   Auto-selected target (deterministic): {target_name}")
     
     target_n_questions = int(datasets[target_name]['question_id'].nunique())
 
-    # Update output directory with target name
+    # Update output directory with target name (avoid duplication)
     initial_output_dir = Path(config.output_dir)
     # Check if target name is already in the path to avoid duplication if run multiple times or manually named
     if f"target_{target_name}" not in initial_output_dir.name:
