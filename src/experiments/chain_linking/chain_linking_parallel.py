@@ -282,6 +282,7 @@ class ParallelChainConfig(ExperimentConfig):
     cleanup_cache: bool = True  # Remove chain_cache after successful completion
     cleanup_models: bool = False  # Remove IRT model files from dist_* directories (saves space, keeps only metrics)
     cleanup_training_data: bool = True  # Remove training datasets (*.jsonlines) immediately after training (saves ~88% per IRT dir)
+    force_resume: bool = False  # Force resume existing experiment (skip auto-increment check)
     
     def __post_init__(self):
         # Auto-adjust for tinybenchmarks/lb (only 6 datasets available)
@@ -1260,59 +1261,64 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         target_name = config.target_dataset
 
         # Loop until we find a seed without an existing directory
-        while True:
-            # Update output_dir with current_seed if it changed
-            if current_seed != config.shuffle_seed:
-                config.output_dir = re.sub(r'_seed_\d+', f'_seed_{current_seed}', config.output_dir)
-            
-            # Build expected directory path with target name
-            temp_output_dir = Path(config.output_dir)
-            if f"target_{target_name}" not in temp_output_dir.name:
-                expected_dir = output_parent / f"{temp_output_dir.name}_target_{target_name}"
-            else:
-                expected_dir = temp_output_dir
-
-            # Check if this specific directory exists with same parameters
-            if expected_dir.exists():
-                config_file = expected_dir / "config.json"
-                existing_n_models = None
-                existing_n_anchors = None
-                if config_file.exists():
-                    try:
-                        with open(config_file) as f:
-                            existing_config = json.load(f)
-                        existing_n_models = existing_config.get('n_models_per_chain')
-                        existing_n_anchors = existing_config.get('n_anchors_per_dataset')
-                    except:
-                        pass
+        # UNLESS force_resume is True - then use the provided seed/dir as-is
+        if not config.force_resume:
+            while True:
+                # Update output_dir with current_seed if it changed
+                if current_seed != config.shuffle_seed:
+                    config.output_dir = re.sub(r'_seed_\d+', f'_seed_{current_seed}', config.output_dir)
                 
-                # Check if both n_models_per_chain AND n_anchors_per_dataset match
-                same_n_models = (config.n_models_per_chain == existing_n_models)
-                same_n_anchors = (config.n_anchors_per_dataset == existing_n_anchors)
-                
-                if same_n_models and same_n_anchors:
-                    # Same parameters - skip to next seed
-                    print(f"   ⏭️ Seed {current_seed} for target '{target_name}' exists, trying seed {current_seed + 1}...")
-                    current_seed += 1
-                    continue
+                # Build expected directory path with target name
+                temp_output_dir = Path(config.output_dir)
+                if f"target_{target_name}" not in temp_output_dir.name:
+                    expected_dir = output_parent / f"{temp_output_dir.name}_target_{target_name}"
                 else:
-                    # Different parameters - can use this seed (will create different directory)
-                    diff_parts = []
-                    if not same_n_models:
-                        diff_parts.append(f"n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
-                    if not same_n_anchors:
-                        diff_parts.append(f"n_anchors ({existing_n_anchors} vs {config.n_anchors_per_dataset})")
-                    print(f"   ℹ️ Found '{expected_dir.name}' but different {', '.join(diff_parts)}")
-                    break
-            else:
-                # Directory doesn't exist - use this seed
-                print(f"   ✅ Using seed {current_seed} for target '{target_name}'")
-                break
+                    expected_dir = temp_output_dir
 
-        # Update shuffle_seed to reflect actual seed used
-        if current_seed != config.shuffle_seed:
-            print(f"   Updated shuffle_seed: {config.shuffle_seed} → {current_seed}")
-            config.shuffle_seed = current_seed
+                # Check if this specific directory exists with same parameters
+                if expected_dir.exists():
+                    config_file = expected_dir / "config.json"
+                    existing_n_models = None
+                    existing_n_anchors = None
+                    if config_file.exists():
+                        try:
+                            with open(config_file) as f:
+                                existing_config = json.load(f)
+                            existing_n_models = existing_config.get('n_models_per_chain')
+                            existing_n_anchors = existing_config.get('n_anchors_per_dataset')
+                        except:
+                            pass
+                    
+                    # Check if both n_models_per_chain AND n_anchors_per_dataset match
+                    same_n_models = (config.n_models_per_chain == existing_n_models)
+                    same_n_anchors = (config.n_anchors_per_dataset == existing_n_anchors)
+                    
+                    if same_n_models and same_n_anchors:
+                        # Same parameters - skip to next seed
+                        print(f"   ⏭️ Seed {current_seed} for target '{target_name}' exists, trying seed {current_seed + 1}...")
+                        current_seed += 1
+                        continue
+                    else:
+                        # Different parameters - can use this seed (will create different directory)
+                        diff_parts = []
+                        if not same_n_models:
+                            diff_parts.append(f"n_models_per_chain ({existing_n_models} vs {config.n_models_per_chain})")
+                        if not same_n_anchors:
+                            diff_parts.append(f"n_anchors ({existing_n_anchors} vs {config.n_anchors_per_dataset})")
+                        print(f"   ℹ️ Found '{expected_dir.name}' but different {', '.join(diff_parts)}")
+                        break
+                else:
+                    # Directory doesn't exist - use this seed
+                    print(f"   ✅ Using seed {current_seed} for target '{target_name}'")
+                    break
+
+            # Update shuffle_seed to reflect actual seed used
+            if current_seed != config.shuffle_seed:
+                print(f"   Updated shuffle_seed: {config.shuffle_seed} → {current_seed}")
+                config.shuffle_seed = current_seed
+        else:
+            # Force resume mode - use the provided seed as-is
+            print(f"   🔄 FORCE RESUME: Using provided seed {current_seed} for target '{target_name}'")
 
         # Select base datasets and chain with the updated seed
         np.random.seed(config.shuffle_seed)
@@ -2193,6 +2199,8 @@ if __name__ == "__main__":
                         help="Remove training datasets (*.jsonlines) immediately after training (default: True, saves ~88%% per IRT dir)")
     parser.add_argument("--no-cleanup-training-data", dest="cleanup_training_data", action="store_false",
                         help="Keep training datasets (useful for debugging)")
+    parser.add_argument("--force-resume", action="store_true", default=False,
+                        help="Force resume existing experiment (skip auto-increment seed check)")
     
     args = parser.parse_args()
     
@@ -2214,6 +2222,7 @@ if __name__ == "__main__":
         cleanup_cache=args.cleanup_cache,
         cleanup_models=args.cleanup_models,
         cleanup_training_data=args.cleanup_training_data,
+        force_resume=args.force_resume,
     )
     
     if args.output_dir:

@@ -147,6 +147,7 @@ PRESET=""
 OUTPUT_BASE_DIR=""  # User must specify base output directory
 EXPERIMENT_TYPE="parallel"  # parallel or disjoint
 AUTO_INCREMENT_SEED=true
+FORCE_RESUME=false  # If true, force resume existing experiment (pass --force-resume to Python)
 SETUP_ONLY=false  # If true, only create directory and config, don't run experiment
 SKIP_EXISTING=false  # If true, skip if output dir already exists (no auto-increment)
 
@@ -265,6 +266,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-auto-increment)
             AUTO_INCREMENT_SEED=false
+            shift
+            ;;
+        --force-resume)
+            FORCE_RESUME=true
+            AUTO_INCREMENT_SEED=false  # Also disable bash-level auto-increment
             shift
             ;;
         --setup-only|--dry-run)
@@ -609,6 +615,9 @@ else
     fi
     if [ -n "$TARGET_DATASET" ]; then
         ARGS="$ARGS --target-dataset \"${TARGET_DATASET}\""
+    fi
+    if [ "$FORCE_RESUME" = true ]; then
+        ARGS="$ARGS --force-resume"
     fi
     
     eval python src/experiments/chain_linking/chain_linking_parallel.py $ARGS
