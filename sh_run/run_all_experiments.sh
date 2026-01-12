@@ -76,10 +76,11 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo ""
     echo "-- LB Baseline (6 experiments) --"
     echo "   Seeds 11-16, anchors=100, models=all"
+    echo "   Using: --time=12:0:0 (LB needs more time)"
     for seed in 11 12 13 14 15 16; do
         echo "   Submitting seed $seed..."
-        echo "   → sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_baseline --preset lb_standard --seed $seed --random-seed 1000"
-        sbatch $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
+        echo "   → sbatch --time=12:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh --output-dir ${BASE_DIR}/lb_baseline --preset lb_standard --seed $seed --random-seed 1000"
+        sbatch --time=12:0:0 $SETUP_ONLY $SKIP_EXISTING sh_run/run_chain_linking_unified.sh \
             --output-dir ${BASE_DIR}/lb_baseline \
             --preset lb_standard \
             --seed $seed \
