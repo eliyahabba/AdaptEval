@@ -160,7 +160,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                 --seed $SEED \
                 --target "$target" \
                 --random-seed 1000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             RESUMED=$((RESUMED + 1))
         elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
             echo "▶️  $target (baseline) - submitting (seed=$SEED)"
@@ -170,7 +170,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                 --seed $SEED \
                 --target "$target" \
                 --random-seed 1000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             SUBMITTED=$((SUBMITTED + 1))
         else
             echo "⏭️  $target (baseline) - incomplete but --resume not specified"
@@ -202,7 +202,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --seed $SEED \
                     --target "$target" \
                     --random-seed $((1000 + anchors)) \
-                    $UNIFIED_FLAGS >/dev/null
+                    $UNIFIED_FLAGS
                 RESUMED=$((RESUMED + 1))
             elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
                 echo "▶️  $target (anchors=$anchors) - submitting (seed=$SEED)"
@@ -213,7 +213,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --seed $SEED \
                     --target "$target" \
                     --random-seed $((1000 + anchors)) \
-                    $UNIFIED_FLAGS >/dev/null
+                    $UNIFIED_FLAGS
                 SUBMITTED=$((SUBMITTED + 1))
             else
                 echo "⏭️  $target (anchors=$anchors) - incomplete but --resume not specified"
@@ -246,7 +246,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --seed $SEED \
                     --target "$target" \
                     --random-seed $((2000 + models)) \
-                    $UNIFIED_FLAGS >/dev/null
+                    $UNIFIED_FLAGS
                 RESUMED=$((RESUMED + 1))
             elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
                 echo "▶️  $target (models=$models) - submitting (seed=$SEED)"
@@ -257,7 +257,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --seed $SEED \
                     --target "$target" \
                     --random-seed $((2000 + models)) \
-                    $UNIFIED_FLAGS >/dev/null
+                    $UNIFIED_FLAGS
                 SUBMITTED=$((SUBMITTED + 1))
             else
                 echo "⏭️  $target (models=$models) - incomplete but --resume not specified"
@@ -297,7 +297,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
                 --preset helm_lite_base1 \
                 --seed $seed \
                 --random-seed 1000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             RESUMED=$((RESUMED + 1))
         elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
             echo "▶️  HELM Lite base=1 (seed=$seed) - submitting"
@@ -306,7 +306,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
                 --preset helm_lite_base1 \
                 --seed $seed \
                 --random-seed 1000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             SUBMITTED=$((SUBMITTED + 1))
         else
             echo "⏭️  HELM Lite base=1 (seed=$seed) - incomplete but --resume not specified"
@@ -333,7 +333,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
                 --preset helm_lite_base4 \
                 --seed $seed \
                 --random-seed 3000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             RESUMED=$((RESUMED + 1))
         elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
             echo "▶️  HELM Lite base=4 (seed=$seed) - submitting"
@@ -342,7 +342,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
                 --preset helm_lite_base4 \
                 --seed $seed \
                 --random-seed 3000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             SUBMITTED=$((SUBMITTED + 1))
         else
             echo "⏭️  HELM Lite base=4 (seed=$seed) - incomplete but --resume not specified"
@@ -379,7 +379,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
                 --preset mmlu_fields \
                 --seed $seed \
                 --random-seed 1000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             RESUMED=$((RESUMED + 1))
         elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
             echo "▶️  MMLU Fields (seed=$seed) - submitting"
@@ -388,7 +388,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
                 --preset mmlu_fields \
                 --seed $seed \
                 --random-seed 1000 \
-                $UNIFIED_FLAGS >/dev/null
+                $UNIFIED_FLAGS
             SUBMITTED=$((SUBMITTED + 1))
         else
             echo "⏭️  MMLU Fields (seed=$seed) - incomplete but --resume not specified"
@@ -427,12 +427,12 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
         elif [ "$RESUME" = true ] && [ $status -eq 2 ]; then
             echo "🔄 Disjoint fixed (seed=$seed) - resuming"
             sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-                ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_MODE >/dev/null
+                ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_MODE
             RESUMED=$((RESUMED + 1))
         elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
             echo "▶️  Disjoint fixed (seed=$seed) - submitting"
             sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-                ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_MODE >/dev/null
+                ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_MODE
             SUBMITTED=$((SUBMITTED + 1))
         else
             echo "⏭️  Disjoint fixed (seed=$seed) - incomplete but --resume not specified"
@@ -456,12 +456,12 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
         elif [ "$RESUME" = true ] && [ $status -eq 2 ]; then
             echo "🔄 Disjoint random (seed=$seed) - resuming"
             sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-                ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_MODE >/dev/null
+                ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_MODE
             RESUMED=$((RESUMED + 1))
         elif [ "$FORCE" = true ] || [ $status -eq 1 ]; then
             echo "▶️  Disjoint random (seed=$seed) - submitting"
             sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-                ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_MODE >/dev/null
+                ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_MODE
             SUBMITTED=$((SUBMITTED + 1))
         else
             echo "⏭️  Disjoint random (seed=$seed) - incomplete but --resume not specified"
