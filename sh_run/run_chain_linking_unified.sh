@@ -547,10 +547,15 @@ EOF
     exit 0
 fi
 
-# If not setup-only mode, Python script will create the directory with target suffix
+# If not setup-only mode, Python script will create the directory
 echo ""
-echo "NOTE: Python script will create output directory with target suffix"
-echo "      Final directory will be: ${OUTPUT_DIR}_target_<dataset_name>"
+if [ -n "$TARGET_DATASET" ]; then
+    echo "NOTE: Output directory already includes target name (--target was specified)"
+    echo "      Final directory will be: ${OUTPUT_DIR}"
+else
+    echo "NOTE: Python script will append target suffix after auto-selecting target"
+    echo "      Final directory will be: ${OUTPUT_DIR}_target_<auto_selected_name>"
+fi
 echo ""
 
 # =============================================================================
