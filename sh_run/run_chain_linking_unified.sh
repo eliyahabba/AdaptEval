@@ -629,5 +629,24 @@ fi
 
 echo ""
 echo "Job resource usage:"
-sacct -j $SLURM_JOB_ID --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
+
+# NOTE:
+# - For RUNNING jobs, sacct fields like MaxRSS may be empty due to accounting latency.
+# - While RUNNING, prefer: sstat -j ${SLURM_JOB_ID}.batch --format=AveRSS,MaxRSS,MaxVMSize
+# - After COMPLETION, prefer querying the batch step explicitly: ${SLURM_JOB_ID}.batch
+
+if [ -n "$SLURM_JOB_ID" ]; then
+    echo "sacct (job + steps):"
+    sacct -j "${SLURM_JOB_ID}" --units=G --format=User,JobID,JobName,Partition,State,ExitCode,Elapsed,MaxRSS,MaxVMSize,AveRSS,ReqMem,AllocTRES%30
+    echo ""
+    echo "sacct (batch step):"
+    sacct -j "${SLURM_JOB_ID}.batch" --units=G --format=JobID,JobName,State,ExitCode,Elapsed,MaxRSS,MaxVMSize,AveRSS,ReqMem,AllocTRES%30
+    echo ""
+    if command -v seff &> /dev/null; then
+        echo "seff summary:"
+        seff "${SLURM_JOB_ID}" || true
+    fi
+else
+    echo "SLURM_JOB_ID not set (local run?)"
+fi
 
