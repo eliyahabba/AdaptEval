@@ -39,11 +39,12 @@ done
 # Check if experiment exists and is complete
 exists_and_complete() {
     local category="$1"
-    local target="$2"
-    local anchors="$3"
-    local models="$4"
+    local seed="$2"
+    local target="$3"
+    local anchors="$4"
+    local models="$5"
     
-    local pattern="*_anchors_${anchors}"
+    local pattern="*_seed_${seed}_anchors_${anchors}"
     [ -n "$models" ] && pattern="${pattern}_models_${models}"
     [ -n "$target" ] && pattern="${pattern}_target_${target}"
     
@@ -94,7 +95,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     for target in "${LB_DATASETS[@]}"; do
         TOTAL=$((TOTAL + 1))
         
-        if [ "$FORCE" = false ] && exists_and_complete "lb_baseline" "$target" 100 ""; then
+        if [ "$FORCE" = false ] && exists_and_complete "lb_baseline" "$SEED" "$target" 100 ""; then
             echo "⏭️  $target (baseline) - already complete"
             SKIPPED=$((SKIPPED + 1))
         else
@@ -104,7 +105,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                 --preset lb_standard \
                 --seed $SEED \
                 --target "$target" \
-                --random-seed 1000 >/dev/null
+                --random-seed 1000 \
+                --skip-existing >/dev/null
             SUBMITTED=$((SUBMITTED + 1))
         fi
         SEED=$((SEED + 1))
@@ -118,7 +120,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
         for anchors in 25 50 100 200; do
             TOTAL=$((TOTAL + 1))
             
-            if [ "$FORCE" = false ] && exists_and_complete "lb_anchor_sweep" "$target" $anchors ""; then
+            if [ "$FORCE" = false ] && exists_and_complete "lb_anchor_sweep" "$SEED" "$target" $anchors ""; then
                 echo "⏭️  $target (anchors=$anchors) - already complete"
                 SKIPPED=$((SKIPPED + 1))
             else
@@ -129,7 +131,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --n-anchors $anchors \
                     --seed $SEED \
                     --target "$target" \
-                    --random-seed $((1000 + anchors)) >/dev/null
+                    --random-seed $((1000 + anchors)) \
+                    --skip-existing >/dev/null
                 SUBMITTED=$((SUBMITTED + 1))
             fi
             SEED=$((SEED + 1))
@@ -144,7 +147,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
         for models in 50 100; do
             TOTAL=$((TOTAL + 1))
             
-            if [ "$FORCE" = false ] && exists_and_complete "lb_model_sweep" "$target" 100 "$models"; then
+            if [ "$FORCE" = false ] && exists_and_complete "lb_model_sweep" "$SEED" "$target" 100 "$models"; then
                 echo "⏭️  $target (models=$models) - already complete"
                 SKIPPED=$((SKIPPED + 1))
             else
@@ -155,7 +158,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --n-models $models \
                     --seed $SEED \
                     --target "$target" \
-                    --random-seed $((2000 + models)) >/dev/null
+                    --random-seed $((2000 + models)) \
+                    --skip-existing >/dev/null
                 SUBMITTED=$((SUBMITTED + 1))
             fi
             SEED=$((SEED + 1))
@@ -179,7 +183,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
     for seed in 11 12 13 14 15 16 17 18 19; do
         TOTAL=$((TOTAL + 1))
         
-        if [ "$FORCE" = false ] && exists_and_complete "helm_lite_baseline" "" 50 ""; then
+        if [ "$FORCE" = false ] && exists_and_complete "helm_lite_baseline" "$seed" "" 50 ""; then
             echo "⏭️  HELM Lite base=1 (seed=$seed) - already complete"
             SKIPPED=$((SKIPPED + 1))
         else
@@ -188,7 +192,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
                 --output-dir ${BASE_DIR}/helm_lite_baseline \
                 --preset helm_lite_base1 \
                 --seed $seed \
-                --random-seed 1000 >/dev/null
+                --random-seed 1000 \
+                --skip-existing >/dev/null
             SUBMITTED=$((SUBMITTED + 1))
         fi
     done
@@ -199,7 +204,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
     for seed in 11 12 13 14 15 16 17 18 19; do
         TOTAL=$((TOTAL + 1))
         
-        if [ "$FORCE" = false ] && exists_and_complete "helm_lite_base4" "" 25 ""; then
+        if [ "$FORCE" = false ] && exists_and_complete "helm_lite_base4" "$seed" "" 25 ""; then
             echo "⏭️  HELM Lite base=4 (seed=$seed) - already complete"
             SKIPPED=$((SKIPPED + 1))
         else
@@ -208,7 +213,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
                 --output-dir ${BASE_DIR}/helm_lite_base4 \
                 --preset helm_lite_base4 \
                 --seed $seed \
-                --random-seed 3000 >/dev/null
+                --random-seed 3000 \
+                --skip-existing >/dev/null
             SUBMITTED=$((SUBMITTED + 1))
         fi
     done
@@ -229,7 +235,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
     for seed in $(seq 11 30); do
         TOTAL=$((TOTAL + 1))
         
-        if [ "$FORCE" = false ] && exists_and_complete "mmlu_baseline" "" 10 ""; then
+        if [ "$FORCE" = false ] && exists_and_complete "mmlu_baseline" "$seed" "" 10 ""; then
             echo "⏭️  MMLU Fields (seed=$seed) - already complete"
             SKIPPED=$((SKIPPED + 1))
         else
@@ -238,7 +244,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
                 --output-dir ${BASE_DIR}/mmlu_baseline \
                 --preset mmlu_fields \
                 --seed $seed \
-                --random-seed 1000 >/dev/null
+                --random-seed 1000 \
+                --skip-existing >/dev/null
             SUBMITTED=$((SUBMITTED + 1))
         fi
     done

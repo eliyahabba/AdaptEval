@@ -227,6 +227,19 @@ def binarize_responses(matrix_df: pd.DataFrame) -> pd.DataFrame:
         if dataset_df.empty:
             continue
 
+        # Check if THIS dataset is already binary (skip threshold search if so)
+        unique_scores_in_dataset = dataset_df["normalized_score"].unique()
+        is_dataset_binary = (
+            len(unique_scores_in_dataset) == 2 
+            and set(unique_scores_in_dataset) == {0.0, 1.0}
+        )
+        
+        if is_dataset_binary:
+            # Already binary - no need to compute threshold
+            result_frames.append(dataset_df.copy())
+            print(f"     ✓ {dataset}: already binary (0.0, 1.0), skipped")
+            continue
+
         # Stabilize duplicates: original code implicitly overwrote duplicates when filling the dense matrix.
         # Using mean is deterministic and usually the intended behavior (also matches pivot_table defaults).
         dataset_df = (
