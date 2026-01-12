@@ -6,12 +6,16 @@
 # - LB: 42 experiments (6 datasets × 7 configs) - balanced
 # - HELM Lite: 18 experiments (9 base1 + 9 base4)
 # - MMLU Fields: 20 experiments (seeds 11-30)
+# - Disjoint: 12 experiments (6 fixed + 6 random bridge)
+#
+# Total: 92 experiments
 #
 # Usage:
 #   bash run_all_balanced.sh                    # Run all missing
 #   bash run_all_balanced.sh --category 1       # Only LB
 #   bash run_all_balanced.sh --category 2       # Only HELM Lite
 #   bash run_all_balanced.sh --category 3       # Only MMLU
+#   bash run_all_balanced.sh --category 4       # Only Disjoint
 #   bash run_all_balanced.sh --setup-only       # Test only
 #   bash run_all_balanced.sh --force            # Re-run all (ignore existing)
 
@@ -62,6 +66,25 @@ exists_and_complete() {
     return 1
 }
 
+# Check if disjoint experiment exists and is complete
+disjoint_exists_and_complete() {
+    local category="$1"
+    local seed="$2"
+    
+    local dir="${BASE_DIR}/${category}/full_chain_disjoint_seed_${seed}"
+    
+    if [ ! -d "$dir" ]; then
+        return 1
+    fi
+    
+    if [ -f "$dir/all_results.json" ] && [ -s "$dir/all_results.json" ]; then
+        local n=$(grep -o '"distance":' "$dir/all_results.json" 2>/dev/null | wc -l)
+        [ "$n" -ge 3 ] && return 0
+    fi
+    
+    return 1
+}
+
 # Counters
 TOTAL=0
 SKIPPED=0
@@ -79,6 +102,7 @@ echo ""
 mkdir -p "${BASE_DIR}/lb_baseline" "${BASE_DIR}/lb_anchor_sweep" "${BASE_DIR}/lb_model_sweep"
 mkdir -p "${BASE_DIR}/helm_lite_baseline" "${BASE_DIR}/helm_lite_base4"
 mkdir -p "${BASE_DIR}/mmlu_baseline"
+mkdir -p "${BASE_DIR}/lb_disjoint_fixed" "${BASE_DIR}/lb_disjoint_random"
 
 # ============================================================
 # CATEGORY 1: LB (42 experiments)
@@ -253,6 +277,53 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
     echo ""
 fi
 
+# ============================================================
+# CATEGORY 4: Disjoint Experiments - LB (12 experiments)
+# ============================================================
+if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
+    echo "=================================================================="
+    echo "CATEGORY 4: Disjoint Experiments - LB (12 experiments)"
+    echo "=================================================================="
+    echo ""
+    
+    # 4.1: Fixed Bridge (6 experiments, seeds 41-46)
+    echo "-- Disjoint Fixed Bridge (6 experiments) --"
+    echo "   bridge=20, isolated=50"
+    for seed in 41 42 43 44 45 46; do
+        TOTAL=$((TOTAL + 1))
+        
+        if [ "$FORCE" = false ] && disjoint_exists_and_complete "lb_disjoint_fixed" "$seed"; then
+            echo "⏭️  Disjoint fixed (seed=$seed) - already complete"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "▶️  Disjoint fixed (seed=$seed) - submitting"
+            sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
+                ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed skip >/dev/null
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
+    done
+    
+    # 4.2: Random Bridge (6 experiments, seeds 41-46)
+    echo ""
+    echo "-- Disjoint Random Bridge (6 experiments) --"
+    echo "   bridge=20, isolated=50"
+    for seed in 41 42 43 44 45 46; do
+        TOTAL=$((TOTAL + 1))
+        
+        if [ "$FORCE" = false ] && disjoint_exists_and_complete "lb_disjoint_random" "$seed"; then
+            echo "⏭️  Disjoint random (seed=$seed) - already complete"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "▶️  Disjoint random (seed=$seed) - submitting"
+            sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
+                ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random skip >/dev/null
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
+    done
+    
+    echo ""
+fi
+
 # Summary
 echo "=================================================================="
 echo "SUMMARY"
@@ -264,13 +335,17 @@ else
     echo "  Category 1 (LB):         42 experiments"
     echo "  Category 2 (HELM Lite):  18 experiments"
     echo "  Category 3 (MMLU):       20 experiments"
+    echo "  Category 4 (Disjoint):   12 experiments"
     echo "  ───────────────────────────────────────"
+    echo "  TOTAL:                   92 experiments"
 fi
-echo "Total planned:   $TOTAL experiments"
-echo "  ⏭️  Skipped:    $SKIPPED (already complete)"
-echo "  ▶️  Submitted:  $SUBMITTED (new/incomplete)"
 echo ""
-echo "Balanced coverage achieved!"
+echo "This run:"
+echo "  Total planned:   $TOTAL experiments"
+echo "  ⏭️  Skipped:      $SKIPPED (already complete)"
+echo "  ▶️  Submitted:    $SUBMITTED (new/incomplete)"
+echo ""
+echo "Complete coverage achieved!"
 echo ""
 echo "Monitor: squeue -u \$USER"
 echo "Check:   python scripts/check_experiment_plan.py $BASE_DIR"

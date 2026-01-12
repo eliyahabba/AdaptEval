@@ -1125,17 +1125,24 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             result['true_performance_mean'] = validation_df['true_performance'].mean()
             result['true_performance_std'] = validation_df['true_performance'].std()
     
-    # Helper to save DataFrame as CSV and JSON
+    # Helper to save DataFrame as Parquet (or CSV/JSON for backward compatibility)
     def save_per_model_df(df, name):
-        """Save DataFrame as CSV and JSON (dict format)."""
+        """Save DataFrame as Parquet (and optionally CSV for backward compatibility)."""
         if df is None or len(df) == 0:
             return
-        csv_path = output_dir.parent / f"{name}_{task.method}.csv"
-        json_path = output_dir.parent / f"{name}_{task.method}.json"
+        
         # Round numeric columns to 4 decimal places for cleaner output
         df_rounded = round_df_for_save(df)
+        
+        # Save as Parquet (primary format - smaller and faster)
+        parquet_path = output_dir.parent / f"{name}_{task.method}.parquet"
+        df_rounded.to_parquet(parquet_path, compression='snappy', index=False)
+        
+        # Also save CSV for backward compatibility (can be disabled to save space)
+        csv_path = output_dir.parent / f"{name}_{task.method}.csv"
         df_rounded.to_csv(csv_path, index=False)
-        # Save as JSON dict
+        
+        # JSON dict is now redundant with Parquet, but keep for backward compatibility
         if 'model_name' in df_rounded.columns:
             import json
             # Find dataset column (may be 'dataset', 'dataset_name', or 'scenario_name')
@@ -1947,6 +1954,11 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         results_for_df.append(r_copy)
     
     results_df = pd.DataFrame(results_for_df)
+    
+    # Save as Parquet (primary format - faster and smaller)
+    round_df_for_save(results_df).to_parquet(output_dir / "all_results.parquet", compression='snappy', index=False)
+    
+    # Also save as CSV for backward compatibility
     round_df_for_save(results_df).to_csv(output_dir / "all_results.csv", index=False)
     
     with open(output_dir / "all_results.json", 'w') as f:
