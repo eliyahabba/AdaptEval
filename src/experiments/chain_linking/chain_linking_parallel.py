@@ -1145,6 +1145,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         # JSON dict is now redundant with Parquet, but keep for backward compatibility
         if 'model_name' in df_rounded.columns:
             import json
+            json_path = output_dir.parent / f"{name}_{task.method}.json"
             # Find dataset column (may be 'dataset', 'dataset_name', or 'scenario_name')
             dataset_col = None
             for col in ['dataset', 'dataset_name', 'scenario_name']:
