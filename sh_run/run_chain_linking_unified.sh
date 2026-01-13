@@ -35,8 +35,11 @@
 #   # Override preset values
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --n-anchors 50
 #
-#   # Skip experiments that already exist (resume failures only)
+#   # Skip experiments where directory already exists (any experiment with that seed)
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11 --skip-existing
+#
+#   # Resume incomplete experiments (skip COMPLETED ones with all_results.csv, resume incomplete)
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11 --force-resume
 #
 #   # Fully custom (no preset)
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_custom --data-source lb --n-anchors 100
@@ -442,6 +445,23 @@ if [ "$SKIP_EXISTING" = true ]; then
             echo "⏭️  SKIP: Output directory already exists: ${OUTPUT_BASE_DIR}/${existing}"
         fi
         echo "   (Use without --skip-existing to auto-increment seed and create a new experiment)"
+        exit 0
+    fi
+fi
+
+# Check if experiment is already COMPLETE when resuming
+# (Skip completed experiments, only resume incomplete ones)
+if [ "$FORCE_RESUME" = true ]; then
+    # Find the actual output directory (may have target suffix)
+    ACTUAL_OUTPUT_DIR="$OUTPUT_DIR"
+    if [ ! -d "$OUTPUT_DIR" ]; then
+        ACTUAL_OUTPUT_DIR=$(ls -d "${OUTPUT_DIR}_target_"* 2>/dev/null | head -1)
+    fi
+    
+    if [ -n "$ACTUAL_OUTPUT_DIR" ] && [ -f "${ACTUAL_OUTPUT_DIR}/all_results.csv" ]; then
+        echo "⏭️  SKIP (COMPLETE): Experiment already finished: ${ACTUAL_OUTPUT_DIR}"
+        echo "   Found: all_results.csv"
+        echo "   (Use --force without --resume to re-run from scratch)"
         exit 0
     fi
 fi
