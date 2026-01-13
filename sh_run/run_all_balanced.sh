@@ -49,6 +49,58 @@ if [ -z "$FORCE_RESUME" ] && [ -z "$SKIP_EXISTING" ]; then
     SKIP_EXISTING="--skip-existing"
 fi
 
+# =============================================================================
+# Helper: Check if experiment is already complete
+# Returns 0 (true) if complete, 1 (false) if incomplete/missing
+# =============================================================================
+is_experiment_complete() {
+    local output_dir="$1"
+    local seed="$2"
+    local anchors="$3"
+    local target="$4"
+    local models="$5"
+    
+    # Build expected directory name (same logic as run_chain_linking_unified.sh)
+    local dir_name="full_chain_classic_seed_${seed}_anchors_${anchors}"
+    if [ -n "$models" ]; then
+        dir_name="${dir_name}_models_${models}"
+    fi
+    if [ -n "$target" ]; then
+        # Replace spaces with underscores for directory name
+        local target_clean="${target// /_}"
+        dir_name="${dir_name}_target_${target_clean}"
+    fi
+    
+    local full_path="${output_dir}/${dir_name}"
+    
+    # Check if all_results.csv exists (experiment complete)
+    if [ -f "${full_path}/all_results.csv" ]; then
+        return 0  # Complete
+    fi
+    return 1  # Incomplete or missing
+}
+
+# Helper: Check if DISJOINT experiment is complete
+is_disjoint_complete() {
+    local output_base="$1"
+    local seed="$2"
+    local anchors="$3"
+    local bridge="$4"
+    local bridge_mode="$5"
+    local isolated="$6"
+    
+    local dir_name="${output_base}_seed_${seed}_anchors_${anchors}_bridge_${bridge}_${bridge_mode}_isolated_${isolated}"
+    
+    if [ -f "${dir_name}/all_results.csv" ]; then
+        return 0  # Complete
+    fi
+    return 1  # Incomplete or missing
+}
+
+# Counter for tracking
+SUBMITTED=0
+SKIPPED=0
+
 echo "=================================================================="
 echo "Complete Experiment Suite (Balanced)"
 echo "=================================================================="
@@ -77,14 +129,21 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo "-- LB Baseline (6 experiments) --"
     SEED=21
     for target in "${LB_DATASETS[@]}"; do
-        echo "   Submitting $target (baseline, seed=$SEED)..."
-        sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-            --output-dir ${BASE_DIR}/lb_baseline \
-            --preset lb_standard \
-            --seed $SEED \
-            --target "$target" \
-            --random-seed 1000 \
-            $SKIP_EXISTING $FORCE_RESUME
+        # Check if already complete when resuming
+        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_baseline" $SEED 100 "$target" ""; then
+            echo "   ⏭️  SKIP (complete): $target (seed=$SEED)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting $target (baseline, seed=$SEED)..."
+            sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                --output-dir ${BASE_DIR}/lb_baseline \
+                --preset lb_standard \
+                --seed $SEED \
+                --target "$target" \
+                --random-seed 1000 \
+                $SKIP_EXISTING $FORCE_RESUME
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
         SEED=$((SEED + 1))
     done
     
@@ -94,15 +153,21 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     SEED=31
     for target in "${LB_DATASETS[@]}"; do
         for anchors in 25 50 100 200; do
-            echo "   Submitting $target (anchors=$anchors, seed=$SEED)..."
-            sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                --output-dir ${BASE_DIR}/lb_anchor_sweep \
-                --preset lb_standard \
-                --n-anchors $anchors \
-                --seed $SEED \
-                --target "$target" \
-                --random-seed $((1000 + anchors)) \
-                $SKIP_EXISTING $FORCE_RESUME
+            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_anchor_sweep" $SEED $anchors "$target" ""; then
+                echo "   ⏭️  SKIP (complete): $target anchors=$anchors (seed=$SEED)"
+                SKIPPED=$((SKIPPED + 1))
+            else
+                echo "   Submitting $target (anchors=$anchors, seed=$SEED)..."
+                sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                    --output-dir ${BASE_DIR}/lb_anchor_sweep \
+                    --preset lb_standard \
+                    --n-anchors $anchors \
+                    --seed $SEED \
+                    --target "$target" \
+                    --random-seed $((1000 + anchors)) \
+                    $SKIP_EXISTING $FORCE_RESUME
+                SUBMITTED=$((SUBMITTED + 1))
+            fi
             SEED=$((SEED + 1))
         done
     done
@@ -113,15 +178,21 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     SEED=61
     for target in "${LB_DATASETS[@]}"; do
         for models in 50 100; do
-            echo "   Submitting $target (models=$models, seed=$SEED)..."
-            sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                --output-dir ${BASE_DIR}/lb_model_sweep \
-                --preset lb_standard \
-                --n-models $models \
-                --seed $SEED \
-                --target "$target" \
-                --random-seed $((2000 + models)) \
-                $SKIP_EXISTING $FORCE_RESUME
+            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_model_sweep" $SEED 100 "$target" "$models"; then
+                echo "   ⏭️  SKIP (complete): $target models=$models (seed=$SEED)"
+                SKIPPED=$((SKIPPED + 1))
+            else
+                echo "   Submitting $target (models=$models, seed=$SEED)..."
+                sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                    --output-dir ${BASE_DIR}/lb_model_sweep \
+                    --preset lb_standard \
+                    --n-models $models \
+                    --seed $SEED \
+                    --target "$target" \
+                    --random-seed $((2000 + models)) \
+                    $SKIP_EXISTING $FORCE_RESUME
+                SUBMITTED=$((SUBMITTED + 1))
+            fi
             SEED=$((SEED + 1))
         done
     done
@@ -143,26 +214,38 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
     # 2.1: Base=1 (9 experiments, seeds 11-19)
     echo "-- HELM Lite Baseline (base=1, 9 experiments) --"
     for seed in 11 12 13 14 15 16 17 18 19; do
-        echo "   Submitting HELM Lite base=1 (seed=$seed)..."
-        sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-            --output-dir ${BASE_DIR}/helm_lite_baseline \
-            --preset helm_lite_base1 \
-            --seed $seed \
-            --random-seed 1000 \
-            $SKIP_EXISTING $FORCE_RESUME
+        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/helm_lite_baseline" $seed 50 "" ""; then
+            echo "   ⏭️  SKIP (complete): HELM Lite base=1 (seed=$seed)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting HELM Lite base=1 (seed=$seed)..."
+            sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                --output-dir ${BASE_DIR}/helm_lite_baseline \
+                --preset helm_lite_base1 \
+                --seed $seed \
+                --random-seed 1000 \
+                $SKIP_EXISTING $FORCE_RESUME
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
     done
     
     # 2.2: Base=4 (9 experiments, seeds 11-19)
     echo ""
     echo "-- HELM Lite Base4 (base=4, 9 experiments) --"
     for seed in 11 12 13 14 15 16 17 18 19; do
-        echo "   Submitting HELM Lite base=4 (seed=$seed)..."
-        sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-            --output-dir ${BASE_DIR}/helm_lite_base4 \
-            --preset helm_lite_base4 \
-            --seed $seed \
-            --random-seed 3000 \
-            $SKIP_EXISTING $FORCE_RESUME
+        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/helm_lite_base4" $seed 25 "" ""; then
+            echo "   ⏭️  SKIP (complete): HELM Lite base=4 (seed=$seed)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting HELM Lite base=4 (seed=$seed)..."
+            sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                --output-dir ${BASE_DIR}/helm_lite_base4 \
+                --preset helm_lite_base4 \
+                --seed $seed \
+                --random-seed 3000 \
+                $SKIP_EXISTING $FORCE_RESUME
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
     done
     
     echo ""
@@ -181,13 +264,19 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
     
     echo "-- MMLU Fields Baseline (seeds 11-30) --"
     for seed in $(seq 11 30); do
-        echo "   Submitting MMLU Fields (seed=$seed)..."
-        sbatch --mem=8g --time=10:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-            --output-dir ${BASE_DIR}/mmlu_baseline \
-            --preset mmlu_fields \
-            --seed $seed \
-            --random-seed 1000 \
-            $SKIP_EXISTING $FORCE_RESUME
+        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_baseline" $seed 10 "" ""; then
+            echo "   ⏭️  SKIP (complete): MMLU Fields (seed=$seed)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting MMLU Fields (seed=$seed)..."
+            sbatch --mem=8g --time=10:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                --output-dir ${BASE_DIR}/mmlu_baseline \
+                --preset mmlu_fields \
+                --seed $seed \
+                --random-seed 1000 \
+                $SKIP_EXISTING $FORCE_RESUME
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
     done
     
     echo ""
@@ -212,9 +301,15 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
     echo "-- Disjoint Fixed Bridge (6 experiments) --"
     echo "   bridge=20, isolated=50"
     for seed in 41 42 43 44 45 46; do
-        echo "   Submitting Disjoint fixed (seed=$seed)..."
-        sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-            ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_SKIP_ARG
+        if [ -n "$FORCE_RESUME" ] && is_disjoint_complete "${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint" $seed 100 20 "fixed" 50; then
+            echo "   ⏭️  SKIP (complete): Disjoint fixed (seed=$seed)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting Disjoint fixed (seed=$seed)..."
+            sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
+                ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_SKIP_ARG
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
     done
     
     # 4.2: Random Bridge (6 experiments, seeds 41-46)
@@ -222,9 +317,15 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
     echo "-- Disjoint Random Bridge (6 experiments) --"
     echo "   bridge=20, isolated=50"
     for seed in 41 42 43 44 45 46; do
-        echo "   Submitting Disjoint random (seed=$seed)..."
-        sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
-            ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_SKIP_ARG
+        if [ -n "$FORCE_RESUME" ] && is_disjoint_complete "${BASE_DIR}/lb_disjoint_random/full_chain_disjoint" $seed 100 20 "random" 50; then
+            echo "   ⏭️  SKIP (complete): Disjoint random (seed=$seed)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting Disjoint random (seed=$seed)..."
+            sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
+                ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_SKIP_ARG
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
     done
     
     echo ""
@@ -236,8 +337,11 @@ echo ""
 echo "=================================================================="
 echo "SUMMARY"
 echo "=================================================================="
-if [ -n "$RUN_CATEGORY" ]; then
-    echo "Category $RUN_CATEGORY submitted"
+if [ -n "$FORCE_RESUME" ]; then
+    echo "Submitted: $SUBMITTED jobs"
+    echo "Skipped (complete): $SKIPPED experiments"
+elif [ -n "$RUN_CATEGORY" ]; then
+    echo "Category $RUN_CATEGORY: $SUBMITTED jobs submitted"
 else
     echo "All categories:"
     echo "  Category 1 (LB):         42 experiments"
@@ -246,6 +350,9 @@ else
     echo "  Category 4 (Disjoint):   12 experiments"
     echo "  ───────────────────────────────────────"
     echo "  TOTAL:                   92 experiments"
+    echo ""
+    echo "Actually submitted: $SUBMITTED"
+    [ $SKIPPED -gt 0 ] && echo "Skipped (complete): $SKIPPED"
 fi
 echo ""
 echo "Monitor: squeue -u \$USER"
