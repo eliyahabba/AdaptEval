@@ -11,7 +11,7 @@ open-llm-leaderboard/details_RatanRohith__MistralBeagle-RS-7B-V0.1,TruthfulQA,Tr
 open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,TruthfulQA,TruthfulQA,817,100,-0.7229,0.5466,0.5265,0.5509,0.5281,0.551,0.0202,0.0042,0.0186,0.0044,0.9345,0.1224
 open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,TruthfulQA,TruthfulQA,817,100,-3.2848,0.6564,0.6479,0.6625,0.6488,0.661,0.0085,0.0061,0.0076,0.0046,0.9345,0.1224
 open-llm-leaderboard/details_jilp00__Hermes-2-SOLAR-10.7B-Symbolic,TruthfulQA,TruthfulQA,817,100,-0.0705,0.5485,0.5099,0.5199,0.5104,0.5181,0.0386,0.0286,0.0381,0.0304,0.9345,0.1224
-open-llm-leaderboard/details_Neuronovo__neuronovo-7B-v0.1,TruthfulQA,TruthfulQA,817,100,-0.3111,0.5395,0.5399,0.5463,0.5404,0.5473,0.0004,0.0068,0.0009,0.0077,0.9345,0.1224
+open-llm-leaderboard/details_Neuronovo__neuronovo-7B-v0.1,TruthfulQA,TruthfulQA,817,100,-0.311,0.5395,0.5399,0.5463,0.5404,0.5473,0.0004,0.0068,0.0009,0.0077,0.9345,0.1224
 open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,TruthfulQA,TruthfulQA,817,100,-0.3168,0.5624,0.5404,0.5547,0.5413,0.5532,0.0219,0.0077,0.0211,0.0091,0.9345,0.1224
 open-llm-leaderboard/details_ewqr2130__mistral-se-inst-ppo,TruthfulQA,TruthfulQA,817,100,-0.1494,0.5134,0.5597,0.5413,0.5586,0.5426,0.0463,0.0279,0.0452,0.0292,0.9345,0.1224
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,TruthfulQA,TruthfulQA,817,100,-1.7784,0.6765,0.6826,0.6506,0.6806,0.6528,0.0061,0.0259,0.0041,0.0237,0.9345,0.1224

@@ -27,7 +27,7 @@ open-llm-leaderboard/details_KnutJaegersberg__Qwen-14B-Llamafied,GSM8K,GSM8K,131
 open-llm-leaderboard/details_diffnamehard__Psyfighter2-Noromaid-ties-Capybara-13B,GSM8K,GSM8K,1319,100,0.5939,0.304,0.3586,0.2493,0.3391,0.2577,0.0546,0.0547,0.0351,0.0464,0.8065,0.0758
 open-llm-leaderboard/details_FelixChao__WizardDolphin-7B,GSM8K,GSM8K,1319,100,-1.2951,0.6626,0.6687,0.63,0.6619,0.6338,0.0061,0.0326,0.0007,0.0288,0.8065,0.0758
 open-llm-leaderboard/details_Unbabel__TowerInstruct-7B-v0.1,GSM8K,GSM8K,1319,100,0.4795,0.1645,0.2077,0.1077,0.1899,0.1158,0.0432,0.0568,0.0254,0.0487,0.8065,0.0758
-open-llm-leaderboard/details_chanwit__flux-7b-v0.1,GSM8K,GSM8K,1319,100,-1.9901,0.724,0.7453,0.6875,0.7344,0.6893,0.0212,0.0366,0.0104,0.0348,0.8065,0.0758
+open-llm-leaderboard/details_chanwit__flux-7b-v0.1,GSM8K,GSM8K,1319,100,-1.9901,0.724,0.7453,0.6875,0.7344,0.6893,0.0212,0.0365,0.0104,0.0348,0.8065,0.0758
 open-llm-leaderboard/details_udkai__Turdus,GSM8K,GSM8K,1319,100,-3.0198,0.677,0.7005,0.7133,0.7028,0.7124,0.0235,0.0363,0.0258,0.0354,0.8065,0.0758
 open-llm-leaderboard/details_Pierre-obi__Mistral_solar-slerp,GSM8K,GSM8K,1319,100,-0.5089,0.0061,0.0068,0.09,0.0217,0.0835,0.0008,0.0839,0.0156,0.0774,0.8065,0.0758
 open-llm-leaderboard/details_rishiraj__oswald-7b,GSM8K,GSM8K,1319,100,-1.3004,0.6929,0.6566,0.6317,0.6521,0.6336,0.0364,0.0612,0.0408,0.0593,0.8065,0.0758
@@ -44,7 +44,7 @@ open-llm-leaderboard/details_cognitivecomputations__yayi2-30b-llama,GSM8K,GSM8K,
 open-llm-leaderboard/details_Sao10K__Sensualize-Mixtral-bf16,GSM8K,GSM8K,1319,100,1.6093,0.5201,0.5428,0.5218,0.5387,0.5216,0.0227,0.0017,0.0186,0.0015,0.8065,0.0758
 open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,GSM8K,GSM8K,1319,100,-1.4439,0.7104,0.6998,0.6397,0.6887,0.6427,0.0106,0.0707,0.0217,0.0677,0.8065,0.0758
 open-llm-leaderboard/details_AA051610__A0106,GSM8K,GSM8K,1319,100,3.8436,0.6255,0.6429,0.6132,0.6373,0.6137,0.0174,0.0123,0.0118,0.0118,0.8065,0.0758
-open-llm-leaderboard/details_gagan3012__MetaModel_moe,GSM8K,GSM8K,1319,100,3.9869,0.6543,0.671,0.6522,0.6674,0.6526,0.0167,0.0021,0.0131,0.0017,0.8065,0.0758
+open-llm-leaderboard/details_gagan3012__MetaModel_moe,GSM8K,GSM8K,1319,100,3.9817,0.6543,0.671,0.6522,0.6674,0.6526,0.0167,0.0021,0.0131,0.0016,0.8065,0.0758
 open-llm-leaderboard/details_notbdq__alooowso,GSM8K,GSM8K,1319,100,-0.2128,0.3958,0.2889,0.3984,0.3091,0.3936,0.1069,0.0027,0.0866,0.0021,0.8065,0.0758
 open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,GSM8K,GSM8K,1319,100,0.5597,0.5656,0.5762,0.5054,0.5635,0.5105,0.0106,0.0602,0.0021,0.0551,0.8065,0.0758
 open-llm-leaderboard/details_rombodawg__Open_Gpt4_8x7B,GSM8K,GSM8K,1319,100,2.1722,0.5921,0.6247,0.6643,0.632,0.6622,0.0326,0.0722,0.0399,0.0701,0.8065,0.0758
@@ -63,9 +63,9 @@ open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,GSM8K,GSM8
 open-llm-leaderboard/details_Weyaxi__Nous-Hermes-2-SUS-Chat-2x34B,GSM8K,GSM8K,1319,100,5.9013,0.7309,0.721,0.6837,0.7141,0.6856,0.0099,0.0471,0.0167,0.0453,0.8065,0.0758
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough_v0.1,GSM8K,GSM8K,1319,100,0.503,0.2282,0.1911,0.343,0.2185,0.3326,0.0371,0.1148,0.0098,0.1044,0.8065,0.0758
 open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,GSM8K,GSM8K,1319,100,-0.5429,0.492,0.4337,0.3813,0.4243,0.3851,0.0584,0.1107,0.0678,0.1069,0.8065,0.0758
-open-llm-leaderboard/details_TomGrc__FusionNet,GSM8K,GSM8K,1319,100,2.4304,0.6505,0.6444,0.642,0.6439,0.6418,0.0061,0.0085,0.0066,0.0087,0.8065,0.0758
+open-llm-leaderboard/details_TomGrc__FusionNet,GSM8K,GSM8K,1319,100,2.4138,0.6505,0.6444,0.6422,0.6439,0.642,0.0061,0.0083,0.0065,0.0085,0.8065,0.0758
 open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,GSM8K,GSM8K,1319,100,-2.6897,0.7089,0.7362,0.7456,0.7378,0.7448,0.0273,0.0368,0.029,0.0359,0.8065,0.0758
-open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,GSM8K,GSM8K,1319,100,3.6471,0.6452,0.6657,0.6447,0.6616,0.6449,0.0205,0.0005,0.0165,0.0003,0.8065,0.0758
+open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,GSM8K,GSM8K,1319,100,3.6424,0.6452,0.6657,0.6447,0.6616,0.6449,0.0205,0.0004,0.0165,0.0002,0.8065,0.0758
 open-llm-leaderboard/details_HenryJJ__Instruct_Mistral-7B-v0.1_Dolly15K,GSM8K,GSM8K,1319,100,0.5845,0.351,0.3669,0.3522,0.3646,0.3549,0.0159,0.0011,0.0136,0.0039,0.8065,0.0758
 open-llm-leaderboard/details_KnutJaegersberg__Qwen-1_8B-Llamafied,GSM8K,GSM8K,1319,100,-0.1248,0.2441,0.2638,0.1691,0.2466,0.1746,0.0197,0.075,0.0024,0.0695,0.8065,0.0758
 open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2.1-mistral-7b,GSM8K,GSM8K,1319,100,-0.5157,0.4814,0.4754,0.4616,0.4733,0.4648,0.0061,0.0199,0.0081,0.0166,0.8065,0.0758
@@ -86,8 +86,8 @@ open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,GSM8K,GSM8K,1319,100,
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,GSM8K,GSM8K,1319,100,-0.3964,0.4723,0.439,0.4564,0.4421,0.4554,0.0334,0.0159,0.0302,0.0169,0.8065,0.0758
 open-llm-leaderboard/details_vikash06__mistral_v1,GSM8K,GSM8K,1319,100,0.2233,0.0948,0.1516,0.1171,0.1451,0.1178,0.0569,0.0223,0.0503,0.023,0.8065,0.0758
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,GSM8K,GSM8K,1319,100,0.2482,0.3108,0.3268,0.2797,0.3185,0.284,0.0159,0.0312,0.0077,0.0268,0.8065,0.0758
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,GSM8K,GSM8K,1319,100,3.5155,0.6429,0.6566,0.6374,0.6529,0.6374,0.0136,0.0055,0.0099,0.0055,0.8065,0.0758
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,GSM8K,GSM8K,1319,100,3.616,0.6376,0.6566,0.6365,0.6527,0.6367,0.019,0.0011,0.0151,0.0009,0.8065,0.0758
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,GSM8K,GSM8K,1319,100,3.5165,0.6429,0.6566,0.6374,0.6529,0.6375,0.0136,0.0055,0.0099,0.0055,0.8065,0.0758
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,GSM8K,GSM8K,1319,100,3.5491,0.6376,0.6566,0.6361,0.6527,0.6364,0.019,0.0015,0.015,0.0012,0.8065,0.0758
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,GSM8K,GSM8K,1319,100,-0.3168,0.3844,0.3692,0.349,0.3656,0.3504,0.0152,0.0354,0.0188,0.034,0.8065,0.0758
 open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,GSM8K,GSM8K,1319,100,-2.2606,0.6846,0.7392,0.7245,0.7366,0.7259,0.0546,0.0399,0.052,0.0413,0.8065,0.0758
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,GSM8K,GSM8K,1319,100,0.3091,0.0083,0.0,0.0774,0.0138,0.0712,0.0083,0.069,0.0054,0.0629,0.8065,0.0758
@@ -101,8 +101,8 @@ open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3,GSM8K,GSM8K,1319,10
 open-llm-leaderboard/details_Zangs3011__mistral_7b_DolphinCoder,GSM8K,GSM8K,1319,100,-0.0289,0.2623,0.3086,0.2766,0.3029,0.2792,0.0462,0.0143,0.0406,0.0169,0.8065,0.0758
 open-llm-leaderboard/details_Mihaiii__Pallas-0.4,GSM8K,GSM8K,1319,100,5.7508,0.6027,0.5262,0.5441,0.5296,0.5438,0.0766,0.0586,0.0731,0.0589,0.8065,0.0758
 open-llm-leaderboard/details_KaeriJenti__Kaori-34B-v1,GSM8K,GSM8K,1319,100,2.5985,0.3669,0.3086,0.3282,0.3123,0.3278,0.0584,0.0387,0.0547,0.0392,0.8065,0.0758
-open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,GSM8K,GSM8K,1319,100,0.8423,0.6338,0.6497,0.6512,0.6498,0.6502,0.0159,0.0174,0.016,0.0164,0.8065,0.0758
-open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-SOLAR-Instruct,GSM8K,GSM8K,1319,100,2.5506,0.6414,0.6467,0.6385,0.6451,0.6387,0.0053,0.0028,0.0038,0.0027,0.8065,0.0758
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,GSM8K,GSM8K,1319,100,0.8422,0.6338,0.6497,0.6512,0.6498,0.6502,0.0159,0.0174,0.016,0.0164,0.8065,0.0758
+open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-SOLAR-Instruct,GSM8K,GSM8K,1319,100,2.5524,0.6414,0.6467,0.6385,0.6451,0.6387,0.0053,0.0029,0.0037,0.0027,0.8065,0.0758
 open-llm-leaderboard/details_KnutJaegersberg__Walter-Mistral-7B,GSM8K,GSM8K,1319,100,-0.744,0.0008,0.0,0.113,0.0202,0.1042,0.0008,0.1122,0.0194,0.1035,0.8065,0.0758
 open-llm-leaderboard/details_upaya07__Birbal-7B-V1,GSM8K,GSM8K,1319,100,-0.6733,0.4026,0.3715,0.3504,0.3679,0.3531,0.0311,0.0521,0.0346,0.0495,0.8065,0.0758
 open-llm-leaderboard/details_cookinai__BruinHermes,GSM8K,GSM8K,1319,100,-2.9954,0.7119,0.74,0.7564,0.7428,0.7545,0.0281,0.0445,0.0309,0.0426,0.8065,0.0758
@@ -164,7 +164,7 @@ open-llm-leaderboard/details_teknium__CollectiveCognition-v1-Mistral-7B,GSM8K,GS
 open-llm-leaderboard/details_glaiveai__glaive-coder-7b,GSM8K,GSM8K,1319,100,-0.482,0.0523,0.0576,0.0691,0.0598,0.0687,0.0053,0.0168,0.0075,0.0164,0.8065,0.0758
 open-llm-leaderboard/details_Sao10K__Stheno-1.8-L2-13B,GSM8K,GSM8K,1319,100,1.2553,0.1327,0.119,0.1313,0.1213,0.1306,0.0136,0.0014,0.0114,0.0021,0.8065,0.0758
 open-llm-leaderboard/details_DopeorNope__LaOT,GSM8K,GSM8K,1319,100,-0.114,0.0,0.0,0.0625,0.011,0.0571,0.0,0.0625,0.011,0.0571,0.8065,0.0758
-open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,GSM8K,GSM8K,1319,100,0.7987,0.1274,0.1554,0.1222,0.1496,0.1255,0.0281,0.0052,0.0223,0.0019,0.8065,0.0758
+open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,GSM8K,GSM8K,1319,100,0.8022,0.1274,0.1554,0.122,0.1496,0.1254,0.0281,0.0053,0.0222,0.002,0.8065,0.0758
 open-llm-leaderboard/details_oh-yeontaek__llama-2-13B-LoRA-assemble,GSM8K,GSM8K,1319,100,0.748,0.0842,0.0993,0.1551,0.1094,0.1516,0.0152,0.071,0.0253,0.0675,0.8065,0.0758
 open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mixed-datasets-time-unit,GSM8K,GSM8K,1319,100,0.3575,0.0713,0.0508,0.0935,0.0586,0.0914,0.0205,0.0222,0.0126,0.0201,0.8065,0.0758
 open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-pretrain,GSM8K,GSM8K,1319,100,-0.0129,0.0857,0.0751,0.0699,0.0741,0.0704,0.0106,0.0157,0.0115,0.0153,0.8065,0.0758
@@ -187,7 +187,7 @@ open-llm-leaderboard/details_dhmeltzer__llama-7b-SFT_ds_wiki65k_1024_r_64_alpha_
 open-llm-leaderboard/details_Sao10K__Zephyrus-L1-33B,GSM8K,GSM8K,1319,100,1.3888,0.2358,0.2153,0.1893,0.2109,0.1927,0.0205,0.0465,0.0249,0.0431,0.8065,0.0758
 open-llm-leaderboard/details_jphme__em_german_leo_mistral,GSM8K,GSM8K,1319,100,-0.3298,0.0561,0.0303,0.1275,0.0478,0.1208,0.0258,0.0714,0.0083,0.0647,0.8065,0.0758
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE4_3.8w-r8-q_k_v_o,GSM8K,GSM8K,1319,100,0.8491,0.1205,0.1319,0.1118,0.1283,0.1132,0.0114,0.0088,0.0077,0.0074,0.8065,0.0758
-open-llm-leaderboard/details_Brouz__Slerpeno,GSM8K,GSM8K,1319,100,0.495,0.1251,0.141,0.1106,0.1358,0.1142,0.0159,0.0145,0.0107,0.0109,0.8065,0.0758
+open-llm-leaderboard/details_Brouz__Slerpeno,GSM8K,GSM8K,1319,100,0.4948,0.1251,0.141,0.1106,0.1358,0.1142,0.0159,0.0145,0.0107,0.0109,0.8065,0.0758
 open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-timedial,GSM8K,GSM8K,1319,100,0.5206,0.0728,0.0652,0.0849,0.0687,0.0834,0.0076,0.0121,0.0041,0.0106,0.8065,0.0758
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down,GSM8K,GSM8K,1319,100,0.6815,0.1296,0.1092,0.1044,0.1085,0.1056,0.0205,0.0252,0.0212,0.0241,0.8065,0.0758
 open-llm-leaderboard/details_Sao10K__BrainDerp2,GSM8K,GSM8K,1319,100,0.8515,0.0902,0.1046,0.1568,0.1142,0.154,0.0144,0.0665,0.024,0.0638,0.8065,0.0758
@@ -196,7 +196,7 @@ open-llm-leaderboard/details_lu-vae__llama2-13B-sharegpt4-orca-openplatypus-8w,G
 open-llm-leaderboard/details_HuggingFaceH4__starchat-beta,GSM8K,GSM8K,1319,100,-0.252,0.0516,0.0569,0.1218,0.0683,0.1162,0.0053,0.0702,0.0168,0.0647,0.8065,0.0758
 open-llm-leaderboard/details_TinyPixel__testmodel2,GSM8K,GSM8K,1319,100,0.6696,0.0766,0.0902,0.0534,0.0838,0.057,0.0136,0.0231,0.0072,0.0196,0.8065,0.0758
 open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V3-peft,GSM8K,GSM8K,1319,100,0.2881,0.0553,0.0303,0.1047,0.0438,0.0999,0.025,0.0493,0.0116,0.0445,0.8065,0.0758
-open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-v1.2,GSM8K,GSM8K,1319,100,0.706,0.0917,0.1001,0.1103,0.1022,0.1109,0.0083,0.0186,0.0104,0.0192,0.8065,0.0758
+open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-v1.2,GSM8K,GSM8K,1319,100,0.7061,0.0917,0.1001,0.1103,0.1022,0.1109,0.0083,0.0186,0.0104,0.0192,0.8065,0.0758
 open-llm-leaderboard/details_mncai__Llama2-7B-guanaco-1k,GSM8K,GSM8K,1319,100,0.9136,0.0758,0.0933,0.0745,0.09,0.0763,0.0174,0.0013,0.0141,0.0004,0.8065,0.0758
 open-llm-leaderboard/details_PocketDoc__Dans-AdventurousWinds-7b,GSM8K,GSM8K,1319,100,0.0435,0.1569,0.1372,0.2083,0.1502,0.2043,0.0197,0.0513,0.0067,0.0474,0.8065,0.0758
 open-llm-leaderboard/details_YeungNLP__firefly-llama2-7b-pretrain,GSM8K,GSM8K,1319,100,-0.209,0.0326,0.0796,0.0791,0.0793,0.0779,0.047,0.0465,0.0467,0.0453,0.8065,0.0758
@@ -209,9 +209,9 @@ open-llm-leaderboard/details_PygmalionAI__pygmalion-2-13b,GSM8K,GSM8K,1319,100,0
 open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged,GSM8K,GSM8K,1319,100,0.4608,0.1069,0.0902,0.0768,0.0879,0.0781,0.0167,0.0301,0.019,0.0288,0.8065,0.0758
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1,GSM8K,GSM8K,1319,100,0.2946,0.0068,0.0,0.0761,0.0135,0.0699,0.0068,0.0693,0.0067,0.0631,0.8065,0.0758
 open-llm-leaderboard/details_dotvignesh__perry-7b,GSM8K,GSM8K,1319,100,0.1968,0.1031,0.091,0.0727,0.0877,0.0742,0.0121,0.0305,0.0154,0.0289,0.8065,0.0758
-open-llm-leaderboard/details_Undi95__ReMM-v2.2-L2-13B,GSM8K,GSM8K,1319,100,0.9182,0.1403,0.1759,0.1292,0.1674,0.1321,0.0356,0.0111,0.0272,0.0082,0.8065,0.0758
+open-llm-leaderboard/details_Undi95__ReMM-v2.2-L2-13B,GSM8K,GSM8K,1319,100,0.9205,0.1403,0.1759,0.1291,0.1674,0.132,0.0356,0.0111,0.0271,0.0082,0.8065,0.0758
 open-llm-leaderboard/details_TheBloke__robin-65b-v2-fp16,GSM8K,GSM8K,1319,100,1.72,0.2699,0.2487,0.2213,0.2438,0.2233,0.0212,0.0486,0.0261,0.0466,0.8065,0.0758
-open-llm-leaderboard/details_Undi95__Emerald-13B,GSM8K,GSM8K,1319,100,0.1462,0.1281,0.166,0.1116,0.1562,0.1153,0.0379,0.0165,0.0281,0.0128,0.8065,0.0758
+open-llm-leaderboard/details_Undi95__Emerald-13B,GSM8K,GSM8K,1319,100,0.1463,0.1281,0.166,0.1116,0.1562,0.1153,0.0379,0.0165,0.0281,0.0128,0.8065,0.0758
 open-llm-leaderboard/details_jondurbin__airoboros-l2-70b-gpt4-m2.0,GSM8K,GSM8K,1319,100,1.7969,0.254,0.2828,0.2825,0.2827,0.2822,0.0288,0.0285,0.0287,0.0282,0.8065,0.0758
 open-llm-leaderboard/details_PulsarAI__EnsembleV5-Nova-13B,GSM8K,GSM8K,1319,100,1.0474,0.1077,0.1069,0.1382,0.1128,0.1373,0.0008,0.0305,0.0051,0.0296,0.8065,0.0758
 open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa,GSM8K,GSM8K,1319,100,-0.7669,0.0781,0.0728,0.0812,0.0743,0.0807,0.0053,0.0031,0.0038,0.0026,0.8065,0.0758
