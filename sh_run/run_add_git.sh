@@ -78,28 +78,57 @@ if [ -d "$DIRECT_PATH" ]; then
         echo "  Experiment: $(basename "$dir")"
 
         # ====================================================================
+        # DETECT EXPERIMENT TYPE (unified vs disjoint)
+        # ====================================================================
+        IS_DISJOINT=false
+        if [ -f "$dir/disjoint_results.json" ]; then
+            IS_DISJOINT=true
+            echo "    Type: Disjoint"
+        else
+            echo "    Type: Unified"
+        fi
+
+        # ====================================================================
         # ESSENTIAL FILES (always included, regardless of mode)
         # ====================================================================
         
         # Config file (always needed)
         find "$dir" -maxdepth 1 -name "config.json" -type f >> "$FILES_TO_ADD"
         
-        # all_results files (based on format)
-        if [ "$FORMAT" = "parquet" ]; then
-            find "$dir" -maxdepth 1 -name "all_results.parquet" -type f >> "$FILES_TO_ADD"
-        elif [ "$FORMAT" = "csv" ]; then
-            find "$dir" -maxdepth 1 -name "all_results.csv" -type f >> "$FILES_TO_ADD"
-        else  # both
-            find "$dir" -maxdepth 1 \( -name "all_results.parquet" -o -name "all_results.csv" \) -type f >> "$FILES_TO_ADD"
+        if [ "$IS_DISJOINT" = true ]; then
+            # ================================================================
+            # DISJOINT EXPERIMENTS
+            # ================================================================
+            # Main results JSON
+            find "$dir" -maxdepth 1 -name "disjoint_results.json" -type f >> "$FILES_TO_ADD"
+            
+            # Comparison and theta files (always CSV for disjoint)
+            find "$dir" -maxdepth 1 -name "disjoint_comparison.csv" -type f >> "$FILES_TO_ADD"
+            find "$dir" -maxdepth 1 -name "isolated_thetas.csv" -type f >> "$FILES_TO_ADD"
+            find "$dir" -maxdepth 1 -name "unseen_thetas.csv" -type f >> "$FILES_TO_ADD"
+            
+            # Note: Disjoint experiments don't have dist_* validation files
+        else
+            # ================================================================
+            # UNIFIED EXPERIMENTS (classic/parallel)
+            # ================================================================
+            # all_results files (based on format)
+            if [ "$FORMAT" = "parquet" ]; then
+                find "$dir" -maxdepth 1 -name "all_results.parquet" -type f >> "$FILES_TO_ADD"
+            elif [ "$FORMAT" = "csv" ]; then
+                find "$dir" -maxdepth 1 -name "all_results.csv" -type f >> "$FILES_TO_ADD"
+            else  # both
+                find "$dir" -maxdepth 1 \( -name "all_results.parquet" -o -name "all_results.csv" \) -type f >> "$FILES_TO_ADD"
+            fi
+            
+            # Distance-level results (small JSON files, always useful)
+            find "$dir" -path "*/dist_*/results.json" -type f >> "$FILES_TO_ADD"
         fi
         
-        # Distance-level results (small JSON files, always useful)
-        find "$dir" -path "*/dist_*/results.json" -type f >> "$FILES_TO_ADD"
-        
         # ====================================================================
-        # FULL MODE: Add per-model validation files
+        # FULL MODE: Add per-model validation files (UNIFIED ONLY)
         # ====================================================================
-        if [ "$MODE" = "full" ]; then
+        if [ "$MODE" = "full" ] && [ "$IS_DISJOINT" = false ]; then
             if [ "$FORMAT" = "parquet" ]; then
                 # Parquet only
                 find "$dir" -maxdepth 2 \( \
@@ -181,28 +210,57 @@ else
             echo "  Experiment: $(basename "$dir")"
 
             # ====================================================================
+            # DETECT EXPERIMENT TYPE (unified vs disjoint)
+            # ====================================================================
+            IS_DISJOINT=false
+            if [ -f "$dir/disjoint_results.json" ]; then
+                IS_DISJOINT=true
+                echo "    Type: Disjoint"
+            else
+                echo "    Type: Unified"
+            fi
+
+            # ====================================================================
             # ESSENTIAL FILES (always included, regardless of mode)
             # ====================================================================
             
             # Config file (always needed)
             find "$dir" -maxdepth 1 -name "config.json" -type f >> "$FILES_TO_ADD"
             
-            # all_results files (based on format)
-            if [ "$FORMAT" = "parquet" ]; then
-                find "$dir" -maxdepth 1 -name "all_results.parquet" -type f >> "$FILES_TO_ADD"
-            elif [ "$FORMAT" = "csv" ]; then
-                find "$dir" -maxdepth 1 -name "all_results.csv" -type f >> "$FILES_TO_ADD"
-            else  # both
-                find "$dir" -maxdepth 1 \( -name "all_results.parquet" -o -name "all_results.csv" \) -type f >> "$FILES_TO_ADD"
+            if [ "$IS_DISJOINT" = true ]; then
+                # ================================================================
+                # DISJOINT EXPERIMENTS
+                # ================================================================
+                # Main results JSON
+                find "$dir" -maxdepth 1 -name "disjoint_results.json" -type f >> "$FILES_TO_ADD"
+                
+                # Comparison and theta files (always CSV for disjoint)
+                find "$dir" -maxdepth 1 -name "disjoint_comparison.csv" -type f >> "$FILES_TO_ADD"
+                find "$dir" -maxdepth 1 -name "isolated_thetas.csv" -type f >> "$FILES_TO_ADD"
+                find "$dir" -maxdepth 1 -name "unseen_thetas.csv" -type f >> "$FILES_TO_ADD"
+                
+                # Note: Disjoint experiments don't have dist_* validation files
+            else
+                # ================================================================
+                # UNIFIED EXPERIMENTS (classic/parallel)
+                # ================================================================
+                # all_results files (based on format)
+                if [ "$FORMAT" = "parquet" ]; then
+                    find "$dir" -maxdepth 1 -name "all_results.parquet" -type f >> "$FILES_TO_ADD"
+                elif [ "$FORMAT" = "csv" ]; then
+                    find "$dir" -maxdepth 1 -name "all_results.csv" -type f >> "$FILES_TO_ADD"
+                else  # both
+                    find "$dir" -maxdepth 1 \( -name "all_results.parquet" -o -name "all_results.csv" \) -type f >> "$FILES_TO_ADD"
+                fi
+                
+                # Distance-level results (small JSON files, always useful)
+                find "$dir" -path "*/dist_*/results.json" -type f >> "$FILES_TO_ADD"
             fi
             
-            # Distance-level results (small JSON files, always useful)
-            find "$dir" -path "*/dist_*/results.json" -type f >> "$FILES_TO_ADD"
-            
             # ====================================================================
-            # FULL MODE: Add per-model validation files
+            # FULL MODE: Add per-model validation files (UNIFIED ONLY)
             # ====================================================================
-            if [ "$MODE" = "full" ]; then
+            if [ "$MODE" = "full" ] && [ "$IS_DISJOINT" = false ]; then
                 if [ "$FORMAT" = "parquet" ]; then
                     # Parquet only
                     find "$dir" -maxdepth 2 \( \
@@ -339,18 +397,34 @@ echo "========================================"
 echo ""
 echo "📊 Files included in this commit:"
 if [ "$MODE" = "minimal" ]; then
+    echo "   UNIFIED experiments:"
     echo "   ✓ all_results ($FORMAT)"
     echo "   ✓ config.json"
     echo "   ✓ dist_*/results.json"
     echo ""
-    echo "   ❌ Per-model validation files NOT included"
+    echo "   DISJOINT experiments:"
+    echo "   ✓ disjoint_results.json"
+    echo "   ✓ disjoint_comparison.csv"
+    echo "   ✓ isolated_thetas.csv"
+    echo "   ✓ unseen_thetas.csv"
+    echo "   ✓ config.json"
+    echo ""
+    echo "   ❌ Per-model validation files NOT included (unified only)"
     echo "      (use 'full' mode to include them)"
 else
+    echo "   UNIFIED experiments:"
     echo "   ✓ all_results ($FORMAT)"
     echo "   ✓ config.json"
     echo "   ✓ dist_*/results.json"
     echo "   ✓ dist_*/validation_* ($FORMAT)"
     echo "   ✓ dist_*/random_* ($FORMAT)"
+    echo ""
+    echo "   DISJOINT experiments:"
+    echo "   ✓ disjoint_results.json"
+    echo "   ✓ disjoint_comparison.csv"
+    echo "   ✓ isolated_thetas.csv"
+    echo "   ✓ unseen_thetas.csv"
+    echo "   ✓ config.json"
 fi
 echo ""
 echo "💡 Usage examples:"
