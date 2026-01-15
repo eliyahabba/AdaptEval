@@ -1,0 +1,40 @@
+{
+  "experiment": "disjoint_chain_linking",
+  "target_dataset": "HellaSwag",
+  "n_chain_steps": 4,
+  "chain_datasets": [
+    "GSM8K",
+    "MMLU",
+    "ARC Challenge",
+    "TruthfulQA"
+  ],
+  "fixed_bridge": false,
+  "n_bridge_models": 80,
+  "n_isolated_total": 200,
+  "n_unseen_test": 59,
+  "n_isolated_models": 200,
+  "n_models_with_theta": 200,
+  "n_isolated_groups": 4,
+  "isolated_group_sizes": {
+    "0": 50,
+    "1": 50,
+    "2": 50,
+    "3": 50
+  },
+  "disjoint_spearman_rho_target": -0.3773,
+  "disjoint_kendall_tau_target": -0.2624,
+  "disjoint_spearman_pvalue_target": 0.0,
+  "n_valid_target": 200,
+  "disjoint_spearman_rho_global": -0.4316,
+  "disjoint_kendall_tau_global": -0.3055,
+  "disjoint_spearman_pvalue_global": 0.0,
+  "n_valid_global": 200,
+  "disjoint_spearman_rho": -0.3773,
+  "disjoint_kendall_tau": -0.2624,
+  "unseen_spearman_rho": -0.0186,
+  "unseen_kendall_tau": 0.0164,
+  "unseen_n_models": 59,
+  "pairwise_accuracy": 0.3631,
+  "correct_pairs": 5447,
+  "total_pairs": 15000
+}
