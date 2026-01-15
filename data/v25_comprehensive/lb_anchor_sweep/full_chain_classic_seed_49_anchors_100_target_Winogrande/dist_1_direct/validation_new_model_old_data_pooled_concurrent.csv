@@ -41,7 +41,7 @@ open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,MM
 open-llm-leaderboard/details_SuperAGI__SAM,MMLU,MMLU,14042,100,-3.9118,0.6115,0.6122,0.6095,0.6119,0.6095,0.0008,0.0019,0.0005,0.002,0.8792,0.0071
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,MMLU,MMLU,14042,100,-2.9222,0.6141,0.6744,0.6058,0.6662,0.6063,0.0603,0.0082,0.0521,0.0078,0.8792,0.0071
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,MMLU,MMLU,14042,100,-2.7666,0.597,0.5833,0.5717,0.5819,0.5718,0.0137,0.0253,0.0151,0.0252,0.8792,0.0071
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,-28.9885,0.6552,0.6476,0.649,0.6478,0.649,0.0075,0.0061,0.0074,0.0061,0.8792,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,-28.9974,0.6552,0.6476,0.649,0.6478,0.649,0.0075,0.0061,0.0074,0.0061,0.8792,0.0071
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,MMLU,MMLU,14042,100,-1.1066,0.5063,0.5049,0.494,0.5036,0.494,0.0014,0.0123,0.0027,0.0123,0.8792,0.0071
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,MMLU,MMLU,14042,100,-5.291,0.6266,0.6188,0.5967,0.6161,0.5969,0.0078,0.03,0.0105,0.0298,0.8792,0.0071
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,MMLU,MMLU,14042,100,-2.014,0.7049,0.7371,0.7118,0.734,0.712,0.0322,0.0069,0.0292,0.0071,0.8792,0.0071

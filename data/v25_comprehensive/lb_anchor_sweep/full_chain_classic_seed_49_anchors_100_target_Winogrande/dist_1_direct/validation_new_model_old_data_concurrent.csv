@@ -45,7 +45,7 @@ open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,MMLU,MMLU,14042,100,-0.9026,0.5063,0.4916,0.4688,0.4889,0.4689,0.0147,0.0374,0.0174,0.0373,0.8792,0.0071
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,MMLU,MMLU,14042,100,-5.5754,0.6266,0.6327,0.6266,0.632,0.6266,0.0061,0.0,0.0054,0.0,0.8792,0.0071
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,MMLU,MMLU,14042,100,-1.7742,0.7049,0.6622,0.6803,0.6644,0.6802,0.0427,0.0246,0.0405,0.0247,0.8792,0.0071
-open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,MMLU,MMLU,14042,100,-38.9541,0.6519,0.6701,0.6556,0.6683,0.6556,0.0182,0.0037,0.0164,0.0037,0.8792,0.0071
+open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,MMLU,MMLU,14042,100,-38.9852,0.6519,0.6701,0.6556,0.6683,0.6556,0.0182,0.0037,0.0164,0.0037,0.8792,0.0071
 open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,MMLU,MMLU,14042,100,-1.8895,0.5541,0.5546,0.5653,0.5559,0.5651,0.0005,0.0112,0.0018,0.011,0.8792,0.0071
 open-llm-leaderboard/details_KaeriJenti__Kaori-34B-v1,MMLU,MMLU,14042,100,-0.8242,0.702,0.6788,0.6947,0.6807,0.6947,0.0231,0.0072,0.0212,0.0072,0.8792,0.0071
 open-llm-leaderboard/details_Mihaiii__Metis-0.1,MMLU,MMLU,14042,100,-1.9963,0.6,0.5936,0.5965,0.5939,0.5965,0.0064,0.0035,0.0061,0.0034,0.8792,0.0071
@@ -60,7 +60,7 @@ open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,MMLU,
 open-llm-leaderboard/details_ajibawa-2023__Python-Code-33B,MMLU,MMLU,14042,100,-1.2027,0.5384,0.5409,0.5162,0.538,0.5164,0.0026,0.0222,0.0004,0.022,0.8792,0.0071
 open-llm-leaderboard/details_speechlessai__speechless-mistral-7b-dare-0.85,MMLU,MMLU,14042,100,-3.7229,0.6293,0.6399,0.64,0.6399,0.6401,0.0105,0.0107,0.0106,0.0107,0.8792,0.0071
 open-llm-leaderboard/details_l3utterfly__mistral-7b-v0.1-layla-v1,MMLU,MMLU,14042,100,-3.6217,0.5952,0.6388,0.6577,0.6411,0.6576,0.0436,0.0625,0.0459,0.0624,0.8792,0.0071
-open-llm-leaderboard/details_euclaise__Ferret-7B,MMLU,MMLU,14042,100,-2.1304,0.5875,0.6563,0.6282,0.6529,0.6283,0.0689,0.0407,0.0655,0.0408,0.8792,0.0071
+open-llm-leaderboard/details_euclaise__Ferret-7B,MMLU,MMLU,14042,100,-2.1305,0.5875,0.6563,0.6282,0.6529,0.6283,0.0689,0.0407,0.0655,0.0408,0.8792,0.0071
 open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,MMLU,MMLU,14042,100,-2.3568,0.6036,0.64,0.5765,0.6324,0.5768,0.0364,0.0271,0.0288,0.0268,0.8792,0.0071
 open-llm-leaderboard/details_luffycodes__llama-shishya-7b-ep3-v1,MMLU,MMLU,14042,100,-1.2674,0.4546,0.47,0.4632,0.4692,0.4632,0.0154,0.0085,0.0146,0.0086,0.8792,0.0071
 open-llm-leaderboard/details_chargoddard__storytime-13b,MMLU,MMLU,14042,100,-5.3807,0.578,0.5865,0.5789,0.5856,0.579,0.0085,0.0009,0.0076,0.001,0.8792,0.0071
