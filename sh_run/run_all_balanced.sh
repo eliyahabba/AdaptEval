@@ -111,7 +111,7 @@ echo "Base: $BASE_DIR"
 [ -n "$RUN_CATEGORY" ] && echo "Running: Category $RUN_CATEGORY only"
 echo ""
 
-mkdir -p "${BASE_DIR}/lb_baseline" "${BASE_DIR}/lb_anchor_sweep" "${BASE_DIR}/lb_model_sweep"
+mkdir -p "${BASE_DIR}/lb_baseline" "${BASE_DIR}/lb_anchor_sweep" "${BASE_DIR}/lb_anchor_sweep_controlled" "${BASE_DIR}/lb_model_sweep" "${BASE_DIR}/lb_model_sweep_controlled"
 mkdir -p "${BASE_DIR}/helm_lite_baseline" "${BASE_DIR}/helm_lite_base4"
 mkdir -p "${BASE_DIR}/mmlu_baseline"
 mkdir -p "${BASE_DIR}/lb_disjoint_fixed" "${BASE_DIR}/lb_disjoint_random"
@@ -147,54 +147,65 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
         SEED=$((SEED + 1))
     done
     
-    # 1.2: Anchor Sweep (4 per dataset = 24)
+    # 1.2: Anchor Sweep - CONTROLLED (same seed per target, only anchors vary)
+    # This allows fair comparison: same train/test split, same chain order
+    # Output to NEW directory to avoid mixing with old uncontrolled experiments
     echo ""
-    echo "-- LB Anchor Sweep (24 experiments) --"
+    echo "-- LB Anchor Sweep CONTROLLED (24 experiments) --"
+    echo "   Same seed per target, only anchors vary (25, 50, 100, 200)"
+    echo "   Output: ${BASE_DIR}/lb_anchor_sweep_controlled"
     SEED=31
     for target in "${LB_DATASETS[@]}"; do
+        # SAME seed for all anchor counts of this target!
+        TARGET_SEED=$SEED
         for anchors in 25 50 100 200; do
-            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_anchor_sweep" $SEED $anchors "$target" ""; then
-                echo "   ⏭️  SKIP (complete): $target anchors=$anchors (seed=$SEED)"
+            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_anchor_sweep_controlled" $TARGET_SEED $anchors "$target" ""; then
+                echo "   ⏭️  SKIP (complete): $target anchors=$anchors (seed=$TARGET_SEED)"
                 SKIPPED=$((SKIPPED + 1))
             else
-                echo "   Submitting $target (anchors=$anchors, seed=$SEED)..."
+                echo "   Submitting $target (anchors=$anchors, seed=$TARGET_SEED)..."
                 sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                    --output-dir ${BASE_DIR}/lb_anchor_sweep \
+                    --output-dir ${BASE_DIR}/lb_anchor_sweep_controlled \
                     --preset lb_standard \
                     --n-anchors $anchors \
-                    --seed $SEED \
+                    --seed $TARGET_SEED \
                     --target "$target" \
                     --random-seed $((1000 + anchors)) \
                     $SKIP_EXISTING $FORCE_RESUME
                 SUBMITTED=$((SUBMITTED + 1))
             fi
-            SEED=$((SEED + 1))
         done
+        SEED=$((SEED + 1))  # Next target gets next seed
     done
     
-    # 1.3: Model Sweep (2 per dataset = 12)
+    # 1.3: Model Sweep - CONTROLLED (same seed per target, only model count varies)
+    # Output to NEW directory to avoid mixing with old uncontrolled experiments
     echo ""
-    echo "-- LB Model Sweep (12 experiments) --"
+    echo "-- LB Model Sweep CONTROLLED (12 experiments) --"
+    echo "   Same seed per target, only model count varies (50, 100)"
+    echo "   Output: ${BASE_DIR}/lb_model_sweep_controlled"
     SEED=61
     for target in "${LB_DATASETS[@]}"; do
+        # SAME seed for all model counts of this target!
+        TARGET_SEED=$SEED
         for models in 50 100; do
-            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_model_sweep" $SEED 100 "$target" "$models"; then
-                echo "   ⏭️  SKIP (complete): $target models=$models (seed=$SEED)"
+            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_model_sweep_controlled" $TARGET_SEED 100 "$target" "$models"; then
+                echo "   ⏭️  SKIP (complete): $target models=$models (seed=$TARGET_SEED)"
                 SKIPPED=$((SKIPPED + 1))
             else
-                echo "   Submitting $target (models=$models, seed=$SEED)..."
+                echo "   Submitting $target (models=$models, seed=$TARGET_SEED)..."
                 sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                    --output-dir ${BASE_DIR}/lb_model_sweep \
+                    --output-dir ${BASE_DIR}/lb_model_sweep_controlled \
                     --preset lb_standard \
                     --n-models $models \
-                    --seed $SEED \
+                    --seed $TARGET_SEED \
                     --target "$target" \
                     --random-seed $((2000 + models)) \
                     $SKIP_EXISTING $FORCE_RESUME
                 SUBMITTED=$((SUBMITTED + 1))
             fi
-            SEED=$((SEED + 1))
         done
+        SEED=$((SEED + 1))  # Next target gets next seed
     done
     
     echo ""
