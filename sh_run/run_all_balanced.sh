@@ -4,7 +4,7 @@
 #
 # Covers:
 # - LB: 42 experiments (6 datasets × 7 configs) - balanced
-#   - Baseline: 6 experiments (1 seed per dataset)
+#   - Baseline Fixed: 6 experiments (1 seed per dataset) → lb_baseline_fixed/
 #   - Anchor Sweep: 24 experiments (4 anchor counts × 6 datasets)
 #   - Model Sweep: 12 experiments (2 model counts × 6 datasets)
 # - HELM Lite: 18 experiments (9 base1 + 9 base4)
@@ -114,7 +114,7 @@ echo "Base: $BASE_DIR"
 [ -n "$RUN_CATEGORY" ] && echo "Running: Category $RUN_CATEGORY only"
 echo ""
 
-mkdir -p "${BASE_DIR}/lb_baseline" "${BASE_DIR}/lb_anchor_sweep" "${BASE_DIR}/lb_anchor_sweep_controlled" "${BASE_DIR}/lb_model_sweep" "${BASE_DIR}/lb_model_sweep_controlled"
+mkdir -p "${BASE_DIR}/lb_baseline_fixed" "${BASE_DIR}/lb_anchor_sweep" "${BASE_DIR}/lb_anchor_sweep_controlled" "${BASE_DIR}/lb_model_sweep" "${BASE_DIR}/lb_model_sweep_controlled"
 mkdir -p "${BASE_DIR}/helm_lite_baseline" "${BASE_DIR}/helm_lite_base4"
 mkdir -p "${BASE_DIR}/mmlu_baseline"
 mkdir -p "${BASE_DIR}/lb_disjoint_fixed" "${BASE_DIR}/lb_disjoint_random"
@@ -129,17 +129,18 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo ""
     
     # 1.1: Baseline (1 per dataset = 6)
-    echo "-- LB Baseline (6 experiments) --"
+    # Output to lb_baseline_fixed to distinguish from old experiments with anchor bug
+    echo "-- LB Baseline Fixed (6 experiments) --"
     SEED=21
     for target in "${LB_DATASETS[@]}"; do
         # Check if already complete when resuming
-        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_baseline" $SEED 100 "$target" ""; then
+        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_baseline_fixed" $SEED 100 "$target" ""; then
             echo "   ⏭️  SKIP (complete): $target (seed=$SEED)"
             SKIPPED=$((SKIPPED + 1))
         else
             echo "   Submitting $target (baseline, seed=$SEED)..."
             sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                --output-dir ${BASE_DIR}/lb_baseline \
+                --output-dir ${BASE_DIR}/lb_baseline_fixed \
                 --preset lb_standard \
                 --seed $SEED \
                 --target "$target" \
