@@ -476,17 +476,37 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             B_matrix = np.array(B_list)
     
     # Select anchors
-    target_anchors, target_weights = select_anchors_for_dataset(
-        irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix
-    )
+    # Note: We need BOTH:
+    #   - all_anchors (Base+Chain+Target) for Validation 1 & 2
+    #   - prev_anchors (Base+Chain only) for Validation 3 (to avoid "cheating" with Target)
     
-    # Combine anchors
-    if prev_anchors is not None:
-        all_anchors = list(prev_anchors) + target_anchors
-        all_weights = list(prev_weights) + target_weights
+    if task.method == 'concurrent':
+        # Concurrent: Re-select ALL anchors from the new IRT (not from cache)
+        # This is the correct behavior since we trained a completely new IRT model
+        
+        # First, select anchors from ALL datasets (including Target)
+        all_anchors, all_weights = select_anchors(
+            irt_params, task.n_anchors_per_dataset, final_df, A_matrix, B_matrix
+        )
+        
+        # For Validation 3: we need Base+Chain anchors only (without Target)
+        # Filter out Target anchors from all_anchors
+        target_prefix = f"{task.target_name}:"
+        prev_anchors = [a for a in all_anchors if not str(a).startswith(target_prefix)]
+        prev_weights = [w for a, w in zip(all_anchors, all_weights) if not str(a).startswith(target_prefix)]
     else:
-        all_anchors = target_anchors
-        all_weights = target_weights
+        # Fixed: use prev_anchors (from cache) + new target anchors
+        # This maintains the frozen anchor selection from previous steps
+        target_anchors, target_weights = select_anchors_for_dataset(
+            irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix
+        )
+        if prev_anchors is not None:
+            all_anchors = list(prev_anchors) + target_anchors
+            all_weights = list(prev_weights) + target_weights
+        else:
+            all_anchors = target_anchors
+            all_weights = target_weights
+        # prev_anchors stays as passed from task (from cache)
 
     # Paper-grade sanity: ensure every dataset we evaluate has enough LOCAL anchors (prefix-based).
     datasets_to_check = set()

@@ -4,6 +4,9 @@
 #
 # Covers:
 # - LB: 42 experiments (6 datasets × 7 configs) - balanced
+#   - Baseline: 6 experiments (1 seed per dataset)
+#   - Anchor Sweep: 24 experiments (4 anchor counts × 6 datasets)
+#   - Model Sweep: 12 experiments (2 model counts × 6 datasets)
 # - HELM Lite: 18 experiments (9 base1 + 9 base4)
 # - MMLU Fields: 20 experiments (seeds 11-30)
 # - Disjoint: 12 experiments (6 fixed + 6 random bridge)
@@ -125,29 +128,26 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo "=================================================================="
     echo ""
     
-    # 1.1: Baseline (4 per dataset = 24)
-    echo "-- LB Baseline (24 experiments) --"
+    # 1.1: Baseline (1 per dataset = 6)
+    echo "-- LB Baseline (6 experiments) --"
     SEED=21
     for target in "${LB_DATASETS[@]}"; do
-        for offset in 0 1 2 3; do
-            RUN_SEED=$((SEED + offset))
-            # Check if already complete when resuming
-            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_baseline" $RUN_SEED 100 "$target" ""; then
-                echo "   ⏭️  SKIP (complete): $target (seed=$RUN_SEED)"
-                SKIPPED=$((SKIPPED + 1))
-            else
-                echo "   Submitting $target (baseline, seed=$RUN_SEED)..."
-                sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                    --output-dir ${BASE_DIR}/lb_baseline \
-                    --preset lb_standard \
-                    --seed $RUN_SEED \
-                    --target "$target" \
-                    --random-seed 1000 \
-                    $SKIP_EXISTING $FORCE_RESUME
-                SUBMITTED=$((SUBMITTED + 1))
-            fi
-        done
-        SEED=$((SEED + 4))
+        # Check if already complete when resuming
+        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_baseline" $SEED 100 "$target" ""; then
+            echo "   ⏭️  SKIP (complete): $target (seed=$SEED)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting $target (baseline, seed=$SEED)..."
+            sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                --output-dir ${BASE_DIR}/lb_baseline \
+                --preset lb_standard \
+                --seed $SEED \
+                --target "$target" \
+                --random-seed 1000 \
+                $SKIP_EXISTING $FORCE_RESUME
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
+        SEED=$((SEED + 1))
     done
     
     # 1.2: Anchor Sweep - CONTROLLED (same seed per target, only anchors vary)
@@ -212,7 +212,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     done
     
     echo ""
-    echo "✓ Category 1 complete: 60 experiments submitted"
+    echo "✓ Category 1 complete: 42 experiments (6 baseline + 24 anchor + 12 model)"
 fi
 
 # ============================================================
@@ -358,12 +358,12 @@ elif [ -n "$RUN_CATEGORY" ]; then
     echo "Category $RUN_CATEGORY: $SUBMITTED jobs submitted"
 else
     echo "All categories:"
-    echo "  Category 1 (LB):         60 experiments"
+    echo "  Category 1 (LB):         42 experiments (6+24+12)"
     echo "  Category 2 (HELM Lite):  18 experiments"
     echo "  Category 3 (MMLU):       20 experiments"
     echo "  Category 4 (Disjoint):   12 experiments"
     echo "  ───────────────────────────────────────"
-    echo "  TOTAL:                   110 experiments"
+    echo "  TOTAL:                   92 experiments"
     echo ""
     echo "Actually submitted: $SUBMITTED"
     [ $SKIPPED -gt 0 ] && echo "Skipped (complete): $SKIPPED"
