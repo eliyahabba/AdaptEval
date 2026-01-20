@@ -4,7 +4,7 @@
 #
 # Covers:
 # - LB: 42 experiments (6 datasets × 7 configs) - balanced
-#   - Baseline Fixed: 6 experiments (1 seed per dataset) → lb_baseline_fixed/
+#   - Baseline Fixed: 24 experiments (4 seeds per dataset) → lb_baseline_fixed/
 #   - Anchor Sweep: 24 experiments (4 anchor counts × 6 datasets)
 #   - Model Sweep: 12 experiments (2 model counts × 6 datasets)
 # - HELM Lite: 18 experiments (9 base1 + 9 base4)
@@ -124,31 +124,34 @@ mkdir -p "${BASE_DIR}/lb_disjoint_fixed" "${BASE_DIR}/lb_disjoint_random"
 # ============================================================
 if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     echo "=================================================================="
-    echo "CATEGORY 1: LB (42 experiments)"
+    echo "CATEGORY 1: LB (60 experiments)"
     echo "=================================================================="
     echo ""
     
-    # 1.1: Baseline (1 per dataset = 6)
+    # 1.1: Baseline (4 seeds per dataset = 24 experiments)
     # Output to lb_baseline_fixed to distinguish from old experiments with anchor bug
-    echo "-- LB Baseline Fixed (6 experiments) --"
+    echo "-- LB Baseline Fixed (24 experiments) --"
     SEED=21
     for target in "${LB_DATASETS[@]}"; do
-        # Check if already complete when resuming
-        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_baseline_fixed" $SEED 100 "$target" ""; then
-            echo "   ⏭️  SKIP (complete): $target (seed=$SEED)"
-            SKIPPED=$((SKIPPED + 1))
-        else
-            echo "   Submitting $target (baseline, seed=$SEED)..."
-            sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                --output-dir ${BASE_DIR}/lb_baseline_fixed \
-                --preset lb_standard \
-                --seed $SEED \
-                --target "$target" \
-                --random-seed 1000 \
-                $SKIP_EXISTING $FORCE_RESUME
-            SUBMITTED=$((SUBMITTED + 1))
-        fi
-        SEED=$((SEED + 1))
+        for offset in 0 1 2 3; do
+            RUN_SEED=$((SEED + offset))
+            # Check if already complete when resuming
+            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_baseline_fixed" $RUN_SEED 100 "$target" ""; then
+                echo "   ⏭️  SKIP (complete): $target (seed=$RUN_SEED)"
+                SKIPPED=$((SKIPPED + 1))
+            else
+                echo "   Submitting $target (baseline, seed=$RUN_SEED)..."
+                sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                    --output-dir ${BASE_DIR}/lb_baseline_fixed \
+                    --preset lb_standard \
+                    --seed $RUN_SEED \
+                    --target "$target" \
+                    --random-seed 1000 \
+                    $SKIP_EXISTING $FORCE_RESUME
+                SUBMITTED=$((SUBMITTED + 1))
+            fi
+        done
+        SEED=$((SEED + 4))
     done
     
     # 1.2: Anchor Sweep - CONTROLLED (same seed per target, only anchors vary)
