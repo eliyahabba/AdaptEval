@@ -27,7 +27,7 @@
 
 set -e
 
-BASE_DIR="data/v25_comprehensive"
+BASE_DIR="data/v26_anchor_fix_num_of_models"
 SETUP_ONLY=""
 SKIP_EXISTING=""
 FORCE_RESUME=""
