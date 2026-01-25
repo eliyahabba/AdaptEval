@@ -10,8 +10,10 @@
 # - HELM Lite: 18 experiments (9 base1 + 9 base4)
 # - MMLU Fields: 20 experiments (seeds 11-30)
 # - Disjoint: 12 experiments (6 fixed + 6 random bridge)
+# - Extended Model Sweep: 162 experiments (9 model counts × 6 datasets × 3 seeds) → lb_model_sweep_extended_fixed/
+# - MMLU Extended Model Sweep: 27 experiments (9 model counts × 3 seeds) → mmlu_model_sweep_extended_fixed/
 #
-# Total: 92 experiments
+# Total: 299 experiments
 #
 # Usage:
 #   bash run_all_balanced.sh                    # Run all missing
@@ -216,7 +218,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
     done
     
     echo ""
-    echo "✓ Category 1 complete: 42 experiments (6 baseline + 24 anchor + 12 model)"
+    echo "✓ Category 1 complete: 60 experiments (24 baseline + 24 anchor + 12 model)"
 fi
 
 # ============================================================
@@ -350,6 +352,96 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
     echo "✓ Category 4 complete: 12 experiments submitted"
 fi
 
+# ============================================================
+# CATEGORY 5: Extended Model Sweep (162 experiments)
+# ============================================================
+# Test how number of models in chain affects performance
+# 9 model counts × 6 datasets × 3 seeds = 162 experiments
+if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
+    echo "=================================================================="
+    echo "CATEGORY 5: Extended Model Sweep (162 experiments)"
+    echo "=================================================================="
+    echo ""
+    
+    mkdir -p "${BASE_DIR}/lb_model_sweep_extended_fixed"
+    
+    echo "-- LB Model Sweep Extended (162 experiments) --"
+    echo "   Model counts: 5, 10, 25, 50, 100, 150, 200, 250, 300"
+    echo "   3 seeds per dataset"
+    echo "   Output: ${BASE_DIR}/lb_model_sweep_extended_fixed"
+    
+    SEED=101
+    for target in "${LB_DATASETS[@]}"; do
+        for seed_offset in 0 1 2; do
+            RUN_SEED=$((SEED + seed_offset))
+            for models in 5 10 25 50 100 150 200 250 300; do
+                if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_model_sweep_extended_fixed" $RUN_SEED 100 "$target" "$models"; then
+                    echo "   ⏭️  SKIP (complete): $target models=$models (seed=$RUN_SEED)"
+                    SKIPPED=$((SKIPPED + 1))
+                else
+                    echo "   Submitting $target (models=$models, seed=$RUN_SEED)..."
+                    sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                        --output-dir ${BASE_DIR}/lb_model_sweep_extended_fixed \
+                        --preset lb_standard \
+                        --n-models $models \
+                        --seed $RUN_SEED \
+                        --target "$target" \
+                        --random-seed $((3000 + models)) \
+                        $SKIP_EXISTING $FORCE_RESUME
+                    SUBMITTED=$((SUBMITTED + 1))
+                fi
+            done
+        done
+        SEED=$((SEED + 3))  # Next target gets next 3 seeds
+    done
+    
+    echo ""
+    echo "✓ Category 5 complete: 162 experiments (9 model counts × 6 datasets × 3 seeds)"
+fi
+
+# ============================================================
+# CATEGORY 6: MMLU Extended Model Sweep (27 experiments)
+# ============================================================
+# Test how number of models in chain affects performance for MMLU Fields
+# 9 model counts × 3 seeds = 27 experiments
+if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
+    echo "=================================================================="
+    echo "CATEGORY 6: MMLU Extended Model Sweep (27 experiments)"
+    echo "=================================================================="
+    echo ""
+    
+    mkdir -p "${BASE_DIR}/mmlu_model_sweep_extended_fixed"
+    
+    echo "-- MMLU Model Sweep Extended (27 experiments) --"
+    echo "   Model counts: 5, 10, 25, 50, 100, 150, 200, 250, 300"
+    echo "   3 seeds per model count"
+    echo "   Output: ${BASE_DIR}/mmlu_model_sweep_extended_fixed"
+    
+    SEED=201
+    for seed_offset in 0 1 2; do
+        RUN_SEED=$((SEED + seed_offset))
+        for models in 5 10 25 50 100 150 200 250 300; do
+            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_model_sweep_extended_fixed" $RUN_SEED 10 "" "$models"; then
+                echo "   ⏭️  SKIP (complete): MMLU models=$models (seed=$RUN_SEED)"
+                SKIPPED=$((SKIPPED + 1))
+            else
+                echo "   Submitting MMLU Fields (models=$models, seed=$RUN_SEED)..."
+                sbatch --mem=8g --time=24:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                    --output-dir ${BASE_DIR}/mmlu_model_sweep_extended_fixed \
+                    --preset mmlu_fields \
+                    --n-models $models \
+                    --seed $RUN_SEED \
+                    --random-seed $((4000 + models)) \
+                    $SKIP_EXISTING $FORCE_RESUME
+                SUBMITTED=$((SUBMITTED + 1))
+            fi
+        done
+    done
+    
+    echo ""
+    echo "✓ Category 6 complete: 27 experiments (9 model counts × 3 seeds)"
+fi
+
 # Summary
 echo ""
 echo "=================================================================="
@@ -362,12 +454,14 @@ elif [ -n "$RUN_CATEGORY" ]; then
     echo "Category $RUN_CATEGORY: $SUBMITTED jobs submitted"
 else
     echo "All categories:"
-    echo "  Category 1 (LB):         42 experiments (6+24+12)"
-    echo "  Category 2 (HELM Lite):  18 experiments"
-    echo "  Category 3 (MMLU):       20 experiments"
-    echo "  Category 4 (Disjoint):   12 experiments"
+    echo "  Category 1 (LB):              60 experiments (24 baseline + 24 anchor + 12 model)"
+    echo "  Category 2 (HELM Lite):       18 experiments"
+    echo "  Category 3 (MMLU):            20 experiments"
+    echo "  Category 4 (Disjoint):        12 experiments"
+    echo "  Category 5 (LB Model Ext):    162 experiments (9 counts × 6 datasets × 3 seeds)"
+    echo "  Category 6 (MMLU Model Ext):  27 experiments (9 counts × 3 seeds)"
     echo "  ───────────────────────────────────────"
-    echo "  TOTAL:                   92 experiments"
+    echo "  TOTAL:                        299 experiments"
     echo ""
     echo "Actually submitted: $SUBMITTED"
     [ $SKIPPED -gt 0 ] && echo "Skipped (complete): $SKIPPED"
