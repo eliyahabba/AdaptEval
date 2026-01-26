@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=git-add-validation
 #SBATCH --mem=4g
-#SBATCH --time=2:0:0
+#SBATCH --time=0:10:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --cpus-per-task=2

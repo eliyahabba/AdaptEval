@@ -374,12 +374,16 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
     echo "-- LB Model Sweep Extended (162 experiments) --"
     echo "   Model counts: 5, 10, 25, 50, 100, 150, 200, 250, 300"
     echo "   3 seeds per dataset"
+    echo "   Order: seed → dataset → model_count (get full picture faster)"
     echo "   Output: ${BASE_DIR}/lb_model_sweep_extended_fixed"
     
-    SEED=101
-    for target in "${LB_DATASETS[@]}"; do
-        for seed_offset in 0 1 2; do
-            RUN_SEED=$((SEED + seed_offset))
+    BASE_SEED=101
+    for seed_offset in 0 1 2; do
+        echo ""
+        echo "   --- Seed round $((seed_offset + 1))/3 ---"
+        TARGET_IDX=0
+        for target in "${LB_DATASETS[@]}"; do
+            RUN_SEED=$((BASE_SEED + TARGET_IDX * 3 + seed_offset))
             for models in 5 10 25 50 100 150 200 250 300; do
                 if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_model_sweep_extended_fixed" $RUN_SEED 100 "$target" "$models"; then
                     echo "   ⏭️  SKIP (complete): $target models=$models (seed=$RUN_SEED)"
@@ -397,8 +401,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
                     SUBMITTED=$((SUBMITTED + 1))
                 fi
             done
+            TARGET_IDX=$((TARGET_IDX + 1))
         done
-        SEED=$((SEED + 3))  # Next target gets next 3 seeds
     done
     
     echo ""
