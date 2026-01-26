@@ -106,6 +106,12 @@ is_disjoint_complete() {
 SUBMITTED=0
 SKIPPED=0
 
+# Helper: Submit job with full command echo
+submit_job() {
+    echo "   → $@"
+    "$@"
+}
+
 echo "=================================================================="
 echo "Complete Experiment Suite (Balanced)"
 echo "=================================================================="
@@ -143,7 +149,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                 SKIPPED=$((SKIPPED + 1))
             else
                 echo "   Submitting $target (baseline, seed=$RUN_SEED)..."
-                sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                submit_job sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                     --output-dir ${BASE_DIR}/lb_baseline_fixed \
                     --preset lb_standard \
                     --seed $RUN_SEED \
@@ -173,7 +179,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                 SKIPPED=$((SKIPPED + 1))
             else
                 echo "   Submitting $target (anchors=$anchors, seed=$TARGET_SEED)..."
-                sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                submit_job sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                     --output-dir ${BASE_DIR}/lb_anchor_sweep_controlled \
                     --preset lb_standard \
                     --n-anchors $anchors \
@@ -203,7 +209,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                 SKIPPED=$((SKIPPED + 1))
             else
                 echo "   Submitting $target (models=$models, seed=$TARGET_SEED)..."
-                sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                submit_job sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                     --output-dir ${BASE_DIR}/lb_model_sweep_controlled \
                     --preset lb_standard \
                     --n-models $models \
@@ -239,7 +245,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
             SKIPPED=$((SKIPPED + 1))
         else
             echo "   Submitting HELM Lite base=1 (seed=$seed)..."
-            sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+            submit_job sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/helm_lite_baseline \
                 --preset helm_lite_base1 \
                 --seed $seed \
@@ -258,7 +264,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
             SKIPPED=$((SKIPPED + 1))
         else
             echo "   Submitting HELM Lite base=4 (seed=$seed)..."
-            sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+            submit_job sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/helm_lite_base4 \
                 --preset helm_lite_base4 \
                 --seed $seed \
@@ -289,7 +295,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
             SKIPPED=$((SKIPPED + 1))
         else
             echo "   Submitting MMLU Fields (seed=$seed)..."
-            sbatch --mem=8g --time=10:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+            submit_job sbatch --mem=8g --time=10:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/mmlu_baseline \
                 --preset mmlu_fields \
                 --seed $seed \
@@ -326,7 +332,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
             SKIPPED=$((SKIPPED + 1))
         else
             echo "   Submitting Disjoint fixed (seed=$seed)..."
-            sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
+            submit_job sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
                 ${BASE_DIR}/lb_disjoint_fixed/full_chain_disjoint $seed 100 20 50 "" fixed $DISJOINT_SKIP_ARG
             SUBMITTED=$((SUBMITTED + 1))
         fi
@@ -342,7 +348,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
             SKIPPED=$((SKIPPED + 1))
         else
             echo "   Submitting Disjoint random (seed=$seed)..."
-            sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
+            submit_job sbatch $SETUP_ONLY sh_run/run_chain_linking_disjoint_lb.sh \
                 ${BASE_DIR}/lb_disjoint_random/full_chain_disjoint $seed 100 20 50 "" random $DISJOINT_SKIP_ARG
             SUBMITTED=$((SUBMITTED + 1))
         fi
@@ -380,7 +386,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
                     SKIPPED=$((SKIPPED + 1))
                 else
                     echo "   Submitting $target (models=$models, seed=$RUN_SEED)..."
-                    sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                    submit_job sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                         --output-dir ${BASE_DIR}/lb_model_sweep_extended_fixed \
                         --preset lb_standard \
                         --n-models $models \
@@ -426,7 +432,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
                 SKIPPED=$((SKIPPED + 1))
             else
                 echo "   Submitting MMLU Fields (models=$models, seed=$RUN_SEED)..."
-                sbatch --mem=8g --time=24:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                submit_job sbatch --mem=8g --time=24:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                     --output-dir ${BASE_DIR}/mmlu_model_sweep_extended_fixed \
                     --preset mmlu_fields \
                     --n-models $models \

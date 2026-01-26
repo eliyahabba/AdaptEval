@@ -2,11 +2,11 @@
 
 #SBATCH --job-name=chain-unified
 #SBATCH --mem=10g
-#SBATCH --time=9:0:0
+#SBATCH --time=12:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
-#SBATCH --gres=gg:g0:4
-#SBATCH --cpus-per-task=4
+#SBATCH --gres=gg:g0:2
+#SBATCH --cpus-per-task=2
 #SBATCH --killable
 #SBATCH --requeue
 
