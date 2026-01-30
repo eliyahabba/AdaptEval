@@ -1,0 +1,25 @@
+{
+  "n_base_datasets": 1,
+  "max_chain_length": 5,
+  "shuffle_seed": 111,
+  "num_workers": 4,
+  "epochs": 2000,
+  "dims_search": [
+    5
+  ],
+  "n_anchors_per_dataset": 100,
+  "n_models_per_chain": 10,
+  "base_datasets": [
+    "GSM8K"
+  ],
+  "target_dataset": "TruthfulQA",
+  "chain_pool": [
+    "HellaSwag",
+    "MMLU",
+    "ARC Challenge",
+    "Winogrande"
+  ],
+  "target_n_questions": 817,
+  "n_train_models": 297,
+  "n_chain_train_models": 10
+}
