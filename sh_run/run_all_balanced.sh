@@ -113,7 +113,7 @@ SKIPPED=0
 # Helper: Submit job with full command echo
 submit_job() {
     echo "   → $@"
-#    "$@"
+    "$@"
 }
 
 echo "=================================================================="
