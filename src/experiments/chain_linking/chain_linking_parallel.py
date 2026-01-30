@@ -1579,8 +1579,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     # Get target data
     target_df = datasets[target_name]
-    # Use ALL train_models for validation - test if model generalizes to models not in chain training
-    target_train_df = target_df[target_df['model_name'].isin(train_models)].copy()
+    # Use chain_train_models for target (same N models as chain steps)
+    # This tests: "Can we link a new dataset when it only has N models?"
+    target_train_df = target_df[target_df['model_name'].isin(chain_train_models)].copy()
     target_test_df = target_df[target_df['model_name'].isin(test_models)].copy()
     
     # Save target test df for workers
@@ -1766,7 +1767,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 lr=config.lr,
                 target_name=target_name,
                 test_models=list(test_models),
-                train_models=list(train_models),  # ALL train_models for generalization test
+                train_models=list(chain_train_models),  # Same N models as chain for consistent model sweep
                 seed=task_seed,
                 random_seed=config.random_seed,
                 cumulative_chain_time=cumulative_chain_time,
