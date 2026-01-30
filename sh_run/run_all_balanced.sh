@@ -31,7 +31,7 @@
 
 set -e
 
-BASE_DIR="data/v26_anchor_fix_num_of_models"
+BASE_DIR="data/v27_target_models_match_chain"
 SETUP_ONLY=""
 SKIP_EXISTING=""
 FORCE_RESUME=""
