@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=chain-unified
-#SBATCH --mem=10g
+#SBATCH --mem=12g
 #SBATCH --time=12:0:0
 #SBATCH --mail-user=eliya.habba@mail.huji.ac.il
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
