@@ -12,9 +12,9 @@
 # - Disjoint: 12 experiments (6 fixed + 6 random bridge)
 # - LB Extended Model Sweep: 162 experiments (9 model counts × 6 datasets × 3 seeds) → lb_model_sweep_extended_fixed/
 # - MMLU Extended Model Sweep: 45 experiments (9 model counts × 5 seeds/targets) → mmlu_model_sweep_extended_fixed/
-# - HELM Lite Extended Model Sweep: 135 experiments (5 model counts × 9 datasets × 3 seeds) → helm_lite_model_sweep_extended_fixed/
+# - HELM Lite Extended Model Sweep: 162 experiments (6 model counts × 9 datasets × 3 seeds) → helm_lite_model_sweep_extended_fixed/
 #
-# Total: 452 experiments
+# Total: 479 experiments
 #
 # Usage:
 #   bash run_all_balanced.sh                    # Run all missing
@@ -459,11 +459,11 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
 fi
 
 # ============================================================
-# CATEGORY 7: HELM Lite Extended Model Sweep (135 experiments)
+# CATEGORY 7: HELM Lite Extended Model Sweep (162 experiments)
 # ============================================================
 # Test how number of models in chain affects performance for HELM Lite
-# 5 model counts × 9 datasets × 3 seeds = 135 experiments
-# HELM Lite has 91 models, so model counts: 5, 10, 25, 50, 75
+# 6 model counts × 9 datasets × 3 seeds = 162 experiments
+# HELM Lite has 91 models, so model counts: 5, 10, 25, 50, 75, 91
 if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
     echo "=================================================================="
     echo "CATEGORY 7: HELM Lite Extended Model Sweep (135 experiments)"
@@ -475,8 +475,8 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
     # HELM Lite datasets (9 total)
     HELM_LITE_DATASETS=("GSM8K-Lite" "LegalBench" "MATH Competition" "MedQA" "MMLU-Lite" "NarrativeQA" "NaturalQA" "OpenBookQA" "WMT-14 Translation")
     
-    echo "-- HELM Lite Model Sweep Extended (135 experiments) --"
-    echo "   Model counts: 5, 10, 25, 50, 75 (HELM has 91 models total)"
+    echo "-- HELM Lite Model Sweep Extended (162 experiments) --"
+    echo "   Model counts: 5, 10, 25, 50, 75, 91 (HELM has 91 models total)"
     echo "   9 datasets × 3 seeds per dataset"
     echo "   Output: ${BASE_DIR}/helm_lite_model_sweep_extended_fixed"
     
@@ -487,7 +487,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
         TARGET_IDX=0
         for target in "${HELM_LITE_DATASETS[@]}"; do
             RUN_SEED=$((BASE_SEED + TARGET_IDX * 3 + seed_offset))
-            for models in 5 10 25 50 75; do
+            for models in 5 10 25 50 75 91; do
                 if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/helm_lite_model_sweep_extended_fixed" $RUN_SEED 50 "$target" "$models"; then
                     echo "   ⏭️  SKIP (complete): $target models=$models (seed=$RUN_SEED)"
                     SKIPPED=$((SKIPPED + 1))
@@ -509,7 +509,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
     done
     
     echo ""
-    echo "✓ Category 7 complete: 135 experiments (5 model counts × 9 datasets × 3 seeds)"
+    echo "✓ Category 7 complete: 162 experiments (6 model counts × 9 datasets × 3 seeds)"
 fi
 
 # Summary
@@ -530,9 +530,9 @@ else
     echo "  Category 4 (Disjoint):        12 experiments"
     echo "  Category 5 (LB Model Ext):    162 experiments (9 counts × 6 datasets × 3 seeds)"
     echo "  Category 6 (MMLU Model Ext):  45 experiments (9 counts × 5 targets)"
-    echo "  Category 7 (HELM Model Ext):  135 experiments (5 counts × 9 datasets × 3 seeds)"
+    echo "  Category 7 (HELM Model Ext):  162 experiments (6 counts × 9 datasets × 3 seeds)"
     echo "  ───────────────────────────────────────"
-    echo "  TOTAL:                        452 experiments"
+    echo "  TOTAL:                        479 experiments"
     echo ""
     echo "Actually submitted: $SUBMITTED"
     [ $SKIPPED -gt 0 ] && echo "Skipped (complete): $SKIPPED"
