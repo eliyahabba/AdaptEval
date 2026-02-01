@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,1,0.0528,0.0,0.7092,0.0,0.6564,0.0
+open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,1,0.0922,0.0,0.6504,0.0,0.5582,0.0
+open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,1,0.0884,0.0,0.4957,0.0,0.4072,0.0
+open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,1,0.047,0.0,0.4402,0.0,0.3933,0.0
+open-llm-leaderboard/details_hyunseoki__ko-ref-llama2-13b,1,0.0876,0.0,0.4458,0.0,0.3582,0.0

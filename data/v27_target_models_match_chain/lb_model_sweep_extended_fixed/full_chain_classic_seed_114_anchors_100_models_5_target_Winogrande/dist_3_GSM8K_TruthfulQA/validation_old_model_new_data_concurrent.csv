@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,Winogrande,Winogrande,1267,100,0.5918,0.7782,0.7932,0.4398,0.7378,0.4579,0.015,0.3384,0.0404,0.3203,0.8348,0.0789
+open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,Winogrande,Winogrande,1267,100,-0.2956,0.8003,0.8003,0.5845,0.7663,0.5943,0.0,0.2158,0.034,0.206,0.8348,0.0789
+open-llm-leaderboard/details_Mihaiii__Metis-0.3,Winogrande,Winogrande,1267,100,-0.1423,0.7727,0.7624,0.5058,0.7215,0.5149,0.0103,0.2668,0.0511,0.2578,0.8348,0.0789
+open-llm-leaderboard/details_euclaise__Ferret-7B,Winogrande,Winogrande,1267,100,0.3246,0.7766,0.8106,0.3201,0.7343,0.3488,0.0339,0.4565,0.0423,0.4279,0.8348,0.0789
+open-llm-leaderboard/details_teknium__Mistral-Trismegistus-7B,Winogrande,Winogrande,1267,100,0.1109,0.7017,0.6511,0.304,0.5966,0.3212,0.0505,0.3976,0.105,0.3805,0.8348,0.0789

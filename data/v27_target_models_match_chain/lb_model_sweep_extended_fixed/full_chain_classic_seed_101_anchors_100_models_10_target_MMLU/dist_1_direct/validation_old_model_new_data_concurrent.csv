@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_AdaptLLM__finance-chat,MMLU,MMLU,14042,100,-1.611,0.49,0.4975,0.3961,0.4314,0.3964,0.0075,0.094,0.0587,0.0936,0.3455,0.0071
+open-llm-leaderboard/details_Swisslex__Mixtral-Orca-v0.1,MMLU,MMLU,14042,100,0.5405,0.6566,0.667,0.5857,0.614,0.586,0.0104,0.0709,0.0426,0.0706,0.3455,0.0071
+open-llm-leaderboard/details_KnutJaegersberg__Qwen-14B-Llamafied,MMLU,MMLU,14042,100,0.924,0.6547,0.6228,0.5347,0.5653,0.5349,0.0318,0.12,0.0894,0.1197,0.3455,0.0071
+open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,MMLU,MMLU,14042,100,0.2645,0.6394,0.6374,0.5796,0.5997,0.5798,0.0019,0.0597,0.0396,0.0595,0.3455,0.0071
+open-llm-leaderboard/details_SanjiWatsuki__Kunoichi-7B,MMLU,MMLU,14042,100,3.6334,0.6418,0.6107,0.5295,0.5577,0.5297,0.031,0.1123,0.0841,0.1121,0.3455,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,-2.8424,0.6528,0.648,0.6056,0.6204,0.6058,0.0048,0.0471,0.0324,0.0469,0.3455,0.0071
+open-llm-leaderboard/details_acrastt__kalomaze-stuff,MMLU,MMLU,14042,100,2.6891,0.6216,0.6102,0.5178,0.5499,0.5181,0.0113,0.1038,0.0716,0.1035,0.3455,0.0071
+open-llm-leaderboard/details_Undi95__MLewd-Chat-v2-13B,MMLU,MMLU,14042,100,-0.7004,0.5676,0.5517,0.4699,0.4984,0.4702,0.0159,0.0977,0.0692,0.0974,0.3455,0.0071
+open-llm-leaderboard/details_upstage__llama-65b-instruct,MMLU,MMLU,14042,100,0.1051,0.6466,0.6513,0.5788,0.6041,0.5791,0.0048,0.0677,0.0425,0.0674,0.3455,0.0071
+open-llm-leaderboard/details_augtoma__qCammel-70x,MMLU,MMLU,14042,100,0.1936,0.7026,0.7098,0.641,0.6649,0.6413,0.0072,0.0616,0.0377,0.0613,0.3455,0.0071

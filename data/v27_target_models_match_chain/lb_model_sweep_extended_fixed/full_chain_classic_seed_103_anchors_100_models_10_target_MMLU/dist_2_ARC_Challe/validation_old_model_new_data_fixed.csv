@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_rishiraj__oswald-7b,MMLU,MMLU,14042,100,5.3088,0.6406,0.6435,0.648,0.6476,0.648,0.0029,0.0074,0.0071,0.0074,0.0769,0.0071
+open-llm-leaderboard/details_Delcos__Velara-11B-V2,MMLU,MMLU,14042,100,3.8856,0.6268,0.6158,0.6178,0.6177,0.6178,0.011,0.0091,0.0092,0.009,0.0769,0.0071
+open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6,MMLU,MMLU,14042,100,2.2505,0.7437,0.7537,0.7729,0.7714,0.7729,0.01,0.0292,0.0277,0.0292,0.0769,0.0071
+open-llm-leaderboard/details_mistralai__Mixtral-8x7B-v0.1,MMLU,MMLU,14042,100,3.7374,0.7037,0.7547,0.7364,0.7379,0.7365,0.051,0.0327,0.0342,0.0328,0.0769,0.0071
+open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2.03,MMLU,MMLU,14042,100,4.782,0.6204,0.6324,0.6379,0.6376,0.638,0.012,0.0176,0.0172,0.0176,0.0769,0.0071
+open-llm-leaderboard/details_Sao10K__Euryale-L2-70B,MMLU,MMLU,14042,100,3.852,0.6839,0.6744,0.6878,0.6867,0.6878,0.0095,0.0038,0.0028,0.0038,0.0769,0.0071
+open-llm-leaderboard/details_DopeorNope__LaOT,MMLU,MMLU,14042,100,3.0959,0.4963,0.4986,0.5374,0.5344,0.5374,0.0023,0.0411,0.0381,0.0411,0.0769,0.0071
+open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,MMLU,MMLU,14042,100,2.8771,0.4839,0.4914,0.5114,0.5099,0.5115,0.0075,0.0275,0.026,0.0276,0.0769,0.0071
+open-llm-leaderboard/details_PygmalionAI__pygmalion-2-13b,MMLU,MMLU,14042,100,5.661,0.5572,0.5273,0.546,0.5446,0.546,0.0299,0.0112,0.0126,0.0112,0.0769,0.0071
+open-llm-leaderboard/details_heegyu__RedTulu-Uncensored-3B-0719,MMLU,MMLU,14042,100,1.7103,0.2988,0.2891,0.2927,0.2926,0.2929,0.0098,0.0061,0.0062,0.0059,0.0769,0.0071

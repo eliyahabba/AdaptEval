@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_h2m__mhm-7b-v1.3,1,0.0232,0.0,0.19,0.0,0.1668,0.0
+open-llm-leaderboard/details_HenryJJ__dolphin-2.6-mistral-7b-dpo-orca-v3,1,0.0055,0.0,0.25,0.0,0.2555,0.0
+open-llm-leaderboard/details_rombodawg__Open_Gpt4_8x7B,1,0.0221,0.0,0.57,0.0,0.5921,0.0
+open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,1,0.058,0.0,0.55,0.0,0.492,0.0
+open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,1,0.0087,0.0,0.13,0.0,0.1387,0.0
+open-llm-leaderboard/details_oh-yeontaek__llama-2-13B-LoRA-assemble,1,0.0342,0.0,0.05,0.0,0.0842,0.0
+open-llm-leaderboard/details_Envoid__Libra-19B,1,0.0008,0.0,0.0,0.0,0.0008,0.0
+open-llm-leaderboard/details_chargoddard__llama2-22b-blocktriangular,1,0.0378,0.0,0.15,0.0,0.1122,0.0
+open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,1,0.0121,0.0,0.11,0.0,0.1221,0.0
+open-llm-leaderboard/details_clibrain__Llama-2-7b-ft-instruct-es,1,0.0169,0.0,0.04,0.0,0.0569,0.0

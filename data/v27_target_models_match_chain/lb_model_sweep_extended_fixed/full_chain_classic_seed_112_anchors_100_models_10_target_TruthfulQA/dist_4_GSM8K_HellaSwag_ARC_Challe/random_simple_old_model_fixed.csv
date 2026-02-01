@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_CallComply__zephyr-7b-beta-128k,1,0.0117,0.0,0.4493,0.0,0.461,0.0
+open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,1,0.0221,0.0,0.6343,0.0,0.6564,0.0
+open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,1,0.001,0.0,0.5572,0.0,0.5582,0.0
+open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,1,0.0014,0.0,0.6423,0.0,0.641,0.0
+open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,1,0.0308,0.0,0.438,0.0,0.4072,0.0
+open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,1,0.0073,0.0,0.4005,0.0,0.3933,0.0
+open-llm-leaderboard/details_DevaMalla__llama_7b_lora,1,0.0048,0.0,0.3522,0.0,0.3474,0.0
+open-llm-leaderboard/details_hyunseoki__ko-ref-llama2-13b,1,0.0061,0.0,0.3643,0.0,0.3582,0.0
+open-llm-leaderboard/details_klosax__open_llama_13b_600bt_preview,1,0.0109,0.0,0.3357,0.0,0.3466,0.0
+open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,1,0.0461,0.0,0.5479,0.0,0.5018,0.0

@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,HellaSwag,HellaSwag,10042,100,-0.3481,0.8566,0.8563,0.7561,0.7693,0.757,0.0003,0.1005,0.0873,0.0996,0.1239,0.01
+open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,HellaSwag,HellaSwag,10042,100,0.006,0.8078,0.8014,0.5637,0.5949,0.5656,0.0064,0.2441,0.213,0.2422,0.1239,0.01
+open-llm-leaderboard/details_wang7776__Llama-2-7b-chat-hf-10-sparsity,HellaSwag,HellaSwag,10042,100,2.6454,0.7826,0.7868,0.5852,0.6116,0.5868,0.0042,0.1974,0.171,0.1958,0.1239,0.01
+open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,HellaSwag,HellaSwag,10042,100,-0.0054,0.8392,0.8467,0.6748,0.6973,0.6762,0.0076,0.1643,0.1419,0.163,0.1239,0.01
+open-llm-leaderboard/details_TheBloke__robin-65b-v2-fp16,HellaSwag,HellaSwag,10042,100,1.2298,0.846,0.8571,0.7253,0.7427,0.7265,0.0111,0.1207,0.1034,0.1195,0.1239,0.01

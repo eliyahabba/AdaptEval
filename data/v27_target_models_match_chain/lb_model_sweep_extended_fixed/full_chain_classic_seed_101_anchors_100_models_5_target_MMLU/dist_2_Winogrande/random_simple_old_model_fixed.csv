@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_KnutJaegersberg__Qwen-14B-Llamafied,1,0.0147,0.0,0.64,0.0,0.6547,0.0
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,1,0.0128,0.0,0.64,0.0,0.6528,0.0
+open-llm-leaderboard/details_Undi95__MLewd-Chat-v2-13B,1,0.0024,0.0,0.57,0.0,0.5676,0.0
+open-llm-leaderboard/details_upstage__llama-65b-instruct,1,0.0234,0.0,0.67,0.0,0.6466,0.0
+open-llm-leaderboard/details_augtoma__qCammel-70x,1,0.0026,0.0,0.7,0.0,0.7026,0.0

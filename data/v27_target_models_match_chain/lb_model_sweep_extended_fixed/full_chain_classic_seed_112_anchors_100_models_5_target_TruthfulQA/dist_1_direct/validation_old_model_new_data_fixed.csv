@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,TruthfulQA,TruthfulQA,817,100,1.8898,0.6564,0.6551,0.7186,0.6715,0.7157,0.0013,0.0622,0.0151,0.0592,0.7283,0.1224
+open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,TruthfulQA,TruthfulQA,817,100,-0.4171,0.5582,0.5358,0.6078,0.5549,0.606,0.0224,0.0496,0.0034,0.0477,0.7283,0.1224
+open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,TruthfulQA,TruthfulQA,817,100,-2.8897,0.4072,0.3949,0.4119,0.3993,0.4111,0.0124,0.0047,0.008,0.0039,0.7283,0.1224
+open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,TruthfulQA,TruthfulQA,817,100,-5.337,0.3933,0.3464,0.3648,0.3509,0.363,0.0469,0.0285,0.0424,0.0302,0.7283,0.1224
+open-llm-leaderboard/details_hyunseoki__ko-ref-llama2-13b,TruthfulQA,TruthfulQA,817,100,-1.5399,0.3582,0.3562,0.3811,0.3623,0.3789,0.002,0.0229,0.0041,0.0207,0.7283,0.1224

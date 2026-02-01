@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_umd-zhou-lab__claude2-alpaca-13B,Winogrande,Winogrande,1267,100,0.6893,0.768,0.7893,0.7332,0.7594,0.7333,0.0213,0.0348,0.0085,0.0346,0.4661,0.0789
+open-llm-leaderboard/details_gagan3012__MetaModel_moe,Winogrande,Winogrande,1267,100,0.5179,0.8335,0.8382,0.8447,0.8381,0.838,0.0047,0.0112,0.0046,0.0045,0.4661,0.0789
+open-llm-leaderboard/details_AdaptLLM__finance-chat,Winogrande,Winogrande,1267,100,0.6459,0.7569,0.749,0.7529,0.747,0.7453,0.0079,0.004,0.0099,0.0116,0.4661,0.0789
+open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,Winogrande,Winogrande,1267,100,0.5172,0.7987,0.7932,0.8014,0.7943,0.7953,0.0055,0.0027,0.0044,0.0034,0.4661,0.0789
+open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,Winogrande,Winogrande,1267,100,1.286,0.7758,0.8051,0.8135,0.8062,0.8072,0.0292,0.0377,0.0303,0.0313,0.4661,0.0789
+open-llm-leaderboard/details_CobraMamba__mamba-gpt-7b-v1,Winogrande,Winogrande,1267,100,1.2077,0.7916,0.783,0.7978,0.7879,0.7922,0.0087,0.0062,0.0037,0.0006,0.4661,0.0789
+open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,Winogrande,Winogrande,1267,100,0.9596,0.7593,0.7656,0.7647,0.7633,0.7612,0.0063,0.0054,0.004,0.002,0.4661,0.0789
+open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,Winogrande,Winogrande,1267,100,1.1096,0.7885,0.7656,0.7982,0.7779,0.7886,0.0229,0.0098,0.0106,0.0001,0.4661,0.0789
+open-llm-leaderboard/details_GOAT-AI__GOAT-7B-Community,Winogrande,Winogrande,1267,100,0.8373,0.723,0.719,0.7602,0.7348,0.7485,0.0039,0.0372,0.0118,0.0255,0.4661,0.0789
+open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V2-16k,Winogrande,Winogrande,1267,100,0.9536,0.7301,0.738,0.7372,0.7354,0.7332,0.0079,0.0072,0.0054,0.0032,0.4661,0.0789

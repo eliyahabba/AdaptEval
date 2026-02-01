@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_flemmingmiguel__NeuDist-Ro-7B,GSM8K,GSM8K,1319,100,-0.7266,0.7096,0.7172,0.6891,0.6927,0.6921,0.0076,0.0205,0.0169,0.0175,0.0232,0.0758
+open-llm-leaderboard/details_rishiraj__oswald-7b,GSM8K,GSM8K,1319,100,-0.9818,0.6929,0.6785,0.6503,0.6549,0.6544,0.0144,0.0426,0.038,0.0386,0.0232,0.0758
+open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,GSM8K,GSM8K,1319,100,-0.0805,0.5095,0.5133,0.5163,0.5145,0.5145,0.0038,0.0069,0.005,0.005,0.0232,0.0758
+open-llm-leaderboard/details_Intel__neural-chat-7b-v3-3-Slerp,GSM8K,GSM8K,1319,100,-0.492,0.6998,0.7392,0.6798,0.6863,0.685,0.0394,0.02,0.0135,0.0148,0.0232,0.0758
+open-llm-leaderboard/details_openaccess-ai-collective__DPOpenHermes-7B,GSM8K,GSM8K,1319,100,-1.3429,0.5481,0.5663,0.6031,0.6012,0.602,0.0182,0.055,0.053,0.0539,0.0232,0.0758
+open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,GSM8K,GSM8K,1319,100,-1.2092,0.0,0.0,0.1888,0.173,0.1772,0.0,0.1888,0.173,0.1772,0.0232,0.0758
+open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa,GSM8K,GSM8K,1319,100,-0.6707,0.0781,0.0675,0.1813,0.174,0.1765,0.0106,0.1032,0.0959,0.0984,0.0232,0.0758
+open-llm-leaderboard/details_elinas__chronos-13b-v2,GSM8K,GSM8K,1319,100,-1.0946,0.113,0.094,0.2512,0.2406,0.2441,0.019,0.1382,0.1277,0.1312,0.0232,0.0758
+open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,GSM8K,GSM8K,1319,100,1.0648,0.1433,0.1433,0.1326,0.1361,0.136,0.0,0.0107,0.0072,0.0073,0.0232,0.0758
+open-llm-leaderboard/details_ashercn97__manatee-7b,GSM8K,GSM8K,1319,100,-0.8396,0.0705,0.0417,0.2089,0.1972,0.2009,0.0288,0.1384,0.1267,0.1304,0.0232,0.0758
