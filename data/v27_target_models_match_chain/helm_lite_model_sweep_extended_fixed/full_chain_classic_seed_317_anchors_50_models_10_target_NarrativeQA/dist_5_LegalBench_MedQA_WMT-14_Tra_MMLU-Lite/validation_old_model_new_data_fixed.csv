@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+anthropic/claude-3-5-haiku-20241022,NarrativeQA,NarrativeQA,470,50,0.5329,0.7755,0.7872,0.7323,0.7601,0.733,0.0117,0.0431,0.0154,0.0425,0.5,0.1064
+cohere/command-light,NarrativeQA,NarrativeQA,470,50,-0.0703,0.6442,0.7002,0.5618,0.635,0.5698,0.0559,0.0824,0.0092,0.0744,0.5,0.1064
+databricks/dbrx-instruct,NarrativeQA,NarrativeQA,470,50,0.2322,0.5064,0.5551,0.5939,0.5717,0.5883,0.0487,0.0875,0.0653,0.0818,0.5,0.1064
+google/gemini-1.5-pro-001,NarrativeQA,NarrativeQA,470,50,0.2889,0.7883,0.7861,0.7179,0.7541,0.7221,0.0023,0.0705,0.0343,0.0662,0.5,0.1064
+google/gemini-2.0-flash-exp,NarrativeQA,NarrativeQA,470,50,0.429,0.7869,0.8148,0.748,0.7826,0.7505,0.0279,0.0389,0.0042,0.0364,0.5,0.1064
+meta/llama-2-13b,NarrativeQA,NarrativeQA,470,50,0.0571,0.7506,0.7525,0.7021,0.7283,0.7042,0.0019,0.0485,0.0223,0.0464,0.5,0.1064
+meta/llama-2-7b,NarrativeQA,NarrativeQA,470,50,-0.1182,0.7008,0.6849,0.6547,0.6688,0.6528,0.0159,0.0461,0.032,0.048,0.5,0.1064
+openai/gpt-4o-2024-05-13,NarrativeQA,NarrativeQA,470,50,0.369,0.8076,0.8117,0.759,0.7856,0.7595,0.0041,0.0487,0.022,0.0482,0.5,0.1064
+qwen/qwen1.5-110b-chat,NarrativeQA,NarrativeQA,470,50,0.3412,0.7304,0.7602,0.7042,0.7325,0.7049,0.0297,0.0263,0.0021,0.0255,0.5,0.1064
+qwen/qwen1.5-7b,NarrativeQA,NarrativeQA,470,50,0.1794,0.457,0.4961,0.5287,0.5117,0.5273,0.039,0.0717,0.0547,0.0703,0.5,0.1064

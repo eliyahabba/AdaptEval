@@ -1,0 +1,28 @@
+{
+  "n_base_datasets": 1,
+  "max_chain_length": 10,
+  "shuffle_seed": 306,
+  "num_workers": 4,
+  "epochs": 2000,
+  "dims_search": [
+    5
+  ],
+  "n_anchors_per_dataset": 50,
+  "n_models_per_chain": 10,
+  "base_datasets": [
+    "MATH Competition"
+  ],
+  "target_dataset": "LegalBench",
+  "chain_pool": [
+    "MedQA",
+    "MMLU-Lite",
+    "WMT-14 Translation",
+    "NarrativeQA",
+    "NaturalQA",
+    "OpenBookQA",
+    "GSM8K-Lite"
+  ],
+  "target_n_questions": 2142,
+  "n_train_models": 69,
+  "n_chain_train_models": 10
+}

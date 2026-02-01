@@ -1,0 +1,45 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-6b,OpenBookQA,OpenBookQA,500,50,-1.746,0.8,0.774,0.711,0.7538,0.7109,0.026,0.089,0.0462,0.0891,0.6799,0.1
+01-ai/yi-large-preview,OpenBookQA,OpenBookQA,500,50,-1.2517,0.946,0.972,0.9386,0.9627,0.9431,0.026,0.0074,0.0167,0.0029,0.6799,0.1
+allenai/olmo-7b,OpenBookQA,OpenBookQA,500,50,-0.4637,0.222,0.264,0.206,0.2436,0.2002,0.042,0.016,0.0216,0.0218,0.6799,0.1
+amazon/nova-micro-v1:0,OpenBookQA,OpenBookQA,500,50,-1.2641,0.888,0.868,0.6309,0.7936,0.6356,0.02,0.2571,0.0944,0.2524,0.6799,0.1
+anthropic/claude-2.1,OpenBookQA,OpenBookQA,500,50,-1.3971,0.872,0.744,0.3943,0.6326,0.396,0.128,0.4777,0.2394,0.476,0.6799,0.1
+anthropic/claude-3-5-haiku-20241022,OpenBookQA,OpenBookQA,500,50,-1.3412,0.854,0.882,0.8064,0.8588,0.8096,0.028,0.0476,0.0048,0.0444,0.6799,0.1
+anthropic/claude-3-sonnet-20240229,OpenBookQA,OpenBookQA,500,50,-1.3994,0.918,0.918,0.8444,0.8942,0.8437,0.0,0.0736,0.0238,0.0743,0.6799,0.1
+anthropic/claude-instant-1.2,OpenBookQA,OpenBookQA,500,50,-1.1272,0.844,0.68,0.4766,0.6145,0.4752,0.164,0.3674,0.2295,0.3688,0.6799,0.1
+google/gemini-1.5-flash-001,OpenBookQA,OpenBookQA,500,50,-1.2573,0.928,0.94,0.9041,0.9299,0.9085,0.012,0.0239,0.0019,0.0195,0.6799,0.1
+meta/llama-2-7b,OpenBookQA,OpenBookQA,500,50,-1.0904,0.544,0.604,0.2987,0.5062,0.2983,0.06,0.2453,0.0378,0.2457,0.6799,0.1
+meta/llama-3-8b,OpenBookQA,OpenBookQA,500,50,-1.2536,0.766,0.77,0.6196,0.722,0.6201,0.004,0.1464,0.044,0.1459,0.6799,0.1
+meta/llama-3.1-8b-instruct-turbo,OpenBookQA,OpenBookQA,500,50,-1.1872,0.74,0.674,0.3286,0.5632,0.3277,0.066,0.4114,0.1768,0.4123,0.6799,0.1
+meta/llama-3.2-11b-vision-instruct-turbo,OpenBookQA,OpenBookQA,500,50,-1.222,0.724,0.634,0.3111,0.5299,0.3087,0.09,0.4129,0.1941,0.4153,0.6799,0.1
+microsoft/phi-2,OpenBookQA,OpenBookQA,500,50,-1.5259,0.798,0.746,0.6061,0.7025,0.61,0.052,0.1919,0.0955,0.188,0.6799,0.1
+microsoft/phi-3-small-8k-instruct,OpenBookQA,OpenBookQA,500,50,-1.3151,0.912,0.948,0.9483,0.9496,0.953,0.036,0.0363,0.0376,0.041,0.6799,0.1
+mistralai/mistral-large-2402,OpenBookQA,OpenBookQA,500,50,-1.1621,0.894,0.922,0.8873,0.9111,0.888,0.028,0.0067,0.0171,0.006,0.6799,0.1
+mistralai/mistral-medium-2312,OpenBookQA,OpenBookQA,500,50,-1.175,0.83,0.834,0.823,0.8308,0.824,0.004,0.007,0.0008,0.006,0.6799,0.1
+mistralai/mistral-small-2402,OpenBookQA,OpenBookQA,500,50,-1.2814,0.862,0.852,0.7452,0.8182,0.7465,0.01,0.1168,0.0438,0.1155,0.6799,0.1
+openai/text-davinci-003,OpenBookQA,OpenBookQA,500,50,-1.5263,0.828,0.866,0.786,0.8405,0.7864,0.038,0.042,0.0125,0.0416,0.6799,0.1
+qwen/qwen1.5-32b,OpenBookQA,OpenBookQA,500,50,-0.9774,0.932,0.964,0.9569,0.9629,0.9607,0.032,0.0249,0.0309,0.0287,0.6799,0.1
+tiiuae/falcon-40b,OpenBookQA,OpenBookQA,500,50,-1.2024,0.662,0.508,0.2147,0.4128,0.2106,0.154,0.4473,0.2492,0.4514,0.6799,0.1
+upstage/solar-pro-241126,OpenBookQA,OpenBookQA,500,50,-1.2078,0.922,0.904,0.9112,0.9069,0.9132,0.018,0.0108,0.0151,0.0088,0.6799,0.1
+01-ai/yi-6b,WMT-14 Translation,WMT-14 Translation,5000,50,-1.746,0.1067,0.0802,0.8977,0.3566,0.8974,0.0265,0.791,0.25,0.7908,0.6618,0.01
+01-ai/yi-large-preview,WMT-14 Translation,WMT-14 Translation,5000,50,-1.2517,0.1601,0.1698,0.2389,0.1931,0.2386,0.0097,0.0787,0.033,0.0785,0.6618,0.01
+allenai/olmo-7b,WMT-14 Translation,WMT-14 Translation,5000,50,-0.4637,0.0912,0.0993,0.8774,0.3622,0.8767,0.008,0.7862,0.271,0.7855,0.6618,0.01
+amazon/nova-micro-v1:0,WMT-14 Translation,WMT-14 Translation,5000,50,-1.2641,0.1712,0.2106,0.3814,0.2683,0.3812,0.0395,0.2102,0.0972,0.21,0.6618,0.01
+anthropic/claude-2.1,WMT-14 Translation,WMT-14 Translation,5000,50,-1.3971,0.1819,0.189,0.6963,0.3605,0.6959,0.0071,0.5144,0.1786,0.514,0.6618,0.01
+anthropic/claude-3-5-haiku-20241022,WMT-14 Translation,WMT-14 Translation,5000,50,-1.3412,0.1208,0.126,0.4769,0.2445,0.4765,0.0052,0.3561,0.1237,0.3557,0.6618,0.01
+anthropic/claude-3-sonnet-20240229,WMT-14 Translation,WMT-14 Translation,5000,50,-1.3994,0.195,0.2077,0.2414,0.2191,0.2414,0.0127,0.0464,0.0241,0.0464,0.6618,0.01
+anthropic/claude-instant-1.2,WMT-14 Translation,WMT-14 Translation,5000,50,-1.1272,0.1737,0.1807,0.6747,0.3477,0.6743,0.007,0.501,0.174,0.5006,0.6618,0.01
+google/gemini-1.5-flash-001,WMT-14 Translation,WMT-14 Translation,5000,50,-1.2573,0.2029,0.191,0.2729,0.2187,0.2727,0.0119,0.07,0.0158,0.0698,0.6618,0.01
+meta/llama-2-7b,WMT-14 Translation,WMT-14 Translation,5000,50,-1.0904,0.1305,0.1397,0.8592,0.3829,0.8587,0.0092,0.7287,0.2524,0.7281,0.6618,0.01
+meta/llama-3-8b,WMT-14 Translation,WMT-14 Translation,5000,50,-1.2536,0.1664,0.1739,0.6618,0.3388,0.6614,0.0074,0.4953,0.1723,0.495,0.6618,0.01
+meta/llama-3.1-8b-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,-1.1872,0.16,0.1593,0.749,0.3585,0.7484,0.0008,0.589,0.1985,0.5884,0.6618,0.01
+meta/llama-3.2-11b-vision-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,-1.222,0.1583,0.1278,0.7964,0.3537,0.7958,0.0305,0.6381,0.1954,0.6375,0.6618,0.01
+microsoft/phi-2,WMT-14 Translation,WMT-14 Translation,5000,50,-1.5259,0.037,0.0402,0.9114,0.3347,0.9108,0.0032,0.8743,0.2976,0.8737,0.6618,0.01
+microsoft/phi-3-small-8k-instruct,WMT-14 Translation,WMT-14 Translation,5000,50,-1.3151,0.1407,0.1551,0.3361,0.2163,0.3362,0.0143,0.1954,0.0756,0.1955,0.6618,0.01
+mistralai/mistral-large-2402,WMT-14 Translation,WMT-14 Translation,5000,50,-1.1621,0.1639,0.1892,0.2431,0.2073,0.2429,0.0253,0.0792,0.0435,0.079,0.6618,0.01
+mistralai/mistral-medium-2312,WMT-14 Translation,WMT-14 Translation,5000,50,-1.175,0.1508,0.1468,0.4369,0.2448,0.4366,0.004,0.2861,0.094,0.2858,0.6618,0.01
+mistralai/mistral-small-2402,WMT-14 Translation,WMT-14 Translation,5000,50,-1.2814,0.1535,0.198,0.2798,0.2256,0.2796,0.0444,0.1262,0.0721,0.1261,0.6618,0.01
+openai/text-davinci-003,WMT-14 Translation,WMT-14 Translation,5000,50,-1.5263,0.1705,0.1655,0.5012,0.2791,0.5012,0.0049,0.3308,0.1086,0.3307,0.6618,0.01
+qwen/qwen1.5-32b,WMT-14 Translation,WMT-14 Translation,5000,50,-0.9774,0.1734,0.1432,0.2681,0.1854,0.2679,0.0301,0.0948,0.012,0.0945,0.6618,0.01
+tiiuae/falcon-40b,WMT-14 Translation,WMT-14 Translation,5000,50,-1.2024,0.1441,0.1332,0.852,0.3761,0.8513,0.0109,0.7079,0.232,0.7072,0.6618,0.01
+upstage/solar-pro-241126,WMT-14 Translation,WMT-14 Translation,5000,50,-1.2078,0.1527,0.1606,0.3463,0.2234,0.3462,0.008,0.1937,0.0707,0.1936,0.6618,0.01

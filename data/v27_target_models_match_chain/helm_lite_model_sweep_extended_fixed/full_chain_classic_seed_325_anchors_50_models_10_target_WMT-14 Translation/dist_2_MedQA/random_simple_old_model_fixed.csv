@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+AlephAlpha/luminous-base,1,0.0203,0.0,0.0828,0.0,0.0625,0.0
+ai21/jamba-1.5-mini,1,0.0141,0.0,0.1508,0.0,0.1648,0.0
+allenai/olmo-7b,1,0.0014,0.0,0.0898,0.0,0.0912,0.0
+anthropic/claude-3-5-sonnet-20241022,1,0.0215,0.0,0.1808,0.0,0.2023,0.0
+deepseek-ai/deepseek-llm-67b-chat,1,0.0175,0.0,0.1518,0.0,0.1693,0.0
+meta/llama-3.3-70b-instruct-turbo,1,0.011,0.0,0.1837,0.0,0.1947,0.0
+mistralai/mistral-7b-v0.1,1,0.0031,0.0,0.1429,0.0,0.146,0.0
+mistralai/mixtral-8x22b,1,0.0226,0.0,0.1641,0.0,0.1867,0.0
+openai/gpt-4-1106-preview,1,0.0008,0.0,0.1824,0.0,0.1816,0.0
+openai/gpt-4o-2024-05-13,1,0.0177,0.0,0.188,0.0,0.2057,0.0

@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-34b,MedQA,MedQA,1000,50,-1.6471,0.652,0.676,0.5574,0.6655,0.5619,0.024,0.0946,0.0135,0.0901,0.9077,0.05
+ai21/j2-grande,MedQA,MedQA,1000,50,2.2879,0.386,0.391,0.3446,0.387,0.3474,0.005,0.0414,0.001,0.0386,0.9077,0.05
+ai21/jamba-instruct,MedQA,MedQA,1000,50,-3.0987,0.537,0.566,0.4893,0.5592,0.4918,0.029,0.0477,0.0222,0.0452,0.9077,0.05
+deepseek-ai/deepseek-llm-67b-chat,MedQA,MedQA,1000,50,-0.162,0.614,0.643,0.5615,0.6355,0.5616,0.029,0.0525,0.0215,0.0524,0.9077,0.05
+google/gemini-1.5-flash-002,MedQA,MedQA,1000,50,2.4103,0.644,0.64,0.5969,0.6362,0.5991,0.004,0.0471,0.0078,0.0449,0.9077,0.05
+meta/llama-3-70b,MedQA,MedQA,1000,50,-0.459,0.77,0.839,0.6826,0.8252,0.6894,0.069,0.0874,0.0552,0.0806,0.9077,0.05
+meta/llama-65b,MedQA,MedQA,1000,50,-2.0175,0.5,0.415,0.4404,0.4172,0.4391,0.085,0.0596,0.0828,0.0609,0.9077,0.05
+mistralai/mixtral-8x7b-32kseqlen,MedQA,MedQA,1000,50,-1.5545,0.634,0.599,0.5478,0.5944,0.5492,0.035,0.0862,0.0396,0.0848,0.9077,0.05
+openai/gpt-4o-mini-2024-07-18,MedQA,MedQA,1000,50,-0.5516,0.744,0.737,0.6256,0.7271,0.6295,0.007,0.1184,0.0169,0.1145,0.9077,0.05
+openai/text-davinci-003,MedQA,MedQA,1000,50,-0.8079,0.529,0.548,0.5037,0.5438,0.5027,0.019,0.0253,0.0148,0.0263,0.9077,0.05

@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+AlephAlpha/luminous-extended,1,0.02,0.0,0.28,0.0,0.26,0.0
+cohere/command-light,1,0.034,0.0,0.26,0.0,0.294,0.0
+cohere/command-r,1,0.031,0.0,0.5,0.0,0.531,0.0
+deepseek-ai/deepseek-llm-67b-chat,1,0.054,0.0,0.56,0.0,0.614,0.0
+google/text-bison@001,1,0.02,0.0,0.52,0.0,0.54,0.0
+meta/llama-3.2-90b-vision-instruct-turbo,1,0.004,0.0,0.82,0.0,0.824,0.0
+openai/gpt-4o-2024-08-06,1,0.049,0.0,0.82,0.0,0.869,0.0
+qwen/qwen1.5-110b-chat,1,0.02,0.0,0.62,0.0,0.64,0.0
+qwen/qwen1.5-72b,1,0.016,0.0,0.68,0.0,0.664,0.0
+tiiuae/falcon-7b,1,0.053,0.0,0.32,0.0,0.267,0.0

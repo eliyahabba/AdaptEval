@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+ai21/j2-grande,1,0.0718,0.0,0.1662,0.0,0.0943,0.0
+ai21/jamba-instruct,1,0.0541,0.0,0.2022,0.0,0.148,0.0
+anthropic/claude-2.1,1,0.0712,0.0,0.2531,0.0,0.1819,0.0
+anthropic/claude-3-5-sonnet-20241022,1,0.0732,0.0,0.2755,0.0,0.2023,0.0
+google/gemini-1.5-pro-001,1,0.0342,0.0,0.2049,0.0,0.1707,0.0
+google/gemini-2.0-flash-exp,1,0.0638,0.0,0.2545,0.0,0.1908,0.0
+meta/llama-2-13b,1,0.057,0.0,0.2088,0.0,0.1518,0.0
+mistralai/mistral-medium-2312,1,0.0436,0.0,0.1945,0.0,0.1508,0.0
+openai/gpt-4-1106-preview,1,0.0537,0.0,0.2354,0.0,0.1816,0.0
+qwen/qwen1.5-32b,1,0.065,0.0,0.2384,0.0,0.1734,0.0

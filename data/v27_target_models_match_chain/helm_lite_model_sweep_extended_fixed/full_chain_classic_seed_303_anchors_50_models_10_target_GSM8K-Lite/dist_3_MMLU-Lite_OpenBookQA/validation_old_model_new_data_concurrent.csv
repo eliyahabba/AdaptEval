@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-34b,GSM8K-Lite,GSM8K-Lite,1000,50,-0.7006,0.648,0.617,0.6905,0.6431,0.6845,0.031,0.0425,0.0049,0.0365,0.6138,0.05
+amazon/nova-lite-v1:0,GSM8K-Lite,GSM8K-Lite,1000,50,0.0855,0.829,0.851,0.7807,0.8244,0.7821,0.022,0.0483,0.0046,0.0469,0.6138,0.05
+amazon/nova-micro-v1:0,GSM8K-Lite,GSM8K-Lite,1000,50,0.9833,0.794,0.798,0.7302,0.7725,0.732,0.004,0.0638,0.0215,0.062,0.6138,0.05
+anthropic/claude-2.0,GSM8K-Lite,GSM8K-Lite,1000,50,-0.1913,0.583,0.591,0.6353,0.6064,0.6308,0.008,0.0523,0.0234,0.0478,0.6138,0.05
+anthropic/claude-3-5-haiku-20241022,GSM8K-Lite,GSM8K-Lite,1000,50,-0.333,0.815,0.876,0.7811,0.8402,0.7833,0.061,0.0339,0.0252,0.0317,0.6138,0.05
+cohere/command-light,GSM8K-Lite,GSM8K-Lite,1000,50,-1.9888,0.149,0.146,0.1963,0.1649,0.1948,0.003,0.0473,0.0159,0.0458,0.6138,0.05
+google/gemini-1.5-flash-001,GSM8K-Lite,GSM8K-Lite,1000,50,0.8123,0.785,0.757,0.7541,0.7551,0.752,0.028,0.0309,0.0299,0.033,0.6138,0.05
+meta/llama-3.1-8b-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,-3.4777,0.798,0.836,0.7371,0.7984,0.7387,0.038,0.0609,0.0004,0.0593,0.6138,0.05
+meta/llama-3.2-90b-vision-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,0.7596,0.936,0.958,0.8581,0.9208,0.8617,0.022,0.0779,0.0152,0.0743,0.6138,0.05
+microsoft/phi-3-medium-4k-instruct,GSM8K-Lite,GSM8K-Lite,1000,50,-1.2291,0.878,0.9,0.7788,0.8541,0.781,0.022,0.0992,0.0239,0.097,0.6138,0.05

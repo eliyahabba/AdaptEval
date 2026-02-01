@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+anthropic/claude-2.0,MATH Competition,MATH Competition,437,50,0.3181,0.6613,0.6316,0.3123,0.5644,0.3321,0.0297,0.349,0.0969,0.3292,0.7758,0.1144
+cohere/command,MATH Competition,MATH Competition,437,50,0.6631,0.2654,0.2677,0.0957,0.2327,0.1115,0.0023,0.1698,0.0327,0.154,0.7758,0.1144
+databricks/dbrx-instruct,MATH Competition,MATH Competition,437,50,0.892,0.2998,0.2265,0.1619,0.2129,0.1659,0.0732,0.1379,0.0868,0.1339,0.7758,0.1144
+deepseek-ai/deepseek-v3,MATH Competition,MATH Competition,437,50,0.4828,0.9291,0.9405,0.5469,0.8587,0.5758,0.0114,0.3822,0.0703,0.3533,0.7758,0.1144
+google/gemini-1.0-pro-002,MATH Competition,MATH Competition,437,50,0.1273,0.7162,0.7689,0.305,0.6722,0.3376,0.0526,0.4112,0.0441,0.3786,0.7758,0.1144
+meta/llama-3.1-8b-instruct-turbo,MATH Competition,MATH Competition,437,50,0.3437,0.7368,0.7391,0.4435,0.6775,0.4642,0.0023,0.2933,0.0593,0.2726,0.7758,0.1144
+mistralai/mistral-large-2402,MATH Competition,MATH Competition,437,50,0.4359,0.7941,0.7963,0.2933,0.6928,0.3344,0.0023,0.5007,0.1013,0.4596,0.7758,0.1144
+openai/gpt-4o-2024-05-13,MATH Competition,MATH Competition,437,50,0.384,0.865,0.8993,0.4838,0.8121,0.5104,0.0343,0.3812,0.0529,0.3546,0.7758,0.1144
+qwen/qwen2.5-72b-instruct-turbo,MATH Competition,MATH Competition,437,50,0.3066,0.9062,0.9108,0.4713,0.8191,0.502,0.0046,0.4348,0.0871,0.4042,0.7758,0.1144
+writer/palmyra-x-v3,MATH Competition,MATH Competition,437,50,0.143,0.7735,0.7735,0.4025,0.6958,0.427,0.0,0.371,0.0777,0.3465,0.7758,0.1144

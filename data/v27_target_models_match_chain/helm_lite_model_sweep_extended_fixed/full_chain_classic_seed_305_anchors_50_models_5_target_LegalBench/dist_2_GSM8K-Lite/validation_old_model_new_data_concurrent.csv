@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+ai21/j2-jumbo,LegalBench,LegalBench,2047,50,-0.4012,0.491,0.4885,0.3673,0.3737,0.3702,0.0024,0.1236,0.1173,0.1208,0.0296,0.0244
+amazon/nova-micro-v1:0,LegalBench,LegalBench,2047,50,0.3859,0.6277,0.6561,0.6724,0.6714,0.6719,0.0283,0.0446,0.0436,0.0441,0.0296,0.0244
+anthropic/claude-3-haiku-20240307,LegalBench,LegalBench,2047,50,0.5361,0.3117,0.2902,0.3161,0.3152,0.3159,0.0215,0.0045,0.0035,0.0043,0.0296,0.0244
+google/gemini-1.5-flash-002,LegalBench,LegalBench,2047,50,-0.1827,0.6224,0.6146,0.4687,0.4763,0.472,0.0078,0.1536,0.1461,0.1503,0.0296,0.0244
+meta/llama-3.2-90b-vision-instruct-turbo,LegalBench,LegalBench,2047,50,-0.1108,0.5765,0.5843,0.5892,0.589,0.5891,0.0078,0.0128,0.0125,0.0127,0.0296,0.0244

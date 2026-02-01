@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+databricks/dbrx-instruct,1,0.0198,0.0,0.28,0.0,0.2998,0.0
+google/gemini-2.0-flash-exp,1,0.0268,0.0,0.9,0.0,0.9268,0.0
+meta/llama-2-13b,1,0.0681,0.0,0.06,0.0,0.1281,0.0
+qwen/qwen1.5-32b,1,0.0065,0.0,0.78,0.0,0.7735,0.0
+qwen/qwen2-72b-instruct,1,0.0038,0.0,0.82,0.0,0.8238,0.0

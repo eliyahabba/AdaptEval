@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+databricks/dbrx-instruct,1,0.0798,0.0,0.22,0.0,0.2998,0.0
+google/gemini-1.5-flash-001,1,0.0128,0.0,0.8,0.0,0.7872,0.0
+google/gemini-1.5-flash-002,1,0.0691,0.0,0.86,0.0,0.9291,0.0
+google/gemini-2.0-flash-exp,1,0.0868,0.0,0.84,0.0,0.9268,0.0
+meta/llama-2-13b,1,0.0481,0.0,0.08,0.0,0.1281,0.0
+meta/llama-3.1-8b-instruct-turbo,1,0.0568,0.0,0.68,0.0,0.7368,0.0
+microsoft/phi-3-medium-4k-instruct,1,0.0801,0.0,0.54,0.0,0.6201,0.0
+qwen/qwen1.5-32b,1,0.0265,0.0,0.8,0.0,0.7735,0.0
+qwen/qwen2-72b-instruct,1,0.0162,0.0,0.84,0.0,0.8238,0.0
+tiiuae/falcon-40b,1,0.0096,0.0,0.14,0.0,0.1304,0.0

@@ -1,0 +1,26 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-6b,WMT-14 Translation,WMT-14 Translation,5000,50,0.4789,0.1067,0.1091,0.2437,0.1266,0.2419,0.0024,0.137,0.0199,0.1352,0.8684,0.01
+ai21/j2-grande,WMT-14 Translation,WMT-14 Translation,5000,50,2.002,0.0943,0.0858,0.136,0.0923,0.1353,0.0085,0.0416,0.002,0.041,0.8684,0.01
+ai21/j2-jumbo,WMT-14 Translation,WMT-14 Translation,5000,50,1.3442,0.1032,0.1176,0.191,0.1271,0.19,0.0144,0.0878,0.0239,0.0868,0.8684,0.01
+ai21/jamba-instruct,WMT-14 Translation,WMT-14 Translation,5000,50,0.05,0.148,0.1477,0.234,0.1589,0.2333,0.0004,0.0859,0.0109,0.0853,0.8684,0.0082
+allenai/olmo-7b,WMT-14 Translation,WMT-14 Translation,5000,50,0.284,0.0912,0.088,0.1265,0.093,0.126,0.0033,0.0353,0.0017,0.0348,0.8684,0.01
+amazon/nova-lite-v1:0,WMT-14 Translation,WMT-14 Translation,5000,50,0.1896,0.1812,0.2037,0.3019,0.2164,0.3007,0.0224,0.1207,0.0352,0.1195,0.8684,0.01
+anthropic/claude-2.1,WMT-14 Translation,WMT-14 Translation,5000,50,0.425,0.1819,0.2004,0.2922,0.2123,0.2912,0.0184,0.1103,0.0304,0.1092,0.8684,0.01
+anthropic/claude-3-5-sonnet-20241022,WMT-14 Translation,WMT-14 Translation,5000,50,0.8664,0.2023,0.2281,0.3382,0.2424,0.337,0.0258,0.1359,0.0401,0.1347,0.8684,0.01
+anthropic/claude-instant-1.2,WMT-14 Translation,WMT-14 Translation,5000,50,0.2903,0.1737,0.2006,0.2438,0.2062,0.2432,0.0269,0.0701,0.0325,0.0695,0.8684,0.01
+deepseek-ai/deepseek-v3,WMT-14 Translation,WMT-14 Translation,5000,50,1.1107,0.1883,0.2293,0.3573,0.246,0.3558,0.041,0.1689,0.0576,0.1675,0.8684,0.01
+google/gemini-1.0-pro-002,WMT-14 Translation,WMT-14 Translation,5000,50,0.6658,0.1746,0.198,0.2144,0.2001,0.2141,0.0234,0.0398,0.0255,0.0395,0.8684,0.01
+google/gemini-1.5-pro-001,WMT-14 Translation,WMT-14 Translation,5000,50,0.6067,0.1707,0.194,0.3339,0.2122,0.3322,0.0233,0.1632,0.0415,0.1615,0.8684,0.01
+google/gemini-2.0-flash-exp,WMT-14 Translation,WMT-14 Translation,5000,50,1.0303,0.1908,0.1988,0.2943,0.2112,0.2932,0.008,0.1036,0.0204,0.1024,0.8684,0.01
+google/gemma-7b,WMT-14 Translation,WMT-14 Translation,5000,50,0.5166,0.1707,0.1932,0.2659,0.2027,0.265,0.0225,0.0952,0.032,0.0943,0.8684,0.01
+meta/llama-2-13b,WMT-14 Translation,WMT-14 Translation,5000,50,0.5741,0.1518,0.1607,0.241,0.1711,0.24,0.0089,0.0892,0.0193,0.0882,0.8684,0.01
+meta/llama-3-8b,WMT-14 Translation,WMT-14 Translation,5000,50,0.5065,0.1664,0.1779,0.2717,0.1901,0.2706,0.0115,0.1052,0.0237,0.1041,0.8684,0.01
+mistralai/mistral-medium-2312,WMT-14 Translation,WMT-14 Translation,5000,50,-0.5469,0.1508,0.1528,0.2188,0.1614,0.218,0.002,0.0679,0.0106,0.0672,0.8684,0.01
+mistralai/mistral-small-2402,WMT-14 Translation,WMT-14 Translation,5000,50,-0.2557,0.1535,0.1639,0.2175,0.1708,0.2167,0.0103,0.0639,0.0173,0.0632,0.8684,0.01
+openai/gpt-3.5-turbo-0613,WMT-14 Translation,WMT-14 Translation,5000,50,-0.1108,0.1699,0.1753,0.2951,0.1909,0.2936,0.0053,0.1252,0.0209,0.1237,0.8684,0.01
+openai/gpt-4-0613,WMT-14 Translation,WMT-14 Translation,5000,50,0.3922,0.1889,0.225,0.3628,0.243,0.3612,0.0361,0.1739,0.0541,0.1723,0.8684,0.01
+openai/gpt-4-1106-preview,WMT-14 Translation,WMT-14 Translation,5000,50,0.2495,0.1816,0.218,0.3391,0.2338,0.3377,0.0364,0.1575,0.0521,0.1561,0.8684,0.01
+openai/text-davinci-003,WMT-14 Translation,WMT-14 Translation,5000,50,0.2553,0.1705,0.1944,0.2875,0.2065,0.2863,0.0239,0.117,0.036,0.1158,0.8684,0.01
+qwen/qwen1.5-14b,WMT-14 Translation,WMT-14 Translation,5000,50,0.5718,0.1604,0.1987,0.2748,0.2086,0.2739,0.0383,0.1144,0.0482,0.1135,0.8684,0.01
+qwen/qwen1.5-32b,WMT-14 Translation,WMT-14 Translation,5000,50,-0.1828,0.1734,0.2123,0.3187,0.2262,0.3175,0.039,0.1453,0.0528,0.1441,0.8684,0.01
+writer/palmyra-x-v3,WMT-14 Translation,WMT-14 Translation,5000,50,0.4296,0.2292,0.2496,0.3407,0.2614,0.3397,0.0204,0.1115,0.0322,0.1105,0.8684,0.01

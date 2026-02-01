@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-extended,NaturalQA,NaturalQA,1000,50,0.7165,0.2529,0.28,0.3423,0.3043,0.3419,0.0271,0.0894,0.0514,0.0889,0.6075,0.05
+deepseek-ai/deepseek-v3,NaturalQA,NaturalQA,1000,50,-0.3747,0.467,0.5376,0.6492,0.5813,0.649,0.0706,0.1822,0.1143,0.182,0.6075,0.05
+openai/gpt-3.5-turbo-0613,NaturalQA,NaturalQA,1000,50,0.2224,0.3346,0.3987,0.4825,0.4315,0.4822,0.0642,0.1479,0.0969,0.1476,0.6075,0.05
+openai/text-davinci-003,NaturalQA,NaturalQA,1000,50,-0.1036,0.4134,0.4223,0.4983,0.452,0.4981,0.0088,0.0849,0.0386,0.0846,0.6075,0.05
+upstage/solar-pro-241126,NaturalQA,NaturalQA,1000,50,-0.4682,0.2973,0.2036,0.2852,0.2351,0.2837,0.0937,0.0121,0.0623,0.0136,0.6075,0.05

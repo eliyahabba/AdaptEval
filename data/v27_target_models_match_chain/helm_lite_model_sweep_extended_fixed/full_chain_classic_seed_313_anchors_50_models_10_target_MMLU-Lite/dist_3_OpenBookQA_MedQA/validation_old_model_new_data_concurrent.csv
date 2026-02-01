@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,MMLU-Lite,MMLU-Lite,567,50,-0.5287,0.2293,0.2222,0.2479,0.2255,0.2451,0.0071,0.0186,0.0038,0.0158,0.8576,0.0882
+anthropic/claude-3-5-sonnet-20240620,MMLU-Lite,MMLU-Lite,567,50,-1.5987,0.8042,0.843,0.8303,0.841,0.829,0.0388,0.0261,0.0368,0.0247,0.8576,0.0882
+cohere/command-light,MMLU-Lite,MMLU-Lite,567,50,0.5117,0.3827,0.3915,0.3651,0.388,0.3664,0.0088,0.0176,0.0052,0.0163,0.8576,0.0882
+cohere/command,MMLU-Lite,MMLU-Lite,567,50,0.3728,0.522,0.5626,0.5329,0.5583,0.5324,0.0406,0.0109,0.0363,0.0104,0.8576,0.0882
+meta/llama-65b,MMLU-Lite,MMLU-Lite,567,50,1.0185,0.5785,0.6578,0.6087,0.6511,0.6104,0.0794,0.0302,0.0726,0.0319,0.8576,0.0882
+microsoft/phi-3-small-8k-instruct,MMLU-Lite,MMLU-Lite,567,50,1.9795,0.6596,0.7178,0.7083,0.716,0.7049,0.0582,0.0487,0.0564,0.0453,0.8576,0.0882
+mistralai/mistral-medium-2312,MMLU-Lite,MMLU-Lite,567,50,2.343,0.6173,0.6138,0.6172,0.6138,0.6143,0.0035,0.0001,0.0034,0.003,0.8576,0.0882
+tiiuae/falcon-40b,MMLU-Lite,MMLU-Lite,567,50,0.1385,0.5009,0.4938,0.527,0.4977,0.5212,0.0071,0.0261,0.0032,0.0203,0.8576,0.0882
+upstage/solar-pro-241126,MMLU-Lite,MMLU-Lite,567,50,0.8892,0.6949,0.6437,0.6959,0.6503,0.6895,0.0511,0.001,0.0446,0.0054,0.8576,0.0882
+writer/palmyra-x-v2,MMLU-Lite,MMLU-Lite,567,50,1.2489,0.6243,0.6155,0.6177,0.6153,0.6138,0.0088,0.0067,0.0091,0.0105,0.8576,0.0882

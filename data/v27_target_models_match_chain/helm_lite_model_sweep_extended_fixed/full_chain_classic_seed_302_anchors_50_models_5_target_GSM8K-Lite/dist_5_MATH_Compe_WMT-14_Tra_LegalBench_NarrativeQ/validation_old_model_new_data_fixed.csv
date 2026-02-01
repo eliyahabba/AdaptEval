@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+google/gemini-2.0-flash-exp,GSM8K-Lite,GSM8K-Lite,1000,50,0.5196,0.946,0.949,0.7383,0.7738,0.7495,0.003,0.2077,0.1722,0.1965,0.1218,0.05
+meta/llama-3.1-70b-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,0.2571,0.938,0.973,0.7879,0.8181,0.7967,0.035,0.1501,0.1199,0.1413,0.1218,0.05
+meta/llama-3.2-11b-vision-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,0.5909,0.823,0.835,0.6722,0.6966,0.6774,0.012,0.1508,0.1264,0.1456,0.1218,0.05
+openai/gpt-4o-2024-05-13,GSM8K-Lite,GSM8K-Lite,1000,50,0.2839,0.905,0.89,0.7594,0.7799,0.7646,0.015,0.1456,0.1251,0.1404,0.1218,0.05
+writer/palmyra-x-v3,GSM8K-Lite,GSM8K-Lite,1000,50,0.3592,0.831,0.829,0.7014,0.7207,0.7056,0.002,0.1296,0.1103,0.1254,0.1218,0.05

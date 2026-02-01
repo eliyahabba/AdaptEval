@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+cohere/command-light,1,0.106,0.0,0.4,0.0,0.294,0.0
+meta/llama-3.2-90b-vision-instruct-turbo,1,0.004,0.0,0.82,0.0,0.824,0.0
+qwen/qwen1.5-110b-chat,1,0.06,0.0,0.7,0.0,0.64,0.0
+qwen/qwen1.5-72b,1,0.016,0.0,0.68,0.0,0.664,0.0
+tiiuae/falcon-7b,1,0.027,0.0,0.24,0.0,0.267,0.0

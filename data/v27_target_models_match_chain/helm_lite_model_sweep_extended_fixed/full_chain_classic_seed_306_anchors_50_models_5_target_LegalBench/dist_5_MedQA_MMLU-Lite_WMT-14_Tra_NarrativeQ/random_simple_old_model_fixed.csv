@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+cohere/command,1,0.1179,0.0,0.375,0.0,0.4929,0.0
+google/gemini-1.5-flash-001,1,0.0279,0.0,0.5745,0.0,0.6023,0.0
+google/gemini-1.5-flash-002,1,0.1015,0.0,0.5208,0.0,0.6224,0.0
+google/text-bison@001,1,0.0052,0.0,0.5625,0.0,0.5677,0.0
+openai/gpt-4-0613,1,0.0047,0.0,0.6667,0.0,0.6619,0.0
