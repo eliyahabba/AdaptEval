@@ -332,6 +332,7 @@ class ScenarioTask:
     target_test_df_path: str
     base_chain_test_df_path: str | None  # Path to test models' responses on Base+Chain (for cross-dataset theta)
     target_train_df_path: str | None  # Path to train models' responses on Target (for old model + new data)
+    target_all_train_df_path: str | None  # Path to ALL train_models' responses on Target (for linking generalization test)
     
     # IRT parameters (for Fixed-Anchor)
     prev_irt_path: str | None  # Path to pickled IRT params
@@ -350,7 +351,8 @@ class ScenarioTask:
     target_name: str
     test_models: list  # Serialized as list
     random_seed: int  # Seed for random baseline scenarios
-    train_models: list  # Serialized as list (for old model validation)
+    train_models: list  # Serialized as list (for old model validation - chain_train_models)
+    all_train_models: list  # ALL train_models for linking generalization test
     seed: int  # Base seed for random sampling
     
     # Timing info
@@ -1583,6 +1585,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # This tests: "Can we link a new dataset when it only has N models?"
     target_train_df = target_df[target_df['model_name'].isin(chain_train_models)].copy()
     target_test_df = target_df[target_df['model_name'].isin(test_models)].copy()
+    # ALL train_models on target - for testing linking generalization
+    # This tests: "If we link with N models, can we predict ALL train models?"
+    target_all_train_df = target_df[target_df['model_name'].isin(train_models)].copy()
     
     # Save target test df for workers
     target_test_path = temp_dir / "target_test.pkl"
@@ -1591,6 +1596,10 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # Save target train df for workers (old model + new data validation)
     target_train_path = temp_dir / "target_train.pkl"
     target_train_df.to_pickle(target_train_path)
+    
+    # Save ALL train_models on target for linking generalization test
+    target_all_train_path = temp_dir / "target_all_train.pkl"
+    target_all_train_df.to_pickle(target_all_train_path)
     
     # Save base IRT params
     base_irt_pkl = temp_dir / "base_irt.pkl"
@@ -1754,6 +1763,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 target_test_df_path=str(target_test_path),
                 base_chain_test_df_path=base_chain_test_df_path_str,
                 target_train_df_path=str(target_train_path),
+                target_all_train_df_path=str(target_all_train_path),
                 prev_irt_path=prev_irt_path if method == 'fixed' else None,
                 prev_A_path=prev_A_path if method == 'fixed' else None,
                 prev_B_path=prev_B_path if method == 'fixed' else None,
@@ -1768,6 +1778,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 target_name=target_name,
                 test_models=list(test_models),
                 train_models=list(chain_train_models),  # Same N models as chain for consistent model sweep
+                all_train_models=list(train_models),  # ALL train models for linking generalization test
                 seed=task_seed,
                 random_seed=config.random_seed,
                 cumulative_chain_time=cumulative_chain_time,
