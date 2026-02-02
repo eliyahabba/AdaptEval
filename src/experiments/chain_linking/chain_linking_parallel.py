@@ -391,11 +391,17 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     test_models = set(task.test_models)
     train_models = set(task.train_models) if task.train_models else set()
+    all_train_models = set(task.all_train_models) if task.all_train_models else set()
     
     # Load additional data for extra validations
     target_train_df = None
     if task.distance >= 1 and task.target_train_df_path:
         target_train_df = pd.read_pickle(task.target_train_df_path)
+    
+    # Load ALL train_models on target for linking generalization test
+    target_all_train_df = None
+    if task.distance >= 1 and task.target_all_train_df_path:
+        target_all_train_df = pd.read_pickle(task.target_all_train_df_path)
     
     base_chain_test_df = None
     if task.base_chain_test_df_path:
@@ -593,6 +599,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # SKIP for distance=0 (Base only - no target dataset)
     # ==========================================================================
     val_train_on_target_df = None
+    precomputed_thetas_train = None  # Initialize before conditional block
     if task.distance >= 1 and target_train_df is not None and len(target_train_df) > 0:
         precomputed_thetas_train = precompute_thetas_from_all_anchors(
             test_df=final_df,  # final_df contains train_models on all datasets
@@ -612,6 +619,50 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             precomputed_thetas=precomputed_thetas_train,
         )
         val_train_on_target_df = pd.DataFrame(train_on_target_results) if train_on_target_results else None
+    
+    # ==========================================================================
+    # Validation 2b: ALL Train Models on New Dataset (linking generalization test)
+    # Tests: "If we link with N models, can we predict ALL train models on Target?"
+    # Uses Base+Chain anchors only for theta estimation (no Target "cheating")
+    # This is the KEY metric for the model sweep experiment!
+    # ==========================================================================
+    val_all_train_on_target_df = None
+    precomputed_thetas_all_train = None  # Initialize before conditional block
+    if task.distance >= 1 and target_all_train_df is not None and len(target_all_train_df) > 0 and prev_anchors is not None:
+        print(f"      Task {task.task_id}: Running Validation 2b (All Train Models on Target)...")
+        
+        # Precompute theta for ALL train_models using Base+Chain anchors only
+        # This ensures fair comparison: theta is estimated without seeing Target data
+        # For chain_train_models: they have responses in final_df (Base+Chain+Target)
+        # For other train_models: they only have responses in Base (not in Chain or Target)
+        
+        # First, get Base data for ALL train_models (they all have Base responses)
+        base_df_for_theta = final_df[final_df['model_name'].isin(all_train_models)].copy()
+        
+        precomputed_thetas_all_train = precompute_thetas_from_all_anchors(
+            test_df=base_df_for_theta,  # Use Base data (includes all train_models)
+            item_params=irt_params,
+            anchor_ids=prev_anchors,  # Only Base+Chain anchors (no Target)
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+        )
+        
+        all_train_on_target_results = run_validation(
+            test_df=target_all_train_df,
+            item_params=irt_params,
+            anchor_ids=prev_anchors,  # Use Base+Chain anchors
+            anchor_weights=prev_weights,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas_all_train,
+        )
+        val_all_train_on_target_df = pd.DataFrame(all_train_on_target_results) if all_train_on_target_results else None
+        
+        if val_all_train_on_target_df is not None:
+            n_all = len(val_all_train_on_target_df)
+            n_chain = len([m for m in val_all_train_on_target_df['model_name'].unique() if m in train_models])
+            print(f"      Task {task.task_id}: Validated {n_all} models ({n_chain} from chain, {n_all - n_chain} generalized)")
     
     # ==========================================================================
     # Validation 3: New Models + Old Datasets (test_models on Base+Chain)
@@ -743,6 +794,38 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             n_random_questions=task.n_anchors_per_dataset,
             n_seeds=1,
             base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
+            return_per_model=True,
+        )
+    
+    # ==========================================================================
+    # Random Baselines for Validation 2b: All Train Models on New Data
+    # This is the KEY random baseline for the model sweep experiment!
+    # ==========================================================================
+    random_baseline_all_train = {}
+    random_simple_all_train = {}
+    random_baseline_all_train_per_model_df = pd.DataFrame()
+    random_simple_all_train_per_model_df = pd.DataFrame()
+    if task.distance >= 1 and target_all_train_df is not None and len(target_all_train_df) > 0:
+        print(f"      Task {task.task_id}: Running random baselines for Validation 2b (All Train on Target)...")
+        random_baseline_all_train, random_baseline_all_train_per_model_df = run_random_baseline_validation(
+            test_df=target_all_train_df,
+            item_params=irt_params,
+            n_random_questions=task.n_anchors_per_dataset,
+            target_name=task.target_name,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=precomputed_thetas_all_train,
+            n_seeds=1,
+            base_seed=task.random_seed + task.distance * 100 + 500,  # Different seed offset
+            return_per_model=True,
+        )
+        random_simple_all_train, random_simple_all_train_per_model_df = run_random_simple_baseline(
+            test_df=target_all_train_df,
+            target_name=task.target_name,
+            n_random_questions=task.n_anchors_per_dataset,
+            n_seeds=1,
+            base_seed=task.random_seed + task.distance * 100 + 500,  # Different seed offset
             return_per_model=True,
         )
     
@@ -1091,6 +1174,8 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Validation 1 & 2: single dataset (target) - use flat mean
     add_metrics(validation_df, 'new_model_new_data')
     add_metrics(val_train_on_target_df, 'old_model_new_data')
+    # Validation 2b: ALL train_models on target - KEY metric for model sweep!
+    add_metrics(val_all_train_on_target_df, 'all_train_new_data')
     # Validation 3: multiple datasets (Base+Chain) - use mean-of-means for consistency with random baselines
     add_metrics_mean_of_means(val_test_on_base_df, 'new_model_old_data')
     
@@ -1099,6 +1184,12 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         result[key] = val
     for key, val in random_simple_results.items():
         result[key] = val
+    
+    # Add Random baselines for Validation 2b (All Train Models on New Data) - KEY for model sweep!
+    for key, val in random_baseline_all_train.items():
+        result[f'all_train_new_data_{key}'] = val
+    for key, val in random_simple_all_train.items():
+        result[f'all_train_new_data_{key}'] = val
     
     # Add Random baselines for Validation 2 (Old Model + New Data)
     for key, val in random_baseline_old_model.items():
@@ -1205,12 +1296,15 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Save all per-model DataFrames
     save_per_model_df(validation_df, 'validation')
     save_per_model_df(val_train_on_target_df, 'validation_old_model_new_data')
+    save_per_model_df(val_all_train_on_target_df, 'validation_all_train_new_data')  # KEY metric!
     save_per_model_df(val_test_on_base_df, 'validation_new_model_old_data')
     save_per_model_df(val_test_on_base_pooled_df, 'validation_new_model_old_data_pooled')
     save_per_model_df(random_baseline_per_model_df, 'random_irt')
     save_per_model_df(random_simple_per_model_df, 'random_simple')
     save_per_model_df(random_baseline_old_model_per_model_df, 'random_irt_old_model')
     save_per_model_df(random_simple_old_model_per_model_df, 'random_simple_old_model')
+    save_per_model_df(random_baseline_all_train_per_model_df, 'random_irt_all_train')  # KEY baseline!
+    save_per_model_df(random_simple_all_train_per_model_df, 'random_simple_all_train')  # KEY baseline!
     save_per_model_df(random_baseline_new_model_old_data_per_model_df, 'random_irt_new_model_old_data')
     save_per_model_df(random_simple_new_model_old_data_per_model_df, 'random_simple_new_model_old_data')
     
@@ -1218,6 +1312,9 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     if val_train_on_target_df is not None:
         round_df_for_save(val_train_on_target_df).to_csv(
             output_dir.parent / f"validation_{task.method}_old_model_new_data.csv", index=False)
+    if val_all_train_on_target_df is not None:
+        round_df_for_save(val_all_train_on_target_df).to_csv(
+            output_dir.parent / f"validation_{task.method}_all_train_new_data.csv", index=False)
     if val_test_on_base_df is not None:
         round_df_for_save(val_test_on_base_df).to_csv(
             output_dir.parent / f"validation_{task.method}_new_model_old_data.csv", index=False)
@@ -1798,7 +1895,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     # Workers will load data from disk (.temp/*.pkl files), they don't need the in-memory datasets
     print("\n   🧹 Freeing main process memory before spawning workers...")
     del datasets  # Large dict of all datasets - no longer needed
-    del target_df, target_train_df, target_test_df  # Already saved to disk
+    del target_df, target_train_df, target_test_df, target_all_train_df  # Already saved to disk
     if 'base_chain_test_dfs' in locals():
         del base_chain_test_dfs
     if 'base_chain_test_df' in locals():

@@ -10,11 +10,11 @@
 # - HELM Lite: 18 experiments (9 base1 + 9 base4)
 # - MMLU Fields: 20 experiments (seeds 11-30)
 # - Disjoint: 12 experiments (6 fixed + 6 random bridge)
-# - LB Extended Model Sweep: 162 experiments (9 model counts × 6 datasets × 3 seeds) → lb_model_sweep_extended_fixed/
-# - MMLU Extended Model Sweep: 45 experiments (9 model counts × 5 seeds/targets) → mmlu_model_sweep_extended_fixed/
-# - HELM Lite Extended Model Sweep: 162 experiments (6 model counts × 9 datasets × 3 seeds) → helm_lite_model_sweep_extended_fixed/
+# - LB Extended Model Sweep: 9 model counts × 6 datasets × N seeds → lb_model_sweep_extended_fixed/
+# - MMLU Extended Model Sweep: 9 model counts × N seeds → mmlu_model_sweep_extended_fixed/
+# - HELM Lite Extended Model Sweep: 6 model counts × 9 datasets × N seeds → helm_lite_model_sweep_extended_fixed/
 #
-# Total: 479 experiments
+# Total: depends on --seeds N (default N=3)
 #
 # Usage:
 #   bash run_all_balanced.sh                    # Run all missing
@@ -25,17 +25,19 @@
 #   bash run_all_balanced.sh --category 5       # Only LB Model Sweep Extended
 #   bash run_all_balanced.sh --category 6       # Only MMLU Model Sweep Extended
 #   bash run_all_balanced.sh --category 7       # Only HELM Lite Model Sweep Extended
+#   bash run_all_balanced.sh --seeds 5          # Use 5 seeds per config (categories 5,6,7)
 #   bash run_all_balanced.sh --setup-only       # Test only
 #   bash run_all_balanced.sh --force            # Re-run all (ignore existing)
 #   bash run_all_balanced.sh --resume           # Resume incomplete experiments
 
 set -e
 
-BASE_DIR="data/v27_target_models_match_chain"
+BASE_DIR="data/v28_target_models_match_chain"
 SETUP_ONLY=""
 SKIP_EXISTING=""
 FORCE_RESUME=""
 RUN_CATEGORY=""
+N_SEEDS=3  # Number of seeds per dataset per model count (for categories 5, 6, 7)
 
 # LB datasets
 LB_DATASETS=("MMLU" "ARC Challenge" "HellaSwag" "TruthfulQA" "Winogrande" "GSM8K")
@@ -49,6 +51,7 @@ while [[ $# -gt 0 ]]; do
         --skip-existing) SKIP_EXISTING="--skip-existing"; shift ;;
         --category) RUN_CATEGORY="$2"; shift 2 ;;
         --base-dir) BASE_DIR="$2"; shift 2 ;;
+        --seeds) N_SEEDS="$2"; shift 2 ;;  # Number of seeds for categories 5,6,7
         *) echo "Unknown: $1"; exit 1 ;;
     esac
 done
@@ -124,6 +127,7 @@ echo "Base: $BASE_DIR"
 [ -n "$FORCE_RESUME" ] && echo "Mode: RESUME (continue incomplete experiments)"
 [ -n "$SKIP_EXISTING" ] && echo "Mode: SKIP-EXISTING (skip completed)"
 [ -n "$RUN_CATEGORY" ] && echo "Running: Category $RUN_CATEGORY only"
+echo "Seeds per config (cat 5,6,7): $N_SEEDS"
 echo ""
 
 mkdir -p "${BASE_DIR}/lb_baseline_fixed" "${BASE_DIR}/lb_anchor_sweep" "${BASE_DIR}/lb_anchor_sweep_controlled" "${BASE_DIR}/lb_model_sweep" "${BASE_DIR}/lb_model_sweep_controlled"
@@ -363,31 +367,32 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "4" ]; then
 fi
 
 # ============================================================
-# CATEGORY 5: Extended Model Sweep (162 experiments)
+# CATEGORY 5: Extended Model Sweep (9 × 6 × N_SEEDS experiments)
 # ============================================================
 # Test how number of models in chain affects performance
-# 9 model counts × 6 datasets × 3 seeds = 162 experiments
+# 9 model counts × 6 datasets × N_SEEDS seeds
 if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
+    CAT5_TOTAL=$((9 * 6 * N_SEEDS))
     echo "=================================================================="
-    echo "CATEGORY 5: Extended Model Sweep (162 experiments)"
+    echo "CATEGORY 5: Extended Model Sweep ($CAT5_TOTAL experiments)"
     echo "=================================================================="
     echo ""
     
     mkdir -p "${BASE_DIR}/lb_model_sweep_extended_fixed"
     
-    echo "-- LB Model Sweep Extended (162 experiments) --"
+    echo "-- LB Model Sweep Extended ($CAT5_TOTAL experiments) --"
     echo "   Model counts: 5, 10, 25, 50, 100, 150, 200, 250, 300"
-    echo "   3 seeds per dataset"
+    echo "   $N_SEEDS seeds per dataset"
     echo "   Order: seed → dataset → model_count (get full picture faster)"
     echo "   Output: ${BASE_DIR}/lb_model_sweep_extended_fixed"
     
     BASE_SEED=101
-    for seed_offset in 0 1 2; do
+    for seed_offset in $(seq 0 $((N_SEEDS - 1))); do
         echo ""
         echo "   --- Seed round $((seed_offset + 1))/3 ---"
         TARGET_IDX=0
         for target in "${LB_DATASETS[@]}"; do
-            RUN_SEED=$((BASE_SEED + TARGET_IDX * 3 + seed_offset))
+            RUN_SEED=$((BASE_SEED + TARGET_IDX * N_SEEDS + seed_offset))
             for models in 5 10 25 50 100 150 200 250 300; do
                 if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_model_sweep_extended_fixed" $RUN_SEED 100 "$target" "$models"; then
                     echo "   ⏭️  SKIP (complete): $target models=$models (seed=$RUN_SEED)"
@@ -410,31 +415,32 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
     done
     
     echo ""
-    echo "✓ Category 5 complete: 162 experiments (9 model counts × 6 datasets × 3 seeds)"
+    echo "✓ Category 5 complete: $CAT5_TOTAL experiments (9 model counts × 6 datasets × $N_SEEDS seeds)"
 fi
 
 # ============================================================
-# CATEGORY 6: MMLU Extended Model Sweep (45 experiments)
+# CATEGORY 6: MMLU Extended Model Sweep (9 × N_SEEDS experiments)
 # ============================================================
 # Test how number of models in chain affects performance for MMLU Fields
-# 9 model counts × 5 seeds = 45 experiments
+# 9 model counts × N_SEEDS seeds
 # NOTE: Each seed produces a DIFFERENT target dataset (unlike LB where target is explicit)
-# So 5 seeds = 5 different targets, each with full model sweep coverage
+# So N_SEEDS seeds = N_SEEDS different targets, each with full model sweep coverage
 if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
+    CAT6_TOTAL=$((9 * N_SEEDS))
     echo "=================================================================="
-    echo "CATEGORY 6: MMLU Extended Model Sweep (45 experiments)"
+    echo "CATEGORY 6: MMLU Extended Model Sweep ($CAT6_TOTAL experiments)"
     echo "=================================================================="
     echo ""
     
     mkdir -p "${BASE_DIR}/mmlu_model_sweep_extended_fixed"
     
-    echo "-- MMLU Model Sweep Extended (45 experiments) --"
+    echo "-- MMLU Model Sweep Extended ($CAT6_TOTAL experiments) --"
     echo "   Model counts: 5, 10, 25, 50, 100, 150, 200, 250, 300"
-    echo "   5 seeds (each seed = different target dataset)"
+    echo "   $N_SEEDS seeds (each seed = different target dataset)"
     echo "   Output: ${BASE_DIR}/mmlu_model_sweep_extended_fixed"
     
     SEED=201
-    for seed_offset in 0 1 2 3 4; do
+    for seed_offset in $(seq 0 $((N_SEEDS - 1))); do
         RUN_SEED=$((SEED + seed_offset))
         for models in 5 10 25 50 100 150 200 250 300; do
             if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_model_sweep_extended_fixed" $RUN_SEED 10 "" "$models"; then
@@ -455,18 +461,19 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
     done
     
     echo ""
-    echo "✓ Category 6 complete: 45 experiments (9 model counts × 5 seeds/targets)"
+    echo "✓ Category 6 complete: $CAT6_TOTAL experiments (9 model counts × $N_SEEDS seeds/targets)"
 fi
 
 # ============================================================
-# CATEGORY 7: HELM Lite Extended Model Sweep (162 experiments)
+# CATEGORY 7: HELM Lite Extended Model Sweep (6 × 9 × N_SEEDS experiments)
 # ============================================================
 # Test how number of models in chain affects performance for HELM Lite
-# 6 model counts × 9 datasets × 3 seeds = 162 experiments
+# 6 model counts × 9 datasets × N_SEEDS seeds
 # HELM Lite has 91 models, so model counts: 5, 10, 25, 50, 75, 91
 if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
+    CAT7_TOTAL=$((6 * 9 * N_SEEDS))
     echo "=================================================================="
-    echo "CATEGORY 7: HELM Lite Extended Model Sweep (135 experiments)"
+    echo "CATEGORY 7: HELM Lite Extended Model Sweep ($CAT7_TOTAL experiments)"
     echo "=================================================================="
     echo ""
     
@@ -475,18 +482,18 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
     # HELM Lite datasets (9 total)
     HELM_LITE_DATASETS=("GSM8K-Lite" "LegalBench" "MATH Competition" "MedQA" "MMLU-Lite" "NarrativeQA" "NaturalQA" "OpenBookQA" "WMT-14 Translation")
     
-    echo "-- HELM Lite Model Sweep Extended (162 experiments) --"
+    echo "-- HELM Lite Model Sweep Extended ($CAT7_TOTAL experiments) --"
     echo "   Model counts: 5, 10, 25, 50, 75, 91 (HELM has 91 models total)"
-    echo "   9 datasets × 3 seeds per dataset"
+    echo "   9 datasets × $N_SEEDS seeds per dataset"
     echo "   Output: ${BASE_DIR}/helm_lite_model_sweep_extended_fixed"
     
     BASE_SEED=301
-    for seed_offset in 0 1 2; do
+    for seed_offset in $(seq 0 $((N_SEEDS - 1))); do
         echo ""
-        echo "   --- Seed round $((seed_offset + 1))/3 ---"
+        echo "   --- Seed round $((seed_offset + 1))/$N_SEEDS ---"
         TARGET_IDX=0
         for target in "${HELM_LITE_DATASETS[@]}"; do
-            RUN_SEED=$((BASE_SEED + TARGET_IDX * 3 + seed_offset))
+            RUN_SEED=$((BASE_SEED + TARGET_IDX * N_SEEDS + seed_offset))
             for models in 5 10 25 50 75 91; do
                 if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/helm_lite_model_sweep_extended_fixed" $RUN_SEED 50 "$target" "$models"; then
                     echo "   ⏭️  SKIP (complete): $target models=$models (seed=$RUN_SEED)"
@@ -509,7 +516,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
     done
     
     echo ""
-    echo "✓ Category 7 complete: 162 experiments (6 model counts × 9 datasets × 3 seeds)"
+    echo "✓ Category 7 complete: $CAT7_TOTAL experiments (6 model counts × 9 datasets × $N_SEEDS seeds)"
 fi
 
 # Summary
@@ -524,15 +531,19 @@ elif [ -n "$RUN_CATEGORY" ]; then
     echo "Category $RUN_CATEGORY: $SUBMITTED jobs submitted"
 else
     echo "All categories:"
+    CAT5_EXP=$((9 * 6 * N_SEEDS))
+    CAT6_EXP=$((9 * N_SEEDS))
+    CAT7_EXP=$((6 * 9 * N_SEEDS))
+    TOTAL_EXP=$((60 + 18 + 20 + 12 + CAT5_EXP + CAT6_EXP + CAT7_EXP))
     echo "  Category 1 (LB):              60 experiments (24 baseline + 24 anchor + 12 model)"
     echo "  Category 2 (HELM Lite):       18 experiments"
     echo "  Category 3 (MMLU):            20 experiments"
     echo "  Category 4 (Disjoint):        12 experiments"
-    echo "  Category 5 (LB Model Ext):    162 experiments (9 counts × 6 datasets × 3 seeds)"
-    echo "  Category 6 (MMLU Model Ext):  45 experiments (9 counts × 5 targets)"
-    echo "  Category 7 (HELM Model Ext):  162 experiments (6 counts × 9 datasets × 3 seeds)"
+    echo "  Category 5 (LB Model Ext):    $CAT5_EXP experiments (9 counts × 6 datasets × $N_SEEDS seeds)"
+    echo "  Category 6 (MMLU Model Ext):  $CAT6_EXP experiments (9 counts × $N_SEEDS targets)"
+    echo "  Category 7 (HELM Model Ext):  $CAT7_EXP experiments (6 counts × 9 datasets × $N_SEEDS seeds)"
     echo "  ───────────────────────────────────────"
-    echo "  TOTAL:                        479 experiments"
+    echo "  TOTAL:                        $TOTAL_EXP experiments (with --seeds $N_SEEDS)"
     echo ""
     echo "Actually submitted: $SUBMITTED"
     [ $SKIPPED -gt 0 ] && echo "Skipped (complete): $SKIPPED"
