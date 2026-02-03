@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_osanseviero__mistral-instruct-frankenmerge,ARC Challenge,ARC Challenge,1172,100,2.1942,0.5819,0.57,0.5954,0.5717,0.5945,0.0119,0.0135,0.0102,0.0126,0.9307,0.0853
+open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,ARC Challenge,ARC Challenge,1172,100,2.9212,0.6058,0.6638,0.6531,0.6632,0.6546,0.058,0.0473,0.0574,0.0488,0.9307,0.0853
+open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,ARC Challenge,ARC Challenge,1172,100,9.1939,0.7116,0.7108,0.7118,0.7108,0.7119,0.0009,0.0002,0.0008,0.0003,0.9307,0.0853
+open-llm-leaderboard/details_Mihaiii__Metis-0.3,ARC Challenge,ARC Challenge,1172,100,3.7268,0.6271,0.6621,0.682,0.6634,0.6811,0.035,0.0549,0.0363,0.054,0.9307,0.0853
+open-llm-leaderboard/details_PeanutJar__Mistral-v0.1-PeanutButter-v0.0.2-7B,ARC Challenge,ARC Challenge,1172,100,4.2182,0.6177,0.6237,0.6021,0.6224,0.6051,0.006,0.0156,0.0047,0.0127,0.9307,0.0853
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down,ARC Challenge,ARC Challenge,1172,100,3.0352,0.587,0.5478,0.569,0.5493,0.57,0.0392,0.018,0.0377,0.0171,0.9307,0.0853
+open-llm-leaderboard/details_jondurbin__airoboros-7b,ARC Challenge,ARC Challenge,1172,100,1.7813,0.5307,0.535,0.5282,0.5347,0.5312,0.0043,0.0025,0.004,0.0004,0.9307,0.0853
+open-llm-leaderboard/details_Undi95__Nous-Hermes-13B-Code,ARC Challenge,ARC Challenge,1172,100,3.8476,0.6118,0.5922,0.612,0.5935,0.6117,0.0196,0.0002,0.0183,0.0001,0.9307,0.0853
+open-llm-leaderboard/details_ashercn97__giraffe-7b,ARC Challenge,ARC Challenge,1172,100,1.4354,0.4718,0.4608,0.4534,0.4603,0.4536,0.0111,0.0185,0.0116,0.0183,0.9307,0.0853
+open-llm-leaderboard/details_The-Face-Of-Goonery__Chronos-Beluga-v2-13bfp16,ARC Challenge,ARC Challenge,1172,100,4.2982,0.6075,0.6212,0.6072,0.6203,0.6092,0.0137,0.0003,0.0128,0.0017,0.9307,0.0853

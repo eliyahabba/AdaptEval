@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,HellaSwag,HellaSwag,10042,100,0.8548,0.8566,0.8519,0.7856,0.8068,0.7862,0.0047,0.071,0.0498,0.0704,0.3139,0.01
+open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,HellaSwag,HellaSwag,10042,100,0.3837,0.8078,0.7841,0.6009,0.6591,0.6019,0.0237,0.2069,0.1487,0.2059,0.3139,0.01
+open-llm-leaderboard/details_Open-Orca__Mixtral-SlimOrca-8x7B,HellaSwag,HellaSwag,10042,100,0.7545,0.8511,0.8585,0.7854,0.8085,0.7857,0.0074,0.0658,0.0426,0.0654,0.3139,0.01
+open-llm-leaderboard/details_wang7776__Llama-2-7b-chat-hf-10-sparsity,HellaSwag,HellaSwag,10042,100,0.1419,0.7826,0.7821,0.5859,0.6482,0.5869,0.0005,0.1967,0.1344,0.1957,0.3139,0.01
+open-llm-leaderboard/details_WebraftAI__synapsellm-7b-mistral-v0.4-preview3,HellaSwag,HellaSwag,10042,100,0.6635,0.7483,0.7441,0.6099,0.6524,0.6105,0.0042,0.1384,0.0958,0.1378,0.3139,0.01
+open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,HellaSwag,HellaSwag,10042,100,0.4466,0.8314,0.8478,0.6668,0.7246,0.6682,0.0164,0.1646,0.1068,0.1632,0.3139,0.01
+open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,HellaSwag,HellaSwag,10042,100,0.5274,0.8392,0.8476,0.6918,0.7415,0.6929,0.0085,0.1474,0.0977,0.1462,0.3139,0.01
+open-llm-leaderboard/details_TheBloke__robin-65b-v2-fp16,HellaSwag,HellaSwag,10042,100,0.4494,0.846,0.8363,0.742,0.7719,0.7424,0.0098,0.1041,0.0742,0.1036,0.3139,0.01
+open-llm-leaderboard/details_WizardLM__WizardLM-70B-V1.0,HellaSwag,HellaSwag,10042,100,0.3445,0.8545,0.8574,0.7253,0.7674,0.7263,0.0029,0.1292,0.0871,0.1283,0.3139,0.01
+open-llm-leaderboard/details_chargoddard__MelangeC-70b,HellaSwag,HellaSwag,10042,100,0.4364,0.876,0.8742,0.742,0.7841,0.7429,0.0018,0.134,0.0919,0.1331,0.3139,0.01

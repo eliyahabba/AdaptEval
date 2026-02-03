@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_CallComply__Starling-LM-11B-alpha,TruthfulQA,TruthfulQA,817,100,0.3413,0.4153,0.3895,0.5308,0.4591,0.5115,0.0258,0.1155,0.0438,0.0962,0.4298,0.1224
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,0.544,0.7252,0.7252,0.7746,0.7503,0.7693,0.0,0.0494,0.0251,0.0441,0.4298,0.1224
+open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,TruthfulQA,TruthfulQA,817,100,0.6245,0.4988,0.5278,0.5065,0.5144,0.5043,0.029,0.0078,0.0156,0.0055,0.4298,0.1224
+open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,TruthfulQA,TruthfulQA,817,100,0.4051,0.5586,0.5402,0.6114,0.572,0.596,0.0183,0.0528,0.0135,0.0374,0.4298,0.1224
+open-llm-leaderboard/details_TFLai__Luban-Platypus2-13B-QLora-0.80-epoch,TruthfulQA,TruthfulQA,817,100,0.4891,0.5526,0.5836,0.5934,0.5838,0.584,0.031,0.0408,0.0312,0.0314,0.4298,0.1224

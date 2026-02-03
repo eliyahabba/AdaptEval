@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_CallComply__Starling-LM-11B-alpha,1,0.0007,0.0,0.416,0.0,0.4153,0.0
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,1,0.0187,0.0,0.7065,0.0,0.7252,0.0
+open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,1,0.0434,0.0,0.5421,0.0,0.4988,0.0
+open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,1,0.0253,0.0,0.5838,0.0,0.5586,0.0
+open-llm-leaderboard/details_TFLai__Luban-Platypus2-13B-QLora-0.80-epoch,1,0.017,0.0,0.5696,0.0,0.5526,0.0

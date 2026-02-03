@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_PeanutJar__Mistral-v0.1-PeanutButter-v0.0.2-7B,1,0.0523,0.0,0.67,0.0,0.6177,0.0
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down,1,0.063,0.0,0.65,0.0,0.587,0.0
+open-llm-leaderboard/details_Undi95__Nous-Hermes-13B-Code,1,0.0482,0.0,0.66,0.0,0.6118,0.0
+open-llm-leaderboard/details_ashercn97__giraffe-7b,1,0.0582,0.0,0.53,0.0,0.4718,0.0
+open-llm-leaderboard/details_The-Face-Of-Goonery__Chronos-Beluga-v2-13bfp16,1,0.0075,0.0,0.6,0.0,0.6075,0.0

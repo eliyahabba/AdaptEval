@@ -1,0 +1,26 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_nfaheem__Marcoroni-7b-DPO-Merge,ARC Challenge,ARC Challenge,1172,100,0.5746,0.7304,0.75,0.7549,0.7524,0.754,0.0196,0.0245,0.0221,0.0236,0.3885,0.0853
+open-llm-leaderboard/details_umd-zhou-lab__recycled-wizardlm-7b-v2.0,ARC Challenge,ARC Challenge,1172,100,3.3975,0.5495,0.5444,0.5512,0.5487,0.5515,0.0051,0.0017,0.0007,0.002,0.3885,0.0853
+open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,ARC Challenge,ARC Challenge,1172,100,1.331,0.6502,0.6433,0.6638,0.6553,0.6629,0.0068,0.0137,0.0051,0.0127,0.3885,0.0853
+open-llm-leaderboard/details_dfurman__Mistral-7B-Instruct-v0.2,ARC Challenge,ARC Challenge,1172,100,2.6031,0.6015,0.5939,0.5923,0.5935,0.5932,0.0077,0.0093,0.0081,0.0083,0.3885,0.0853
+open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k,ARC Challenge,ARC Challenge,1172,100,1.0567,0.4206,0.3857,0.4188,0.4057,0.4184,0.035,0.0018,0.015,0.0023,0.3885,0.0853
+open-llm-leaderboard/details_upaya07__Birbal-7B-V1,ARC Challenge,ARC Challenge,1172,100,2.0142,0.628,0.6519,0.6516,0.6515,0.6513,0.0239,0.0236,0.0236,0.0233,0.3885,0.0853
+open-llm-leaderboard/details_kyujinpy__PlatYi-34B-Llama,ARC Challenge,ARC Challenge,1172,100,0.3251,0.6783,0.6485,0.6721,0.6625,0.6714,0.0299,0.0063,0.0158,0.0069,0.3885,0.0853
+open-llm-leaderboard/details_migtissera__Tess-7B-v1.4,ARC Challenge,ARC Challenge,1172,100,1.555,0.6041,0.6169,0.6315,0.6259,0.6317,0.0128,0.0274,0.0218,0.0276,0.3885,0.0853
+open-llm-leaderboard/details_euclaise__Ferret-7B,ARC Challenge,ARC Challenge,1172,100,0.5859,0.6229,0.6485,0.674,0.6637,0.6734,0.0256,0.0511,0.0409,0.0506,0.3885,0.0853
+open-llm-leaderboard/details_PeanutJar__Mistral-v0.1-PeanutButter-v0.0.2-7B,ARC Challenge,ARC Challenge,1172,100,1.1129,0.6177,0.6399,0.6425,0.6412,0.642,0.0222,0.0248,0.0235,0.0243,0.3885,0.0853
+open-llm-leaderboard/details_glaiveai__glaive-coder-7b,ARC Challenge,ARC Challenge,1172,100,0.1923,0.4266,0.3857,0.3998,0.395,0.4009,0.041,0.0269,0.0317,0.0257,0.3885,0.0853
+open-llm-leaderboard/details_oh-yeontaek__llama-2-13B-LoRA-assemble,ARC Challenge,ARC Challenge,1172,100,-2.1449,0.6357,0.6348,0.6469,0.642,0.6465,0.0009,0.0112,0.0063,0.0109,0.3885,0.0853
+open-llm-leaderboard/details_Danielbrdz__Barcenas-13b,ARC Challenge,ARC Challenge,1172,100,-1.624,0.6126,0.6109,0.6283,0.6211,0.6276,0.0017,0.0157,0.0085,0.0149,0.3885,0.0853
+open-llm-leaderboard/details_JosephusCheung__Pwen-14B-Chat-20_30,ARC Challenge,ARC Challenge,1172,100,-0.1034,0.5614,0.5853,0.5734,0.578,0.5733,0.0239,0.0119,0.0165,0.0118,0.3885,0.0853
+open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,ARC Challenge,ARC Challenge,1172,100,0.0969,0.5384,0.541,0.5503,0.5461,0.5494,0.0026,0.0119,0.0077,0.011,0.3885,0.0853
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down,ARC Challenge,ARC Challenge,1172,100,-1.5829,0.587,0.6109,0.6019,0.6053,0.6017,0.0239,0.0148,0.0182,0.0146,0.3885,0.0853
+open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-v1.2,ARC Challenge,ARC Challenge,1172,100,-3.022,0.6092,0.6015,0.5971,0.5995,0.5982,0.0077,0.0121,0.0097,0.011,0.3885,0.0853
+open-llm-leaderboard/details_mncai__Llama2-7B-guanaco-1k,ARC Challenge,ARC Challenge,1172,100,3.817,0.5512,0.5469,0.5542,0.5509,0.5534,0.0043,0.003,0.0003,0.0022,0.3885,0.0853
+open-llm-leaderboard/details_wei123602__llama2-13b-FINETUNE3_TEST,ARC Challenge,ARC Challenge,1172,100,-0.4388,0.5367,0.5222,0.54,0.5329,0.5397,0.0145,0.0033,0.0038,0.003,0.3885,0.0853
+open-llm-leaderboard/details_heegyu__RedTulu-Uncensored-3B-0719,ARC Challenge,ARC Challenge,1172,100,0.5259,0.4002,0.3985,0.3926,0.3943,0.3916,0.0017,0.0076,0.0059,0.0085,0.3885,0.0853
+open-llm-leaderboard/details_jarradh__llama2_70b_chat_uncensored,ARC Challenge,ARC Challenge,1172,100,-0.6318,0.6843,0.6869,0.6926,0.6901,0.6922,0.0026,0.0083,0.0058,0.0079,0.3885,0.0853
+open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,ARC Challenge,ARC Challenge,1172,100,-1.0233,0.6092,0.5904,0.5961,0.5935,0.5954,0.0188,0.0131,0.0157,0.0138,0.3885,0.0853
+open-llm-leaderboard/details_pe-nlp__llama-2-13b-platypus-vicuna-wizard,ARC Challenge,ARC Challenge,1172,100,-1.0083,0.6126,0.6118,0.6243,0.619,0.6236,0.0009,0.0117,0.0064,0.011,0.3885,0.0853
+open-llm-leaderboard/details_elinas__chronos-13b-v2,ARC Challenge,ARC Challenge,1172,100,-1.1893,0.587,0.6118,0.6011,0.6058,0.6019,0.0247,0.0141,0.0187,0.0149,0.3885,0.0853
+open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,ARC Challenge,ARC Challenge,1172,100,1.349,0.4019,0.4411,0.4188,0.4275,0.4189,0.0392,0.0169,0.0256,0.017,0.3885,0.0853
