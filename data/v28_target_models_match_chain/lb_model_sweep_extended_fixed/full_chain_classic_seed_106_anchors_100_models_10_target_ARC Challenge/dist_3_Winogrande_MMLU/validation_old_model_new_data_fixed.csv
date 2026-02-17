@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_Locutusque__Rhino-Mistral-7B,ARC Challenge,ARC Challenge,1172,100,0.6929,0.4812,0.4556,0.4308,0.4476,0.433,0.0256,0.0505,0.0336,0.0482,0.6447,0.0853
+open-llm-leaderboard/details_chanwit__flux-7b-v0.1,ARC Challenge,ARC Challenge,1172,100,0.8729,0.6706,0.6689,0.5772,0.6384,0.5829,0.0017,0.0934,0.0323,0.0878,0.6447,0.0853
+open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,ARC Challenge,ARC Challenge,1172,100,0.8017,0.6792,0.68,0.6155,0.659,0.6209,0.0009,0.0637,0.0202,0.0583,0.6447,0.0853
+open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,ARC Challenge,ARC Challenge,1172,100,0.9685,0.6212,0.6442,0.5736,0.6212,0.5795,0.023,0.0476,0.0,0.0417,0.6447,0.0853
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r8-gate_up_down,ARC Challenge,ARC Challenge,1172,100,1.7497,0.5725,0.5631,0.5332,0.5529,0.5344,0.0094,0.0393,0.0196,0.0381,0.6447,0.0853
+open-llm-leaderboard/details_TheBloke__tulu-7B-fp16,ARC Challenge,ARC Challenge,1172,100,0.5102,0.5017,0.5051,0.4554,0.4885,0.4584,0.0034,0.0463,0.0132,0.0433,0.6447,0.0853
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_Fintune_1_17w-q_k_v_o_proj,ARC Challenge,ARC Challenge,1172,100,1.5955,0.5973,0.5717,0.5533,0.5656,0.5547,0.0256,0.0439,0.0316,0.0426,0.6447,0.0853
+open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,ARC Challenge,ARC Challenge,1172,100,0.7624,0.4019,0.3993,0.4067,0.4021,0.4071,0.0026,0.0048,0.0002,0.0053,0.6447,0.0853
+open-llm-leaderboard/details_openaccess-ai-collective__manticore-13b,ARC Challenge,ARC Challenge,1172,100,0.7541,0.587,0.5862,0.5298,0.5677,0.5341,0.0009,0.0572,0.0194,0.0529,0.6447,0.0853
+open-llm-leaderboard/details_shareAI__bimoGPT-llama2-13b,ARC Challenge,ARC Challenge,1172,100,1.8012,0.5879,0.6186,0.5922,0.6099,0.5942,0.0307,0.0044,0.022,0.0063,0.6447,0.0853

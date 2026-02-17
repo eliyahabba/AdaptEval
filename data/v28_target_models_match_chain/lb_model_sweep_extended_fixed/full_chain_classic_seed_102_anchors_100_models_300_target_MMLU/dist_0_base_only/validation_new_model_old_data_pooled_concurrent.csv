@@ -23,7 +23,7 @@ open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,GSM8K,GSM8K
 open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,GSM8K,GSM8K,1319,100,-1.5721,0.5095,0.5951,0.5887,0.5927,0.5885,0.0857,0.0792,0.0832,0.079,0.6282,0.0758
 open-llm-leaderboard/details_Walmart-the-bag__Solar-10.7B-Cato,GSM8K,GSM8K,1319,100,1.924,0.6459,0.6899,0.6691,0.6826,0.6702,0.044,0.0231,0.0367,0.0243,0.6282,0.0758
 open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,GSM8K,GSM8K,1319,100,-2.9796,0.0508,0.0432,0.0511,0.046,0.0507,0.0076,0.0003,0.0048,0.0001,0.6282,0.0758
-open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k,GSM8K,GSM8K,1319,100,808.8489,0.0311,0.0023,0.0271,0.0115,0.0271,0.0288,0.004,0.0196,0.004,0.6282,0.0758
+open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k,GSM8K,GSM8K,1319,100,868.2278,0.0311,0.0023,0.0272,0.0115,0.0272,0.0288,0.0039,0.0196,0.0039,0.6282,0.0758
 open-llm-leaderboard/details_spmurrayzzz__Mistral-Syndicate-7B,GSM8K,GSM8K,1319,100,-0.4593,0.4405,0.3647,0.3697,0.3668,0.3704,0.0758,0.0708,0.0737,0.0701,0.6282,0.0758
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,GSM8K,GSM8K,1319,100,1.3674,0.7005,0.7384,0.7212,0.7322,0.7216,0.0379,0.0206,0.0317,0.0211,0.6282,0.0758
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,GSM8K,GSM8K,1319,100,-1.2872,0.5459,0.5967,0.566,0.5858,0.5673,0.0508,0.0201,0.0399,0.0215,0.6282,0.0758

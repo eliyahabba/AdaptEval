@@ -77,7 +77,7 @@ open-llm-leaderboard/details_jondurbin__airoboros-7b,Winogrande,Winogrande,1267,
 open-llm-leaderboard/details_jondurbin__airoboros-33b-gpt4-m2.0,Winogrande,Winogrande,1267,100,-2.4179,0.7837,0.8587,0.8181,0.8583,0.8224,0.075,0.0343,0.0746,0.0387,0.9889,0.0789
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_Fintune_1_17w-q_k_v_o_proj,Winogrande,Winogrande,1267,100,-0.1462,0.7814,0.7845,0.7748,0.7844,0.7762,0.0032,0.0066,0.0031,0.0052,0.9889,0.0789
 open-llm-leaderboard/details_huggingface__llama-7b,Winogrande,Winogrande,1267,100,-0.0948,0.7143,0.6985,0.7495,0.6991,0.7482,0.0158,0.0352,0.0152,0.0339,0.9889,0.0789
-open-llm-leaderboard/details_togethercomputer__GPT-JT-6B-v0,Winogrande,Winogrande,1267,100,-1.7902,0.648,0.6456,0.6308,0.6454,0.6299,0.0024,0.0172,0.0025,0.0181,0.9889,0.0789
+open-llm-leaderboard/details_togethercomputer__GPT-JT-6B-v0,Winogrande,Winogrande,1267,100,-1.7903,0.648,0.6456,0.6308,0.6454,0.6299,0.0024,0.0172,0.0025,0.0181,0.9889,0.0789
 open-llm-leaderboard/details_huggingface__llama-30b,Winogrande,Winogrande,1267,100,-1.7321,0.8003,0.8256,0.8207,0.8255,0.8225,0.0253,0.0204,0.0252,0.0222,0.9889,0.0789
 open-llm-leaderboard/details_Aeala__GPT4-x-AlpacaDente2-30b,Winogrande,Winogrande,1267,100,-0.003,0.7814,0.753,0.7937,0.7534,0.793,0.0284,0.0123,0.028,0.0116,0.9889,0.0789
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_FINETUNE2_3w,Winogrande,Winogrande,1267,100,0.8881,0.768,0.7522,0.7343,0.752,0.7343,0.0158,0.0336,0.016,0.0337,0.9889,0.0789

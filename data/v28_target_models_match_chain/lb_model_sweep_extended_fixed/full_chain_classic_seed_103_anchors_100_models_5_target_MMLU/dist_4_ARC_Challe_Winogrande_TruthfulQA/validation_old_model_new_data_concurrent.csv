@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_Delcos__Velara-11B-V2,MMLU,MMLU,14042,100,0.4684,0.6268,0.6312,0.665,0.6571,0.6649,0.0043,0.0381,0.0303,0.038,0.2297,0.0071
+open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2.03,MMLU,MMLU,14042,100,-1.0331,0.6204,0.6036,0.645,0.6353,0.6448,0.0167,0.0247,0.015,0.0245,0.2297,0.0071
+open-llm-leaderboard/details_DopeorNope__LaOT,MMLU,MMLU,14042,100,-3.3866,0.4963,0.5046,0.5433,0.5343,0.5432,0.0083,0.047,0.038,0.0469,0.2297,0.0071
+open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,MMLU,MMLU,14042,100,-2.7561,0.4839,0.4681,0.5111,0.5011,0.511,0.0158,0.0272,0.0172,0.0271,0.2297,0.0071
+open-llm-leaderboard/details_heegyu__RedTulu-Uncensored-3B-0719,MMLU,MMLU,14042,100,-2.2897,0.2988,0.2075,0.3719,0.3335,0.3711,0.0913,0.0731,0.0347,0.0723,0.2297,0.0071

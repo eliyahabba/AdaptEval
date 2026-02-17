@@ -1,5 +1,5 @@
 model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_rombodawg__Leaderboard-killer-MoE_4x7b,TruthfulQA,TruthfulQA,817,100,0.0484,0.5075,0.4879,0.6048,0.5084,0.5963,0.0196,0.0973,0.0009,0.0888,0.8108,0.1224
+open-llm-leaderboard/details_rombodawg__Leaderboard-killer-MoE_4x7b,TruthfulQA,TruthfulQA,817,100,0.0485,0.5075,0.4879,0.6048,0.5084,0.5963,0.0196,0.0973,0.0009,0.0888,0.8108,0.1224
 open-llm-leaderboard/details_maywell__PiVoT-SUS-RP,TruthfulQA,TruthfulQA,817,100,1.2265,0.5457,0.5708,0.6478,0.585,0.6457,0.0252,0.1021,0.0393,0.1,0.8108,0.1224
 open-llm-leaderboard/details_macadeliccc__polyglot-math-4x7b,TruthfulQA,TruthfulQA,817,100,-0.1754,0.5378,0.5299,0.6161,0.5458,0.614,0.0079,0.0783,0.008,0.0762,0.8108,0.1224
 open-llm-leaderboard/details_Locutusque__Rhino-Mistral-7B,TruthfulQA,TruthfulQA,817,100,-0.226,0.459,0.4249,0.4384,0.4282,0.4421,0.034,0.0206,0.0308,0.0169,0.8108,0.1224

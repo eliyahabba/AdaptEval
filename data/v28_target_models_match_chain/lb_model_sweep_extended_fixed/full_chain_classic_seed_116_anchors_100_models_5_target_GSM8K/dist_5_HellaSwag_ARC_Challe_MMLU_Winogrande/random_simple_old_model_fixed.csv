@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_UCLA-AGI__test,1,0.0214,0.0,0.33,0.0,0.3086,0.0
+open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,1,0.0492,0.0,0.1,0.0,0.0508,0.0
+open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,1,0.0592,0.0,0.37,0.0,0.3108,0.0
+open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3,1,0.0549,0.0,0.6,0.0,0.5451,0.0
+open-llm-leaderboard/details_JosephusCheung__Pwen-14B-Chat-20_30,1,0.0001,0.0,0.27,0.0,0.2699,0.0

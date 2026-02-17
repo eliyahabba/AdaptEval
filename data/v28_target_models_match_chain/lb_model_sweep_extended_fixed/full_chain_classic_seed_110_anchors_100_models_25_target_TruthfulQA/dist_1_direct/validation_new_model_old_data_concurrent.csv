@@ -6,7 +6,7 @@ open-llm-leaderboard/details_Locutusque__Rhino-Mistral-7B,Winogrande,Winogrande,
 open-llm-leaderboard/details_Weyaxi__Bagel-Hermes-2x34b,Winogrande,Winogrande,1267,100,2.4179,0.8477,0.9021,0.8126,0.9014,0.8195,0.0545,0.0351,0.0538,0.0282,0.9916,0.0789
 open-llm-leaderboard/details_macadeliccc__laser-dolphin-mixtral-2x7b-dpo,Winogrande,Winogrande,1267,100,2.8658,0.7901,0.7601,0.7536,0.76,0.7539,0.03,0.0365,0.03,0.0361,0.9916,0.0789
 open-llm-leaderboard/details_Weyaxi__Bagel-Hermes-34B-Slerp,Winogrande,Winogrande,1267,100,2.0969,0.8437,0.8848,0.8287,0.8843,0.832,0.041,0.0151,0.0406,0.0118,0.9916,0.0789
-open-llm-leaderboard/details_Weyaxi__Helion-4x34B,Winogrande,Winogrande,1267,100,6.0208,0.8437,0.8816,0.8541,0.8814,0.8542,0.0379,0.0104,0.0377,0.0105,0.9916,0.0789
+open-llm-leaderboard/details_Weyaxi__Helion-4x34B,Winogrande,Winogrande,1267,100,6.0206,0.8437,0.8816,0.8541,0.8814,0.8542,0.0379,0.0104,0.0377,0.0105,0.9916,0.0789
 open-llm-leaderboard/details_chanwit__flux-7b-v0.1,Winogrande,Winogrande,1267,100,7.7934,0.7901,0.8043,0.7952,0.8042,0.796,0.0142,0.0052,0.0141,0.006,0.9916,0.0789
 open-llm-leaderboard/details_hywu__Camelidae-8x13B,Winogrande,Winogrande,1267,100,1.1209,0.7735,0.7853,0.7842,0.7853,0.7837,0.0118,0.0107,0.0118,0.0103,0.9916,0.0789
 open-llm-leaderboard/details_RatanRohith__MistralBeagle-RS-7B-V0.1,Winogrande,Winogrande,1267,100,1.6005,0.8169,0.824,0.7368,0.8233,0.7458,0.0071,0.0801,0.0064,0.071,0.9916,0.0789

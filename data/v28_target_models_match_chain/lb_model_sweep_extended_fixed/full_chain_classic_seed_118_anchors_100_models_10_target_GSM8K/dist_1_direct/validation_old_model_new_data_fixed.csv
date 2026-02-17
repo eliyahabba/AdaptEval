@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_h2m__mhm-7b-v1.3,GSM8K,GSM8K,1319,100,1.881,0.1668,0.1812,0.2176,0.1826,0.2188,0.0144,0.0508,0.0158,0.052,0.9629,0.0758
+open-llm-leaderboard/details_HenryJJ__dolphin-2.6-mistral-7b-dpo-orca-v3,GSM8K,GSM8K,1319,100,4.61,0.2555,0.2282,0.2416,0.2287,0.2409,0.0273,0.0139,0.0268,0.0146,0.9629,0.0758
+open-llm-leaderboard/details_rombodawg__Open_Gpt4_8x7B,GSM8K,GSM8K,1319,100,2.5724,0.5921,0.6149,0.628,0.6153,0.6274,0.0227,0.0359,0.0232,0.0353,0.9629,0.0758
+open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,GSM8K,GSM8K,1319,100,2.4578,0.492,0.508,0.5684,0.5101,0.567,0.0159,0.0764,0.0181,0.0749,0.9629,0.0758
+open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,GSM8K,GSM8K,1319,100,3.1194,0.1387,0.1175,0.1496,0.1187,0.1492,0.0212,0.0108,0.0201,0.0104,0.9629,0.0758
+open-llm-leaderboard/details_oh-yeontaek__llama-2-13B-LoRA-assemble,GSM8K,GSM8K,1319,100,3.9449,0.0842,0.0675,0.0952,0.0685,0.0948,0.0167,0.011,0.0157,0.0107,0.9629,0.0758
+open-llm-leaderboard/details_Envoid__Libra-19B,GSM8K,GSM8K,1319,100,3.6707,0.0008,0.0,0.0101,0.0003,0.0091,0.0008,0.0093,0.0004,0.0084,0.9629,0.0758
+open-llm-leaderboard/details_chargoddard__llama2-22b-blocktriangular,GSM8K,GSM8K,1319,100,5.4279,0.1122,0.1046,0.1093,0.1048,0.1089,0.0076,0.0029,0.0074,0.0033,0.9629,0.0758
+open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,GSM8K,GSM8K,1319,100,3.5737,0.1221,0.1312,0.1576,0.1321,0.1576,0.0091,0.0355,0.0101,0.0355,0.9629,0.0758
+open-llm-leaderboard/details_clibrain__Llama-2-7b-ft-instruct-es,GSM8K,GSM8K,1319,100,4.2652,0.0569,0.0569,0.0661,0.0572,0.0669,0.0,0.0092,0.0004,0.0101,0.9629,0.0758

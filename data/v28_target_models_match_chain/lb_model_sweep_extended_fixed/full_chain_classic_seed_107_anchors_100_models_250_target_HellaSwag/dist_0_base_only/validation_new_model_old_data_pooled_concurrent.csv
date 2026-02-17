@@ -17,8 +17,8 @@ open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,Winogrande,Winogrande
 open-llm-leaderboard/details_AdaptLLM__finance-chat,Winogrande,Winogrande,1267,100,-0.5137,0.7569,0.7932,0.7864,0.793,0.7866,0.0363,0.0295,0.0361,0.0297,0.969,0.0789
 open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,Winogrande,Winogrande,1267,100,0.7986,0.8335,0.82,0.834,0.8204,0.8317,0.0134,0.0006,0.0131,0.0018,0.969,0.0789
 open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,Winogrande,Winogrande,1267,100,3.4599,0.7822,0.824,0.8048,0.8234,0.8064,0.0418,0.0226,0.0413,0.0242,0.969,0.0789
-open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,Winogrande,Winogrande,1267,100,189.1005,0.8161,0.8051,0.8112,0.8052,0.8112,0.011,0.0049,0.0109,0.0049,0.969,0.0789
-open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,Winogrande,Winogrande,1267,100,260.8247,0.8343,0.8516,0.8293,0.8509,0.8293,0.0174,0.005,0.0167,0.005,0.969,0.0789
+open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,Winogrande,Winogrande,1267,100,189.1973,0.8161,0.8051,0.8112,0.8052,0.8112,0.011,0.0049,0.0109,0.0049,0.969,0.0789
+open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,Winogrande,Winogrande,1267,100,262.3131,0.8343,0.8516,0.8293,0.8509,0.8293,0.0174,0.005,0.0167,0.005,0.969,0.0789
 open-llm-leaderboard/details_HenryJJ__Instruct_Mistral-7B-v0.1_Dolly15K,Winogrande,Winogrande,1267,100,1.2981,0.7932,0.7995,0.7741,0.7988,0.7762,0.0063,0.0191,0.0056,0.017,0.969,0.0789
 open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2.1-mistral-7b,Winogrande,Winogrande,1267,100,4.6385,0.7861,0.8129,0.8131,0.813,0.8133,0.0268,0.027,0.0268,0.0271,0.969,0.0789
 open-llm-leaderboard/details_decapoda-research__Antares-11b-v1,Winogrande,Winogrande,1267,100,1.0555,0.8295,0.8145,0.8249,0.8148,0.8247,0.015,0.0046,0.0147,0.0048,0.969,0.0789
@@ -31,7 +31,7 @@ open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,W
 open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,Winogrande,Winogrande,1267,100,3.8582,0.8374,0.8611,0.831,0.8602,0.8322,0.0237,0.0064,0.0228,0.0052,0.969,0.0789
 open-llm-leaderboard/details_Zangs3011__mistral_7b_DolphinCoder,Winogrande,Winogrande,1267,100,1.2105,0.7459,0.7159,0.7341,0.7164,0.7338,0.03,0.0117,0.0294,0.012,0.969,0.0789
 open-llm-leaderboard/details_KaeriJenti__Kaori-34B-v1,Winogrande,Winogrande,1267,100,-0.7583,0.7695,0.7553,0.7773,0.7559,0.7726,0.0142,0.0077,0.0137,0.0031,0.969,0.0789
-open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,Winogrande,Winogrande,1267,100,260.8247,0.8335,0.8516,0.8293,0.8509,0.8293,0.0182,0.0042,0.0175,0.0042,0.969,0.0789
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,Winogrande,Winogrande,1267,100,262.3131,0.8335,0.8516,0.8293,0.8509,0.8293,0.0182,0.0042,0.0175,0.0042,0.969,0.0789
 open-llm-leaderboard/details_martyn__llama2-megamerge-dare-13b-v2,Winogrande,Winogrande,1267,100,-0.6289,0.7553,0.7901,0.7787,0.7897,0.7779,0.0347,0.0234,0.0344,0.0226,0.969,0.0789
 open-llm-leaderboard/details_Mihaiii__Metis-0.1,Winogrande,Winogrande,1267,100,1.5135,0.7727,0.7924,0.7565,0.7914,0.7589,0.0197,0.0162,0.0187,0.0138,0.969,0.0789
 open-llm-leaderboard/details_abhinand__tamil-llama-13b-instruct-v0.1,Winogrande,Winogrande,1267,100,-0.9788,0.7656,0.7751,0.791,0.7756,0.7915,0.0095,0.0254,0.01,0.026,0.969,0.0789
