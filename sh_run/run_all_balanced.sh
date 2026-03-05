@@ -72,20 +72,27 @@ is_experiment_complete() {
     local target="$4"
     local models="$5"
     
-    # Build expected directory name (same logic as run_chain_linking_unified.sh)
-    local dir_name="full_chain_classic_seed_${seed}_anchors_${anchors}"
+    # Build expected directory name base (same logic as run_chain_linking_unified.sh)
+    local dir_base="full_chain_classic_seed_${seed}_anchors_${anchors}"
     if [ -n "$models" ]; then
-        dir_name="${dir_name}_models_${models}"
+        dir_base="${dir_base}_models_${models}"
     fi
+
+    # Handle both target naming variants:
+    # - raw target name (current run_chain_linking_unified.sh behavior)
+    # - underscored target name (historical/other scripts)
     if [ -n "$target" ]; then
-        # Replace spaces with underscores for directory name
         local target_clean="${target// /_}"
-        dir_name="${dir_name}_target_${target_clean}"
+        local full_path_raw="${output_dir}/${dir_base}_target_${target}"
+        local full_path_clean="${output_dir}/${dir_base}_target_${target_clean}"
+
+        if [ -f "${full_path_raw}/all_results.csv" ] || [ -f "${full_path_clean}/all_results.csv" ]; then
+            return 0  # Complete
+        fi
+        return 1  # Incomplete or missing
     fi
-    
-    local full_path="${output_dir}/${dir_name}"
-    
-    # Check if all_results.csv exists (experiment complete)
+
+    local full_path="${output_dir}/${dir_base}"
     if [ -f "${full_path}/all_results.csv" ]; then
         return 0  # Complete
     fi
@@ -160,6 +167,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                 submit_job sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                     --output-dir ${BASE_DIR}/lb_baseline_fixed \
                     --preset lb_standard \
+                    --shuffle-seed $RUN_SEED \
                     --seed $RUN_SEED \
                     --target "$target" \
                     --random-seed 1000 \
@@ -191,6 +199,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --output-dir ${BASE_DIR}/lb_anchor_sweep_controlled \
                     --preset lb_standard \
                     --n-anchors $anchors \
+                    --shuffle-seed $TARGET_SEED \
                     --seed $TARGET_SEED \
                     --target "$target" \
                     --random-seed $((1000 + anchors)) \
@@ -221,6 +230,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
                     --output-dir ${BASE_DIR}/lb_model_sweep_controlled \
                     --preset lb_standard \
                     --n-models $models \
+                    --shuffle-seed $TARGET_SEED \
                     --seed $TARGET_SEED \
                     --target "$target" \
                     --random-seed $((2000 + models)) \
@@ -256,6 +266,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
             submit_job sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/helm_lite_baseline \
                 --preset helm_lite_base1 \
+                --shuffle-seed $seed \
                 --seed $seed \
                 --random-seed 1000 \
                 $SKIP_EXISTING $FORCE_RESUME
@@ -275,6 +286,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "2" ]; then
             submit_job sbatch $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/helm_lite_base4 \
                 --preset helm_lite_base4 \
+                --shuffle-seed $seed \
                 --seed $seed \
                 --random-seed 3000 \
                 $SKIP_EXISTING $FORCE_RESUME
@@ -306,6 +318,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
             submit_job sbatch --mem=8g --time=10:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                 --output-dir ${BASE_DIR}/mmlu_baseline \
                 --preset mmlu_fields \
+                --shuffle-seed $seed \
                 --seed $seed \
                 --random-seed 1000 \
                 $SKIP_EXISTING $FORCE_RESUME
@@ -403,6 +416,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "5" ]; then
                         --output-dir ${BASE_DIR}/lb_model_sweep_extended_fixed \
                         --preset lb_standard \
                         --n-models $models \
+                        --shuffle-seed $RUN_SEED \
                         --seed $RUN_SEED \
                         --target "$target" \
                         --random-seed $((3000 + models)) \
@@ -452,6 +466,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
                     --output-dir ${BASE_DIR}/mmlu_model_sweep_extended_fixed \
                     --preset mmlu_fields \
                     --n-models $models \
+                    --shuffle-seed $RUN_SEED \
                     --seed $RUN_SEED \
                     --random-seed $((4000 + models)) \
                     $SKIP_EXISTING $FORCE_RESUME
@@ -504,6 +519,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
                         --output-dir ${BASE_DIR}/helm_lite_model_sweep_extended_fixed \
                         --preset helm_lite_base1 \
                         --n-models $models \
+                        --shuffle-seed $RUN_SEED \
                         --seed $RUN_SEED \
                         --target "$target" \
                         --random-seed $((5000 + models)) \

@@ -26,7 +26,7 @@
 #
 # Usage Examples:
 #   # Basic usage
-#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --shuffle-seed 11 --seed 11
 #
 #   # Override SLURM resources for MMLU
 #   sbatch --mem=8g --time=24:0:0 run_chain_linking_unified.sh \
@@ -36,10 +36,10 @@
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --n-anchors 50
 #
 #   # Skip experiments where directory already exists (any experiment with that seed)
-#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11 --skip-existing
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --shuffle-seed 11 --seed 11 --skip-existing
 #
 #   # Resume incomplete experiments (skip COMPLETED ones with all_results.csv, resume incomplete)
-#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --seed 11 --force-resume
+#   sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standard --shuffle-seed 11 --seed 11 --force-resume
 #
 #   # Fully custom (no preset)
 #   sbatch run_chain_linking_unified.sh --output-dir data/v24_custom --data-source lb --n-anchors 100
@@ -195,7 +195,18 @@ while [[ $# -gt 0 ]]; do
             EXPERIMENT_TYPE="$2"
             shift 2
             ;;
-        --seed|--shuffle-seed)
+        --seed)
+            # Backward-compatible behavior:
+            # - seed controls model split/random sampling in Python
+            # - if shuffle seed is not explicitly provided, keep historical behavior
+            #   where --seed also controlled dataset shuffle/target selection
+            SEED="$2"
+            if [ -z "$SHUFFLE_SEED" ]; then
+                SHUFFLE_SEED="$2"
+            fi
+            shift 2
+            ;;
+        --shuffle-seed)
             SHUFFLE_SEED="$2"
             shift 2
             ;;
@@ -307,6 +318,7 @@ if [ -n "$PRESET" ]; then
     
     # Store CLI arguments before loading preset
     CLI_SHUFFLE_SEED="$SHUFFLE_SEED"
+    CLI_SEED="$SEED"
     CLI_DATA_SOURCE_MODE="$DATA_SOURCE_MODE"
     CLI_N_BASE="$N_BASE"
     CLI_MAX_CHAIN="$MAX_CHAIN"
@@ -321,6 +333,7 @@ if [ -n "$PRESET" ]; then
     
     # Override preset with CLI arguments if provided
     [ -n "$CLI_SHUFFLE_SEED" ] && SHUFFLE_SEED="$CLI_SHUFFLE_SEED"
+    [ -n "$CLI_SEED" ] && SEED="$CLI_SEED"
     [ -n "$CLI_DATA_SOURCE_MODE" ] && DATA_SOURCE_MODE="$CLI_DATA_SOURCE_MODE"
     [ -n "$CLI_N_BASE" ] && N_BASE="$CLI_N_BASE"
     [ -n "$CLI_MAX_CHAIN" ] && MAX_CHAIN="$CLI_MAX_CHAIN"
@@ -487,8 +500,8 @@ echo "Output: ${OUTPUT_DIR}"
 echo ""
 echo "Parameters:"
 echo "  DATA_SOURCE_MODE: $DATA_SOURCE_MODE"
-echo "  SHUFFLE_SEED: $SHUFFLE_SEED (controls dataset order & model splits)"
-echo "  SEED: $SEED (base random seed)"
+echo "  SHUFFLE_SEED: $SHUFFLE_SEED (controls dataset order / target selection)"
+echo "  SEED: $SEED (controls model splits and task-level random sampling)"
 echo "  RANDOM_SEED: $RANDOM_SEED (for random baseline scenarios)"
 echo "  N_BASE: $N_BASE"
 echo "  MAX_CHAIN: $MAX_CHAIN"

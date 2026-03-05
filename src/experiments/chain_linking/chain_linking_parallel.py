@@ -273,6 +273,7 @@ class ParallelChainConfig(ExperimentConfig):
     data_source_mode: str = "helm_lite"
     filter_zero_variance: bool = False
     validate_dimensions: bool = True
+    compare_anchor_methods: bool = False  # Compare IRT vs correctness clustering
     epochs: int = 2000
     epochs_fixed: int = 1000
     n_anchors_per_dataset: int = 100
@@ -326,21 +327,21 @@ class ScenarioTask:
     chain_list: list
     chain_str: str
     scenario_dir: str
-    
+
     # Data (will be serialized/deserialized)
     final_df_path: str  # Path to pickled DataFrame
     target_test_df_path: str
     base_chain_test_df_path: str | None  # Path to test models' responses on Base+Chain (for cross-dataset theta)
     target_train_df_path: str | None  # Path to train models' responses on Target (for old model + new data)
     target_all_train_df_path: str | None  # Path to ALL train_models' responses on Target (for linking generalization test)
-    
+
     # IRT parameters (for Fixed-Anchor)
     prev_irt_path: str | None  # Path to pickled IRT params
     prev_A_path: str | None
     prev_B_path: str | None
     prev_anchors: list | None
     prev_weights: list | None
-    
+
     # Config values
     dims: list[int]
     epochs: int
@@ -354,9 +355,13 @@ class ScenarioTask:
     train_models: list  # Serialized as list (for old model validation - chain_train_models)
     all_train_models: list  # ALL train_models for linking generalization test
     seed: int  # Base seed for random sampling
-    
+    cleanup_training_data: bool  # Whether to delete training jsonlines after training
+
     # Timing info
     cumulative_chain_time: float
+
+    # Research mode: compare anchor selection methods
+    compare_anchor_methods: bool = False
 
 
 def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
@@ -464,7 +469,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # Clean up training datasets immediately after training (saves ~88% space)
     # Only keep item_params.parquet and metadata - training data no longer needed
-    if output_dir.exists():
+    if task.cleanup_training_data and output_dir.exists():
         freed_bytes = cleanup_training_datasets(output_dir)
         if freed_bytes > 0:
             freed_mb = freed_bytes / (1024 * 1024)
@@ -487,34 +492,84 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Note: We need BOTH:
     #   - all_anchors (Base+Chain+Target) for Validation 1 & 2
     #   - prev_anchors (Base+Chain only) for Validation 3 (to avoid "cheating" with Target)
-    
-    if task.method == 'concurrent':
-        # Concurrent: Re-select ALL anchors from the new IRT (not from cache)
-        # This is the correct behavior since we trained a completely new IRT model
-        
-        # First, select anchors from ALL datasets (including Target)
-        all_anchors, all_weights = select_anchors(
-            irt_params, task.n_anchors_per_dataset, final_df, A_matrix, B_matrix
-        )
-        
-        # For Validation 3: we need Base+Chain anchors only (without Target)
-        # Filter out Target anchors from all_anchors
-        target_prefix = f"{task.target_name}:"
-        prev_anchors = [a for a in all_anchors if not str(a).startswith(target_prefix)]
-        prev_weights = [w for a, w in zip(all_anchors, all_weights) if not str(a).startswith(target_prefix)]
-    else:
-        # Fixed: use prev_anchors (from cache) + new target anchors
-        # This maintains the frozen anchor selection from previous steps
-        target_anchors, target_weights = select_anchors_for_dataset(
-            irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix
-        )
-        if prev_anchors is not None:
-            all_anchors = list(prev_anchors) + target_anchors
-            all_weights = list(prev_weights) + target_weights
+
+    # Check if we should compare anchor methods (research mode)
+    compare_methods = getattr(task, 'compare_anchor_methods', False)
+
+    if compare_methods:
+        print(f"      Task {task.task_id}: Comparing anchor selection methods...")
+
+        if task.method == 'concurrent':
+            # Run both clustering methods and compare
+            all_anchors_dict, all_weights_dict = select_anchors_comparison(
+                irt_params, task.n_anchors_per_dataset, final_df, A_matrix, B_matrix
+            )
+
+            # For now, use IRT clustering as default but run validations for both
+            all_anchors = all_anchors_dict['irt_clustering']
+            all_weights = all_weights_dict['irt_clustering']
+
+            # Store both sets for comparison
+            all_anchors_comparison = all_anchors_dict
+            all_weights_comparison = all_weights_dict
         else:
-            all_anchors = target_anchors
-            all_weights = target_weights
-        # prev_anchors stays as passed from task (from cache)
+            # Fixed method comparison - use IRT clustering for now
+            target_anchors, target_weights = select_anchors_for_dataset(
+                irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix
+            )
+            if prev_anchors is not None:
+                all_anchors = list(prev_anchors) + target_anchors
+                all_weights = list(prev_weights) + target_weights
+            else:
+                all_anchors = target_anchors
+                all_weights = target_weights
+            all_anchors_comparison = None
+            all_weights_comparison = None
+    else:
+        # Standard mode - use IRT clustering only
+        if task.method == 'concurrent':
+            # Concurrent: Re-select ALL anchors from the new IRT (not from cache)
+            # This is the correct behavior since we trained a completely new IRT model
+
+            # First, select anchors from ALL datasets (including Target)
+            all_anchors, all_weights = select_anchors(
+                irt_params, task.n_anchors_per_dataset, final_df, A_matrix, B_matrix
+            )
+
+            all_anchors_comparison = None
+            all_weights_comparison = None
+
+        else:
+            # Fixed: use prev_anchors (from cache) + new target anchors
+            # This maintains the frozen anchor selection from previous steps
+            target_anchors, target_weights = select_anchors_for_dataset(
+                irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix
+            )
+            if prev_anchors is not None:
+                all_anchors = list(prev_anchors) + target_anchors
+                all_weights = list(prev_weights) + target_weights
+            else:
+                all_anchors = target_anchors
+                all_weights = target_weights
+            all_anchors_comparison = None
+            all_weights_comparison = None
+
+    # For Validation 3: we need Base+Chain anchors only (without Target)
+    # Filter out Target anchors from all_anchors
+    target_prefix = f"{task.target_name}:"
+    prev_anchors = [a for a in all_anchors if not str(a).startswith(target_prefix)]
+    prev_weights = [w for a, w in zip(all_anchors, all_weights) if not str(a).startswith(target_prefix)]
+
+    # Also filter comparison anchors if they exist
+    prev_anchors_comparison = None
+    prev_weights_comparison = None
+    if all_anchors_comparison is not None:
+        prev_anchors_comparison = {}
+        prev_weights_comparison = {}
+        for method, anchors in all_anchors_comparison.items():
+            weights = all_weights_comparison[method]
+            prev_anchors_comparison[method] = [a for a in anchors if not str(a).startswith(target_prefix)]
+            prev_weights_comparison[method] = [w for a, w in zip(anchors, weights) if not str(a).startswith(target_prefix)]
 
     # Paper-grade sanity: ensure every dataset we evaluate has enough LOCAL anchors (prefix-based).
     datasets_to_check = set()
@@ -581,7 +636,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # ==========================================================================
     validation_results = []
     validation_df = None
+    validation_comparison_results = {}  # Store results for both methods
+
     if task.distance >= 1:  # Only run if target is involved
+        # Run validation with primary anchors (IRT clustering by default)
         validation_results = run_validation(
             test_df=target_test_df,
             item_params=irt_params,
@@ -593,6 +651,36 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             precomputed_thetas=precomputed_thetas,
         )
         validation_df = pd.DataFrame(validation_results) if validation_results else None
+
+        # If in comparison mode, run validation for both anchor methods
+        if all_anchors_comparison is not None and prev_anchors_comparison is not None:
+            print(f"      Task {task.task_id}: Running Validation 1 comparison...")
+            for method in ['irt_clustering', 'correctness_clustering']:
+                method_anchors = all_anchors_comparison[method]
+                method_weights = all_weights_comparison[method]
+
+                # Recompute thetas for this method
+                method_thetas = precompute_thetas_from_all_anchors(
+                    test_df=test_df,
+                    item_params=irt_params,
+                    anchor_ids=method_anchors,
+                    A_matrix=A_matrix,
+                    B_matrix=B_matrix,
+                )
+
+                method_results = run_validation(
+                    test_df=target_test_df,
+                    item_params=irt_params,
+                    anchor_ids=method_anchors,
+                    anchor_weights=method_weights,
+                    train_df=final_df,
+                    A_matrix=A_matrix,
+                    B_matrix=B_matrix,
+                    precomputed_thetas=method_thetas,
+                )
+
+                if method_results:
+                    validation_comparison_results[f'validation_1_{method}'] = pd.DataFrame(method_results)
     
     # ==========================================================================
     # Validation 2: Old Models + New Dataset (train_models on target)
@@ -669,6 +757,8 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Uses only Base+Chain anchors for theta estimation (no Target "cheating")
     # ==========================================================================
     val_test_on_base_df = None
+    validation_3_comparison_results = {}  # Store comparison results
+
     if base_chain_test_df is not None and len(base_chain_test_df) > 0 and prev_anchors is not None:
         test_on_base_results = run_validation(
             test_df=base_chain_test_df,
@@ -681,6 +771,37 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             precomputed_thetas=precomputed_thetas_base_chain,  # Theta without Target
         )
         val_test_on_base_df = pd.DataFrame(test_on_base_results) if test_on_base_results else None
+
+        # If in comparison mode, run Validation 3 for both anchor methods
+        if prev_anchors_comparison is not None and prev_weights_comparison is not None:
+            print(f"      Task {task.task_id}: Running Validation 3 comparison...")
+            for method in ['irt_clustering', 'correctness_clustering']:
+                method_prev_anchors = prev_anchors_comparison[method]
+                method_prev_weights = prev_weights_comparison[method]
+
+                if method_prev_anchors:  # Only if we have anchors for this method
+                    # Recompute thetas for this method (Base+Chain only)
+                    method_thetas_base_chain = precompute_thetas_from_all_anchors(
+                        test_df=base_chain_test_df,
+                        item_params=irt_params,
+                        anchor_ids=method_prev_anchors,
+                        A_matrix=A_matrix,
+                        B_matrix=B_matrix,
+                    )
+
+                    method_results = run_validation(
+                        test_df=base_chain_test_df,
+                        item_params=irt_params,
+                        anchor_ids=method_prev_anchors,
+                        anchor_weights=method_prev_weights,
+                        train_df=final_df,
+                        A_matrix=A_matrix,
+                        B_matrix=B_matrix,
+                        precomputed_thetas=method_thetas_base_chain,
+                    )
+
+                    if method_results:
+                        validation_3_comparison_results[f'validation_3_{method}'] = pd.DataFrame(method_results)
     
     # ==========================================================================
     # Validation 3 POOLED: IRT with N anchors from combined Base+Chain pool
@@ -751,7 +872,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             train_df=final_df,
             A_matrix=A_matrix,
             B_matrix=B_matrix,
-            precomputed_thetas=precomputed_thetas,
+            precomputed_thetas=None,  # Keep baseline truly random (theta from random anchors)
             n_seeds=1,
             base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
             return_per_model=True,
@@ -783,7 +904,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             train_df=final_df,
             A_matrix=A_matrix,
             B_matrix=B_matrix,
-            precomputed_thetas=precomputed_thetas_train,
+            precomputed_thetas=None,  # Keep baseline truly random (theta from random anchors)
             n_seeds=1,
             base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
             return_per_model=True,
@@ -815,7 +936,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             train_df=final_df,
             A_matrix=A_matrix,
             B_matrix=B_matrix,
-            precomputed_thetas=precomputed_thetas_all_train,
+            precomputed_thetas=None,  # Keep baseline truly random (theta from random anchors)
             n_seeds=1,
             base_seed=task.random_seed + task.distance * 100 + 500,  # Different seed offset
             return_per_model=True,
@@ -855,7 +976,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 train_df=final_df,
                 A_matrix=A_matrix,
                 B_matrix=B_matrix,
-                precomputed_thetas=precomputed_thetas_base_chain,
+                precomputed_thetas=None,  # Keep baseline truly random (theta from random anchors)
                 n_seeds=1,
                 base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
                 return_per_model=True,
@@ -1225,6 +1346,35 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     for key, val in proportional_random_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
 
+    # Add comparison results if they exist
+    if validation_comparison_results:
+        for key, df in validation_comparison_results.items():
+            if df is not None and len(df) > 0:
+                # Add mean metrics for comparison methods
+                for metric in ERROR_METRICS:
+                    if metric in df.columns:
+                        vals = df[metric].dropna()
+                        if len(vals) > 0:
+                            result[f'{key}_{metric}_mean'] = vals.mean()
+                            result[f'{key}_{metric}_std'] = vals.std()
+
+    if validation_3_comparison_results:
+        for key, df in validation_3_comparison_results.items():
+            if df is not None and len(df) > 0:
+                # Add mean-of-means for Validation 3 comparisons (like the main validation)
+                ds_col = None
+                for col in ['dataset', 'dataset_name', 'scenario_name']:
+                    if col in df.columns:
+                        ds_col = col
+                        break
+
+                if ds_col is not None:
+                    for metric in ERROR_METRICS:
+                        if metric in df.columns:
+                            means = df.groupby(ds_col)[metric].mean()
+                            result[f'{key}_{metric}_mean'] = means.mean()
+                            result[f'{key}_{metric}_std'] = means.std()
+
     # Backward compatibility - also add without prefix for main metric
     if validation_df is not None and len(validation_df) > 0:
         result['n_test_models'] = len(validation_df)
@@ -1347,7 +1497,11 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     print("Chain Linking PARALLEL B - Full Scenario Parallelization")
     print("=" * 70)
     print(f"Workers: {config.num_workers}")
-    
+
+    if config.compare_anchor_methods:
+        print("🔬 RESEARCH MODE: Comparing anchor selection methods")
+        print("   - IRT clustering vs Correctness clustering")
+
     if DEBUG_MODE:
         print("\n⚠️  DEBUG MODE ACTIVE")
         print(f"    n_base={config.n_base_datasets}, max_chain={config.max_chain_length}, "
@@ -1444,6 +1598,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     config_dict = {
         'n_base_datasets': config.n_base_datasets,
         'max_chain_length': config.max_chain_length,
+        'seed': config.seed,
         'shuffle_seed': config.shuffle_seed,  # Actual seed used for dataset selection
         'num_workers': config.num_workers,
         'epochs': config.epochs,
@@ -1467,8 +1622,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     base_models_list = sorted(list(base_models))
 
-    # Use shuffle_seed for model splitting - ensures different seeds give different splits
-    np.random.seed(config.shuffle_seed)
+    # Use seed for model splitting (shuffle_seed is for dataset ordering/target selection).
+    np.random.seed(config.seed)
     n_test = max(1, int(len(base_models_list) * config.test_ratio))
     test_models = set(np.random.choice(base_models_list, size=n_test, replace=False))
     train_models = base_models - test_models
@@ -1477,18 +1632,32 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     if config.n_models_per_chain is not None:
         n_chain_models = min(config.n_models_per_chain, len(train_models))
         train_models_list = sorted(list(train_models))
-        np.random.seed(config.shuffle_seed + 1000)  # Different seed offset for chain model selection
+        np.random.seed(config.seed + 1000)  # Different seed offset for chain model selection
         chain_train_models = set(np.random.choice(train_models_list, size=n_chain_models, replace=False))
         print(f"   Train: {len(train_models)}, Test: {len(test_models)}, Chain models: {len(chain_train_models)}")
     else:
         chain_train_models = train_models
     print(f"   Train: {len(train_models)}, Test: {len(test_models)}")
     
-    # Save config with model counts
+    # Save config with model counts and explicit deterministic split artifacts.
+    # We keep the exact sorted lists (no hashing) so sweeps can compare equality
+    # directly across runs with different n_models_per_chain.
+    candidate_models_sorted = base_models_list
+    test_models_sorted = sorted(list(test_models))
+    train_models_sorted = sorted(list(train_models))
+    chain_train_models_sorted = sorted(list(chain_train_models))
+
     config_dict['n_train_models'] = len(train_models)
     config_dict['n_chain_train_models'] = len(chain_train_models)
+    config_dict['n_test_models'] = len(test_models_sorted)
+    config_dict['test_model_split_seed'] = config.seed
+    config_dict['candidate_models'] = candidate_models_sorted
+    config_dict['train_models'] = train_models_sorted
+    config_dict['chain_train_models'] = chain_train_models_sorted
+    config_dict['test_models'] = test_models_sorted
     with open(output_dir / "config.json", 'w') as f:
         json.dump(round_for_json(config_dict), f, indent=2)
+    print(f"   Test-model set saved ({len(test_models_sorted)} models)")
 
     # -------------------------------------------------------------------------
     # Step 3: Train Base IRT (sequential)
@@ -1548,9 +1717,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     total_chain_time = 0
     successful_chain = []
     
-    # Resume: load checkpoint if exists
-    if checkpoint_file.exists():
-        print("   📂 Found checkpoint, loading...")
+    # Resume behavior is explicit: only load prior checkpoint when --force-resume is set.
+    if checkpoint_file.exists() and config.force_resume:
+        print("   📂 Found checkpoint, loading (--force-resume enabled)...")
         with open(checkpoint_file, 'rb') as f:
             checkpoint = pickle.load(f)
         successful_chain = checkpoint['successful_chain']
@@ -1565,7 +1734,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             total_chain_time = sum(chain_cache_times.get(j, 0) for j in range(1, len(successful_chain) + 1))
             print(f"   ✅ Resumed from step {len(successful_chain)}: {successful_chain}")
         else:
-            print(f"   📂 Checkpoint loaded but chain is empty, starting from base")
+            print("   📂 Checkpoint loaded but chain is empty, starting from base")
+    elif checkpoint_file.exists():
+        print("   ⚠️  Checkpoint exists but --force-resume is not set; starting fresh for this run")
     
     for i in range(max_chain):
         chain_ds = chain_pool[i]
@@ -1772,9 +1943,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         
         scenario_dir = output_dir / f"dist_{distance}_{chain_str}"
         
-        # Resume: skip if results already exist
+        # Resume: skip if results already exist (only when --force-resume is set)
         results_file = scenario_dir / "results.json"
-        if results_file.exists():
+        if config.force_resume and results_file.exists():
             print(f"   Distance {distance} ({chain_str}): ✅ Already done, loading...")
             with open(results_file) as f:
                 result = json.load(f)
@@ -1832,8 +2003,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             A = chain_cache[cache_idx][1]
             dims = [A.shape[1] if A.ndim == 3 else A.shape[0]] if A is not None else config.dims_search
         
-        # Use shuffle_seed for task seed - ensures different runs have different random samples
-        task_seed = config.shuffle_seed
+        # Use seed for task-level random sampling (shuffle_seed is dataset ordering only).
+        task_seed = config.seed
 
         # Create tasks for both methods
         # For distance=0 (Base only), we only evaluate on Base datasets (Validation 3)
@@ -1878,7 +2049,9 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 all_train_models=list(train_models),  # ALL train models for linking generalization test
                 seed=task_seed,
                 random_seed=config.random_seed,
+                cleanup_training_data=config.cleanup_training_data,
                 cumulative_chain_time=cumulative_chain_time,
+                compare_anchor_methods=config.compare_anchor_methods,
             )
             tasks.append(task)
             task_id += 1
@@ -2186,7 +2359,32 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
         }
         winner = min(methods, key=methods.get)
         print(f"\n  Winner: {winner} with error = {methods[winner]:.4f}")
-    
+
+    # Show anchor method comparison if available
+    if config.compare_anchor_methods:
+        print("\n" + "-" * 60)
+        print("ANCHOR METHOD COMPARISON:")
+        print("  Method comparison for Validation 3 (New Model + Old Data):")
+
+        irt_errors = [r.get('validation_3_irt_clustering_gp_irt_error_mean')
+                     for r in final_results
+                     if r.get('validation_3_irt_clustering_gp_irt_error_mean') is not None]
+        correctness_errors = [r.get('validation_3_correctness_clustering_gp_irt_error_mean')
+                             for r in final_results
+                             if r.get('validation_3_correctness_clustering_gp_irt_error_mean') is not None]
+
+        if irt_errors and correctness_errors:
+            irt_avg = np.mean(irt_errors)
+            correctness_avg = np.mean(correctness_errors)
+            methods = {
+                'IRT Clustering': irt_avg,
+                'Correctness Clustering': correctness_avg,
+            }
+            winner = min(methods, key=methods.get)
+            print(f"    IRT Clustering:        {irt_avg:.4f}")
+            print(f"    Correctness Clustering: {correctness_avg:.4f}")
+            print(f"\n  Winner: {winner} with error = {methods[winner]:.4f}")
+
     print(f"\nResults saved to: {output_dir}")
     
     return results_df
@@ -2230,7 +2428,9 @@ if __name__ == "__main__":
                         help="Keep training datasets (useful for debugging)")
     parser.add_argument("--force-resume", action="store_true", default=False,
                         help="Force resume existing experiment (skip auto-increment seed check)")
-    
+    parser.add_argument("--compare-anchor-methods", action="store_true", default=False,
+                        help="Compare IRT clustering vs correctness clustering for anchor selection (research mode)")
+
     args = parser.parse_args()
     
     config = ParallelChainConfig(
@@ -2252,6 +2452,7 @@ if __name__ == "__main__":
         cleanup_models=args.cleanup_models,
         cleanup_training_data=args.cleanup_training_data,
         force_resume=args.force_resume,
+        compare_anchor_methods=args.compare_anchor_methods,
     )
     
     if args.output_dir:
