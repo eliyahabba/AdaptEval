@@ -23,14 +23,14 @@ open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,ARC Challenge,ARC Chall
 open-llm-leaderboard/details_spmurrayzzz__Mistral-Syndicate-7B,ARC Challenge,ARC Challenge,1172,100,-0.5989,0.6084,0.657,0.6374,0.6567,0.6373,0.0486,0.029,0.0483,0.0289,0.9835,0.0853
 open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,ARC Challenge,ARC Challenge,1172,100,-0.9528,0.5956,0.6305,0.6253,0.6304,0.6219,0.035,0.0297,0.0348,0.0263,0.9835,0.0853
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,ARC Challenge,ARC Challenge,1172,100,0.0289,0.6689,0.6536,0.6819,0.654,0.6783,0.0154,0.013,0.0149,0.0094,0.9835,0.0853
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,ARC Challenge,ARC Challenge,1172,100,59.8559,0.709,0.7201,0.7171,0.7201,0.7171,0.0111,0.008,0.011,0.008,0.9835,0.0853
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,ARC Challenge,ARC Challenge,1172,100,59.8008,0.709,0.7201,0.7171,0.7201,0.7171,0.0111,0.008,0.011,0.008,0.9835,0.0853
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,ARC Challenge,ARC Challenge,1172,100,-0.7939,0.628,0.6664,0.6737,0.6665,0.6731,0.0384,0.0457,0.0385,0.0451,0.9835,0.0853
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,ARC Challenge,ARC Challenge,1172,100,-2.4394,0.6536,0.6527,0.6754,0.6531,0.6723,0.0009,0.0218,0.0005,0.0187,0.9835,0.0853
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,ARC Challenge,ARC Challenge,1172,100,-0.1654,0.7048,0.6689,0.7129,0.6696,0.7079,0.0358,0.0081,0.0352,0.0031,0.9835,0.0853
 open-llm-leaderboard/details_Brillibits__Instruct_Mixtral-8x7B-v0.1_Dolly15K,ARC Challenge,ARC Challenge,1172,100,-0.6428,0.6928,0.6408,0.6885,0.6415,0.6835,0.052,0.0044,0.0513,0.0093,0.9835,0.0853
 open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,ARC Challenge,ARC Challenge,1172,100,-1.4208,0.4846,0.5196,0.5947,0.5207,0.5858,0.035,0.1101,0.0361,0.1012,0.9835,0.0853
 open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3,ARC Challenge,ARC Challenge,1172,100,0.3191,0.6689,0.6783,0.6879,0.6785,0.6861,0.0094,0.019,0.0095,0.0171,0.9835,0.0853
-open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-SOLAR-Instruct,ARC Challenge,ARC Challenge,1172,100,16.5624,0.7082,0.7116,0.7144,0.7116,0.7143,0.0034,0.0062,0.0035,0.0061,0.9835,0.0853
+open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-SOLAR-Instruct,ARC Challenge,ARC Challenge,1172,100,16.5623,0.7082,0.7116,0.7144,0.7116,0.7143,0.0034,0.0062,0.0035,0.0061,0.9835,0.0853
 open-llm-leaderboard/details_KnutJaegersberg__Walter-Mistral-7B,ARC Challenge,ARC Challenge,1172,100,-1.7854,0.5887,0.6177,0.624,0.6178,0.6214,0.029,0.0353,0.0291,0.0327,0.9835,0.0853
 open-llm-leaderboard/details_upaya07__Birbal-7B-V1,ARC Challenge,ARC Challenge,1172,100,-0.4449,0.628,0.6886,0.6805,0.6884,0.68,0.0606,0.0525,0.0604,0.052,0.9835,0.0853
 open-llm-leaderboard/details_rishiraj__CatPPT-base,ARC Challenge,ARC Challenge,1172,100,-1.5973,0.6792,0.6843,0.6787,0.6842,0.6778,0.0051,0.0005,0.005,0.0014,0.9835,0.0853
@@ -60,7 +60,7 @@ open-llm-leaderboard/details_PeanutJar__Mistral-v0.1-PeanutButter-v0.0.2-7B,ARC 
 open-llm-leaderboard/details_ajibawa-2023__Uncensored-Frank-33B,ARC Challenge,ARC Challenge,1172,100,-0.7127,0.6212,0.5828,0.6424,0.5837,0.6373,0.0384,0.0212,0.0375,0.0162,0.9835,0.0853
 open-llm-leaderboard/details_AlekseyKorshuk__vic15-exp-syn-fight-cp3838,ARC Challenge,ARC Challenge,1172,100,-1.596,0.5179,0.4812,0.5207,0.4818,0.5151,0.0367,0.0028,0.0361,0.0028,0.9835,0.0853
 open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,ARC Challenge,ARC Challenge,1172,100,-1.1859,0.5785,0.5538,0.5862,0.5542,0.5823,0.0247,0.0077,0.0243,0.0038,0.9835,0.0853
-open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,ARC Challenge,ARC Challenge,1172,100,-1.4911,0.5384,0.5828,0.6141,0.5832,0.6075,0.0444,0.0757,0.0448,0.0691,0.9835,0.0853
+open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,ARC Challenge,ARC Challenge,1172,100,-1.4912,0.5384,0.5828,0.6141,0.5832,0.6075,0.0444,0.0757,0.0448,0.0691,0.9835,0.0853
 open-llm-leaderboard/details_jondurbin__airoboros-c34b-2.2.1,ARC Challenge,ARC Challenge,1172,100,-1.0243,0.5469,0.5196,0.5737,0.5204,0.5673,0.0273,0.0267,0.0265,0.0204,0.9835,0.0853
 open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,ARC Challenge,ARC Challenge,1172,100,-1.3022,0.5392,0.5666,0.5494,0.5662,0.5469,0.0273,0.0102,0.027,0.0077,0.9835,0.0853
 open-llm-leaderboard/details_DevaMalla__llama_7b_lora,ARC Challenge,ARC Challenge,1172,100,-1.3261,0.5486,0.6024,0.5558,0.6017,0.5578,0.0538,0.0072,0.053,0.0092,0.9835,0.0853

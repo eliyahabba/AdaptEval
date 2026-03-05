@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_WizardLM__WizardMath-7B-V1.0,MMLU,MMLU,14042,100,-0.2556,0.45,0.4448,0.3254,0.3484,0.3261,0.0052,0.1246,0.1016,0.1239,0.1881,0.0071
+open-llm-leaderboard/details_glaiveai__glaive-coder-7b,MMLU,MMLU,14042,100,0.1265,0.3559,0.3718,0.2664,0.2868,0.2671,0.0159,0.0896,0.0692,0.0889,0.1881,0.0071
+open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-pretrain,MMLU,MMLU,14042,100,0.0502,0.4986,0.5335,0.3286,0.3683,0.33,0.0349,0.17,0.1303,0.1685,0.1881,0.0071
+open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,MMLU,MMLU,14042,100,0.0146,0.543,0.5746,0.3458,0.3901,0.3473,0.0315,0.1972,0.1529,0.1957,0.1881,0.0071
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE1_17w-r4,MMLU,MMLU,14042,100,0.0357,0.5546,0.5357,0.3303,0.3701,0.3317,0.0189,0.2243,0.1845,0.2229,0.1881,0.0071
+open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1,MMLU,MMLU,14042,100,-0.278,0.505,0.5302,0.394,0.4202,0.3947,0.0252,0.111,0.0848,0.1102,0.1881,0.0071
+open-llm-leaderboard/details_huggingface__llama-7b,MMLU,MMLU,14042,100,-0.0899,0.3522,0.3056,0.1949,0.2164,0.1957,0.0466,0.1574,0.1358,0.1565,0.1881,0.0071
+open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,MMLU,MMLU,14042,100,-0.0729,0.4885,0.5083,0.3611,0.3896,0.3621,0.0198,0.1274,0.0989,0.1265,0.1881,0.0071
+open-llm-leaderboard/details_lmsys__vicuna-13b-v1.5-16k,MMLU,MMLU,14042,100,0.0988,0.5452,0.5815,0.4002,0.4352,0.4013,0.0362,0.145,0.11,0.1439,0.1881,0.0071
+open-llm-leaderboard/details_shareAI__bimoGPT-llama2-13b,MMLU,MMLU,14042,100,0.0019,0.5494,0.5192,0.3029,0.3447,0.3043,0.0302,0.2465,0.2047,0.2451,0.1881,0.0071

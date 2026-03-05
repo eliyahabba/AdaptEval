@@ -24,7 +24,7 @@ open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,MMLU,MMLU,14042,100,-1.
 open-llm-leaderboard/details_spmurrayzzz__Mistral-Syndicate-7B,MMLU,MMLU,14042,100,-0.426,0.5907,0.5552,0.6055,0.5575,0.6051,0.0355,0.0149,0.0332,0.0144,0.9541,0.0071
 open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,MMLU,MMLU,14042,100,-0.2659,0.6183,0.6272,0.6214,0.6269,0.6213,0.0089,0.0032,0.0086,0.0031,0.9541,0.0071
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,MMLU,MMLU,14042,100,0.7696,0.7715,0.8219,0.7858,0.8202,0.7859,0.0504,0.0143,0.0488,0.0144,0.9541,0.0071
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,14.9801,0.6552,0.625,0.649,0.6261,0.6489,0.0302,0.0062,0.0291,0.0063,0.9541,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,14.98,0.6552,0.625,0.649,0.6261,0.6489,0.0302,0.0062,0.0291,0.0063,0.9541,0.0071
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,MMLU,MMLU,14042,100,-0.4575,0.6176,0.6822,0.6349,0.68,0.6351,0.0645,0.0173,0.0624,0.0174,0.9541,0.0071
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,MMLU,MMLU,14042,100,-0.3589,0.6266,0.6578,0.6775,0.6587,0.6772,0.0312,0.0509,0.0321,0.0506,0.9541,0.0071
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,MMLU,MMLU,14042,100,-0.0767,0.7049,0.7393,0.7579,0.7401,0.7578,0.0344,0.053,0.0352,0.0529,0.9541,0.0071
