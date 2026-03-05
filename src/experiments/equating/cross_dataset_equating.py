@@ -1387,65 +1387,68 @@ def precompute_thetas_from_all_anchors(
     return precomputed_thetas
 
 
-def select_anchors(
+def select_anchors_comparison(
     item_params: pd.DataFrame,
     n_anchors_per_dataset: int,
     train_df: pd.DataFrame,
     A_matrix: np.ndarray | None = None,
     B_matrix: np.ndarray | None = None,
-) -> tuple[list[str], list[float]]:
-    """Select anchor items using clustering - n_anchors PER dataset.
-    
+) -> tuple[dict[str, list[str]], dict[str, list[float]]]:
+    """Select anchor items using BOTH clustering methods for comparison - n_anchors PER dataset.
+
     Args:
         item_params: DataFrame with IRT parameters indexed by question_id
         n_anchors_per_dataset: Number of anchors to select from EACH dataset
         train_df: Training data to identify which questions belong to which dataset
         A_matrix, B_matrix: MIRT matrices for clustering
-    
+
     Returns:
-        Combined anchor_ids and weights from all datasets
+        Dict with method names as keys, containing (anchor_ids, anchor_weights) for each method
     """
     # Get dataset for each question
     question_to_dataset = train_df.groupby('question_id')['dataset'].first().to_dict()
-    
+
     # Group item_params by dataset
     item_params_with_dataset = item_params.copy()
     item_params_with_dataset['dataset'] = item_params_with_dataset.index.map(
         lambda q: question_to_dataset.get(q, 'unknown')
     )
-    
+
     # IMPORTANT: Sort for deterministic order across runs
     datasets = sorted(item_params_with_dataset['dataset'].unique())
-    
-    all_anchor_ids = []
-    all_anchor_weights = []
-    
+
+    # Results for both methods
+    results = {
+        'irt_clustering': {'anchor_ids': [], 'anchor_weights': []},
+        'correctness_clustering': {'anchor_ids': [], 'anchor_weights': []}
+    }
+
     for dataset in datasets:
         if dataset == 'unknown':
             continue
-            
+
         # Get items for this dataset
         ds_mask = item_params_with_dataset['dataset'] == dataset
         ds_items = item_params_with_dataset[ds_mask].drop(columns=['dataset'])
-        
+
         if len(ds_items) == 0:
             continue
-        
+
         # How many anchors to select from this dataset
         n_anchors = min(n_anchors_per_dataset, len(ds_items))
-        
+
         if n_anchors < 5:
             print(f"      Warning: {dataset} has only {len(ds_items)} items, skipping")
             continue
-        
+
         # Get indices for MIRT matrices
         all_question_ids = list(item_params.index)
         ds_indices = [all_question_ids.index(q) for q in ds_items.index if q in all_question_ids]
-        
+
         # Extract sub-matrices for this dataset
         ds_A = A_matrix[:, :, ds_indices] if A_matrix is not None else None
         ds_B = B_matrix[:, :, ds_indices] if B_matrix is not None else None
-        
+
         # Copy attrs to subset
         ds_items_for_clustering = ds_items.copy()
         if hasattr(item_params, 'attrs'):
@@ -1455,36 +1458,161 @@ def select_anchors(
                 orig_weights = np.array(item_params.attrs['balance_weights'])
                 ds_weights = orig_weights[ds_indices]
                 ds_items_for_clustering.attrs['balance_weights'] = ds_weights.tolist()
-        
+
         balance_weights = None
         if hasattr(ds_items_for_clustering, 'attrs'):
             bw = ds_items_for_clustering.attrs.get('balance_weights')
             if bw is not None:
                 balance_weights = np.array(bw)
-        
+
+        # Test both clustering methods
+        for method in ['irt_clustering', 'correctness_clustering']:
+            try:
+                anchor_config = AnchorConfig(
+                    number_items=n_anchors,
+                    method=method,
+                    balance_weights=balance_weights,
+                )
+
+                # For correctness_clustering, we need the actual response matrix
+                matrix_df = None
+                if method == 'correctness_clustering':
+                    # Filter to this dataset in long format expected by anchor selector
+                    ds_train_df = train_df[train_df['dataset'] == dataset].copy()
+                    matrix_df = ds_train_df[['question_id', 'model_name', 'normalized_score']].copy()
+
+                anchor_ids, anchor_weights = find_anchor_items_clustering(
+                    ds_items_for_clustering,
+                    matrix_df=matrix_df,  # Only used for correctness_clustering
+                    config=anchor_config,
+                    A_matrix=ds_A,
+                    B_matrix=ds_B,
+                )
+
+                results[method]['anchor_ids'].extend(anchor_ids)
+                weights_list = anchor_weights.tolist() if hasattr(anchor_weights, 'tolist') else list(anchor_weights)
+                results[method]['anchor_weights'].extend(weights_list)
+
+                print(f"      ✓ {dataset} ({method}): {len(anchor_ids)} anchors selected")
+
+            except Exception as e:
+                print(f"      Warning: Failed to select anchors from {dataset} ({method}): {e}")
+
+    # Return as (anchor_ids_dict, anchor_weights_dict)
+    return (
+        {method: data['anchor_ids'] for method, data in results.items()},
+        {method: data['anchor_weights'] for method, data in results.items()}
+    )
+
+
+def select_anchors(
+    item_params: pd.DataFrame,
+    n_anchors_per_dataset: int,
+    train_df: pd.DataFrame,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+    clustering_method: str = "irt_clustering",
+) -> tuple[list[str], list[float]]:
+    """Select anchor items using clustering - n_anchors PER dataset.
+
+    Args:
+        item_params: DataFrame with IRT parameters indexed by question_id
+        n_anchors_per_dataset: Number of anchors to select from EACH dataset
+        train_df: Training data to identify which questions belong to which dataset
+        A_matrix, B_matrix: MIRT matrices for clustering
+        clustering_method: "irt_clustering" or "correctness_clustering"
+
+    Returns:
+        Combined anchor_ids and weights from all datasets
+    """
+    # Get dataset for each question
+    question_to_dataset = train_df.groupby('question_id')['dataset'].first().to_dict()
+
+    # Group item_params by dataset
+    item_params_with_dataset = item_params.copy()
+    item_params_with_dataset['dataset'] = item_params_with_dataset.index.map(
+        lambda q: question_to_dataset.get(q, 'unknown')
+    )
+
+    # IMPORTANT: Sort for deterministic order across runs
+    datasets = sorted(item_params_with_dataset['dataset'].unique())
+
+    all_anchor_ids = []
+    all_anchor_weights = []
+
+    for dataset in datasets:
+        if dataset == 'unknown':
+            continue
+
+        # Get items for this dataset
+        ds_mask = item_params_with_dataset['dataset'] == dataset
+        ds_items = item_params_with_dataset[ds_mask].drop(columns=['dataset'])
+
+        if len(ds_items) == 0:
+            continue
+
+        # How many anchors to select from this dataset
+        n_anchors = min(n_anchors_per_dataset, len(ds_items))
+
+        if n_anchors < 5:
+            print(f"      Warning: {dataset} has only {len(ds_items)} items, skipping")
+            continue
+
+        # Get indices for MIRT matrices
+        all_question_ids = list(item_params.index)
+        ds_indices = [all_question_ids.index(q) for q in ds_items.index if q in all_question_ids]
+
+        # Extract sub-matrices for this dataset
+        ds_A = A_matrix[:, :, ds_indices] if A_matrix is not None else None
+        ds_B = B_matrix[:, :, ds_indices] if B_matrix is not None else None
+
+        # Copy attrs to subset
+        ds_items_for_clustering = ds_items.copy()
+        if hasattr(item_params, 'attrs'):
+            ds_items_for_clustering.attrs = item_params.attrs.copy()
+            # Update balance weights for this subset
+            if 'balance_weights' in item_params.attrs:
+                orig_weights = np.array(item_params.attrs['balance_weights'])
+                ds_weights = orig_weights[ds_indices]
+                ds_items_for_clustering.attrs['balance_weights'] = ds_weights.tolist()
+
+        balance_weights = None
+        if hasattr(ds_items_for_clustering, 'attrs'):
+            bw = ds_items_for_clustering.attrs.get('balance_weights')
+            if bw is not None:
+                balance_weights = np.array(bw)
+
+        # For correctness_clustering, prepare matrix_df
+        matrix_df = None
+        if clustering_method == 'correctness_clustering':
+            # Filter to this dataset in long format expected by anchor selector
+            ds_train_df = train_df[train_df['dataset'] == dataset].copy()
+            matrix_df = ds_train_df[['question_id', 'model_name', 'normalized_score']].copy()
+
         anchor_config = AnchorConfig(
             number_items=n_anchors,
-            method="irt_clustering",
+            method=clustering_method,
             balance_weights=balance_weights,
         )
-        
+
         try:
             anchor_ids, anchor_weights = find_anchor_items_clustering(
                 ds_items_for_clustering,
+                matrix_df=matrix_df,
                 config=anchor_config,
                 A_matrix=ds_A,
                 B_matrix=ds_B,
             )
-            
+
             all_anchor_ids.extend(anchor_ids)
             weights_list = anchor_weights.tolist() if hasattr(anchor_weights, 'tolist') else list(anchor_weights)
             all_anchor_weights.extend(weights_list)
-            
+
             print(f"      ✓ {dataset}: {len(anchor_ids)} anchors selected")
-            
+
         except Exception as e:
             print(f"      Warning: Failed to select anchors from {dataset}: {e}")
-    
+
     return all_anchor_ids, all_anchor_weights
 
 

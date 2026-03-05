@@ -1,26 +1,21 @@
-
-
 """
 Anchor Point Selection for TinyBenchmarks.
 
-This module implements three anchor selection methods:
+## Methods:
 
-1. **IRT Clustering** (from anchor_points.ipynb): 
-   - Uses KMeans clustering in IRT parameter space (a,b)
-   - Finds representative anchor items across different difficulty/discrimination combinations
-   - Supports balance weights for multi-subscenario datasets like MMLU
+1. **irt_clustering** (alias: anchor-irt):
+   - KMeans clustering on IRT parameters: X = vstack(A, B).T
+   - Default method, used in all existing experiments
 
-2. **Correctness Clustering** (from anchor_points.ipynb):
-   - Uses KMeans clustering on response patterns across models
-   - Groups questions by how models answer them (correctness matrix)
-   - Good for finding items with diverse response patterns
+2. **correctness_clustering** (alias: anchor):
+   - KMeans clustering on correctness patterns (scores_train.T)
+   - Groups questions by model response patterns
 
-3. **Difficulty Binning** (original approach):
-   - Bins questions by difficulty (b parameter) into levels
-   - Selects top Fisher information scorers from each bin
-   - Traditional psychometric approach for distributed difficulty sampling
+3. **difficulty_binning**:
+   - Bins by difficulty + Fisher information selection
 
 Methods can be chosen via the `method` parameter in `AnchorConfig`.
+Set `n_trials > 1` for efficbench-style multiple trials (default=1 for backward compat).
 """
 
 from dataclasses import dataclass
@@ -35,8 +30,9 @@ from sklearn.metrics.pairwise import pairwise_distances
 @dataclass
 class AnchorConfig:
     number_items: int = 100  # total number of anchor points per dataset (from notebook)
-    method: Literal["irt_clustering", "correctness_clustering", "difficulty_binning"] = "irt_clustering"  # selection method
-    random_state: int = 42  # for reproducible clustering
+    method: Literal["irt_clustering", "correctness_clustering", "anchor", "anchor-irt", "difficulty_binning"] = "irt_clustering"  # selection method
+    random_state: int = 42  # for reproducible clustering (base seed)
+    n_trials: int = 1  # number of KMeans trials (1=backward compatible, efficbench uses 5)
     balance_weights: np.ndarray | None = None  # balance weights for multi-subscenario datasets
 
 
@@ -47,21 +43,18 @@ def find_anchor_items_clustering(
     A_matrix: np.ndarray | None = None,
     B_matrix: np.ndarray | None = None,
 ) -> tuple[list[str], np.ndarray]:
-    """Find anchor items using KMeans clustering following the notebook approach.
+    """Find anchor items using KMeans clustering.
     
-    From notebook: Uses KMeans clustering either on IRT parameters (a,b) or on 
-    correctness patterns across models, with balance weights for MMLU-style datasets.
-    
-    IMPORTANT: For irt_clustering method, if A_matrix and B_matrix are provided,
-    they will be used directly (full multidimensional parameters). Otherwise,
-    falls back to scalar (a,b) from item_params.
+    Methods:
+    - irt_clustering/anchor-irt: KMeans on IRT parameters (A, B)
+    - correctness_clustering/anchor: KMeans on response patterns (matrix_df)
     
     Args:
         item_params: DataFrame with IRT parameters (a,b) indexed by question_id
-        matrix_df: Optional matrix DataFrame for correctness-based clustering
+        matrix_df: Matrix DataFrame for correctness-based clustering (required for anchor method)
         config: Configuration for anchor selection
-        A_matrix: Optional full discrimination matrix shape (1, D, n_items)
-        B_matrix: Optional full difficulty matrix shape (1, D, n_items)
+        A_matrix: Full discrimination matrix shape (1, D, n_items)
+        B_matrix: Full difficulty matrix shape (1, D, n_items)
         
     Returns:
         Tuple of (anchor_question_ids, anchor_weights)
@@ -74,59 +67,83 @@ def find_anchor_items_clustering(
     if not {"a", "b"}.issubset(item_params.columns):
         raise ValueError("item_params must have columns 'a' and 'b'")
     
+    # Normalize method names (support both efficbench and our naming)
+    method = cfg.method
+    if method == "anchor-irt":
+        method = "irt_clustering"
+    elif method == "anchor":
+        method = "correctness_clustering"
+    
     # Prepare clustering features (X) based on method
-    if cfg.method == "irt_clustering":
+    if method == "irt_clustering":
         question_ids = item_params.index.tolist()
         
-        # Check if full multidimensional matrices are provided
         if A_matrix is not None and B_matrix is not None:
-            # Use full multidimensional parameters like efficbench:
-            # X = vstack(A.squeeze(), B.squeeze()).T -> shape (n_items, 2*D)
+            # Use full MIRT parameters: X = vstack(A, B).T -> (n_items, 2*D)
             A_squeezed = A_matrix.squeeze()  # (D, n_items)
             B_squeezed = B_matrix.squeeze()  # (D, n_items)
-            
-            # Ensure correct shape
             if A_squeezed.ndim == 1:
                 A_squeezed = A_squeezed.reshape(1, -1)
                 B_squeezed = B_squeezed.reshape(1, -1)
-            
             X = np.vstack((A_squeezed, B_squeezed)).T  # (n_items, 2*D)
-            print(f"   🎯 Anchor clustering using full MIRT parameters: {X.shape[1]} features (D={A_squeezed.shape[0]})")
         else:
-            # Fallback to scalar (a,b) from item_params
+            # Fallback to scalar (a,b)
             X = np.column_stack([item_params["a"].values, item_params["b"].values])
-            print(f"   ⚠️  Anchor clustering using scalar (a,b): {X.shape[1]} features")
-    elif cfg.method == "correctness_clustering":
-        # From notebook: X = Y_train[:,scenarios_position[scenario]].T  
-        # Use correctness patterns across models as features
+            
+    elif method == "correctness_clustering":
+        # Use correctness patterns: X = scores_train.T (questions × models)
+        # Supports both:
+        #   - long format: columns [question_id, model_name, normalized_score]
+        #   - wide pivoted format: index=question_id, columns=model_name
         if matrix_df is None:
-            raise ValueError("matrix_df required for correctness-based clustering")
-        
-        # Build correctness matrix: questions x models
+            raise ValueError("matrix_df required for correctness_clustering/anchor method")
+
         question_ids = item_params.index.tolist()
-        models = sorted(matrix_df["model_name"].unique())
-        
-        X = np.full((len(question_ids), len(models)), np.nan)
-        question_to_idx = {q: i for i, q in enumerate(question_ids)}
-        model_to_idx = {m: i for i, m in enumerate(models)}
-        
-        for _, row in matrix_df.iterrows():
-            if row["question_id"] in question_to_idx:
-                q_idx = question_to_idx[row["question_id"]]
-                m_idx = model_to_idx[row["model_name"]]
-                X[q_idx, m_idx] = row["normalized_score"]
-        
+
+        has_long_cols = {"question_id", "model_name", "normalized_score"}.issubset(matrix_df.columns)
+        if has_long_cols:
+            models = sorted(matrix_df["model_name"].astype(str).unique())
+            X = np.full((len(question_ids), len(models)), np.nan)
+            question_to_idx = {q: i for i, q in enumerate(question_ids)}
+            model_to_idx = {m: i for i, m in enumerate(models)}
+
+            for _, row in matrix_df.iterrows():
+                qid = row["question_id"]
+                mname = str(row["model_name"])
+                if qid in question_to_idx and mname in model_to_idx:
+                    q_idx = question_to_idx[qid]
+                    m_idx = model_to_idx[mname]
+                    X[q_idx, m_idx] = row["normalized_score"]
+        else:
+            # Assume matrix_df is already pivoted: index=question_id, columns=model_name
+            wide = matrix_df.copy()
+            wide.index = wide.index.astype(str)
+            wide.columns = [str(c) for c in wide.columns]
+            # Keep only relevant questions, in deterministic item_params order
+            question_ids = [q for q in question_ids if q in set(wide.index)]
+            if not question_ids:
+                return [], np.array([])
+            wide = wide.loc[question_ids]
+            X = wide.to_numpy(dtype=float)
+
         # Remove questions with no data
         valid_mask = ~np.isnan(X).all(axis=1)
         X = X[valid_mask]
         question_ids = [q for i, q in enumerate(question_ids) if valid_mask[i]]
-        
+
         if len(question_ids) == 0:
             return [], np.array([])
+
+        # KMeans does not support NaN; impute remaining missing entries with global mean.
+        if np.isnan(X).any():
+            global_mean = np.nanmean(X)
+            if np.isnan(global_mean):
+                global_mean = 0.5
+            X = np.where(np.isnan(X), global_mean, X)
     else:
         raise ValueError(f"Unknown clustering method: {cfg.method}")
     
-    # Prepare balance weights (from notebook Cell 15 logic)
+    # Prepare balance weights
     if cfg.balance_weights is not None:
         # Convert to numpy array if needed (for JSON deserialization compatibility)
         balance_weights_array = np.array(cfg.balance_weights) if isinstance(cfg.balance_weights, list) else cfg.balance_weights
@@ -138,24 +155,30 @@ def find_anchor_items_clustering(
         # Uniform weights
         norm_balance_weights = np.ones(len(question_ids))
     
-    # Normalize weights to sum to 1 (from notebook)
+    # Normalize weights to sum to 1
     norm_balance_weights = norm_balance_weights / norm_balance_weights.sum()
     
-    # Fit KMeans clustering (from notebook Cell 13)
-    n_clusters = min(cfg.number_items, len(question_ids))  # Can't have more clusters than points
-    kmeans = KMeans(
-        n_clusters=n_clusters, 
-        n_init="auto", 
-        random_state=cfg.random_state
-    )
-    kmeans.fit(X, sample_weight=norm_balance_weights)
+    n_clusters = min(cfg.number_items, len(question_ids))
     
-    # Find anchor points: closest real point to each cluster center (from notebook)
+    # Fit KMeans (n_trials=1 for backward compat, >1 for multiple trials picking best by inertia)
+    n_trials = cfg.n_trials
+    if n_trials == 1:
+        kmeans = KMeans(n_clusters=n_clusters, n_init="auto", random_state=cfg.random_state)
+        kmeans.fit(X, sample_weight=norm_balance_weights)
+    else:
+        kmeans_models = []
+        for t in range(n_trials):
+            km = KMeans(n_clusters=n_clusters, n_init="auto", random_state=1000 * t + cfg.random_state)
+            km.fit(X, sample_weight=norm_balance_weights)
+            kmeans_models.append(km)
+        kmeans = kmeans_models[np.argmin([m.inertia_ for m in kmeans_models])]
+    
+    # Find anchor points: closest real point to each cluster center
     distances = pairwise_distances(kmeans.cluster_centers_, X, metric='euclidean')
     anchor_indices = distances.argmin(axis=1)
     anchor_question_ids = [str(question_ids[i]) for i in anchor_indices]
     
-    # Calculate anchor weights: sum of balance weights per cluster (from notebook)
+    # Calculate anchor weights: sum of balance weights per cluster
     anchor_weights = np.array([
         np.sum(norm_balance_weights[kmeans.labels_ == c]) 
         for c in range(n_clusters)
@@ -212,16 +235,16 @@ def find_anchor_items_difficulty_binning(item_params: pd.DataFrame, config: Anch
 def find_anchor_items(item_params: pd.DataFrame, config: AnchorConfig | None = None) -> list[str]:
     """Find anchor items using the specified method.
     
-    Supports three methods:
-    - irt_clustering: KMeans clustering in IRT parameter space (from notebook)
-    - correctness_clustering: KMeans clustering on response patterns (from notebook)  
+    Supports methods (with efficbench aliases):
+    - anchor-irt / irt_clustering: KMeans clustering in IRT parameter space
+    - anchor / correctness_clustering: KMeans clustering on response patterns
     - difficulty_binning: Binning by difficulty + Fisher information (original approach)
     """
     cfg = config or AnchorConfig()
     
     if cfg.method == "difficulty_binning":
         return find_anchor_items_difficulty_binning(item_params, config)
-    elif cfg.method in ["irt_clustering", "correctness_clustering"]:
+    elif cfg.method in ["irt_clustering", "correctness_clustering", "anchor", "anchor-irt"]:
         anchor_ids, _ = find_anchor_items_clustering(item_params, config=config)
         return anchor_ids
     else:
@@ -241,7 +264,7 @@ def find_anchor_items_by_dataset(
         item_params: DataFrame with IRT parameters
         dataset_column: Column name for dataset grouping
         number_items: Fixed number of anchor items per dataset (from notebook, default=100)
-        method: Selection method - "irt_clustering", "correctness_clustering", or "difficulty_binning"
+        method: Selection method - "irt_clustering"/"anchor-irt", "correctness_clustering"/"anchor", or "difficulty_binning"
         matrix_df: Optional matrix for correctness-based clustering
     """
     if dataset_column is None or dataset_column not in item_params.columns:
@@ -255,7 +278,7 @@ def find_anchor_items_by_dataset(
         config = AnchorConfig(method=method, number_items=actual_number_items)
         
         # For correctness clustering, we need to filter matrix_df to this dataset
-        if method == "correctness_clustering" and matrix_df is not None:
+        if method in ("correctness_clustering", "anchor") and matrix_df is not None:
             # Filter matrix to this dataset and questions in this group
             dataset_matrix = matrix_df[
                 (matrix_df["dataset"] == ds) & 
