@@ -32,7 +32,7 @@
 
 set -e
 
-BASE_DIR="data/v28_target_models_match_chain"
+BASE_DIR="data/v29_after_changes"
 SETUP_ONLY=""
 SKIP_EXISTING=""
 FORCE_RESUME=""
