@@ -49,6 +49,8 @@ def plot_cost_vs_performance(
     fig, ax = plt.subplots(figsize=figsize)
     title = title.split("Reference")[0].strip() if title else None
     n_chains = min(len(fixed_anchor_errors), len(random_errors), len(concurrent_errors))
+    # chain_distances represents distance values (0=Base, 1=Base+Target, 2=Base+Chain[0]+Target, ...)
+    # But for cost plot, we start from distance=1 (first dataset addition)
     chain_distances = list(range(1, n_chains + 1))
     
     # Trim lists to n_chains
@@ -115,7 +117,7 @@ def plot_cost_vs_performance(
     
     # Axis labels - matching visualize_paper_focused.py (fontsize=13)
     ax.set_xlabel('Total Evaluation Questions (Cost)', fontsize=11.5)
-    ax.set_ylabel('Error vs Full Eval (%)', fontsize=11.5)
+    ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=11.5)
     
     if title:
         ax.set_title(title, fontsize=12, fontweight='normal')
