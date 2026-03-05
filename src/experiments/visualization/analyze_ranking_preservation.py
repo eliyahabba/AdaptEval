@@ -434,7 +434,7 @@ def plot_ranking_by_distance(
             ax.fill_between(distances, means - stderr, means + stderr,
                            color=color, alpha=0.15)
 
-        ax.set_xlabel('Chain Distance')
+        ax.set_xlabel('Chain Step')
         ax.set_ylabel(metric_label)
         ax.set_ylim(0, 1.05)
         ax.axhline(y=1.0, color='gray', linestyle='--', alpha=0.5, linewidth=0.8)
@@ -802,7 +802,7 @@ def plot_ranking_by_distance(
                                color=color, alpha=0.2)
 
         # Format subplot
-        ax.set_xlabel('Chain Distance', fontsize=10)
+        ax.set_xlabel('Chain Step', fontsize=10)
         ax.set_ylabel('Spearman ρ', fontsize=10)
         ax.set_title(f'{target}', fontsize=11, fontweight='bold')
         ax.set_xticks(distances)
@@ -817,7 +817,7 @@ def plot_ranking_by_distance(
     for idx in range(n_targets, len(axes)):
         axes[idx].set_visible(False)
 
-    plt.suptitle(f'{category_name}: Ranking Preservation by Chain Distance\n(Shaded = ±1 SEM)',
+    plt.suptitle(f'{category_name}: Ranking Preservation by Chain Step\n(Shaded = ±1 SEM)',
                  fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
 
@@ -1049,7 +1049,7 @@ Examples:
         """
     )
 
-    parser.add_argument('path', type=Path,
+    parser.add_argument('--path', type=Path,
                     default="data/v25_comprehensive",
                        help='Path to experiment category or parent directory')
     parser.add_argument('--all-categories', action='store_true',
