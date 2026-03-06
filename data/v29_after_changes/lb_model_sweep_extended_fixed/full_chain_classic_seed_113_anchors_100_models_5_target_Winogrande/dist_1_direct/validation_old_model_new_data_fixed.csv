@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_Unbabel__TowerInstruct-7B-v0.1,Winogrande,Winogrande,1267,100,1.9433,0.7395,0.7056,0.6978,0.6978,0.6969,0.0339,0.0417,0.0417,0.0427,0.1084,0.0789
+open-llm-leaderboard/details_xDAN-AI__xDAN-L1Mix-DeepThinking-v2,Winogrande,Winogrande,1267,100,1.0402,0.764,0.7869,0.7417,0.7466,0.7417,0.0229,0.0223,0.0174,0.0223,0.1084,0.0789
+open-llm-leaderboard/details_Mihaiii__Metis-0.1,Winogrande,Winogrande,1267,100,2.3322,0.7727,0.783,0.7731,0.7735,0.7723,0.0103,0.0004,0.0008,0.0004,0.1084,0.0789
+open-llm-leaderboard/details_Aspik101__vicuna-13b-v1.5-PL-lora_unload,Winogrande,Winogrande,1267,100,-10.1136,0.7522,0.7656,0.7573,0.7581,0.7572,0.0134,0.0051,0.006,0.0051,0.1084,0.0789
+open-llm-leaderboard/details_openaccess-ai-collective__manticore-13b,Winogrande,Winogrande,1267,100,-4.5458,0.7664,0.7561,0.7479,0.7484,0.7475,0.0103,0.0185,0.0179,0.0189,0.1084,0.0789
