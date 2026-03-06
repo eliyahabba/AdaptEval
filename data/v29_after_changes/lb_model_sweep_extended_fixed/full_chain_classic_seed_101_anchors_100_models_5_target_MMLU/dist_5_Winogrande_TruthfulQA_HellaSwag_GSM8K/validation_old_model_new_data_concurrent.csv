@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_KnutJaegersberg__Qwen-14B-Llamafied,MMLU,MMLU,14042,100,-1.5156,0.6547,0.6546,0.5761,0.581,0.5762,0.0001,0.0786,0.0737,0.0785,0.0612,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,0.8412,0.6528,0.6523,0.6831,0.6808,0.6827,0.0004,0.0303,0.0281,0.0299,0.0612,0.0071
+open-llm-leaderboard/details_Undi95__MLewd-Chat-v2-13B,MMLU,MMLU,14042,100,0.6432,0.5676,0.5709,0.5369,0.5389,0.5368,0.0033,0.0307,0.0287,0.0307,0.0612,0.0071
+open-llm-leaderboard/details_upstage__llama-65b-instruct,MMLU,MMLU,14042,100,0.8737,0.6466,0.6451,0.6069,0.6092,0.6068,0.0015,0.0397,0.0374,0.0397,0.0612,0.0071
+open-llm-leaderboard/details_augtoma__qCammel-70x,MMLU,MMLU,14042,100,0.6842,0.7026,0.7081,0.6722,0.6746,0.6725,0.0055,0.0304,0.028,0.0301,0.0612,0.0071

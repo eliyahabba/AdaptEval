@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_WizardLM__WizardMath-7B-V1.0,1,0.03,0.0,0.48,0.0,0.45,0.0
+open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,1,0.013,0.0,0.53,0.0,0.543,0.0
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE1_17w-r4,1,0.0446,0.0,0.51,0.0,0.5546,0.0
+open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1,1,0.105,0.0,0.61,0.0,0.505,0.0
+open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,1,0.0015,0.0,0.49,0.0,0.4885,0.0

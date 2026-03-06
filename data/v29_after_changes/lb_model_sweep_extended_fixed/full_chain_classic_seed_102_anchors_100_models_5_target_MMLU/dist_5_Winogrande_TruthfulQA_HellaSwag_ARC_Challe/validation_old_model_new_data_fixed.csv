@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_WizardLM__WizardMath-7B-V1.0,MMLU,MMLU,14042,100,1.6495,0.45,0.4532,0.3947,0.4009,0.3947,0.0032,0.0554,0.0491,0.0553,0.1056,0.0071
+open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,MMLU,MMLU,14042,100,1.0211,0.543,0.5167,0.4257,0.4358,0.4262,0.0263,0.1173,0.1072,0.1168,0.1056,0.0071
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE1_17w-r4,MMLU,MMLU,14042,100,0.8609,0.5546,0.5795,0.4519,0.466,0.4525,0.0249,0.1027,0.0887,0.1021,0.1056,0.0071
+open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1,MMLU,MMLU,14042,100,1.8392,0.505,0.489,0.4154,0.4233,0.4156,0.016,0.0896,0.0816,0.0894,0.1056,0.0071
+open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,MMLU,MMLU,14042,100,1.2103,0.4885,0.4862,0.4357,0.4411,0.4358,0.0024,0.0528,0.0474,0.0527,0.1056,0.0071

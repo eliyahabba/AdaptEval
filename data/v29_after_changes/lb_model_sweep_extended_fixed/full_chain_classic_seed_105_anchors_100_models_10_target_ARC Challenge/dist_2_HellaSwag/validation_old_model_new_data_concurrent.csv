@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_nfaheem__Marcoroni-7b-DPO-Merge,ARC Challenge,ARC Challenge,1172,100,0.1744,0.7304,0.7167,0.7277,0.7173,0.723,0.0137,0.0027,0.0131,0.0074,0.9064,0.0853
+open-llm-leaderboard/details_umd-zhou-lab__recycled-wizardlm-7b-v2.0,ARC Challenge,ARC Challenge,1172,100,1.2723,0.5495,0.5111,0.5637,0.5154,0.5571,0.0384,0.0143,0.0341,0.0076,0.9064,0.0853
+open-llm-leaderboard/details_dfurman__Mistral-7B-Instruct-v0.2,ARC Challenge,ARC Challenge,1172,100,1.5834,0.6015,0.593,0.6116,0.5941,0.6045,0.0085,0.0101,0.0075,0.003,0.9064,0.0853
+open-llm-leaderboard/details_PeanutJar__Mistral-v0.1-PeanutButter-v0.0.2-7B,ARC Challenge,ARC Challenge,1172,100,2.0775,0.6177,0.6152,0.6312,0.6163,0.6275,0.0026,0.0134,0.0014,0.0098,0.9064,0.0853
+open-llm-leaderboard/details_oh-yeontaek__llama-2-13B-LoRA-assemble,ARC Challenge,ARC Challenge,1172,100,1.5293,0.6357,0.6416,0.6479,0.6419,0.6449,0.006,0.0122,0.0063,0.0092,0.9064,0.0853
+open-llm-leaderboard/details_Danielbrdz__Barcenas-13b,ARC Challenge,ARC Challenge,1172,100,1.9021,0.6126,0.6544,0.6291,0.652,0.6289,0.0418,0.0165,0.0394,0.0163,0.9064,0.0853
+open-llm-leaderboard/details_JosephusCheung__Pwen-14B-Chat-20_30,ARC Challenge,ARC Challenge,1172,100,2.4687,0.5614,0.5367,0.5875,0.5408,0.5805,0.0247,0.0261,0.0206,0.0191,0.9064,0.0853
+open-llm-leaderboard/details_wei123602__llama2-13b-FINETUNE3_TEST,ARC Challenge,ARC Challenge,1172,100,1.9877,0.5367,0.5589,0.5812,0.5607,0.578,0.0222,0.0445,0.024,0.0413,0.9064,0.0853
+open-llm-leaderboard/details_elinas__chronos-13b-v2,ARC Challenge,ARC Challenge,1172,100,1.9369,0.587,0.6024,0.6175,0.6035,0.6139,0.0154,0.0304,0.0164,0.0269,0.9064,0.0853
+open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,ARC Challenge,ARC Challenge,1172,100,0.8917,0.4019,0.3899,0.3269,0.3842,0.3285,0.0119,0.075,0.0177,0.0734,0.9064,0.0853

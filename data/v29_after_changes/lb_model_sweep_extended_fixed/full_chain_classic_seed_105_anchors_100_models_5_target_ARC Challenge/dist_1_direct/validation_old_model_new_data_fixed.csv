@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_nfaheem__Marcoroni-7b-DPO-Merge,ARC Challenge,ARC Challenge,1172,100,-0.0158,0.7304,0.7244,0.6831,0.7201,0.6879,0.006,0.0473,0.0103,0.0424,0.8822,0.0853
+open-llm-leaderboard/details_umd-zhou-lab__recycled-wizardlm-7b-v2.0,ARC Challenge,ARC Challenge,1172,100,-1.5596,0.5495,0.4906,0.3636,0.4768,0.3735,0.0589,0.1859,0.0727,0.1759,0.8822,0.0853
+open-llm-leaderboard/details_Danielbrdz__Barcenas-13b,ARC Challenge,ARC Challenge,1172,100,-1.5831,0.6126,0.6553,0.4982,0.6381,0.5093,0.0427,0.1144,0.0255,0.1034,0.8822,0.0853
+open-llm-leaderboard/details_JosephusCheung__Pwen-14B-Chat-20_30,ARC Challenge,ARC Challenge,1172,100,-2.1155,0.5614,0.5862,0.4406,0.5703,0.451,0.0247,0.1209,0.0088,0.1104,0.8822,0.0853
+open-llm-leaderboard/details_elinas__chronos-13b-v2,ARC Challenge,ARC Challenge,1172,100,-1.7378,0.587,0.6101,0.4655,0.5942,0.4752,0.023,0.1215,0.0071,0.1118,0.8822,0.0853

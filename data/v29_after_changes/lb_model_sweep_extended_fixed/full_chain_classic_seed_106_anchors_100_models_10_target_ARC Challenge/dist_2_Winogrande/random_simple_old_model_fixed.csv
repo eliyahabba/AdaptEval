@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_Locutusque__Rhino-Mistral-7B,1,0.0188,0.0,0.5,0.0,0.4812,0.0
+open-llm-leaderboard/details_chanwit__flux-7b-v0.1,1,0.0394,0.0,0.71,0.0,0.6706,0.0
+open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,1,0.0608,0.0,0.74,0.0,0.6792,0.0
+open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,1,0.0788,0.0,0.7,0.0,0.6212,0.0
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r8-gate_up_down,1,0.0375,0.0,0.61,0.0,0.5725,0.0
+open-llm-leaderboard/details_TheBloke__tulu-7B-fp16,1,0.0483,0.0,0.55,0.0,0.5017,0.0
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_Fintune_1_17w-q_k_v_o_proj,1,0.0127,0.0,0.61,0.0,0.5973,0.0
+open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,1,0.0381,0.0,0.44,0.0,0.4019,0.0
+open-llm-leaderboard/details_openaccess-ai-collective__manticore-13b,1,0.023,0.0,0.61,0.0,0.587,0.0
+open-llm-leaderboard/details_shareAI__bimoGPT-llama2-13b,1,0.0821,0.0,0.67,0.0,0.5879,0.0

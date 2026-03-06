@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,TruthfulQA,TruthfulQA,817,100,0.413,0.5514,0.5567,0.4664,0.4857,0.473,0.0053,0.085,0.0657,0.0784,0.152,0.1224
+open-llm-leaderboard/details_AdaptLLM__finance-chat,TruthfulQA,TruthfulQA,817,100,1.0495,0.4454,0.4558,0.3047,0.3372,0.3159,0.0104,0.1407,0.1082,0.1295,0.152,0.1224
+open-llm-leaderboard/details_bofenghuang__vigostral-7b-chat,TruthfulQA,TruthfulQA,817,100,0.4019,0.4924,0.5036,0.4253,0.4427,0.4318,0.0112,0.067,0.0496,0.0606,0.152,0.1224
+open-llm-leaderboard/details_LTC-AI-Labs__L2-7b-Beluga-WVG-Test,TruthfulQA,TruthfulQA,817,100,1.1335,0.4576,0.4885,0.3355,0.3705,0.3493,0.0309,0.1221,0.0871,0.1083,0.152,0.1224
+open-llm-leaderboard/details_ashercn97__manatee-7b,TruthfulQA,TruthfulQA,817,100,1.1638,0.4677,0.4769,0.3248,0.3591,0.338,0.0091,0.1429,0.1087,0.1298,0.152,0.1224

@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_rombodawg__Leaderboard-killer-MoE_4x7b,HellaSwag,HellaSwag,10042,100,0.6279,0.8197,0.8202,0.5991,0.7638,0.6001,0.0005,0.2205,0.0559,0.2196,0.7437,0.01
+open-llm-leaderboard/details_superlazycoder__NeuralPipe-7B-slerp,HellaSwag,HellaSwag,10042,100,2.9077,0.8617,0.8457,0.6532,0.7966,0.6541,0.0159,0.2085,0.065,0.2075,0.7437,0.01
+open-llm-leaderboard/details_perlthoughts__Starling-LM-alpha-8x7B-MoE,HellaSwag,HellaSwag,10042,100,2.4473,0.849,0.8343,0.6026,0.7752,0.6036,0.0147,0.2464,0.0739,0.2454,0.7437,0.01
+open-llm-leaderboard/details_jondurbin__bagel-7b-v0.1,HellaSwag,HellaSwag,10042,100,2.2276,0.8314,0.838,0.607,0.7791,0.608,0.0066,0.2244,0.0524,0.2234,0.7437,0.01
+open-llm-leaderboard/details_uukuguy__speechless-code-mistral-7b-v2.0,HellaSwag,HellaSwag,10042,100,1.0769,0.7561,0.7802,0.4481,0.6955,0.4498,0.0241,0.308,0.0606,0.3063,0.7437,0.01
+open-llm-leaderboard/details_dhmeltzer__llama-7b-SFT_ds_wiki65k_1024_r_64_alpha_16_merged,HellaSwag,HellaSwag,10042,100,1.3907,0.7806,0.778,0.4569,0.6961,0.4582,0.0026,0.3237,0.0846,0.3225,0.7437,0.01
+open-llm-leaderboard/details_TheBloke__tulu-7B-fp16,HellaSwag,HellaSwag,10042,100,1.5327,0.7704,0.7633,0.4585,0.6855,0.4599,0.0071,0.3118,0.0848,0.3105,0.7437,0.01
+open-llm-leaderboard/details_The-Face-Of-Goonery__huginnv1.2,HellaSwag,HellaSwag,10042,100,3.9053,0.8428,0.8463,0.5943,0.7821,0.5956,0.0036,0.2484,0.0607,0.2472,0.7437,0.01
+open-llm-leaderboard/details_klosax__open_llama_13b_600bt_preview,HellaSwag,HellaSwag,10042,100,1.1171,0.7243,0.7081,0.3599,0.6193,0.3614,0.0161,0.3644,0.105,0.3629,0.7437,0.01
+open-llm-leaderboard/details_clibrain__Llama-2-7b-ft-instruct-es,HellaSwag,HellaSwag,10042,100,1.4796,0.7783,0.7968,0.4738,0.7143,0.4752,0.0184,0.3046,0.064,0.3032,0.7437,0.01

@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_h2m__mhm-7b-v1.3,HellaSwag,HellaSwag,10042,100,0.6734,0.6531,0.6469,0.6414,0.6432,0.6415,0.0062,0.0116,0.0098,0.0115,0.3176,0.01
+open-llm-leaderboard/details_AA051611__limb,HellaSwag,HellaSwag,10042,100,1.2208,0.8307,0.8653,0.8307,0.842,0.8311,0.0346,0.0,0.0112,0.0004,0.3176,0.01
+open-llm-leaderboard/details_rishiraj__oswald-7b,HellaSwag,HellaSwag,10042,100,3.5604,0.8518,0.8336,0.8346,0.8344,0.8348,0.0182,0.0172,0.0174,0.0171,0.3176,0.01
+open-llm-leaderboard/details_nlpguy__ColorShadow-7B,HellaSwag,HellaSwag,10042,100,2.1006,0.8515,0.8513,0.8364,0.8413,0.8367,0.0002,0.0152,0.0102,0.0149,0.3176,0.01
+open-llm-leaderboard/details_zyh3826__GML-Mistral-merged-v1,HellaSwag,HellaSwag,10042,100,2.6051,0.8788,0.8812,0.8622,0.8684,0.8625,0.0024,0.0166,0.0104,0.0163,0.3176,0.01
+open-llm-leaderboard/details_TokenBender__pic_7B_mistral_Full_v0.1,HellaSwag,HellaSwag,10042,100,2.1858,0.837,0.8466,0.8354,0.8392,0.8357,0.0097,0.0016,0.0022,0.0013,0.3176,0.01
+open-llm-leaderboard/details_WebraftAI__synapsellm-7b-mistral-v0.3-preview,HellaSwag,HellaSwag,10042,100,1.3999,0.7486,0.7527,0.7363,0.7416,0.7364,0.0042,0.0122,0.007,0.0122,0.3176,0.01
+open-llm-leaderboard/details_Sao10K__Euryale-L2-70B,HellaSwag,HellaSwag,10042,100,1.5073,0.8707,0.8705,0.846,0.854,0.8463,0.0002,0.0248,0.0167,0.0244,0.3176,0.01
+open-llm-leaderboard/details_Undi95__Emerald-13B,HellaSwag,HellaSwag,10042,100,1.7491,0.8369,0.835,0.8032,0.8136,0.8036,0.0019,0.0337,0.0233,0.0332,0.3176,0.01
+open-llm-leaderboard/details_jondurbin__airoboros-7b-gpt4-1.4.1-qlora,HellaSwag,HellaSwag,10042,100,1.1837,0.7789,0.761,0.7295,0.7396,0.7297,0.0179,0.0495,0.0393,0.0492,0.3176,0.01
