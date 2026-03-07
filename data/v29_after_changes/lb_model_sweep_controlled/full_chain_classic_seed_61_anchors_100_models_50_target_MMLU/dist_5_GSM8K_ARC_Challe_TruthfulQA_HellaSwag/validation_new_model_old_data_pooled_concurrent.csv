@@ -28,7 +28,7 @@ open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,Winogrande,Winog
 open-llm-leaderboard/details_TomGrc__FusionNet,Winogrande,Winogrande,1267,24,-1.6256,0.8327,0.0724,0.6947,0.2057,0.6972,0.7602,0.1379,0.627,0.1355,0.7867,0.0189
 open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,Winogrande,Winogrande,1267,24,-1.6258,0.8343,0.0724,0.6948,0.2057,0.6972,0.7618,0.1395,0.6285,0.137,0.7867,0.0189
 open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2.1-mistral-7b,Winogrande,Winogrande,1267,24,0.5085,0.7861,0.0621,0.6943,0.197,0.6945,0.7241,0.0918,0.5892,0.0916,0.7867,0.0189
-open-llm-leaderboard/details_decapoda-research__Antares-11b-v1,Winogrande,Winogrande,1267,24,-0.3374,0.8295,0.0771,0.6637,0.2031,0.668,0.7524,0.1658,0.6264,0.1615,0.7867,0.0189
+open-llm-leaderboard/details_decapoda-research__Antares-11b-v1,Winogrande,Winogrande,1267,24,-0.3374,0.8295,0.0771,0.6637,0.2032,0.668,0.7524,0.1658,0.6264,0.1615,0.7867,0.0189
 open-llm-leaderboard/details_nlpguy__ColorShadow-7B,Winogrande,Winogrande,1267,24,0.0362,0.8058,0.0676,0.5973,0.1813,0.6005,0.7382,0.2086,0.6246,0.2053,0.7867,0.0189
 open-llm-leaderboard/details_sr5434__CodegebraGPT-10b,Winogrande,Winogrande,1267,24,-0.1521,0.8098,0.0729,0.5429,0.1743,0.5482,0.7369,0.2669,0.6355,0.2616,0.7867,0.0189
 open-llm-leaderboard/details_beberik__rawr,Winogrande,Winogrande,1267,24,0.1548,0.7956,0.0657,0.6969,0.2007,0.6983,0.7298,0.0986,0.5949,0.0973,0.7867,0.0189
@@ -103,7 +103,7 @@ open-llm-leaderboard/details_moreh__MoMo-70B-lora-1.8.6-DPO,GSM8K,GSM8K,1319,10,
 open-llm-leaderboard/details_wang7776__Mistral-7B-Instruct-v0.2-sparsity-20,GSM8K,GSM8K,1319,10,0.8788,0.113,0.0,0.2166,0.1118,0.2146,0.113,0.1036,0.0011,0.1016,0.4787,0.0076
 open-llm-leaderboard/details_nfaheem__Marcoroni-7b-DPO-Merge,GSM8K,GSM8K,1319,10,0.3208,0.6763,0.057,0.6956,0.39,0.6958,0.6193,0.0193,0.2863,0.0195,0.4787,0.0076
 open-llm-leaderboard/details_maywell__PiVoT-SUS-RP,GSM8K,GSM8K,1319,10,3.3211,0.7051,0.057,0.5974,0.3393,0.5985,0.6481,0.1077,0.3658,0.1066,0.4787,0.0076
-open-llm-leaderboard/details_h2m__mhm-7b-v1.3,GSM8K,GSM8K,1319,10,1.259,0.1668,0.0105,0.1312,0.0734,0.1312,0.1563,0.0356,0.0934,0.0355,0.4787,0.0076
+open-llm-leaderboard/details_h2m__mhm-7b-v1.3,GSM8K,GSM8K,1319,10,1.259,0.1668,0.0105,0.1312,0.0734,0.1313,0.1563,0.0356,0.0934,0.0355,0.4787,0.0076
 open-llm-leaderboard/details_CallComply__zephyr-7b-beta-128k,GSM8K,GSM8K,1319,10,0.4453,0.1304,0.0122,0.43,0.2289,0.4278,0.1182,0.2996,0.0984,0.2974,0.4787,0.0076
 open-llm-leaderboard/details_Weyaxi__Bagel-Hermes-2x34b,GSM8K,GSM8K,1319,10,2.3559,0.6869,0.0582,0.6414,0.3626,0.6422,0.6287,0.0455,0.3243,0.0447,0.4787,0.0076
 open-llm-leaderboard/details_macadeliccc__laser-dolphin-mixtral-2x7b-dpo,GSM8K,GSM8K,1319,10,0.8265,0.4829,0.0423,0.6313,0.349,0.6305,0.4406,0.1484,0.134,0.1476,0.4787,0.0076

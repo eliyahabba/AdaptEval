@@ -37,7 +37,7 @@ open-llm-leaderboard/details_SuperAGI__SAM,Winogrande,Winogrande,1267,62,-2.3586
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,Winogrande,Winogrande,1267,62,-3.0877,0.7735,0.3879,0.7641,0.5849,0.7647,0.3856,0.0094,0.1886,0.0087,0.4773,0.0489
 open-llm-leaderboard/details_vikash06__mistral_v1,Winogrande,Winogrande,1267,62,-0.5908,0.648,0.3318,0.6132,0.4814,0.618,0.3162,0.0348,0.1666,0.03,0.4773,0.0489
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,Winogrande,Winogrande,1267,62,-4.0386,0.7766,0.4068,0.7984,0.6124,0.8001,0.3698,0.0218,0.1642,0.0235,0.4773,0.0489
-open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,Winogrande,Winogrande,1267,62,-3.4733,0.85,0.4281,0.8053,0.6274,0.8094,0.422,0.0447,0.2226,0.0406,0.4773,0.0489
+open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,Winogrande,Winogrande,1267,62,-3.4734,0.85,0.4281,0.8053,0.6274,0.8094,0.422,0.0447,0.2226,0.0406,0.4773,0.0489
 open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3,Winogrande,Winogrande,1267,62,-1.7616,0.8358,0.3828,0.7512,0.5765,0.7532,0.453,0.0847,0.2594,0.0826,0.4773,0.0489
 open-llm-leaderboard/details_upaya07__Birbal-7B-V1,Winogrande,Winogrande,1267,62,-2.8972,0.7877,0.4207,0.7823,0.6119,0.7864,0.367,0.0054,0.1758,0.0013,0.4773,0.0489
 open-llm-leaderboard/details_rishiraj__CatPPT-base,Winogrande,Winogrande,1267,62,-6.1492,0.8129,0.4169,0.8086,0.6225,0.8103,0.3961,0.0044,0.1904,0.0027,0.4773,0.0489
@@ -89,7 +89,7 @@ open-llm-leaderboard/details_jarradh__llama2_70b_chat_uncensored,Winogrande,Wino
 open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,Winogrande,Winogrande,1267,62,-3.9418,0.7656,0.3592,0.7305,0.5533,0.7304,0.4063,0.0351,0.2123,0.0352,0.4773,0.0489
 open-llm-leaderboard/details_wahaha1987__llama_13b_sharegpt94k_fastchat,Winogrande,Winogrande,1267,62,-0.9705,0.7261,0.3538,0.6824,0.526,0.6832,0.3723,0.0437,0.2001,0.0429,0.4773,0.0489
 open-llm-leaderboard/details_budecosystem__genz-13b-v2,Winogrande,Winogrande,1267,62,-2.674,0.7459,0.3755,0.7525,0.5726,0.7525,0.3704,0.0066,0.1733,0.0067,0.4773,0.0489
-open-llm-leaderboard/details_openbmb__UltraLM-65b,Winogrande,Winogrande,1267,62,-3.5533,0.8114,0.4234,0.8023,0.623,0.8053,0.3879,0.0091,0.1883,0.0061,0.4773,0.0489
+open-llm-leaderboard/details_openbmb__UltraLM-65b,Winogrande,Winogrande,1267,62,-3.5534,0.8114,0.4234,0.8023,0.623,0.8053,0.3879,0.0091,0.1883,0.0061,0.4773,0.0489
 open-llm-leaderboard/details_OpenBuddyEA__openbuddy-llama-30b-v7.1-bf16,Winogrande,Winogrande,1267,62,-2.3025,0.7751,0.3956,0.7626,0.5887,0.7651,0.3795,0.0125,0.1863,0.01,0.4773,0.0489
 open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,Winogrande,Winogrande,1267,62,-3.8569,0.7514,0.3755,0.7604,0.5768,0.7606,0.3759,0.009,0.1746,0.0092,0.4773,0.0489
 open-llm-leaderboard/details_lmsys__vicuna-13b-v1.5-16k,Winogrande,Winogrande,1267,62,-1.4723,0.7238,0.3418,0.7015,0.5298,0.7015,0.3819,0.0222,0.1939,0.0223,0.4773,0.0489
@@ -135,7 +135,7 @@ open-llm-leaderboard/details_SuperAGI__SAM,GSM8K,GSM8K,1319,38,-2.3586,0.229,0.0
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,GSM8K,GSM8K,1319,38,-3.0877,0.4723,0.1736,0.4009,0.3062,0.4015,0.2987,0.0714,0.1661,0.0708,0.418,0.0288
 open-llm-leaderboard/details_vikash06__mistral_v1,GSM8K,GSM8K,1319,38,-0.5908,0.0948,0.0754,0.1642,0.1271,0.1642,0.0194,0.0695,0.0323,0.0694,0.418,0.0288
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,GSM8K,GSM8K,1319,38,-4.0386,0.4526,0.2301,0.4486,0.3574,0.4489,0.2225,0.0041,0.0952,0.0037,0.418,0.0288
-open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,GSM8K,GSM8K,1319,38,-3.4733,0.5459,0.2243,0.4582,0.3604,0.4582,0.3216,0.0877,0.1854,0.0876,0.418,0.0288
+open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,GSM8K,GSM8K,1319,38,-3.4734,0.5459,0.2243,0.4582,0.3604,0.4582,0.3216,0.0877,0.1854,0.0876,0.418,0.0288
 open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3,GSM8K,GSM8K,1319,38,-1.7616,0.5451,0.2398,0.4643,0.3711,0.4655,0.3054,0.0808,0.174,0.0796,0.418,0.0288
 open-llm-leaderboard/details_upaya07__Birbal-7B-V1,GSM8K,GSM8K,1319,38,-2.8972,0.4026,0.1338,0.3085,0.2359,0.3093,0.2688,0.0941,0.1666,0.0932,0.418,0.0288
 open-llm-leaderboard/details_rishiraj__CatPPT-base,GSM8K,GSM8K,1319,38,-6.1492,0.7066,0.3608,0.6851,0.5499,0.6858,0.3458,0.0214,0.1567,0.0208,0.418,0.0288
@@ -187,7 +187,7 @@ open-llm-leaderboard/details_jarradh__llama2_70b_chat_uncensored,GSM8K,GSM8K,131
 open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,GSM8K,GSM8K,1319,38,-3.9418,0.1221,0.0696,0.1497,0.1166,0.1503,0.0525,0.0276,0.0055,0.0283,0.418,0.0288
 open-llm-leaderboard/details_wahaha1987__llama_13b_sharegpt94k_fastchat,GSM8K,GSM8K,1319,38,-0.9705,0.0842,0.0209,0.0481,0.0368,0.0483,0.0633,0.0361,0.0473,0.0359,0.418,0.0288
 open-llm-leaderboard/details_budecosystem__genz-13b-v2,GSM8K,GSM8K,1319,38,-2.674,0.1228,0.0495,0.1163,0.0889,0.1171,0.0733,0.0065,0.034,0.0057,0.418,0.0288
-open-llm-leaderboard/details_openbmb__UltraLM-65b,GSM8K,GSM8K,1319,38,-3.5533,0.3275,0.1485,0.3096,0.243,0.3108,0.179,0.0179,0.0846,0.0167,0.418,0.0288
+open-llm-leaderboard/details_openbmb__UltraLM-65b,GSM8K,GSM8K,1319,38,-3.5534,0.3275,0.1485,0.3096,0.243,0.3108,0.179,0.0179,0.0846,0.0167,0.418,0.0288
 open-llm-leaderboard/details_OpenBuddyEA__openbuddy-llama-30b-v7.1-bf16,GSM8K,GSM8K,1319,38,-2.3025,0.3161,0.1442,0.2891,0.2297,0.291,0.1719,0.027,0.0865,0.0251,0.418,0.0288
 open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,GSM8K,GSM8K,1319,38,-3.8569,0.1198,0.0804,0.169,0.1325,0.1699,0.0394,0.0492,0.0127,0.0501,0.418,0.0288
 open-llm-leaderboard/details_lmsys__vicuna-13b-v1.5-16k,GSM8K,GSM8K,1319,38,-1.4723,0.1312,0.0742,0.1463,0.1169,0.1475,0.0569,0.0151,0.0143,0.0163,0.418,0.0288

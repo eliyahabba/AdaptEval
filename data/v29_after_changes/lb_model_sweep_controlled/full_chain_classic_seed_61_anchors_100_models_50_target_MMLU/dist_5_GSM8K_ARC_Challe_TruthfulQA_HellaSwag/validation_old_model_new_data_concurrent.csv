@@ -44,7 +44,7 @@ open-llm-leaderboard/details_jondurbin__airoboros-l2-7b-gpt4-m2.0,MMLU,MMLU,1404
 open-llm-leaderboard/details_chargoddard__llama2-22b-blocktriangular,MMLU,MMLU,14042,100,3.1966,0.5387,0.5606,0.4811,0.5505,0.4818,0.0219,0.0575,0.0118,0.0568,0.8719,0.0071
 open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-FP16,MMLU,MMLU,14042,100,4.327,0.5335,0.5444,0.4962,0.5383,0.4965,0.0109,0.0374,0.0048,0.037,0.8719,0.0071
 open-llm-leaderboard/details_huggingface__llama-65b,MMLU,MMLU,14042,100,1.1162,0.6374,0.6289,0.5409,0.6177,0.5415,0.0085,0.0965,0.0197,0.0959,0.8719,0.0071
-open-llm-leaderboard/details_stabilityai__StableBeluga-13B,MMLU,MMLU,14042,100,3.3559,0.5713,0.5685,0.4893,0.5584,0.4899,0.0028,0.082,0.0128,0.0813,0.8719,0.0071
+open-llm-leaderboard/details_stabilityai__StableBeluga-13B,MMLU,MMLU,14042,100,3.3558,0.5713,0.5685,0.4893,0.5584,0.4899,0.0028,0.082,0.0128,0.0813,0.8719,0.0071
 open-llm-leaderboard/details_xzuyn__Alpacino-SuperCOT-13B,MMLU,MMLU,14042,100,1.1871,0.4713,0.4563,0.4368,0.4539,0.4369,0.015,0.0345,0.0174,0.0344,0.8719,0.0071
 open-llm-leaderboard/details_ausboss__llama7b-wizardlm-unfiltered,MMLU,MMLU,14042,100,0.8815,0.3596,0.3346,0.3621,0.3382,0.3622,0.025,0.0025,0.0215,0.0025,0.8719,0.0071
 open-llm-leaderboard/details_IGeniusDev__llama13B-quant8-testv1-openorca-customdataset,MMLU,MMLU,14042,100,2.5038,0.5357,0.457,0.464,0.4579,0.464,0.0788,0.0718,0.0779,0.0717,0.8719,0.0071
