@@ -28,7 +28,7 @@ open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,Winogran
 open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5,Winogrande,Winogrande,1267,100,-0.2271,0.8224,0.8343,0.474,0.8335,0.4978,0.0118,0.3484,0.011,0.3246,0.9976,0.0789
 open-llm-leaderboard/details_crumb__apricot-wildflower-20,Winogrande,Winogrande,1267,100,-1.675,0.779,0.8066,0.4635,0.8059,0.4839,0.0276,0.3155,0.0269,0.2951,0.9976,0.0789
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,Winogrande,Winogrande,1267,100,-0.8734,0.8122,0.8437,0.5161,0.843,0.5371,0.0316,0.2961,0.0308,0.2751,0.9976,0.0789
-open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,Winogrande,Winogrande,1267,100,-2.5097,0.8374,0.8264,0.6147,0.8259,0.6261,0.011,0.2227,0.0115,0.2113,0.9976,0.0789
+open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,Winogrande,Winogrande,1267,100,-2.5096,0.8374,0.8264,0.6147,0.8259,0.6261,0.011,0.2227,0.0115,0.2113,0.9976,0.0789
 open-llm-leaderboard/details_Zangs3011__mistral_7b_DolphinCoder,Winogrande,Winogrande,1267,100,-1.0602,0.7459,0.7948,0.4642,0.7941,0.4864,0.0489,0.2816,0.0482,0.2594,0.9976,0.0789
 open-llm-leaderboard/details_KaeriJenti__Kaori-34B-v1,Winogrande,Winogrande,1267,100,0.2182,0.7695,0.7711,0.4452,0.7704,0.4676,0.0016,0.3243,0.0009,0.302,0.9976,0.0789
 open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,Winogrande,Winogrande,1267,100,-2.3618,0.8335,0.8295,0.6079,0.829,0.6205,0.0039,0.2256,0.0044,0.213,0.9976,0.0789
@@ -126,7 +126,7 @@ open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,Truthful
 open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5,TruthfulQA,TruthfulQA,817,100,-0.2271,0.5746,0.5707,0.6111,0.5883,0.6117,0.0039,0.0365,0.0137,0.0371,0.5699,0.1224
 open-llm-leaderboard/details_crumb__apricot-wildflower-20,TruthfulQA,TruthfulQA,817,100,-1.675,0.4176,0.4004,0.4796,0.4335,0.4775,0.0173,0.062,0.0159,0.0598,0.5699,0.1224
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,TruthfulQA,TruthfulQA,817,100,-0.8734,0.6571,0.6496,0.6813,0.6639,0.6828,0.0076,0.0242,0.0067,0.0257,0.5699,0.1224
-open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,TruthfulQA,TruthfulQA,817,100,-2.5097,0.718,0.7235,0.7719,0.7448,0.7729,0.0055,0.0539,0.0267,0.0548,0.5699,0.1224
+open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,TruthfulQA,TruthfulQA,817,100,-2.5096,0.718,0.7235,0.7719,0.7448,0.7729,0.0055,0.0539,0.0267,0.0548,0.5699,0.1224
 open-llm-leaderboard/details_Zangs3011__mistral_7b_DolphinCoder,TruthfulQA,TruthfulQA,817,100,-1.0602,0.4395,0.417,0.465,0.4369,0.4633,0.0225,0.0255,0.0026,0.0238,0.5699,0.1224
 open-llm-leaderboard/details_KaeriJenti__Kaori-34B-v1,TruthfulQA,TruthfulQA,817,100,0.2182,0.5314,0.5659,0.6274,0.5917,0.626,0.0344,0.096,0.0603,0.0946,0.5699,0.1224
 open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,-2.3618,0.7252,0.7305,0.7746,0.7499,0.7755,0.0053,0.0494,0.0246,0.0503,0.5699,0.1224

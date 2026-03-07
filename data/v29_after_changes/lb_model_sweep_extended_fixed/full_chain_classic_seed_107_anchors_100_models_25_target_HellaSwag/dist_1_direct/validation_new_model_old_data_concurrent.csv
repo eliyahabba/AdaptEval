@@ -80,7 +80,7 @@ open-llm-leaderboard/details_psmathur__orca_mini_v3_7b,Winogrande,Winogrande,126
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_Fintune_1_17w-q_k_v_o_proj,Winogrande,Winogrande,1267,100,-3.3704,0.7814,0.7893,0.7568,0.7725,0.7579,0.0079,0.0246,0.0089,0.0235,0.4654,0.0789
 open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-FP16,Winogrande,Winogrande,1267,100,-0.214,0.7372,0.7198,0.7194,0.7202,0.7205,0.0174,0.0178,0.017,0.0167,0.4654,0.0789
 open-llm-leaderboard/details_heegyu__LIMA2-7b-hf,Winogrande,Winogrande,1267,100,-0.8842,0.6993,0.6803,0.6734,0.6762,0.6726,0.0189,0.0259,0.0231,0.0267,0.4654,0.0789
-open-llm-leaderboard/details_TaylorAI__Flash-Llama-7B,Winogrande,Winogrande,1267,100,-632.9454,0.7403,0.7135,0.7294,0.722,0.7294,0.0268,0.0109,0.0183,0.0109,0.4654,0.0789
+open-llm-leaderboard/details_TaylorAI__Flash-Llama-7B,Winogrande,Winogrande,1267,100,-638.2379,0.7403,0.7135,0.7294,0.722,0.7294,0.0268,0.0109,0.0183,0.0109,0.4654,0.0789
 open-llm-leaderboard/details_bofenghuang__vigogne-7b-instruct,Winogrande,Winogrande,1267,100,-3.0622,0.7285,0.7656,0.6894,0.7276,0.6946,0.0371,0.0391,0.0009,0.0339,0.4654,0.0789
 open-llm-leaderboard/details_ehartford__based-30b,Winogrande,Winogrande,1267,100,-0.0886,0.8011,0.8611,0.7796,0.8206,0.7854,0.06,0.0215,0.0195,0.0157,0.4654,0.0789
 open-llm-leaderboard/details_Aspik101__trurl-2-13b-pl-instruct_unload,Winogrande,Winogrande,1267,100,-0.4157,0.7435,0.7253,0.7049,0.7147,0.7054,0.0182,0.0386,0.0288,0.0381,0.4654,0.0789
