@@ -1,6 +1,6 @@
 model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_umd-zhou-lab__claude2-alpaca-13B,Winogrande,Winogrande,1267,100,2.4397,0.768,0.7727,0.699,0.7472,0.696,0.0047,0.069,0.0207,0.072,0.6684,0.0789
-open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,Winogrande,Winogrande,1267,100,1.2227,0.7987,0.7956,0.701,0.7628,0.6966,0.0032,0.0977,0.036,0.1021,0.6684,0.0789
-open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,Winogrande,Winogrande,1267,100,3.4044,0.7758,0.7648,0.8118,0.7758,0.7981,0.011,0.0359,0.0,0.0222,0.6684,0.0789
-open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,Winogrande,Winogrande,1267,100,3.711,0.7593,0.7514,0.7008,0.7338,0.6984,0.0079,0.0585,0.0255,0.0609,0.6684,0.0789
-open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,Winogrande,Winogrande,1267,100,3.4226,0.7885,0.8208,0.8737,0.8343,0.8616,0.0324,0.0852,0.0459,0.0731,0.6684,0.0789
+open-llm-leaderboard/details_umd-zhou-lab__claude2-alpaca-13B,Winogrande,Winogrande,1267,100,3.1324,0.768,0.7656,0.6007,0.7113,0.603,0.0024,0.1673,0.0566,0.165,0.6663,0.0789
+open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,Winogrande,Winogrande,1267,100,1.3673,0.7987,0.8003,0.7498,0.7814,0.7438,0.0016,0.0489,0.0173,0.055,0.6663,0.0789
+open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,Winogrande,Winogrande,1267,100,4.7028,0.7758,0.7743,0.7027,0.7496,0.7004,0.0016,0.0732,0.0262,0.0755,0.6663,0.0789
+open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,Winogrande,Winogrande,1267,100,4.0036,0.7593,0.7656,0.5402,0.6929,0.5478,0.0063,0.2191,0.0664,0.2115,0.6663,0.0789
+open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,Winogrande,Winogrande,1267,100,4.6035,0.7885,0.7869,0.7478,0.7729,0.7449,0.0016,0.0407,0.0156,0.0435,0.6663,0.0789

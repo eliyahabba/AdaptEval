@@ -19,7 +19,7 @@ open-llm-leaderboard/details_maywell__Synatra-7B-v0.3-RP,Winogrande,Winogrande,1
 open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mixed-datasets-time-unit,Winogrande,Winogrande,1267,100,2.7458,0.734,0.7072,0.6724,0.6876,0.6727,0.0268,0.0616,0.0464,0.0613,0.4308,0.0789
 open-llm-leaderboard/details_JosephusCheung__Pwen-14B-Chat-20_30,Winogrande,Winogrande,1267,100,0.8102,0.7648,0.7474,0.6577,0.6968,0.6584,0.0174,0.1071,0.068,0.1064,0.4308,0.0789
 open-llm-leaderboard/details_mncai__Llama2-7B-guanaco-1k,Winogrande,Winogrande,1267,100,1.9084,0.7482,0.794,0.7035,0.7444,0.7069,0.0458,0.0448,0.0038,0.0413,0.4308,0.0789
-open-llm-leaderboard/details_Aspik101__vicuna-13b-v1.5-PL-lora_unload,Winogrande,Winogrande,1267,100,8.8484,0.7522,0.8011,0.7279,0.7618,0.732,0.0489,0.0243,0.0096,0.0201,0.4308,0.0789
+open-llm-leaderboard/details_Aspik101__vicuna-13b-v1.5-PL-lora_unload,Winogrande,Winogrande,1267,100,8.8483,0.7522,0.8011,0.7279,0.7618,0.732,0.0489,0.0243,0.0096,0.0201,0.4308,0.0789
 open-llm-leaderboard/details_Undi95__Nous-Hermes-13B-Code,Winogrande,Winogrande,1267,100,10.6258,0.7514,0.7506,0.7402,0.7439,0.7388,0.0008,0.0112,0.0075,0.0126,0.4308,0.0789
 open-llm-leaderboard/details_OpenAssistant__llama2-70b-oasst-sft-v10,Winogrande,Winogrande,1267,100,7.8842,0.82,0.8295,0.779,0.8018,0.7807,0.0095,0.041,0.0183,0.0393,0.4308,0.0789
 open-llm-leaderboard/details_WeOpenML__Alpaca-7B-v1,Winogrande,Winogrande,1267,100,-6.9467,0.7151,0.6977,0.7216,0.7104,0.72,0.0174,0.0065,0.0047,0.0049,0.4308,0.0789

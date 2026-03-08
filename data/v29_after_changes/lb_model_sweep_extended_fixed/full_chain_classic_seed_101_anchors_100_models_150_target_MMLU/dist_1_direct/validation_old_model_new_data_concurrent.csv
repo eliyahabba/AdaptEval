@@ -132,7 +132,7 @@ open-llm-leaderboard/details_xzuyn__Alpacino-SuperCOT-13B,MMLU,MMLU,14042,100,-1
 open-llm-leaderboard/details_klosax__open_llama_13b_600bt_preview,MMLU,MMLU,14042,100,-1.5273,0.3089,0.347,0.3382,0.3408,0.3383,0.0381,0.0293,0.0319,0.0294,0.2863,0.0071
 open-llm-leaderboard/details_augtoma__qCammel-70x,MMLU,MMLU,14042,100,0.5926,0.7026,0.7012,0.6963,0.6977,0.6963,0.0014,0.0063,0.0049,0.0063,0.2863,0.0071
 open-llm-leaderboard/details_NobodyExistsOnTheInternet__GiftedConvo13bLoraNoEconsE4,MMLU,MMLU,14042,100,-0.6637,0.5409,0.435,0.4742,0.4628,0.474,0.106,0.0668,0.0781,0.067,0.2863,0.0071
-open-llm-leaderboard/details_mosaicml__mpt-7b,MMLU,MMLU,14042,100,-2.246,0.2755,0.2628,0.3027,0.2912,0.3026,0.0127,0.0272,0.0157,0.0271,0.2863,0.0071
+open-llm-leaderboard/details_mosaicml__mpt-7b,MMLU,MMLU,14042,100,-2.2459,0.2755,0.2628,0.3027,0.2912,0.3026,0.0127,0.0272,0.0157,0.0271,0.2863,0.0071
 open-llm-leaderboard/details_elinas__chronos-13b-v2,MMLU,MMLU,14042,100,0.5429,0.5322,0.5542,0.5363,0.5415,0.5364,0.022,0.0041,0.0093,0.0042,0.2863,0.0071
 open-llm-leaderboard/details_GOAT-AI__GOAT-7B-Community,MMLU,MMLU,14042,100,-2.2832,0.4908,0.5009,0.4982,0.4989,0.4981,0.01,0.0073,0.0081,0.0073,0.2863,0.0071
 open-llm-leaderboard/details_kashif__stack-llama-2,MMLU,MMLU,14042,100,-6.5325,0.4591,0.4419,0.4618,0.4561,0.4618,0.0172,0.0027,0.003,0.0026,0.2863,0.0071

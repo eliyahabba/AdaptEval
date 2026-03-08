@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_CallComply__zephyr-7b-beta-128k,TruthfulQA,TruthfulQA,817,100,0.3009,0.461,0.4428,0.5451,0.4584,0.5346,0.0182,0.0841,0.0026,0.0736,0.8299,0.1224
+open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,TruthfulQA,TruthfulQA,817,100,-0.278,0.6564,0.63,0.7991,0.6557,0.781,0.0264,0.1427,0.0007,0.1246,0.8299,0.1224
+open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,TruthfulQA,TruthfulQA,817,100,-0.125,0.5582,0.5707,0.7613,0.5995,0.7397,0.0125,0.2031,0.0412,0.1814,0.8299,0.1224
+open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,TruthfulQA,TruthfulQA,817,100,-0.1301,0.641,0.6598,0.744,0.6727,0.7359,0.0188,0.1031,0.0317,0.0949,0.8299,0.1224
+open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,TruthfulQA,TruthfulQA,817,100,0.9627,0.4072,0.402,0.5426,0.4237,0.5296,0.0053,0.1353,0.0164,0.1223,0.8299,0.1224
+open-llm-leaderboard/details_KnutJaegersberg__deacon-13b,TruthfulQA,TruthfulQA,817,100,0.837,0.3933,0.3977,0.5386,0.419,0.5229,0.0045,0.1453,0.0258,0.1297,0.8299,0.1224
+open-llm-leaderboard/details_DevaMalla__llama_7b_lora,TruthfulQA,TruthfulQA,817,100,1.5485,0.3474,0.3273,0.4696,0.3481,0.4493,0.0201,0.1222,0.0006,0.1018,0.8299,0.1224
+open-llm-leaderboard/details_hyunseoki__ko-ref-llama2-13b,TruthfulQA,TruthfulQA,817,100,1.8221,0.3582,0.3376,0.4197,0.3497,0.4088,0.0206,0.0615,0.0085,0.0506,0.8299,0.1224
+open-llm-leaderboard/details_klosax__open_llama_13b_600bt_preview,TruthfulQA,TruthfulQA,817,100,1.5504,0.3466,0.3481,0.4226,0.3592,0.4134,0.0015,0.076,0.0126,0.0668,0.8299,0.1224
+open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,TruthfulQA,TruthfulQA,817,100,0.4847,0.5018,0.4883,0.5635,0.5001,0.5576,0.0135,0.0616,0.0018,0.0557,0.8299,0.1224

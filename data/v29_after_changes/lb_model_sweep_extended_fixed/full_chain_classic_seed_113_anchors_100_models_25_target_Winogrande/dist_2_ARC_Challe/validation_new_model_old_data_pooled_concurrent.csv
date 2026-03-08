@@ -28,7 +28,7 @@ open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b,GSM8K,GSM8K,1319,
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,GSM8K,GSM8K,1319,62,-0.8191,0.561,0.3155,0.4439,0.4063,0.4469,0.2455,0.1171,0.1547,0.1141,0.3091,0.047
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,GSM8K,GSM8K,1319,62,-1.4948,0.4208,0.1983,0.2601,0.2439,0.2643,0.2225,0.1607,0.1769,0.1565,0.3091,0.047
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,GSM8K,GSM8K,1319,62,-0.5663,0.5701,0.3191,0.4577,0.4165,0.4601,0.251,0.1124,0.1536,0.11,0.3091,0.047
-open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,GSM8K,GSM8K,1319,62,0.5821,0.7172,0.3938,0.6194,0.5518,0.6224,0.3234,0.0978,0.1654,0.0948,0.3091,0.047
+open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,GSM8K,GSM8K,1319,62,0.5822,0.7172,0.3938,0.6194,0.5518,0.6224,0.3234,0.0978,0.1654,0.0948,0.3091,0.047
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,GSM8K,GSM8K,1319,62,0.0615,0.4526,0.2192,0.3305,0.2969,0.3316,0.2334,0.1221,0.1557,0.121,0.3091,0.047
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,GSM8K,GSM8K,1319,62,-0.1918,0.5459,0.2971,0.4586,0.4102,0.4608,0.2488,0.0873,0.1357,0.0851,0.3091,0.047
 open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,GSM8K,GSM8K,1319,62,-0.3387,0.0,0.0,0.0154,0.01,0.0144,0.0,0.0154,0.01,0.0144,0.3091,0.047
@@ -126,7 +126,7 @@ open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b,ARC Challenge,ARC
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,ARC Challenge,ARC Challenge,1172,38,-0.8191,0.6425,0.3135,0.7077,0.4141,0.704,0.329,0.0652,0.2284,0.0615,0.7424,0.0324
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,ARC Challenge,ARC Challenge,1172,38,-1.4948,0.6229,0.2826,0.6379,0.3732,0.6341,0.3402,0.015,0.2497,0.0112,0.7424,0.0324
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,ARC Challenge,ARC Challenge,1172,38,-0.5663,0.5964,0.2951,0.5683,0.3645,0.5645,0.3014,0.0281,0.2319,0.032,0.7424,0.0324
-open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,ARC Challenge,ARC Challenge,1172,38,0.5821,0.6792,0.3179,0.7144,0.419,0.7101,0.3612,0.0352,0.2602,0.0309,0.7424,0.0324
+open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,ARC Challenge,ARC Challenge,1172,38,0.5822,0.6792,0.3179,0.7144,0.419,0.7101,0.3612,0.0352,0.2602,0.0309,0.7424,0.0324
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,ARC Challenge,ARC Challenge,1172,38,0.0615,0.6536,0.324,0.6809,0.4152,0.6781,0.3296,0.0273,0.2384,0.0245,0.7424,0.0324
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,ARC Challenge,ARC Challenge,1172,38,-0.1918,0.7278,0.3256,0.7369,0.4307,0.7334,0.4022,0.009,0.2972,0.0056,0.7424,0.0324
 open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,ARC Challenge,ARC Challenge,1172,38,-0.3387,0.4846,0.2537,0.4826,0.3129,0.4834,0.2309,0.002,0.1718,0.0013,0.7424,0.0324

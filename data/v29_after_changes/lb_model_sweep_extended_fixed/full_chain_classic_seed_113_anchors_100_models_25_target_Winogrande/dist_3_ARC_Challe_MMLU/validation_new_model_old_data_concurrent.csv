@@ -12,7 +12,7 @@ open-llm-leaderboard/details_osanseviero__mistral-instruct-frankenmerge,GSM8K,GS
 open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,GSM8K,GSM8K,1319,100,-0.1907,0.5239,0.5406,0.5708,0.5483,0.5654,0.0167,0.0469,0.0244,0.0415,0.6894,0.0758
 open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,GSM8K,GSM8K,1319,100,-0.145,0.7104,0.6808,0.6298,0.665,0.63,0.0296,0.0806,0.0453,0.0804,0.6894,0.0758
 open-llm-leaderboard/details_notbdq__alooowso,GSM8K,GSM8K,1319,100,-0.1468,0.3958,0.4814,0.4571,0.4728,0.4538,0.0857,0.0614,0.0771,0.058,0.6894,0.0758
-open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,GSM8K,GSM8K,1319,100,-0.2267,0.6118,0.627,0.6342,0.6277,0.6293,0.0152,0.0224,0.0159,0.0175,0.6894,0.0758
+open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,GSM8K,GSM8K,1319,100,-0.2266,0.6118,0.627,0.6342,0.6277,0.6293,0.0152,0.0224,0.0159,0.0175,0.6894,0.0758
 open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6,GSM8K,GSM8K,1319,100,-0.2201,0.486,0.5299,0.5468,0.5333,0.5406,0.044,0.0608,0.0473,0.0547,0.6894,0.0758
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,GSM8K,GSM8K,1319,100,-0.4325,0.2426,0.2214,0.324,0.2505,0.3152,0.0212,0.0814,0.0079,0.0726,0.6894,0.0758
 open-llm-leaderboard/details_chargoddard__mixtralmerge-8x7B-rebalanced-test,GSM8K,GSM8K,1319,100,-0.1696,0.5823,0.6361,0.6016,0.6249,0.6,0.0538,0.0194,0.0426,0.0177,0.6894,0.0758
@@ -41,7 +41,7 @@ open-llm-leaderboard/details_janhq__supermario-slerp,GSM8K,GSM8K,1319,100,-0.172
 open-llm-leaderboard/details_wang7776__Llama-2-7b-chat-hf-10-sparsity,GSM8K,GSM8K,1319,100,-0.0892,0.1842,0.1971,0.2365,0.2081,0.2323,0.0129,0.0523,0.0238,0.0481,0.6894,0.0758
 open-llm-leaderboard/details_chargoddard__servile-harpsichord-cdpo,GSM8K,GSM8K,1319,100,-0.2273,0.5709,0.5951,0.5992,0.5951,0.5949,0.0243,0.0283,0.0242,0.024,0.6894,0.0758
 open-llm-leaderboard/details_jondurbin__spicyboros-70b-2.2,GSM8K,GSM8K,1319,100,-0.4315,0.4094,0.3791,0.4234,0.3914,0.4186,0.0303,0.014,0.018,0.0092,0.6894,0.0758
-open-llm-leaderboard/details_bongchoi__MoMo-70B-LoRA-V1.1,GSM8K,GSM8K,1319,100,-0.3151,0.4632,0.4814,0.4917,0.4838,0.4891,0.0182,0.0284,0.0206,0.0259,0.6894,0.0758
+open-llm-leaderboard/details_bongchoi__MoMo-70B-LoRA-V1.1,GSM8K,GSM8K,1319,100,-0.315,0.4632,0.4814,0.4917,0.4838,0.4891,0.0182,0.0284,0.0206,0.0259,0.6894,0.0758
 open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,GSM8K,GSM8K,1319,100,-0.7534,0.0136,0.0326,0.1118,0.0552,0.1053,0.019,0.0981,0.0415,0.0916,0.6894,0.0758
 open-llm-leaderboard/details_migtissera__Tess-7B-v1.4,GSM8K,GSM8K,1319,100,-0.1784,0.4215,0.4056,0.4356,0.4135,0.431,0.0159,0.014,0.008,0.0095,0.6894,0.0758
 open-llm-leaderboard/details_mrfakename__NeuralOrca-7B-v1,GSM8K,GSM8K,1319,100,-0.2302,0.5845,0.5519,0.5509,0.5508,0.5482,0.0326,0.0337,0.0338,0.0363,0.6894,0.0758
@@ -110,7 +110,7 @@ open-llm-leaderboard/details_osanseviero__mistral-instruct-frankenmerge,ARC Chal
 open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,ARC Challenge,ARC Challenge,1172,100,-0.1907,0.6425,0.6177,0.5275,0.6027,0.5271,0.0247,0.115,0.0398,0.1153,0.8335,0.0853
 open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,ARC Challenge,ARC Challenge,1172,100,-0.145,0.6459,0.6348,0.5292,0.6174,0.5303,0.0111,0.1167,0.0285,0.1156,0.8335,0.0853
 open-llm-leaderboard/details_notbdq__alooowso,ARC Challenge,ARC Challenge,1172,100,-0.1468,0.6297,0.593,0.483,0.5749,0.4843,0.0367,0.1467,0.0548,0.1454,0.8335,0.0853
-open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,ARC Challenge,ARC Challenge,1172,100,-0.2267,0.6476,0.6451,0.6058,0.6378,0.6016,0.0026,0.0418,0.0098,0.046,0.8335,0.0853
+open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,ARC Challenge,ARC Challenge,1172,100,-0.2266,0.6476,0.6451,0.6058,0.6378,0.6016,0.0026,0.0418,0.0098,0.046,0.8335,0.0853
 open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6,ARC Challenge,ARC Challenge,1172,100,-0.2201,0.6246,0.5973,0.5681,0.5917,0.5641,0.0273,0.0565,0.0328,0.0605,0.8335,0.0853
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,ARC Challenge,ARC Challenge,1172,100,-0.4325,0.6945,0.692,0.5779,0.6734,0.5804,0.0026,0.1166,0.0211,0.1142,0.8335,0.0853
 open-llm-leaderboard/details_chargoddard__mixtralmerge-8x7B-rebalanced-test,ARC Challenge,ARC Challenge,1172,100,-0.1696,0.6817,0.6681,0.5607,0.6505,0.5622,0.0137,0.121,0.0313,0.1196,0.8335,0.0853
@@ -139,7 +139,7 @@ open-llm-leaderboard/details_janhq__supermario-slerp,ARC Challenge,ARC Challenge
 open-llm-leaderboard/details_wang7776__Llama-2-7b-chat-hf-10-sparsity,ARC Challenge,ARC Challenge,1172,100,-0.0892,0.5316,0.4514,0.3689,0.4376,0.3689,0.0802,0.1627,0.0939,0.1627,0.8335,0.0853
 open-llm-leaderboard/details_chargoddard__servile-harpsichord-cdpo,ARC Challenge,ARC Challenge,1172,100,-0.2273,0.6732,0.7022,0.5708,0.6811,0.5753,0.029,0.1024,0.0079,0.0979,0.8335,0.0853
 open-llm-leaderboard/details_jondurbin__spicyboros-70b-2.2,ARC Challenge,ARC Challenge,1172,100,-0.4315,0.7073,0.7176,0.621,0.7018,0.6229,0.0102,0.0863,0.0055,0.0845,0.8335,0.0853
-open-llm-leaderboard/details_bongchoi__MoMo-70B-LoRA-V1.1,ARC Challenge,ARC Challenge,1172,100,-0.3151,0.6664,0.6638,0.5925,0.6522,0.594,0.0026,0.0739,0.0142,0.0724,0.8335,0.0853
+open-llm-leaderboard/details_bongchoi__MoMo-70B-LoRA-V1.1,ARC Challenge,ARC Challenge,1172,100,-0.315,0.6664,0.6638,0.5925,0.6522,0.594,0.0026,0.0739,0.0142,0.0724,0.8335,0.0853
 open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,ARC Challenge,ARC Challenge,1172,100,-0.7534,0.5964,0.599,0.5392,0.5889,0.5385,0.0026,0.0573,0.0075,0.0579,0.8335,0.0853
 open-llm-leaderboard/details_migtissera__Tess-7B-v1.4,ARC Challenge,ARC Challenge,1172,100,-0.1784,0.6041,0.5785,0.4639,0.5595,0.4644,0.0256,0.1402,0.0446,0.1397,0.8335,0.0853
 open-llm-leaderboard/details_mrfakename__NeuralOrca-7B-v1,ARC Challenge,ARC Challenge,1172,100,-0.2302,0.6527,0.6553,0.5395,0.6363,0.5411,0.0026,0.1132,0.0165,0.1117,0.8335,0.0853
@@ -208,7 +208,7 @@ open-llm-leaderboard/details_osanseviero__mistral-instruct-frankenmerge,MMLU,MML
 open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,MMLU,MMLU,14042,100,-0.1907,0.6264,0.6545,0.5577,0.6113,0.558,0.0281,0.0687,0.0151,0.0684,0.5527,0.0071
 open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,MMLU,MMLU,14042,100,-0.145,0.632,0.6302,0.5608,0.5992,0.5609,0.0018,0.0712,0.0328,0.0711,0.5527,0.0071
 open-llm-leaderboard/details_notbdq__alooowso,MMLU,MMLU,14042,100,-0.1468,0.5931,0.5687,0.5021,0.5389,0.5021,0.0244,0.091,0.0542,0.091,0.5527,0.0071
-open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,MMLU,MMLU,14042,100,-0.2267,0.7633,0.7921,0.6463,0.7272,0.647,0.0288,0.117,0.0361,0.1163,0.5527,0.0071
+open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,MMLU,MMLU,14042,100,-0.2266,0.7633,0.7921,0.6463,0.7272,0.647,0.0288,0.117,0.0361,0.1163,0.5527,0.0071
 open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6,MMLU,MMLU,14042,100,-0.2201,0.7437,0.738,0.6008,0.6769,0.6015,0.0057,0.1429,0.0668,0.1422,0.5527,0.0071
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,MMLU,MMLU,14042,100,-0.4325,0.6394,0.6898,0.6001,0.6498,0.6003,0.0504,0.0392,0.0104,0.039,0.5527,0.0071
 open-llm-leaderboard/details_chargoddard__mixtralmerge-8x7B-rebalanced-test,MMLU,MMLU,14042,100,-0.1696,0.6942,0.6664,0.5926,0.6334,0.5928,0.0278,0.1016,0.0608,0.1014,0.5527,0.0071
@@ -237,7 +237,7 @@ open-llm-leaderboard/details_janhq__supermario-slerp,MMLU,MMLU,14042,100,-0.172,
 open-llm-leaderboard/details_wang7776__Llama-2-7b-chat-hf-10-sparsity,MMLU,MMLU,14042,100,-0.0892,0.4717,0.4562,0.378,0.4212,0.378,0.0155,0.0937,0.0505,0.0938,0.5527,0.0071
 open-llm-leaderboard/details_chargoddard__servile-harpsichord-cdpo,MMLU,MMLU,14042,100,-0.2273,0.6358,0.6351,0.5964,0.6177,0.5963,0.0007,0.0394,0.0181,0.0395,0.5527,0.0071
 open-llm-leaderboard/details_jondurbin__spicyboros-70b-2.2,MMLU,MMLU,14042,100,-0.4315,0.7047,0.7191,0.651,0.6887,0.6511,0.0145,0.0537,0.016,0.0536,0.5527,0.0071
-open-llm-leaderboard/details_bongchoi__MoMo-70B-LoRA-V1.1,MMLU,MMLU,14042,100,-0.3151,0.6618,0.7,0.6285,0.6681,0.6287,0.0382,0.0333,0.0063,0.0331,0.5527,0.0071
+open-llm-leaderboard/details_bongchoi__MoMo-70B-LoRA-V1.1,MMLU,MMLU,14042,100,-0.315,0.6618,0.7,0.6285,0.6681,0.6287,0.0382,0.0333,0.0063,0.0331,0.5527,0.0071
 open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1,MMLU,MMLU,14042,100,-0.7534,0.6036,0.6518,0.5425,0.603,0.5427,0.0482,0.0612,0.0006,0.0609,0.5527,0.0071
 open-llm-leaderboard/details_migtissera__Tess-7B-v1.4,MMLU,MMLU,14042,100,-0.1784,0.6021,0.5805,0.4912,0.5406,0.4913,0.0216,0.1109,0.0614,0.1107,0.5527,0.0071
 open-llm-leaderboard/details_mrfakename__NeuralOrca-7B-v1,MMLU,MMLU,14042,100,-0.2302,0.6259,0.6287,0.5585,0.5973,0.5586,0.0028,0.0674,0.0286,0.0673,0.5527,0.0071
