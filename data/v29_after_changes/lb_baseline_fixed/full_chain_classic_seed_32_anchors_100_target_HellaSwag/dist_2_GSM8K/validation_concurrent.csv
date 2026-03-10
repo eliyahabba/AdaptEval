@@ -27,7 +27,7 @@ open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b,HellaSwag,HellaSw
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,HellaSwag,HellaSwag,10042,100,-1.0716,0.8247,0.8369,0.8413,0.8371,0.8411,0.0121,0.0166,0.0124,0.0163,0.9467,0.01
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,HellaSwag,HellaSwag,10042,100,-1.9107,0.8569,0.8653,0.8552,0.8647,0.8554,0.0084,0.0017,0.0078,0.0015,0.9467,0.01
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,HellaSwag,HellaSwag,10042,100,-1.3302,0.8237,0.8438,0.8353,0.8433,0.8353,0.02,0.0115,0.0196,0.0116,0.9467,0.01
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,HellaSwag,HellaSwag,10042,100,-1.8381,0.8841,0.8815,0.8883,0.8819,0.8883,0.0026,0.0043,0.0022,0.0042,0.9467,0.01
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,HellaSwag,HellaSwag,10042,100,-1.8382,0.8841,0.8815,0.8883,0.8819,0.8883,0.0026,0.0043,0.0022,0.0042,0.9467,0.01
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,HellaSwag,HellaSwag,10042,100,-1.9259,0.8482,0.8529,0.8526,0.8529,0.8526,0.0047,0.0044,0.0047,0.0043,0.9467,0.01
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,HellaSwag,HellaSwag,10042,100,-1.8207,0.8263,0.8483,0.8511,0.8485,0.8507,0.022,0.0247,0.0221,0.0244,0.9467,0.01
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,HellaSwag,HellaSwag,10042,100,-2.5914,0.7909,0.8072,0.815,0.8076,0.8149,0.0163,0.0242,0.0167,0.024,0.9467,0.01

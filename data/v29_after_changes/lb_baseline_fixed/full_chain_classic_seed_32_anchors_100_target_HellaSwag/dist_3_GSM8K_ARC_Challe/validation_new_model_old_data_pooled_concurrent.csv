@@ -27,7 +27,7 @@ open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b,Winogrande,Winogr
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,Winogrande,Winogrande,1267,30,1.3205,0.7758,0.2105,0.8011,0.3442,0.7986,0.5654,0.0252,0.4316,0.0228,0.7726,0.0237
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,Winogrande,Winogrande,1267,30,1.0546,0.7735,0.236,0.8268,0.3699,0.8248,0.5375,0.0533,0.4036,0.0513,0.7726,0.0237
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,Winogrande,Winogrande,1267,30,5.4812,0.783,0.231,0.7786,0.3552,0.7774,0.552,0.0044,0.4277,0.0056,0.7726,0.0237
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,Winogrande,Winogrande,1267,30,-3.6308,0.8343,0.2653,0.8249,0.3925,0.8249,0.569,0.0094,0.4417,0.0094,0.7726,0.0237
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,Winogrande,Winogrande,1267,30,-3.6368,0.8343,0.2653,0.8249,0.3925,0.8249,0.569,0.0094,0.4417,0.0094,0.7726,0.0237
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,Winogrande,Winogrande,1267,30,0.7211,0.7806,0.2296,0.8003,0.3589,0.7983,0.5509,0.0197,0.4216,0.0177,0.7726,0.0237
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,Winogrande,Winogrande,1267,30,0.0737,0.7167,0.2288,0.7816,0.3541,0.7796,0.4878,0.0649,0.3626,0.0629,0.7726,0.0237
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,Winogrande,Winogrande,1267,30,-2.3187,0.7388,0.227,0.7694,0.35,0.7679,0.5118,0.0307,0.3888,0.0292,0.7726,0.0237
@@ -60,7 +60,7 @@ open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,Winogrande,Winogrand
 open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,Winogrande,Winogrande,1267,30,0.2303,0.7261,0.2382,0.7781,0.3609,0.778,0.488,0.0519,0.3652,0.0518,0.7726,0.0237
 open-llm-leaderboard/details_Sao10K__Zephyrus-L1-33B,Winogrande,Winogrande,1267,30,-1.0869,0.8019,0.2509,0.8402,0.3847,0.8391,0.551,0.0383,0.4172,0.0372,0.7726,0.0237
 open-llm-leaderboard/details_jphme__em_german_leo_mistral,Winogrande,Winogrande,1267,30,0.0573,0.7348,0.2076,0.7585,0.3322,0.7558,0.5272,0.0237,0.4026,0.0209,0.7726,0.0237
-open-llm-leaderboard/details_Brouz__Slerpeno,Winogrande,Winogrande,1267,30,-10.8314,0.764,0.2278,0.7911,0.3556,0.7899,0.5362,0.0271,0.4084,0.0259,0.7726,0.0237
+open-llm-leaderboard/details_Brouz__Slerpeno,Winogrande,Winogrande,1267,30,-10.8315,0.764,0.2278,0.7911,0.3556,0.7899,0.5362,0.0271,0.4084,0.0259,0.7726,0.0237
 open-llm-leaderboard/details_togethercomputer__Llama-2-7B-32K-Instruct,Winogrande,Winogrande,1267,30,1.0276,0.7285,0.2302,0.7588,0.3503,0.7583,0.4983,0.0303,0.3782,0.0298,0.7726,0.0237
 open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,Winogrande,Winogrande,1267,30,0.1564,0.8272,0.244,0.8381,0.3788,0.8368,0.5831,0.011,0.4484,0.0096,0.7726,0.0237
 open-llm-leaderboard/details_beaugogh__Llama2-7b-openorca-mc-v2-dpo,Winogrande,Winogrande,1267,30,0.9895,0.7285,0.2712,0.7519,0.3809,0.754,0.4573,0.0234,0.3475,0.0255,0.7726,0.0237
@@ -69,7 +69,7 @@ open-llm-leaderboard/details_lu-vae__llama2-13B-sharegpt4-orca-openplatypus-8w,W
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE1_17w-r4,Winogrande,Winogrande,1267,30,-0.7664,0.7703,0.2294,0.771,0.3523,0.7701,0.5409,0.0007,0.418,0.0003,0.7726,0.0237
 open-llm-leaderboard/details_TigerResearch__tigerbot-13b-base,Winogrande,Winogrande,1267,30,1.8898,0.7498,0.2374,0.774,0.3594,0.7741,0.5124,0.0242,0.3904,0.0243,0.7726,0.0237
 open-llm-leaderboard/details_PygmalionAI__pygmalion-2-13b,Winogrande,Winogrande,1267,30,-8.099,0.7806,0.2512,0.7834,0.3724,0.7841,0.5294,0.0028,0.4082,0.0035,0.7726,0.0237
-open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged,Winogrande,Winogrande,1267,30,-799.4104,0.7569,0.227,0.7648,0.3493,0.7648,0.5299,0.0079,0.4076,0.0079,0.7726,0.0237
+open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged,Winogrande,Winogrande,1267,30,-781.2251,0.7569,0.227,0.7648,0.3493,0.7648,0.5299,0.0079,0.4076,0.0079,0.7726,0.0237
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1,Winogrande,Winogrande,1267,30,0.641,0.7245,0.2086,0.689,0.3178,0.6887,0.5159,0.0356,0.4068,0.0358,0.7726,0.0237
 open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa,Winogrande,Winogrande,1267,30,-0.6867,0.6543,0.2084,0.7549,0.332,0.7522,0.4459,0.1006,0.3223,0.0979,0.7726,0.0237
 open-llm-leaderboard/details_TheBloke__koala-13B-HF,Winogrande,Winogrande,1267,30,-0.3121,0.7403,0.1953,0.7731,0.3259,0.7697,0.545,0.0328,0.4144,0.0293,0.7726,0.0237
@@ -90,7 +90,7 @@ open-llm-leaderboard/details_augtoma__qCammel-70x,Winogrande,Winogrande,1267,30,
 open-llm-leaderboard/details_Austism__chronos-hermes-13b-v2,Winogrande,Winogrande,1267,30,-9.4462,0.7537,0.244,0.8022,0.3708,0.8018,0.5097,0.0485,0.3829,0.0481,0.7726,0.0237
 open-llm-leaderboard/details_pe-nlp__llama-2-13b-platypus-vicuna-wizard,Winogrande,Winogrande,1267,30,-2.5398,0.7577,0.227,0.7574,0.3474,0.7567,0.5307,0.0003,0.4103,0.001,0.7726,0.0237
 open-llm-leaderboard/details_elinas__chronos-13b-v2,Winogrande,Winogrande,1267,30,-3.8533,0.7506,0.2211,0.7822,0.3483,0.7806,0.5295,0.0316,0.4022,0.03,0.7726,0.0237
-open-llm-leaderboard/details_kashif__stack-llama-2,Winogrande,Winogrande,1267,30,144.9214,0.7403,0.231,0.7509,0.3492,0.7509,0.5094,0.0105,0.3911,0.0105,0.7726,0.0237
+open-llm-leaderboard/details_kashif__stack-llama-2,Winogrande,Winogrande,1267,30,145.4432,0.7403,0.231,0.7509,0.3492,0.7509,0.5094,0.0106,0.3911,0.0106,0.7726,0.0237
 open-llm-leaderboard/details_budecosystem__genz-13b-v2,Winogrande,Winogrande,1267,30,-3.8955,0.7459,0.2398,0.7673,0.3598,0.7676,0.5061,0.0214,0.3861,0.0218,0.7726,0.0237
 open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,Winogrande,Winogrande,1267,30,-11.6056,0.7561,0.228,0.7652,0.3501,0.7646,0.5281,0.0091,0.4061,0.0085,0.7726,0.0237
 open-llm-leaderboard/details_duliadotio__dulia-13b-8k-alpha,Winogrande,Winogrande,1267,30,-3.8383,0.7719,0.2318,0.8005,0.3607,0.7987,0.5401,0.0286,0.4112,0.0268,0.7726,0.0237
@@ -125,7 +125,7 @@ open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b,GSM8K,GSM8K,1319,
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,GSM8K,GSM8K,1319,32,1.3205,0.4208,0.1442,0.4026,0.2119,0.4031,0.2765,0.0182,0.2089,0.0176,0.7387,0.0243
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,GSM8K,GSM8K,1319,32,1.0546,0.4723,0.1908,0.5513,0.2849,0.5511,0.2815,0.0789,0.1874,0.0788,0.7387,0.0243
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,GSM8K,GSM8K,1319,32,5.4812,0.3108,0.0883,0.2406,0.1282,0.2408,0.2225,0.0703,0.1827,0.07,0.7387,0.0243
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,GSM8K,GSM8K,1319,32,-3.6308,0.6376,0.2334,0.64,0.3396,0.64,0.4042,0.0024,0.298,0.0024,0.7387,0.0243
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,GSM8K,GSM8K,1319,32,-3.6368,0.6376,0.2334,0.64,0.3396,0.64,0.4042,0.0024,0.298,0.0024,0.7387,0.0243
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,GSM8K,GSM8K,1319,32,0.7211,0.3844,0.1243,0.3806,0.1912,0.3805,0.2601,0.0037,0.1932,0.0039,0.7387,0.0243
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,GSM8K,GSM8K,1319,32,0.0737,0.5701,0.2352,0.6211,0.336,0.621,0.3349,0.051,0.2341,0.0509,0.7387,0.0243
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,GSM8K,GSM8K,1319,32,-2.3187,0.0083,0.0,0.0723,0.0185,0.0706,0.0083,0.064,0.0101,0.0623,0.7387,0.0243
@@ -158,7 +158,7 @@ open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,GSM8K,GSM8K,1319,32,
 open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,GSM8K,GSM8K,1319,32,0.2303,0.0417,0.0226,0.1,0.0425,0.0987,0.0191,0.0583,0.0008,0.057,0.7387,0.0243
 open-llm-leaderboard/details_Sao10K__Zephyrus-L1-33B,GSM8K,GSM8K,1319,32,-1.0869,0.2358,0.0836,0.2235,0.1201,0.2236,0.1522,0.0123,0.1156,0.0122,0.7387,0.0243
 open-llm-leaderboard/details_jphme__em_german_leo_mistral,GSM8K,GSM8K,1319,32,0.0573,0.0561,0.0202,0.0904,0.0385,0.0902,0.0359,0.0343,0.0176,0.0341,0.7387,0.0243
-open-llm-leaderboard/details_Brouz__Slerpeno,GSM8K,GSM8K,1319,32,-10.8314,0.1251,0.0389,0.0746,0.0484,0.0752,0.0862,0.0505,0.0767,0.0499,0.7387,0.0243
+open-llm-leaderboard/details_Brouz__Slerpeno,GSM8K,GSM8K,1319,32,-10.8315,0.1251,0.0389,0.0746,0.0484,0.0752,0.0862,0.0505,0.0767,0.0499,0.7387,0.0243
 open-llm-leaderboard/details_togethercomputer__Llama-2-7B-32K-Instruct,GSM8K,GSM8K,1319,32,1.0276,0.047,0.0109,0.0701,0.0261,0.069,0.0361,0.0231,0.0209,0.022,0.7387,0.0243
 open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,GSM8K,GSM8K,1319,32,0.1564,0.3222,0.0844,0.3129,0.1438,0.312,0.2379,0.0094,0.1784,0.0102,0.7387,0.0243
 open-llm-leaderboard/details_beaugogh__Llama2-7b-openorca-mc-v2-dpo,GSM8K,GSM8K,1319,32,0.9895,0.0447,0.0077,0.0759,0.0253,0.075,0.037,0.0312,0.0194,0.0302,0.7387,0.0243
@@ -167,7 +167,7 @@ open-llm-leaderboard/details_lu-vae__llama2-13B-sharegpt4-orca-openplatypus-8w,G
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE1_17w-r4,GSM8K,GSM8K,1319,32,-0.7664,0.1319,0.0514,0.116,0.0684,0.1167,0.0806,0.016,0.0635,0.0152,0.7387,0.0243
 open-llm-leaderboard/details_TigerResearch__tigerbot-13b-base,GSM8K,GSM8K,1319,32,1.8898,0.1706,0.0915,0.2342,0.1289,0.2345,0.079,0.0636,0.0417,0.0639,0.7387,0.0243
 open-llm-leaderboard/details_PygmalionAI__pygmalion-2-13b,GSM8K,GSM8K,1319,32,-8.099,0.1175,0.0319,0.1023,0.0501,0.1014,0.0856,0.0152,0.0674,0.0161,0.7387,0.0243
-open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged,GSM8K,GSM8K,1319,32,-799.4104,0.1069,0.0186,0.0652,0.0308,0.0652,0.0883,0.0417,0.0761,0.0417,0.7387,0.0243
+open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged,GSM8K,GSM8K,1319,32,-781.2251,0.1069,0.0186,0.0652,0.0308,0.0652,0.0883,0.0417,0.0761,0.0417,0.7387,0.0243
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1,GSM8K,GSM8K,1319,32,0.641,0.0068,0.0114,0.0239,0.0148,0.0242,0.0046,0.0171,0.008,0.0174,0.7387,0.0243
 open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa,GSM8K,GSM8K,1319,32,-0.6867,0.0781,0.0285,0.1061,0.0487,0.1059,0.0496,0.028,0.0294,0.0278,0.7387,0.0243
 open-llm-leaderboard/details_TheBloke__koala-13B-HF,GSM8K,GSM8K,1319,32,-0.3121,0.0682,0.0391,0.1054,0.0564,0.1051,0.0291,0.0372,0.0119,0.0369,0.7387,0.0243
@@ -188,7 +188,7 @@ open-llm-leaderboard/details_augtoma__qCammel-70x,GSM8K,GSM8K,1319,32,-0.821,0.2
 open-llm-leaderboard/details_Austism__chronos-hermes-13b-v2,GSM8K,GSM8K,1319,32,-9.4462,0.1175,0.0633,0.1229,0.079,0.1234,0.0542,0.0054,0.0385,0.0059,0.7387,0.0243
 open-llm-leaderboard/details_pe-nlp__llama-2-13b-platypus-vicuna-wizard,GSM8K,GSM8K,1319,32,-2.5398,0.0091,0.0,0.0303,0.0077,0.0296,0.0091,0.0212,0.0014,0.0205,0.7387,0.0243
 open-llm-leaderboard/details_elinas__chronos-13b-v2,GSM8K,GSM8K,1319,32,-3.8533,0.113,0.0434,0.0715,0.051,0.0727,0.0696,0.0414,0.0619,0.0403,0.7387,0.0243
-open-llm-leaderboard/details_kashif__stack-llama-2,GSM8K,GSM8K,1319,32,144.9214,0.1001,0.037,0.1166,0.0578,0.1166,0.0631,0.0165,0.0423,0.0165,0.7387,0.0243
+open-llm-leaderboard/details_kashif__stack-llama-2,GSM8K,GSM8K,1319,32,145.4432,0.1001,0.037,0.1166,0.0578,0.1166,0.0631,0.0165,0.0423,0.0165,0.7387,0.0243
 open-llm-leaderboard/details_budecosystem__genz-13b-v2,GSM8K,GSM8K,1319,32,-3.8955,0.1228,0.0434,0.1044,0.0594,0.1046,0.0794,0.0184,0.0634,0.0182,0.7387,0.0243
 open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,GSM8K,GSM8K,1319,32,-11.6056,0.1395,0.0394,0.0968,0.0544,0.0969,0.1001,0.0427,0.0851,0.0426,0.7387,0.0243
 open-llm-leaderboard/details_duliadotio__dulia-13b-8k-alpha,GSM8K,GSM8K,1319,32,-3.8383,0.1069,0.0567,0.1405,0.0785,0.1403,0.0502,0.0336,0.0284,0.0334,0.7387,0.0243
@@ -223,7 +223,7 @@ open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b,ARC Challenge,ARC
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,ARC Challenge,ARC Challenge,1172,38,1.3205,0.6229,0.2155,0.646,0.3371,0.6458,0.4073,0.0232,0.2858,0.023,0.7176,0.0324
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,ARC Challenge,ARC Challenge,1172,38,1.0546,0.6621,0.2307,0.6816,0.3582,0.682,0.4314,0.0195,0.304,0.0199,0.7176,0.0324
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,ARC Challenge,ARC Challenge,1172,38,5.4812,0.599,0.2004,0.5969,0.3123,0.5969,0.3986,0.0021,0.2866,0.0021,0.7176,0.0324
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,ARC Challenge,ARC Challenge,1172,38,-3.6308,0.709,0.24,0.7157,0.3744,0.7157,0.469,0.0067,0.3347,0.0067,0.7176,0.0324
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,ARC Challenge,ARC Challenge,1172,38,-3.6368,0.709,0.24,0.7157,0.3744,0.7157,0.469,0.0067,0.3347,0.0067,0.7176,0.0324
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,ARC Challenge,ARC Challenge,1172,38,0.7211,0.628,0.2163,0.6624,0.3423,0.6622,0.4116,0.0344,0.2857,0.0342,0.7176,0.0324
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,ARC Challenge,ARC Challenge,1172,38,0.0737,0.5964,0.2251,0.716,0.3635,0.7152,0.3713,0.1196,0.2329,0.1188,0.7176,0.0324
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,ARC Challenge,ARC Challenge,1172,38,-2.3187,0.5358,0.2163,0.629,0.3331,0.6299,0.3195,0.0932,0.2027,0.0941,0.7176,0.0324
@@ -256,7 +256,7 @@ open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,ARC Challenge,ARC Ch
 open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,ARC Challenge,ARC Challenge,1172,38,0.2303,0.5392,0.1977,0.5779,0.305,0.5776,0.3415,0.0386,0.2342,0.0384,0.7176,0.0324
 open-llm-leaderboard/details_Sao10K__Zephyrus-L1-33B,ARC Challenge,ARC Challenge,1172,38,-1.0869,0.6451,0.2126,0.6614,0.3394,0.6615,0.4324,0.0163,0.3057,0.0164,0.7176,0.0324
 open-llm-leaderboard/details_jphme__em_german_leo_mistral,ARC Challenge,ARC Challenge,1172,38,0.0573,0.5282,0.1972,0.6025,0.3114,0.6016,0.331,0.0744,0.2168,0.0734,0.7176,0.0324
-open-llm-leaderboard/details_Brouz__Slerpeno,ARC Challenge,ARC Challenge,1172,38,-10.8314,0.6169,0.2033,0.6411,0.3269,0.641,0.4136,0.0242,0.29,0.0241,0.7176,0.0324
+open-llm-leaderboard/details_Brouz__Slerpeno,ARC Challenge,ARC Challenge,1172,38,-10.8315,0.6169,0.2033,0.6411,0.3269,0.641,0.4136,0.0242,0.29,0.0241,0.7176,0.0324
 open-llm-leaderboard/details_togethercomputer__Llama-2-7B-32K-Instruct,ARC Challenge,ARC Challenge,1172,38,1.0276,0.5137,0.2089,0.5576,0.3076,0.5583,0.3048,0.044,0.2061,0.0447,0.7176,0.0324
 open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,ARC Challenge,ARC Challenge,1172,38,0.1564,0.692,0.2296,0.6637,0.3525,0.6647,0.4623,0.0283,0.3395,0.0273,0.7176,0.0324
 open-llm-leaderboard/details_beaugogh__Llama2-7b-openorca-mc-v2-dpo,ARC Challenge,ARC Challenge,1172,38,0.9895,0.5478,0.2006,0.5739,0.3058,0.5731,0.3471,0.0261,0.2419,0.0253,0.7176,0.0324
@@ -265,7 +265,7 @@ open-llm-leaderboard/details_lu-vae__llama2-13B-sharegpt4-orca-openplatypus-8w,A
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE1_17w-r4,ARC Challenge,ARC Challenge,1172,38,-0.7664,0.5674,0.1621,0.5942,0.2832,0.5911,0.4054,0.0267,0.2842,0.0237,0.7176,0.0324
 open-llm-leaderboard/details_TigerResearch__tigerbot-13b-base,ARC Challenge,ARC Challenge,1172,38,1.8898,0.5384,0.186,0.5685,0.2934,0.5663,0.3524,0.0301,0.245,0.0279,0.7176,0.0324
 open-llm-leaderboard/details_PygmalionAI__pygmalion-2-13b,ARC Challenge,ARC Challenge,1172,38,-8.099,0.6032,0.1951,0.625,0.3165,0.6249,0.4082,0.0217,0.2868,0.0217,0.7176,0.0324
-open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged,ARC Challenge,ARC Challenge,1172,38,-799.4104,0.5845,0.186,0.5908,0.3003,0.5908,0.3985,0.0064,0.2841,0.0064,0.7176,0.0324
+open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged,ARC Challenge,ARC Challenge,1172,38,-781.2251,0.5845,0.186,0.5909,0.3003,0.5909,0.3985,0.0064,0.2841,0.0064,0.7176,0.0324
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1,ARC Challenge,ARC Challenge,1172,38,0.641,0.57,0.1615,0.5028,0.2569,0.4994,0.4084,0.0672,0.313,0.0706,0.7176,0.0324
 open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa,ARC Challenge,ARC Challenge,1172,38,-0.6867,0.4778,0.1762,0.5842,0.2904,0.5808,0.3017,0.1064,0.1874,0.103,0.7176,0.0324
 open-llm-leaderboard/details_TheBloke__koala-13B-HF,ARC Challenge,ARC Challenge,1172,38,-0.3121,0.5299,0.1961,0.5955,0.3086,0.5945,0.3337,0.0656,0.2213,0.0646,0.7176,0.0324
@@ -286,7 +286,7 @@ open-llm-leaderboard/details_augtoma__qCammel-70x,ARC Challenge,ARC Challenge,11
 open-llm-leaderboard/details_Austism__chronos-hermes-13b-v2,ARC Challenge,ARC Challenge,1172,38,-9.4462,0.6032,0.2033,0.6583,0.3316,0.6577,0.3999,0.0551,0.2716,0.0545,0.7176,0.0324
 open-llm-leaderboard/details_pe-nlp__llama-2-13b-platypus-vicuna-wizard,ARC Challenge,ARC Challenge,1172,38,-2.5398,0.6126,0.1823,0.58,0.2944,0.5792,0.4304,0.0326,0.3182,0.0334,0.7176,0.0324
 open-llm-leaderboard/details_elinas__chronos-13b-v2,ARC Challenge,ARC Challenge,1172,38,-3.8533,0.587,0.1945,0.6349,0.3186,0.6338,0.3925,0.0479,0.2685,0.0467,0.7176,0.0324
-open-llm-leaderboard/details_kashif__stack-llama-2,ARC Challenge,ARC Challenge,1172,38,144.9214,0.5307,0.1977,0.533,0.2924,0.533,0.333,0.0023,0.2383,0.0023,0.7176,0.0324
+open-llm-leaderboard/details_kashif__stack-llama-2,ARC Challenge,ARC Challenge,1172,38,145.4432,0.5307,0.1977,0.533,0.2924,0.533,0.333,0.0023,0.2383,0.0023,0.7176,0.0324
 open-llm-leaderboard/details_budecosystem__genz-13b-v2,ARC Challenge,ARC Challenge,1172,38,-3.8955,0.5597,0.1913,0.6451,0.3186,0.6419,0.3684,0.0853,0.2412,0.0822,0.7176,0.0324
 open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,ARC Challenge,ARC Challenge,1172,38,-11.6056,0.5956,0.1964,0.6361,0.3205,0.6359,0.3992,0.0406,0.2751,0.0403,0.7176,0.0324
 open-llm-leaderboard/details_duliadotio__dulia-13b-8k-alpha,ARC Challenge,ARC Challenge,1172,38,-3.8383,0.6067,0.202,0.6482,0.3279,0.648,0.4047,0.0416,0.2787,0.0414,0.7176,0.0324

@@ -82,7 +82,7 @@ open-llm-leaderboard/details_huggingface__llama-65b,HellaSwag,HellaSwag,10042,10
 open-llm-leaderboard/details_heegyu__LIMA2-7b-hf,HellaSwag,HellaSwag,10042,100,-0.0369,0.806,0.7895,0.797,0.7899,0.797,0.0165,0.009,0.0161,0.009,0.9432,0.01
 open-llm-leaderboard/details_davzoku__cria-llama2-7b-v1.3,HellaSwag,HellaSwag,10042,100,0.3067,0.7858,0.7934,0.8056,0.794,0.8054,0.0076,0.0198,0.0083,0.0196,0.9432,0.01
 open-llm-leaderboard/details_stabilityai__StableBeluga-13B,HellaSwag,HellaSwag,10042,100,-3.098,0.8227,0.8252,0.8467,0.8264,0.8462,0.0025,0.024,0.0037,0.0234,0.9432,0.01
-open-llm-leaderboard/details_Aspik101__trurl-2-13b-pl-instruct_unload,HellaSwag,HellaSwag,10042,100,-1.1627,0.7999,0.7994,0.8358,0.8015,0.835,0.0005,0.0358,0.0015,0.0351,0.9432,0.01
+open-llm-leaderboard/details_Aspik101__trurl-2-13b-pl-instruct_unload,HellaSwag,HellaSwag,10042,100,-1.1626,0.7999,0.7994,0.8358,0.8015,0.835,0.0005,0.0358,0.0015,0.0351,0.9432,0.01
 open-llm-leaderboard/details_codellama__CodeLlama-7b-hf,HellaSwag,HellaSwag,10042,100,1.1877,0.608,0.6383,0.6871,0.6411,0.6865,0.0303,0.0791,0.033,0.0784,0.9432,0.01
 open-llm-leaderboard/details_jarradh__llama2_70b_chat_uncensored,HellaSwag,HellaSwag,10042,100,-0.4714,0.8677,0.8749,0.8634,0.8743,0.8636,0.0073,0.0043,0.0066,0.0041,0.9432,0.01
 open-llm-leaderboard/details_klosax__open_llama_13b_600bt_preview,HellaSwag,HellaSwag,10042,100,0.7535,0.7243,0.7263,0.7441,0.7274,0.7442,0.0021,0.0199,0.0031,0.02,0.9432,0.01

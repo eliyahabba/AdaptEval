@@ -42,7 +42,7 @@ open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,HellaSwag,HellaSw
 open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,HellaSwag,HellaSwag,10042,100,-1.6173,0.8537,0.8646,0.8576,0.8642,0.8576,0.0109,0.0039,0.0105,0.0039,0.9467,0.01
 open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B,HellaSwag,HellaSwag,10042,100,-5.0723,0.8759,0.8879,0.8814,0.8875,0.8813,0.0119,0.0054,0.0116,0.0054,0.9467,0.01
 open-llm-leaderboard/details_jilp00__Hermes-2-SOLAR-10.7B-Symbolic,HellaSwag,HellaSwag,10042,100,-1.5494,0.8257,0.8042,0.8213,0.8051,0.821,0.0215,0.0045,0.0206,0.0047,0.9467,0.01
-open-llm-leaderboard/details_gagan3012__MetaModel_moe,HellaSwag,HellaSwag,10042,100,-55.1763,0.884,0.8815,0.8839,0.8816,0.8839,0.0025,0.0001,0.0024,0.0001,0.9467,0.01
+open-llm-leaderboard/details_gagan3012__MetaModel_moe,HellaSwag,HellaSwag,10042,100,-55.1999,0.884,0.8815,0.8839,0.8816,0.8839,0.0025,0.0001,0.0024,0.0001,0.9467,0.01
 open-llm-leaderboard/details_Neuronovo__neuronovo-7B-v0.1,HellaSwag,HellaSwag,10042,100,-2.7921,0.8507,0.8604,0.8508,0.8599,0.8509,0.0097,0.0001,0.0092,0.0002,0.9467,0.01
 open-llm-leaderboard/details_notbdq__alooowso,HellaSwag,HellaSwag,10042,100,-1.2007,0.8487,0.8391,0.8484,0.8396,0.8482,0.0097,0.0004,0.0092,0.0006,0.9467,0.01
 open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,HellaSwag,HellaSwag,10042,100,0.1724,0.8455,0.8447,0.8676,0.8458,0.8671,0.0009,0.0221,0.0003,0.0215,0.9467,0.01
@@ -63,7 +63,7 @@ open-llm-leaderboard/details_qblocks__codellama_7b_DolphinCoder,HellaSwag,HellaS
 open-llm-leaderboard/details_SanjiWatsuki__Kunoichi-7B,HellaSwag,HellaSwag,10042,100,-3.3714,0.871,0.8849,0.8807,0.8847,0.8806,0.0138,0.0097,0.0136,0.0096,0.9467,0.01
 open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,HellaSwag,HellaSwag,10042,100,0.8808,0.8386,0.831,0.837,0.8313,0.8367,0.0076,0.0016,0.0073,0.0018,0.9467,0.01
 open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,HellaSwag,HellaSwag,10042,100,-1.13,0.834,0.8232,0.846,0.8244,0.8456,0.0108,0.012,0.0096,0.0116,0.9467,0.01
-open-llm-leaderboard/details_TomGrc__FusionNet,HellaSwag,HellaSwag,10042,100,-55.1763,0.8842,0.8815,0.8839,0.8816,0.8839,0.0027,0.0003,0.0026,0.0003,0.9467,0.01
+open-llm-leaderboard/details_TomGrc__FusionNet,HellaSwag,HellaSwag,10042,100,-55.1999,0.8842,0.8815,0.8839,0.8816,0.8839,0.0027,0.0003,0.0026,0.0003,0.9467,0.01
 open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,HellaSwag,HellaSwag,10042,100,-4.526,0.8713,0.8797,0.8779,0.8796,0.8778,0.0084,0.0066,0.0083,0.0065,0.9467,0.01
 open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6,HellaSwag,HellaSwag,10042,100,-4.3006,0.885,0.8815,0.8979,0.8824,0.8978,0.0035,0.0129,0.0026,0.0129,0.9467,0.01
 open-llm-leaderboard/details_HenryJJ__Instruct_Mistral-7B-v0.1_Dolly15K,HellaSwag,HellaSwag,10042,100,-1.3966,0.8262,0.8215,0.8176,0.8213,0.8175,0.0047,0.0086,0.0049,0.0088,0.9467,0.01
@@ -198,7 +198,7 @@ open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-timedial,HellaSwag,
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down,HellaSwag,HellaSwag,10042,100,2.7652,0.8189,0.8229,0.832,0.8234,0.8318,0.0041,0.0131,0.0046,0.013,0.9467,0.01
 open-llm-leaderboard/details_Undi95__MLewd-Chat-v2-13B,HellaSwag,HellaSwag,10042,100,0.2726,0.8381,0.835,0.8566,0.8361,0.8561,0.0031,0.0185,0.002,0.018,0.9467,0.01
 open-llm-leaderboard/details_camel-ai__CAMEL-13B-Role-Playing-Data,HellaSwag,HellaSwag,10042,100,-1.7816,0.7925,0.7866,0.7992,0.7873,0.7989,0.0059,0.0067,0.0052,0.0064,0.9467,0.01
-open-llm-leaderboard/details_akjindal53244__Mistral-7B-v0.1-Open-Platypus,HellaSwag,HellaSwag,10042,100,-3.089,0.8508,0.8444,0.8354,0.8439,0.8355,0.0065,0.0154,0.0069,0.0154,0.9467,0.01
+open-llm-leaderboard/details_akjindal53244__Mistral-7B-v0.1-Open-Platypus,HellaSwag,HellaSwag,10042,100,-3.0891,0.8508,0.8444,0.8354,0.8439,0.8355,0.0065,0.0154,0.0069,0.0154,0.9467,0.01
 open-llm-leaderboard/details_teknium__Mistral-Trismegistus-7B,HellaSwag,HellaSwag,10042,100,-2.201,0.7791,0.8001,0.7956,0.7999,0.7955,0.021,0.0165,0.0208,0.0164,0.9467,0.01
 open-llm-leaderboard/details_HuggingFaceH4__starchat-beta,HellaSwag,HellaSwag,10042,100,-1.4738,0.8059,0.7842,0.7934,0.7847,0.7931,0.0217,0.0125,0.0212,0.0128,0.9467,0.01
 open-llm-leaderboard/details_TinyPixel__testmodel2,HellaSwag,HellaSwag,10042,100,3.1893,0.7878,0.7907,0.7841,0.7903,0.7842,0.0029,0.0037,0.0025,0.0036,0.9467,0.01
@@ -288,7 +288,7 @@ open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,HellaSw
 open-llm-leaderboard/details_clibrain__Llama-2-7b-ft-instruct-es,HellaSwag,HellaSwag,10042,100,-0.6793,0.7783,0.7796,0.7808,0.7797,0.7807,0.0013,0.0024,0.0014,0.0024,0.9467,0.01
 open-llm-leaderboard/details_fireballoon__baichuan-vicuna-chinese-7b,HellaSwag,HellaSwag,10042,100,-2.7812,0.7112,0.6971,0.724,0.6985,0.7236,0.0141,0.0128,0.0127,0.0123,0.9467,0.01
 open-llm-leaderboard/details_Sao10K__Mythical-Destroyer-V2-L2-13B,HellaSwag,HellaSwag,10042,100,-2.8521,0.8266,0.795,0.8366,0.7971,0.8359,0.0317,0.0099,0.0295,0.0092,0.9467,0.01
-open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,HellaSwag,HellaSwag,10042,100,0.0225,0.8395,0.8468,0.8598,0.8475,0.8595,0.0074,0.0203,0.008,0.02,0.9467,0.01
+open-llm-leaderboard/details_Sao10K__Stheno-L2-13B,HellaSwag,HellaSwag,10042,100,0.0224,0.8395,0.8468,0.8598,0.8475,0.8595,0.0074,0.0203,0.008,0.02,0.9467,0.01
 open-llm-leaderboard/details_openaccess-ai-collective__manticore-13b,HellaSwag,HellaSwag,10042,100,-0.5477,0.8163,0.8248,0.8361,0.8254,0.8358,0.0086,0.0198,0.0091,0.0195,0.9467,0.01
 open-llm-leaderboard/details_Open-Orca__OpenOrca-Preview1-13B,HellaSwag,HellaSwag,10042,100,-2.2087,0.7819,0.7981,0.8058,0.7985,0.8057,0.0162,0.0238,0.0166,0.0238,0.9467,0.01
 open-llm-leaderboard/details_TheBloke__OpenOrca-Platypus2-13B-GPTQ,HellaSwag,HellaSwag,10042,100,-0.0141,0.8267,0.8383,0.841,0.8384,0.8409,0.0116,0.0143,0.0117,0.0141,0.9467,0.01
