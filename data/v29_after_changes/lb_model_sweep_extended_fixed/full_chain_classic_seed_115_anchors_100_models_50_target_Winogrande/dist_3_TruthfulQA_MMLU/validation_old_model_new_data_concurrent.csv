@@ -15,7 +15,7 @@ open-llm-leaderboard/details_crumb__apricot-wildflower-20,Winogrande,Winogrande,
 open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3,Winogrande,Winogrande,1267,100,-1.3051,0.8358,0.8548,0.841,0.853,0.8422,0.0189,0.0052,0.0172,0.0064,0.8614,0.0789
 open-llm-leaderboard/details_KnutJaegersberg__Walter-Mistral-7B,Winogrande,Winogrande,1267,100,2.2339,0.7703,0.7853,0.7821,0.7846,0.7798,0.015,0.0118,0.0142,0.0095,0.8614,0.0789
 open-llm-leaderboard/details_jondurbin__bagel-7b-v0.1,Winogrande,Winogrande,1267,100,2.3405,0.8058,0.8082,0.7962,0.8065,0.7962,0.0024,0.0097,0.0007,0.0097,0.8614,0.0789
-open-llm-leaderboard/details_PulsarAI__OpenHermes-2.5-neural-chat-v3-3-Slerp,Winogrande,Winogrande,1267,100,0.5746,0.7916,0.8051,0.793,0.8035,0.7937,0.0134,0.0014,0.0118,0.002,0.8614,0.0789
+open-llm-leaderboard/details_PulsarAI__OpenHermes-2.5-neural-chat-v3-3-Slerp,Winogrande,Winogrande,1267,100,0.5745,0.7916,0.8051,0.793,0.8035,0.7937,0.0134,0.0014,0.0118,0.002,0.8614,0.0789
 open-llm-leaderboard/details_Intel__neural-chat-7b-v3-3,Winogrande,Winogrande,1267,100,-0.1581,0.7964,0.8066,0.7853,0.8038,0.7863,0.0103,0.011,0.0074,0.0101,0.8614,0.0789
 open-llm-leaderboard/details_WebraftAI__synapsellm-7b-mistral-v0.4-preview3,Winogrande,Winogrande,1267,100,0.5612,0.7348,0.7182,0.7503,0.7222,0.7468,0.0166,0.0155,0.0126,0.012,0.8614,0.0789
 open-llm-leaderboard/details_webbigdata__ALMA-7B-Ja-V2,Winogrande,Winogrande,1267,100,-0.0552,0.734,0.7877,0.7299,0.7803,0.7344,0.0537,0.0041,0.0463,0.0004,0.8614,0.0789

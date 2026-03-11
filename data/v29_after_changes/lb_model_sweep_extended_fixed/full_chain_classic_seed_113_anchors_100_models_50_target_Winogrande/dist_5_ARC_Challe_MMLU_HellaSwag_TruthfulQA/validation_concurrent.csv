@@ -87,7 +87,7 @@ open-llm-leaderboard/details_jarradh__llama2_70b_chat_uncensored,Winogrande,Wino
 open-llm-leaderboard/details_mosaicml__mpt-7b,Winogrande,Winogrande,1267,100,1.5101,0.7214,0.7356,0.598,0.7134,0.6055,0.0142,0.1234,0.008,0.1159,0.8293,0.0789
 open-llm-leaderboard/details_elinas__chronos-13b-v2,Winogrande,Winogrande,1267,100,3.2718,0.7506,0.7601,0.6969,0.7499,0.7005,0.0095,0.0537,0.0007,0.0501,0.8293,0.0789
 open-llm-leaderboard/details_ashercn97__giraffe-7b,Winogrande,Winogrande,1267,100,1.6322,0.6898,0.7316,0.6117,0.712,0.6162,0.0418,0.0781,0.0221,0.0736,0.8293,0.0789
-open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,Winogrande,Winogrande,1267,100,3.489,0.7561,0.7624,0.7004,0.7525,0.7044,0.0063,0.0557,0.0036,0.0518,0.8293,0.0789
+open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,Winogrande,Winogrande,1267,100,3.4889,0.7561,0.7624,0.7004,0.7525,0.7044,0.0063,0.0557,0.0036,0.0518,0.8293,0.0789
 open-llm-leaderboard/details_openbmb__UltraLM-65b,Winogrande,Winogrande,1267,100,1.792,0.8114,0.869,0.7617,0.852,0.7696,0.0576,0.0497,0.0406,0.0418,0.8293,0.0789
 open-llm-leaderboard/details_ashercn97__manatee-7b,Winogrande,Winogrande,1267,100,1.4659,0.7451,0.7743,0.6945,0.7614,0.6987,0.0292,0.0506,0.0163,0.0464,0.8293,0.0789
 open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,Winogrande,Winogrande,1267,100,1.9512,0.7403,0.7901,0.662,0.7698,0.6712,0.0497,0.0783,0.0294,0.0691,0.8293,0.0789

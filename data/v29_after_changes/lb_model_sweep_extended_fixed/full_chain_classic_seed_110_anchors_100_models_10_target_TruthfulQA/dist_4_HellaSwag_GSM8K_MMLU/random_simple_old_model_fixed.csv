@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_moreh__MoMo-70B-lora-1.8.6-DPO,1,0.0118,0.0,0.7017,0.0,0.69,0.0
+open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,1,0.0292,0.0,0.5221,0.0,0.5514,0.0
+open-llm-leaderboard/details_AdaptLLM__finance-chat,1,0.0361,0.0,0.4816,0.0,0.4454,0.0
+open-llm-leaderboard/details_nlpguy__ColorShadow-7B,1,0.0114,0.0,0.5842,0.0,0.5956,0.0
+open-llm-leaderboard/details_bofenghuang__vigostral-7b-chat,1,0.0406,0.0,0.4518,0.0,0.4924,0.0
+open-llm-leaderboard/details_luffycodes__llama-shishya-7b-ep3-v1,1,0.081,0.0,0.39,0.0,0.309,0.0
+open-llm-leaderboard/details_LTC-AI-Labs__L2-7b-Beluga-WVG-Test,1,0.0339,0.0,0.4915,0.0,0.4576,0.0
+open-llm-leaderboard/details_kevinpro__Vicuna-13B-CoT,1,0.0385,0.0,0.5593,0.0,0.5208,0.0
+open-llm-leaderboard/details_ashercn97__manatee-7b,1,0.0158,0.0,0.4835,0.0,0.4677,0.0
+open-llm-leaderboard/details_fireballoon__baichuan-vicuna-chinese-7b,1,0.0361,0.0,0.4606,0.0,0.4245,0.0
