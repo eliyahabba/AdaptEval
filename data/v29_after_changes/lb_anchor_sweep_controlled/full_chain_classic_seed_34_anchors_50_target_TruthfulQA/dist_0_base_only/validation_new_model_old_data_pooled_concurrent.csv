@@ -1,5 +1,5 @@
 model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_fblgit__UNA-POLAR-10.7B-InstructMath-v2,MMLU,MMLU,14042,50,325.3168,0.6506,0.6438,0.6528,0.6491,0.6528,0.0068,0.0022,0.0016,0.0022,0.4137,0.0036
+open-llm-leaderboard/details_fblgit__UNA-POLAR-10.7B-InstructMath-v2,MMLU,MMLU,14042,50,325.8547,0.6506,0.6438,0.6528,0.6491,0.6528,0.0068,0.0022,0.0016,0.0022,0.4137,0.0036
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,MMLU,MMLU,14042,50,-0.1921,0.567,0.5993,0.5838,0.5902,0.5838,0.0323,0.0168,0.0232,0.0168,0.4137,0.0036
 open-llm-leaderboard/details_ed001__datascience-coder-6.7b,MMLU,MMLU,14042,50,-0.1704,0.3622,0.3596,0.3325,0.3438,0.3326,0.0026,0.0297,0.0184,0.0296,0.4137,0.0036
 open-llm-leaderboard/details_WizardLM__WizardMath-7B-V1.0,MMLU,MMLU,14042,50,0.0097,0.45,0.4427,0.3872,0.4102,0.3874,0.0073,0.0628,0.0398,0.0626,0.4137,0.0036
@@ -16,7 +16,7 @@ open-llm-leaderboard/details_macadeliccc__polyglot-math-4x7b,MMLU,MMLU,14042,50,
 open-llm-leaderboard/details_CallComply__SOLAR-10.7B-Instruct-v1.0-128k,MMLU,MMLU,14042,50,0.9903,0.5643,0.6238,0.5543,0.5832,0.5545,0.0595,0.01,0.0189,0.0098,0.4137,0.0036
 open-llm-leaderboard/details_bhavinjawade__SOLAR-10B-Nector-DPO-Jawade,MMLU,MMLU,14042,50,3.2825,0.651,0.6604,0.6342,0.6451,0.6343,0.0095,0.0167,0.0059,0.0167,0.4137,0.0036
 open-llm-leaderboard/details_cloudyu__Yi-34Bx3-MoE-90B,MMLU,MMLU,14042,50,1.9443,0.7805,0.775,0.7892,0.7832,0.7891,0.0056,0.0087,0.0027,0.0085,0.4137,0.0036
-open-llm-leaderboard/details_flemmingmiguel__NeuDist-Ro-7B,MMLU,MMLU,14042,50,28.9488,0.644,0.6052,0.6422,0.6269,0.6422,0.0388,0.0018,0.0171,0.0018,0.4137,0.0036
+open-llm-leaderboard/details_flemmingmiguel__NeuDist-Ro-7B,MMLU,MMLU,14042,50,28.951,0.644,0.6052,0.6422,0.6269,0.6422,0.0388,0.0018,0.0171,0.0018,0.4137,0.0036
 open-llm-leaderboard/details_KnutJaegersberg__Qwen-14B-Llamafied,MMLU,MMLU,14042,50,0.0318,0.6547,0.7693,0.6605,0.7057,0.6608,0.1147,0.0058,0.051,0.0061,0.4137,0.0036
 open-llm-leaderboard/details_charlesdedampierre__TopicNeuralHermes-2.5-Mistral-7B,MMLU,MMLU,14042,50,0.6837,0.6257,0.7096,0.6626,0.6821,0.6627,0.0839,0.0369,0.0564,0.037,0.4137,0.0036
 open-llm-leaderboard/details_udkai__Turdus,MMLU,MMLU,14042,50,1.0871,0.6392,0.5885,0.6118,0.6022,0.6118,0.0506,0.0273,0.037,0.0274,0.4137,0.0036
@@ -29,16 +29,16 @@ open-llm-leaderboard/details_UCLA-AGI__test0,MMLU,MMLU,14042,50,1.1519,0.6038,0.
 open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.4,MMLU,MMLU,14042,50,-0.3967,0.7454,0.8164,0.7478,0.7762,0.7479,0.071,0.0024,0.0308,0.0025,0.4137,0.0036
 open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,MMLU,MMLU,14042,50,1.0833,0.7724,0.8301,0.8052,0.8154,0.8051,0.0577,0.0328,0.043,0.0327,0.4137,0.0036
 open-llm-leaderboard/details_Weyaxi__Nous-Hermes-2-SUS-Chat-2x34B,MMLU,MMLU,14042,50,3.3819,0.7661,0.8568,0.7816,0.8127,0.7815,0.0907,0.0155,0.0466,0.0155,0.4137,0.0036
-open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,MMLU,MMLU,14042,50,28.9488,0.6439,0.6052,0.6422,0.6269,0.6422,0.0387,0.0018,0.0171,0.0018,0.4137,0.0036
+open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,MMLU,MMLU,14042,50,28.951,0.6439,0.6052,0.6422,0.6269,0.6422,0.0387,0.0018,0.0171,0.0018,0.4137,0.0036
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,MMLU,MMLU,14042,50,0.5598,0.6536,0.6251,0.5915,0.6054,0.5916,0.0285,0.0621,0.0482,0.062,0.4137,0.0036
 open-llm-leaderboard/details_nlpguy__ColorShadow-7B,MMLU,MMLU,14042,50,0.7752,0.6139,0.559,0.5409,0.5484,0.541,0.0549,0.073,0.0654,0.0729,0.4137,0.0036
 open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,MMLU,MMLU,14042,50,-0.7912,0.5852,0.5511,0.5989,0.579,0.5987,0.0341,0.0137,0.0062,0.0135,0.4137,0.0036
 open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,MMLU,MMLU,14042,50,0.9527,0.6183,0.5415,0.529,0.5342,0.529,0.0768,0.0893,0.0841,0.0893,0.4137,0.0036
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,50,72.7738,0.6528,0.6455,0.6443,0.6448,0.6443,0.0073,0.0084,0.0079,0.0084,0.4137,0.0036
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,50,73.0693,0.6528,0.6455,0.6444,0.6448,0.6444,0.0073,0.0084,0.0079,0.0084,0.4137,0.0036
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,MMLU,MMLU,14042,50,-0.5782,0.6141,0.528,0.5613,0.5474,0.5612,0.0861,0.0528,0.0666,0.0529,0.4137,0.0036
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,MMLU,MMLU,14042,50,0.6816,0.6176,0.6099,0.5862,0.596,0.5862,0.0078,0.0315,0.0216,0.0314,0.4137,0.0036
 open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5,MMLU,MMLU,14042,50,-0.2894,0.7776,0.7737,0.737,0.7522,0.737,0.0039,0.0406,0.0254,0.0406,0.4137,0.0036
-open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,MMLU,MMLU,14042,50,58.6277,0.6519,0.6837,0.6652,0.6728,0.6652,0.0318,0.0133,0.0209,0.0133,0.4137,0.0036
+open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,MMLU,MMLU,14042,50,58.717,0.6519,0.6837,0.6652,0.6728,0.6652,0.0318,0.0133,0.0209,0.0133,0.4137,0.0036
 open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,MMLU,MMLU,14042,50,-1.3302,0.5541,0.5291,0.4972,0.5104,0.4973,0.0251,0.0569,0.0437,0.0568,0.4137,0.0036
 open-llm-leaderboard/details_acrastt__kalomaze-stuff,MMLU,MMLU,14042,50,2.2549,0.6216,0.5909,0.5621,0.5741,0.5622,0.0307,0.0595,0.0475,0.0593,0.4137,0.0036
 open-llm-leaderboard/details_Mihaiii__Pallas-0.4,MMLU,MMLU,14042,50,0.0507,0.7521,0.8198,0.7218,0.7624,0.7219,0.0677,0.0303,0.0103,0.0302,0.4137,0.0036

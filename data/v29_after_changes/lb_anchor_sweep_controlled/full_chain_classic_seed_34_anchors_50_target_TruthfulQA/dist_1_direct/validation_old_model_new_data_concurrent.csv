@@ -6,7 +6,7 @@ open-llm-leaderboard/details_FelixChao__ExtremeDolphin-MoE,TruthfulQA,TruthfulQA
 open-llm-leaderboard/details_LoSboccacc__orthogonal-2x7B-base,TruthfulQA,TruthfulQA,817,50,1.4463,0.66,0.6819,0.6778,0.6817,0.6769,0.0219,0.0178,0.0216,0.0169,0.9506,0.0612
 open-llm-leaderboard/details_moreh__MoMo-70B-lora-1.8.6-DPO,TruthfulQA,TruthfulQA,817,50,-1.8205,0.69,0.658,0.7321,0.6613,0.7261,0.032,0.0421,0.0286,0.0362,0.9506,0.0612
 open-llm-leaderboard/details_deepseek-ai__deepseek-moe-16b-base,TruthfulQA,TruthfulQA,817,50,1.8533,0.3608,0.3713,0.4253,0.3738,0.4215,0.0105,0.0645,0.013,0.0607,0.9506,0.0612
-open-llm-leaderboard/details_nfaheem__Marcoroni-7b-DPO-Merge,TruthfulQA,TruthfulQA,817,50,2.9535,0.7047,0.7316,0.7056,0.7304,0.7062,0.0269,0.0009,0.0257,0.0015,0.9506,0.0612
+open-llm-leaderboard/details_nfaheem__Marcoroni-7b-DPO-Merge,TruthfulQA,TruthfulQA,817,50,2.9536,0.7047,0.7316,0.7056,0.7304,0.7062,0.0269,0.0009,0.0257,0.0015,0.9506,0.0612
 open-llm-leaderboard/details_maywell__PiVoT-SUS-RP,TruthfulQA,TruthfulQA,817,50,-4.6193,0.5457,0.5577,0.6388,0.5615,0.6334,0.0121,0.0932,0.0158,0.0878,0.9506,0.0612
 open-llm-leaderboard/details_BAAI__Aquila2-34B,TruthfulQA,TruthfulQA,817,50,0.1622,0.4085,0.377,0.5823,0.3865,0.5692,0.0315,0.1738,0.022,0.1607,0.9506,0.0612
 open-llm-leaderboard/details_h2m__mhm-7b-v1.3,TruthfulQA,TruthfulQA,817,50,3.1859,0.4622,0.4506,0.4656,0.4513,0.4634,0.0116,0.0034,0.011,0.0012,0.9506,0.0612
@@ -94,7 +94,7 @@ open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,TruthfulQA,Tru
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,TruthfulQA,TruthfulQA,817,50,1.836,0.4416,0.4942,0.5426,0.4964,0.539,0.0526,0.101,0.0548,0.0974,0.9506,0.0612
 open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,TruthfulQA,TruthfulQA,817,50,2.5586,0.5645,0.5893,0.6342,0.5913,0.6291,0.0248,0.0697,0.0268,0.0646,0.9506,0.0612
 open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED,TruthfulQA,TruthfulQA,817,50,2.2363,0.5285,0.5798,0.6142,0.5814,0.6118,0.0513,0.0857,0.0529,0.0832,0.9506,0.0612
-open-llm-leaderboard/details_zyh3826__GML-Mistral-merged-v1,TruthfulQA,TruthfulQA,817,50,3.456,0.6928,0.7241,0.7075,0.7232,0.7072,0.0313,0.0147,0.0305,0.0145,0.9506,0.0612
+open-llm-leaderboard/details_zyh3826__GML-Mistral-merged-v1,TruthfulQA,TruthfulQA,817,50,3.3614,0.6928,0.7241,0.7078,0.7232,0.7075,0.0313,0.015,0.0305,0.0147,0.9506,0.0612
 open-llm-leaderboard/details_crumb__apricot-wildflower-20,TruthfulQA,TruthfulQA,817,50,2.5429,0.4176,0.416,0.5084,0.4202,0.5015,0.0017,0.0907,0.0026,0.0838,0.9506,0.0612
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,TruthfulQA,TruthfulQA,817,50,0.397,0.6576,0.6835,0.7163,0.685,0.714,0.0259,0.0587,0.0274,0.0564,0.9506,0.0612
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,TruthfulQA,TruthfulQA,817,50,-0.6411,0.6571,0.6896,0.716,0.6908,0.7139,0.0325,0.0589,0.0337,0.0568,0.9506,0.0612
@@ -124,7 +124,7 @@ open-llm-leaderboard/details_microsoft__phi-2,TruthfulQA,TruthfulQA,817,50,1.533
 open-llm-leaderboard/details_one-man-army__una-neural-chat-v3-3-P2-OMA,TruthfulQA,TruthfulQA,817,50,2.051,0.6549,0.6721,0.6802,0.6725,0.6786,0.0173,0.0254,0.0176,0.0238,0.9506,0.0612
 open-llm-leaderboard/details_jondurbin__bagel-7b-v0.1,TruthfulQA,TruthfulQA,817,50,3.2136,0.5265,0.5575,0.5636,0.5578,0.5622,0.031,0.0371,0.0312,0.0357,0.9506,0.0612
 open-llm-leaderboard/details_martyn__llama-megamerge-dare-13b,TruthfulQA,TruthfulQA,817,50,2.0598,0.4576,0.4766,0.5213,0.4786,0.5181,0.019,0.0637,0.0211,0.0605,0.9506,0.0612
-open-llm-leaderboard/details_rwitz2__pee,TruthfulQA,TruthfulQA,817,50,2.9311,0.6056,0.6001,0.6557,0.6026,0.6512,0.0056,0.0501,0.003,0.0455,0.9506,0.0612
+open-llm-leaderboard/details_rwitz2__pee,TruthfulQA,TruthfulQA,817,50,2.931,0.6056,0.6001,0.6557,0.6026,0.6512,0.0056,0.0501,0.003,0.0455,0.9506,0.0612
 open-llm-leaderboard/details_Dans-DiscountModels__Dans-07YahooAnswers-7b,TruthfulQA,TruthfulQA,817,50,3.19,0.4184,0.4047,0.5058,0.4094,0.499,0.0137,0.0874,0.009,0.0806,0.9506,0.0612
 open-llm-leaderboard/details_janhq__supermario-slerp,TruthfulQA,TruthfulQA,817,50,3.2296,0.6011,0.5953,0.6509,0.5978,0.6463,0.0058,0.0499,0.0032,0.0453,0.9506,0.0612
 open-llm-leaderboard/details_mistralai__Mixtral-8x7B-v0.1,TruthfulQA,TruthfulQA,817,50,1.163,0.4681,0.4557,0.6339,0.464,0.6228,0.0123,0.1659,0.0041,0.1547,0.9506,0.0612
@@ -202,7 +202,7 @@ open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,TruthfulQA,Tr
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down,TruthfulQA,TruthfulQA,817,50,2.6415,0.3895,0.3694,0.4871,0.3748,0.4796,0.0202,0.0976,0.0147,0.0901,0.9506,0.0612
 open-llm-leaderboard/details_beaugogh__Llama2-7b-openorca-mc-v2-dpo,TruthfulQA,TruthfulQA,817,50,1.8792,0.5313,0.4923,0.485,0.4919,0.484,0.0391,0.0463,0.0395,0.0473,0.9506,0.0612
 open-llm-leaderboard/details_Sao10K__BrainDerp2,TruthfulQA,TruthfulQA,817,50,1.717,0.5719,0.5937,0.5998,0.5939,0.598,0.0218,0.0279,0.022,0.0261,0.9506,0.0612
-open-llm-leaderboard/details_Undi95__MLewd-Chat-v2-13B,TruthfulQA,TruthfulQA,817,50,-0.6756,0.5451,0.5548,0.5831,0.556,0.5804,0.0097,0.038,0.011,0.0354,0.9506,0.0612
+open-llm-leaderboard/details_Undi95__MLewd-Chat-v2-13B,TruthfulQA,TruthfulQA,817,50,-0.6755,0.5451,0.5548,0.5831,0.556,0.5804,0.0097,0.038,0.011,0.0354,0.9506,0.0612
 open-llm-leaderboard/details_camel-ai__CAMEL-13B-Role-Playing-Data,TruthfulQA,TruthfulQA,817,50,1.2724,0.4635,0.4566,0.4942,0.4583,0.4909,0.0069,0.0307,0.0052,0.0274,0.9506,0.0612
 open-llm-leaderboard/details_lu-vae__llama2-13B-sharegpt4-orca-openplatypus-8w,TruthfulQA,TruthfulQA,817,50,1.5082,0.4566,0.4614,0.5814,0.4669,0.5732,0.0048,0.1248,0.0104,0.1166,0.9506,0.0612
 open-llm-leaderboard/details_akjindal53244__Mistral-7B-v0.1-Open-Platypus,TruthfulQA,TruthfulQA,817,50,1.8556,0.4733,0.4419,0.557,0.4472,0.55,0.0314,0.0837,0.026,0.0767,0.9506,0.0612
