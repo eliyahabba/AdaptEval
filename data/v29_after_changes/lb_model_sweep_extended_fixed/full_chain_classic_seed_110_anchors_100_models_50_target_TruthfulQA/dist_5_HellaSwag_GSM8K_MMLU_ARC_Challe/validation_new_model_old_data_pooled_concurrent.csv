@@ -408,7 +408,7 @@ open-llm-leaderboard/details_rombodawg__Open_Gpt4_8x7B,ARC Challenge,ARC Challen
 open-llm-leaderboard/details_ewqr2130__mistral-se-inst-ppo,ARC Challenge,ARC Challenge,1172,4,-2.2518,0.5631,0.0288,0.6081,0.1618,0.6083,0.5343,0.045,0.4014,0.0451,0.7705,0.0034
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough,ARC Challenge,ARC Challenge,1172,4,-0.5038,0.6945,0.0288,0.6178,0.164,0.6179,0.6657,0.0767,0.5306,0.0767,0.7705,0.0034
 open-llm-leaderboard/details_chargoddard__mixtralmerge-8x7B-rebalanced-test,ARC Challenge,ARC Challenge,1172,4,0.0601,0.6817,0.0288,0.6673,0.1753,0.6672,0.6529,0.0145,0.5065,0.0146,0.7705,0.0034
-open-llm-leaderboard/details_TIGER-Lab__TIGERScore-13B,ARC Challenge,ARC Challenge,1172,4,-2.546,0.5904,0.0193,0.5922,0.1507,0.5919,0.5711,0.0018,0.4397,0.0015,0.7705,0.0034
+open-llm-leaderboard/details_TIGER-Lab__TIGERScore-13B,ARC Challenge,ARC Challenge,1172,4,-2.546,0.5904,0.0193,0.5922,0.1507,0.5919,0.5711,0.0018,0.4397,0.0014,0.7705,0.0034
 open-llm-leaderboard/details_qblocks__codellama_7b_DolphinCoder,ARC Challenge,ARC Challenge,1172,4,-1.1728,0.4198,0.0193,0.4571,0.1197,0.4568,0.4005,0.0373,0.3001,0.037,0.7705,0.0034
 open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,ARC Challenge,ARC Challenge,1172,4,-2.2973,0.6058,0.0288,0.5609,0.151,0.5613,0.577,0.0449,0.4548,0.0445,0.7705,0.0034
 open-llm-leaderboard/details_Weyaxi__Nous-Hermes-2-SUS-Chat-2x34B,ARC Challenge,ARC Challenge,1172,4,0.1363,0.6681,0.0288,0.7878,0.2028,0.7872,0.6393,0.1197,0.4653,0.1191,0.7705,0.0034

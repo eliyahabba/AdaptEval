@@ -30,7 +30,7 @@ open-llm-leaderboard/details_vikash06__mistral_v1,TruthfulQA,TruthfulQA,817,100,
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,TruthfulQA,TruthfulQA,817,100,1.71,0.4117,0.4008,0.4164,0.4034,0.4149,0.011,0.0047,0.0084,0.0031,0.8151,0.1224
 open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,TruthfulQA,TruthfulQA,817,100,3.1983,0.7198,0.7214,0.7258,0.7221,0.7255,0.0016,0.0061,0.0024,0.0057,0.8151,0.1224
 open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,TruthfulQA,TruthfulQA,817,100,2.923,0.5645,0.5765,0.5871,0.5784,0.5872,0.0119,0.0226,0.0139,0.0227,0.8151,0.1224
-open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,2.8801,0.7252,0.7218,0.7319,0.7235,0.7311,0.0034,0.0067,0.0017,0.0059,0.8151,0.1224
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,2.88,0.7252,0.7218,0.7319,0.7235,0.7311,0.0034,0.0067,0.0017,0.0059,0.8151,0.1224
 open-llm-leaderboard/details_KnutJaegersberg__Walter-Mistral-7B,TruthfulQA,TruthfulQA,817,100,1.3759,0.3993,0.3852,0.4181,0.3906,0.4145,0.0142,0.0188,0.0087,0.0152,0.8151,0.1224
 open-llm-leaderboard/details_upaya07__Birbal-7B-V1,TruthfulQA,TruthfulQA,817,100,1.859,0.4534,0.444,0.4711,0.4486,0.4687,0.0094,0.0177,0.0048,0.0153,0.8151,0.1224
 open-llm-leaderboard/details_martyn__mistral-megamerge-dare-7b,TruthfulQA,TruthfulQA,817,100,1.1963,0.5108,0.4439,0.5113,0.4554,0.5058,0.0669,0.0005,0.0555,0.005,0.8151,0.1224

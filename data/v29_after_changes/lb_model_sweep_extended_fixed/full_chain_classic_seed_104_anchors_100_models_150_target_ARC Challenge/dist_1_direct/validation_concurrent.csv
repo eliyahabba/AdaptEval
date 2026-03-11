@@ -13,7 +13,7 @@ open-llm-leaderboard/details_AA051611__A0110,ARC Challenge,ARC Challenge,1172,10
 open-llm-leaderboard/details_RatanRohith__MistralBeagle-RS-7B-V0.1,ARC Challenge,ARC Challenge,1172,100,1.0509,0.6945,0.7321,0.7192,0.7316,0.72,0.0375,0.0247,0.0371,0.0254,0.9611,0.0853
 open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,ARC Challenge,ARC Challenge,1172,100,0.8191,0.6425,0.6621,0.6399,0.6613,0.6402,0.0196,0.0026,0.0188,0.0023,0.9611,0.0853
 open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp,ARC Challenge,ARC Challenge,1172,100,0.8429,0.6459,0.6408,0.6255,0.6402,0.6248,0.0051,0.0204,0.0057,0.0211,0.9611,0.0853
-open-llm-leaderboard/details_gagan3012__MetaModel_moe,ARC Challenge,ARC Challenge,1172,100,25.5349,0.7125,0.7193,0.7099,0.7189,0.7099,0.0068,0.0026,0.0065,0.0026,0.9611,0.0853
+open-llm-leaderboard/details_gagan3012__MetaModel_moe,ARC Challenge,ARC Challenge,1172,100,24.1365,0.7125,0.7193,0.7099,0.7189,0.7099,0.0068,0.0026,0.0065,0.0026,0.9611,0.0853
 open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,ARC Challenge,ARC Challenge,1172,100,1.0287,0.6502,0.6561,0.6479,0.6558,0.6478,0.006,0.0023,0.0056,0.0024,0.9611,0.0853
 open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6,ARC Challenge,ARC Challenge,1172,100,0.4887,0.6246,0.6323,0.641,0.6326,0.6406,0.0077,0.0164,0.008,0.0161,0.9611,0.0853
 open-llm-leaderboard/details_ewqr2130__mistral-se-inst-ppo,ARC Challenge,ARC Challenge,1172,100,0.7514,0.5631,0.6118,0.6147,0.6119,0.6146,0.0486,0.0515,0.0487,0.0514,0.9611,0.0853
@@ -31,7 +31,7 @@ open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,ARC Challenge,ARC Cha
 open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,ARC Challenge,ARC Challenge,1172,100,0.8683,0.68,0.6894,0.6695,0.6886,0.6691,0.0094,0.0106,0.0086,0.0109,0.9611,0.0853
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,ARC Challenge,ARC Challenge,1172,100,0.5895,0.5358,0.5802,0.5509,0.5791,0.5516,0.0444,0.0151,0.0433,0.0158,0.9611,0.0853
 open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,ARC Challenge,ARC Challenge,1172,100,0.971,0.6792,0.6749,0.6742,0.6749,0.6733,0.0043,0.005,0.0043,0.0058,0.9611,0.0853
-open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-SOLAR-Instruct,ARC Challenge,ARC Challenge,1172,100,171.0145,0.7082,0.7244,0.7206,0.7243,0.7206,0.0162,0.0124,0.0161,0.0124,0.9611,0.0853
+open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-SOLAR-Instruct,ARC Challenge,ARC Challenge,1172,100,175.3093,0.7082,0.7244,0.7206,0.7243,0.7206,0.0162,0.0124,0.0161,0.0124,0.9611,0.0853
 open-llm-leaderboard/details_xDAN-AI__xDAN-L1Mix-DeepThinking-v2,ARC Challenge,ARC Challenge,1172,100,0.831,0.6237,0.6323,0.646,0.6328,0.6455,0.0085,0.0223,0.009,0.0218,0.9611,0.0853
 open-llm-leaderboard/details_perlthoughts__Starling-LM-alpha-8x7B-MoE,ARC Challenge,ARC Challenge,1172,100,0.6655,0.6365,0.6715,0.6655,0.6713,0.6655,0.035,0.029,0.0347,0.029,0.9611,0.0853
 open-llm-leaderboard/details_one-man-army__una-neural-chat-v3-3-P2-OMA,ARC Challenge,ARC Challenge,1172,100,0.8926,0.6732,0.698,0.6801,0.6973,0.6801,0.0247,0.0069,0.0241,0.0069,0.9611,0.0853

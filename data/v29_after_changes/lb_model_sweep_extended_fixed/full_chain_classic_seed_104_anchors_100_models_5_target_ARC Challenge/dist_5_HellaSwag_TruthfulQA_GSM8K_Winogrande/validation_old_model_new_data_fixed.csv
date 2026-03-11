@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_PeanutJar__Mistral-v0.1-PeanutButter-v0.0.2-7B,ARC Challenge,ARC Challenge,1172,100,0.3687,0.6177,0.6186,0.8867,0.6288,0.8629,0.0009,0.269,0.0111,0.2451,0.9581,0.0853
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down,ARC Challenge,ARC Challenge,1172,100,0.3584,0.587,0.6126,0.8218,0.6204,0.7984,0.0256,0.2347,0.0334,0.2114,0.9581,0.0853
+open-llm-leaderboard/details_Undi95__Nous-Hermes-13B-Code,ARC Challenge,ARC Challenge,1172,100,0.3424,0.6118,0.6374,0.8649,0.6459,0.842,0.0256,0.2532,0.0342,0.2302,0.9581,0.0853
+open-llm-leaderboard/details_ashercn97__giraffe-7b,ARC Challenge,ARC Challenge,1172,100,0.3718,0.4718,0.4744,0.7592,0.4853,0.7352,0.0026,0.2874,0.0135,0.2633,0.9581,0.0853
+open-llm-leaderboard/details_The-Face-Of-Goonery__Chronos-Beluga-v2-13bfp16,ARC Challenge,ARC Challenge,1172,100,0.3822,0.6075,0.587,0.8147,0.5955,0.7895,0.0205,0.2072,0.012,0.1819,0.9581,0.0853

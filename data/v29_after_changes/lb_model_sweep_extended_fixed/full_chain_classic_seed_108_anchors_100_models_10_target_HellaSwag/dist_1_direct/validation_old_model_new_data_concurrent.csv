@@ -4,7 +4,7 @@ open-llm-leaderboard/details_superlazycoder__NeuralPipe-7B-slerp,HellaSwag,Hella
 open-llm-leaderboard/details_perlthoughts__Starling-LM-alpha-8x7B-MoE,HellaSwag,HellaSwag,10042,100,0.9347,0.849,0.8438,0.8163,0.8227,0.8167,0.0053,0.0327,0.0263,0.0323,0.2225,0.01
 open-llm-leaderboard/details_jondurbin__bagel-7b-v0.1,HellaSwag,HellaSwag,10042,100,0.8212,0.8314,0.8462,0.8043,0.8141,0.8049,0.0148,0.0271,0.0173,0.0265,0.2225,0.01
 open-llm-leaderboard/details_uukuguy__speechless-code-mistral-7b-v2.0,HellaSwag,HellaSwag,10042,100,0.4472,0.7561,0.7558,0.684,0.7004,0.6845,0.0003,0.0721,0.0558,0.0716,0.2225,0.01
-open-llm-leaderboard/details_dhmeltzer__llama-7b-SFT_ds_wiki65k_1024_r_64_alpha_16_merged,HellaSwag,HellaSwag,10042,100,0.6651,0.7806,0.7727,0.7064,0.7215,0.7069,0.008,0.0743,0.0591,0.0737,0.2225,0.01
+open-llm-leaderboard/details_dhmeltzer__llama-7b-SFT_ds_wiki65k_1024_r_64_alpha_16_merged,HellaSwag,HellaSwag,10042,100,0.665,0.7806,0.7727,0.7064,0.7215,0.7069,0.008,0.0743,0.0591,0.0737,0.2225,0.01
 open-llm-leaderboard/details_TheBloke__tulu-7B-fp16,HellaSwag,HellaSwag,10042,100,0.5836,0.7704,0.7711,0.7077,0.7223,0.7083,0.0007,0.0626,0.0481,0.0621,0.2225,0.01
 open-llm-leaderboard/details_The-Face-Of-Goonery__huginnv1.2,HellaSwag,HellaSwag,10042,100,0.8696,0.8428,0.8487,0.8171,0.8245,0.8176,0.006,0.0257,0.0182,0.0252,0.2225,0.01
 open-llm-leaderboard/details_klosax__open_llama_13b_600bt_preview,HellaSwag,HellaSwag,10042,100,0.5436,0.7243,0.7285,0.6462,0.665,0.6469,0.0043,0.078,0.0592,0.0774,0.2225,0.01
