@@ -13,7 +13,7 @@ open-llm-leaderboard/details_osanseviero__mistral-instruct-frankenmerge,Winogran
 open-llm-leaderboard/details_RatanRohith__MistralBeagle-RS-7B-V0.1,Winogrande,Winogrande,1267,100,1.2232,0.8169,0.7861,0.7703,0.7857,0.7727,0.0308,0.0466,0.0312,0.0442,0.9679,0.0789
 open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca,Winogrande,Winogrande,1267,100,0.1242,0.7798,0.7695,0.7597,0.7693,0.7619,0.0103,0.0201,0.0105,0.0179,0.9679,0.0789
 open-llm-leaderboard/details_AA051610__A0106,Winogrande,Winogrande,1267,100,2.8999,0.8272,0.8185,0.7646,0.8169,0.7701,0.0087,0.0625,0.0102,0.0571,0.9679,0.0789
-open-llm-leaderboard/details_gagan3012__MetaModel_moe,Winogrande,Winogrande,1267,100,-28.8793,0.8335,0.8256,0.8358,0.8259,0.8358,0.0079,0.0023,0.0076,0.0023,0.9679,0.0789
+open-llm-leaderboard/details_gagan3012__MetaModel_moe,Winogrande,Winogrande,1267,100,-28.8812,0.8335,0.8256,0.8358,0.8259,0.8358,0.0079,0.0023,0.0076,0.0023,0.9679,0.0789
 open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,Winogrande,Winogrande,1267,100,2.0546,0.8398,0.8485,0.7917,0.8468,0.7962,0.0087,0.0481,0.007,0.0436,0.9679,0.0789
 open-llm-leaderboard/details_chargoddard__mixtralmerge-8x7B-rebalanced-test,Winogrande,Winogrande,1267,100,4.4715,0.8129,0.8051,0.787,0.8045,0.7893,0.0079,0.0259,0.0084,0.0236,0.9679,0.0789
 open-llm-leaderboard/details_OpenBuddy__openbuddy-mixtral-7bx8-v16.3-32k,Winogrande,Winogrande,1267,100,2.2288,0.7711,0.7451,0.7324,0.7447,0.7331,0.026,0.0387,0.0264,0.038,0.9679,0.0789

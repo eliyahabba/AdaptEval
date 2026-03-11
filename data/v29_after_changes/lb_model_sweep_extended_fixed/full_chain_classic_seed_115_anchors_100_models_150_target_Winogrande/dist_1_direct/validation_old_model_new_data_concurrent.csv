@@ -28,10 +28,10 @@ open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.4,Winogrande,Winogrande
 open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,Winogrande,Winogrande,1267,100,-1.7803,0.8335,0.8587,0.7899,0.8426,0.7879,0.0253,0.0435,0.0092,0.0455,0.7726,0.0789
 open-llm-leaderboard/details_Weyaxi__Nous-Hermes-2-SUS-Chat-2x34B,Winogrande,Winogrande,1267,100,-1.1657,0.8374,0.8524,0.7981,0.8396,0.7963,0.015,0.0393,0.0022,0.0411,0.7726,0.0789
 open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,Winogrande,Winogrande,1267,100,-1.7485,0.7822,0.7577,0.7254,0.7495,0.7219,0.0245,0.0567,0.0326,0.0603,0.7726,0.0789
-open-llm-leaderboard/details_TomGrc__FusionNet,Winogrande,Winogrande,1267,100,-17.802,0.8327,0.8358,0.8154,0.8312,0.8156,0.0032,0.0173,0.0015,0.0171,0.7726,0.0789
+open-llm-leaderboard/details_TomGrc__FusionNet,Winogrande,Winogrande,1267,100,-17.8019,0.8327,0.8358,0.8154,0.8312,0.8156,0.0032,0.0173,0.0015,0.0171,0.7726,0.0789
 open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,Winogrande,Winogrande,1267,100,-2.5411,0.8161,0.779,0.7348,0.7686,0.7333,0.0371,0.0813,0.0475,0.0828,0.7726,0.0789
 open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,Winogrande,Winogrande,1267,100,-2.8796,0.8106,0.8327,0.7812,0.8206,0.7795,0.0221,0.0294,0.01,0.031,0.7726,0.0789
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,Winogrande,Winogrande,1267,100,-24.1258,0.8358,0.8358,0.8156,0.8313,0.8159,0.0,0.0202,0.0045,0.0199,0.7726,0.0789
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,Winogrande,Winogrande,1267,100,-24.1271,0.8358,0.8358,0.8156,0.8313,0.8159,0.0,0.0202,0.0045,0.0199,0.7726,0.0789
 open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,Winogrande,Winogrande,1267,100,-0.7612,0.7743,0.7419,0.7091,0.7339,0.7065,0.0324,0.0651,0.0404,0.0677,0.7726,0.0789
 open-llm-leaderboard/details_sr5434__CodegebraGPT-10b,Winogrande,Winogrande,1267,100,-1.7734,0.8098,0.8208,0.753,0.805,0.7514,0.011,0.0567,0.0047,0.0584,0.7726,0.0789
 open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b,Winogrande,Winogrande,1267,100,-1.4549,0.5888,0.5414,0.4695,0.5244,0.4663,0.0474,0.1193,0.0644,0.1225,0.7726,0.0789
@@ -86,7 +86,7 @@ open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mixed-datasets-time
 open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-pretrain,Winogrande,Winogrande,1267,100,-1.5282,0.7553,0.7388,0.7093,0.7315,0.7068,0.0166,0.0461,0.0239,0.0486,0.7726,0.0789
 open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,Winogrande,Winogrande,1267,100,-1.4379,0.7885,0.8398,0.7759,0.8249,0.7745,0.0513,0.0126,0.0365,0.014,0.7726,0.0789
 open-llm-leaderboard/details_Danielbrdz__Barcenas-13b,Winogrande,Winogrande,1267,100,-1.4074,0.7632,0.7956,0.7555,0.7863,0.7548,0.0324,0.0077,0.0231,0.0084,0.7726,0.0789
-open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE5_4w-r4-q_k_v_o,Winogrande,Winogrande,1267,100,-1.3017,0.7664,0.7593,0.734,0.7531,0.7321,0.0071,0.0324,0.0133,0.0343,0.7726,0.0789
+open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE5_4w-r4-q_k_v_o,Winogrande,Winogrande,1267,100,-1.3018,0.7664,0.7593,0.734,0.7531,0.7321,0.0071,0.0324,0.0133,0.0343,0.7726,0.0789
 open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,Winogrande,Winogrande,1267,100,-2.3586,0.7309,0.7048,0.6695,0.6962,0.6669,0.026,0.0613,0.0347,0.0639,0.7726,0.0789
 open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,Winogrande,Winogrande,1267,100,-1.2106,0.738,0.7553,0.7159,0.7461,0.7147,0.0174,0.022,0.0081,0.0233,0.7726,0.0789
 open-llm-leaderboard/details_jondurbin__airoboros-c34b-2.2.1,Winogrande,Winogrande,1267,100,-1.2716,0.7253,0.6953,0.6148,0.6763,0.6118,0.03,0.1105,0.049,0.1136,0.7726,0.0789

@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+open-llm-leaderboard/details_rombodawg__Open_Gpt4_8x7B,GSM8K,GSM8K,1319,100,-4.021,0.5921,0.5936,0.5958,0.5944,0.5961,0.0015,0.0036,0.0023,0.004,0.7004,0.0758
+open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,GSM8K,GSM8K,1319,100,-4.2245,0.492,0.5224,0.4646,0.5052,0.4651,0.0303,0.0274,0.0132,0.027,0.7004,0.0758
+open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,GSM8K,GSM8K,1319,100,-2.4803,0.1387,0.1281,0.1218,0.1267,0.1233,0.0106,0.0169,0.0121,0.0154,0.7004,0.0758
+open-llm-leaderboard/details_chargoddard__llama2-22b-blocktriangular,GSM8K,GSM8K,1319,100,-1.2003,0.1122,0.1114,0.1192,0.1139,0.1195,0.0008,0.007,0.0016,0.0073,0.7004,0.0758
+open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload,GSM8K,GSM8K,1319,100,0.9346,0.1221,0.119,0.0969,0.1127,0.098,0.003,0.0252,0.0093,0.0241,0.7004,0.0758

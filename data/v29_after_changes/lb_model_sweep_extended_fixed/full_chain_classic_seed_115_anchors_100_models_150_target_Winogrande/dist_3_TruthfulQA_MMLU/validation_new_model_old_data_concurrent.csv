@@ -31,7 +31,7 @@ open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,GSM8K,GSM8K,1319,100,2.353
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,GSM8K,GSM8K,1319,100,3.5423,0.5762,0.5914,0.5627,0.5838,0.563,0.0152,0.0135,0.0076,0.0132,0.7335,0.0758
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,GSM8K,GSM8K,1319,100,2.4311,0.7005,0.6975,0.659,0.687,0.6582,0.003,0.0415,0.0135,0.0424,0.7335,0.0758
 open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,GSM8K,GSM8K,1319,100,4.341,0.7225,0.721,0.7026,0.7163,0.7035,0.0015,0.0199,0.0062,0.019,0.7335,0.0758
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,GSM8K,GSM8K,1319,100,8.3746,0.6429,0.6353,0.6168,0.6303,0.6166,0.0076,0.0261,0.0126,0.0264,0.7335,0.0758
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,GSM8K,GSM8K,1319,100,8.3747,0.6429,0.6353,0.6168,0.6303,0.6166,0.0076,0.0261,0.0126,0.0264,0.7335,0.0758
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,GSM8K,GSM8K,1319,100,2.2656,0.5459,0.5398,0.4961,0.5278,0.4947,0.0061,0.0498,0.0181,0.0512,0.7335,0.0758
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,GSM8K,GSM8K,1319,100,2.5981,0.608,0.6513,0.6127,0.6411,0.6133,0.0432,0.0047,0.0331,0.0052,0.7335,0.0758
 open-llm-leaderboard/details_Sao10K__Frostwind-10.7B-v1,GSM8K,GSM8K,1319,100,2.8248,0.5277,0.6217,0.5407,0.6012,0.5447,0.094,0.013,0.0735,0.017,0.7335,0.0758
@@ -129,7 +129,7 @@ open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,TruthfulQA,TruthfulQA,817,
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,TruthfulQA,TruthfulQA,817,100,3.5423,0.641,0.6651,0.706,0.673,0.703,0.0241,0.0651,0.032,0.0621,0.791,0.1224
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,TruthfulQA,TruthfulQA,817,100,2.4311,0.6037,0.6079,0.744,0.6337,0.7313,0.0042,0.1402,0.03,0.1275,0.791,0.1224
 open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,TruthfulQA,TruthfulQA,817,100,4.341,0.5775,0.6007,0.6638,0.6127,0.6581,0.0232,0.0863,0.0352,0.0806,0.791,0.1224
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,TruthfulQA,TruthfulQA,817,100,8.3746,0.7198,0.7315,0.717,0.7289,0.7191,0.0118,0.0028,0.0092,0.0007,0.791,0.1224
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,TruthfulQA,TruthfulQA,817,100,8.3747,0.7198,0.7315,0.717,0.7289,0.7191,0.0118,0.0028,0.0092,0.0007,0.791,0.1224
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,TruthfulQA,TruthfulQA,817,100,2.2656,0.6576,0.6553,0.7223,0.6688,0.7201,0.0023,0.0647,0.0112,0.0625,0.791,0.1224
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,TruthfulQA,TruthfulQA,817,100,2.5981,0.6571,0.6603,0.7321,0.6745,0.7282,0.0032,0.075,0.0174,0.0711,0.791,0.1224
 open-llm-leaderboard/details_Sao10K__Frostwind-10.7B-v1,TruthfulQA,TruthfulQA,817,100,2.8248,0.5041,0.5191,0.5842,0.5313,0.5778,0.015,0.0801,0.0273,0.0737,0.791,0.1224
@@ -227,7 +227,7 @@ open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,MMLU,MMLU,14042,100,2.3533
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,MMLU,MMLU,14042,100,3.5423,0.6087,0.6733,0.6533,0.6553,0.6534,0.0646,0.0446,0.0465,0.0446,0.0948,0.0071
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,MMLU,MMLU,14042,100,2.4311,0.7715,0.7842,0.7327,0.7379,0.7331,0.0127,0.0388,0.0336,0.0384,0.0948,0.0071
 open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,MMLU,MMLU,14042,100,4.341,0.6417,0.653,0.6153,0.619,0.6154,0.0113,0.0265,0.0227,0.0263,0.0948,0.0071
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,MMLU,MMLU,14042,100,8.3746,0.6543,0.6527,0.6604,0.6596,0.6603,0.0016,0.0061,0.0053,0.006,0.0948,0.0071
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,MMLU,MMLU,14042,100,8.3747,0.6543,0.6527,0.6604,0.6596,0.6603,0.0016,0.0061,0.0053,0.006,0.0948,0.0071
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,MMLU,MMLU,14042,100,2.2656,0.7172,0.7096,0.7027,0.7034,0.7027,0.0076,0.0145,0.0138,0.0145,0.0948,0.0071
 open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct,MMLU,MMLU,14042,100,2.5981,0.7049,0.7199,0.7069,0.7081,0.7069,0.015,0.002,0.0032,0.002,0.0948,0.0071
 open-llm-leaderboard/details_Sao10K__Frostwind-10.7B-v1,MMLU,MMLU,14042,100,2.8248,0.6314,0.5922,0.5835,0.5843,0.5835,0.0392,0.0479,0.0471,0.0479,0.0948,0.0071
