@@ -82,7 +82,7 @@ open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,GSM8K,GSM8K,1319,100,-1.3138,0.4208,0.4435,0.4586,0.4436,0.456,0.0227,0.0379,0.0228,0.0352,0.9959,0.0758
 open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1,GSM8K,GSM8K,1319,100,-0.8706,0.4723,0.4109,0.4736,0.4112,0.4682,0.0614,0.0013,0.0612,0.0042,0.9959,0.0758
 open-llm-leaderboard/details_vikash06__mistral_v1,GSM8K,GSM8K,1319,100,1.2668,0.0948,0.066,0.1403,0.0662,0.1352,0.0288,0.0456,0.0285,0.0404,0.9959,0.0758
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,GSM8K,GSM8K,1319,100,-6.4043,0.6429,0.6444,0.6526,0.6445,0.6507,0.0015,0.0097,0.0015,0.0078,0.9959,0.0758
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,GSM8K,GSM8K,1319,100,-6.4044,0.6429,0.6444,0.6526,0.6445,0.6507,0.0015,0.0097,0.0015,0.0078,0.9959,0.0758
 open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,GSM8K,GSM8K,1319,100,-5.5922,0.6376,0.6566,0.6661,0.6566,0.6643,0.019,0.0285,0.019,0.0267,0.9959,0.0758
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,GSM8K,GSM8K,1319,100,-1.4581,0.3844,0.4284,0.4742,0.4285,0.4714,0.044,0.0898,0.0441,0.087,0.9959,0.0758
 open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,GSM8K,GSM8K,1319,100,-2.7593,0.6846,0.6694,0.6699,0.6694,0.6674,0.0152,0.0147,0.0152,0.0172,0.9959,0.0758
