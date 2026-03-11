@@ -28,9 +28,9 @@ open-llm-leaderboard/details_Walmart-the-bag__Solar-10.7B-Cato,TruthfulQA,Truthf
 open-llm-leaderboard/details_beberik__rawr,TruthfulQA,TruthfulQA,817,100,-0.8038,0.5207,0.5317,0.5092,0.5272,0.5108,0.011,0.0115,0.0065,0.0098,0.7841,0.1224
 open-llm-leaderboard/details_vikash06__mistral_v1,TruthfulQA,TruthfulQA,817,100,-0.0168,0.3753,0.3345,0.3314,0.3339,0.3321,0.0409,0.0439,0.0414,0.0433,0.7841,0.1224
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,TruthfulQA,TruthfulQA,817,100,-1.4505,0.4117,0.4026,0.3781,0.3977,0.3803,0.0092,0.0336,0.014,0.0315,0.7841,0.1224
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,TruthfulQA,TruthfulQA,817,100,1.3858,0.7198,0.7649,0.7038,0.7521,0.7057,0.0451,0.016,0.0324,0.014,0.7841,0.1224
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,TruthfulQA,TruthfulQA,817,100,1.3862,0.7198,0.7649,0.7038,0.7521,0.7057,0.0451,0.016,0.0324,0.014,0.7841,0.1224
 open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,TruthfulQA,TruthfulQA,817,100,-2.1162,0.5645,0.5682,0.5403,0.5624,0.5416,0.0037,0.0242,0.0021,0.0229,0.7841,0.1224
-open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,1.7618,0.7252,0.7598,0.6961,0.7467,0.6991,0.0346,0.0291,0.0215,0.0261,0.7841,0.1224
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,1.766,0.7252,0.7598,0.6958,0.7466,0.6988,0.0346,0.0294,0.0214,0.0265,0.7841,0.1224
 open-llm-leaderboard/details_KnutJaegersberg__Walter-Mistral-7B,TruthfulQA,TruthfulQA,817,100,-1.5052,0.3993,0.3835,0.3676,0.3802,0.3683,0.0158,0.0317,0.0191,0.031,0.7841,0.1224
 open-llm-leaderboard/details_upaya07__Birbal-7B-V1,TruthfulQA,TruthfulQA,817,100,-1.2992,0.4534,0.4534,0.4212,0.4469,0.4232,0.0,0.0323,0.0065,0.0303,0.7841,0.1224
 open-llm-leaderboard/details_martyn__mistral-megamerge-dare-7b,TruthfulQA,TruthfulQA,817,100,-0.5797,0.5108,0.4651,0.4391,0.4594,0.439,0.0458,0.0718,0.0514,0.0718,0.7841,0.1224

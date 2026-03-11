@@ -95,5 +95,5 @@ open-llm-leaderboard/details_openbmb__UltraLM-65b,TruthfulQA,TruthfulQA,817,100,
 open-llm-leaderboard/details_kevinpro__Vicuna-13B-CoT,TruthfulQA,TruthfulQA,817,100,-0.3822,0.5208,0.4787,0.505,0.489,0.5067,0.0421,0.0158,0.0318,0.0141,0.6325,0.1224
 open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V2-16k,TruthfulQA,TruthfulQA,817,100,-1.7434,0.4737,0.4477,0.4591,0.4529,0.4618,0.026,0.0146,0.0208,0.0119,0.6325,0.1224
 open-llm-leaderboard/details_fireballoon__baichuan-vicuna-chinese-7b,TruthfulQA,TruthfulQA,817,100,0.5126,0.4245,0.4663,0.4135,0.4492,0.4198,0.0418,0.0111,0.0247,0.0047,0.6325,0.1224
-open-llm-leaderboard/details_Sao10K__Mythical-Destroyer-V2-L2-13B,TruthfulQA,TruthfulQA,817,100,-2.5555,0.5709,0.6034,0.5889,0.5998,0.5937,0.0325,0.0179,0.0289,0.0227,0.6325,0.1224
+open-llm-leaderboard/details_Sao10K__Mythical-Destroyer-V2-L2-13B,TruthfulQA,TruthfulQA,817,100,-2.5555,0.5709,0.6034,0.5889,0.5998,0.5936,0.0325,0.0179,0.0289,0.0227,0.6325,0.1224
 open-llm-leaderboard/details_lmsys__vicuna-13b-v1.5-16k,TruthfulQA,TruthfulQA,817,100,-0.489,0.5196,0.5433,0.5378,0.5427,0.5417,0.0237,0.0182,0.0231,0.0221,0.6325,0.1224

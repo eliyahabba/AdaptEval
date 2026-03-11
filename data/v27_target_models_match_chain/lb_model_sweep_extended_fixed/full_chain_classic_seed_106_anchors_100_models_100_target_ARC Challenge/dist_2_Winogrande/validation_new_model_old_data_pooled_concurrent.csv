@@ -69,7 +69,7 @@ open-llm-leaderboard/details_AlekseyKorshuk__vic15-exp-syn-fight-cp3838,Truthful
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE5_4w-r4-q_k_v_o,TruthfulQA,TruthfulQA,817,43,1.6025,0.3702,0.1409,0.3668,0.221,0.3659,0.2294,0.0035,0.1492,0.0043,0.6439,0.0526
 open-llm-leaderboard/details_LTC-AI-Labs__L2-7b-Synthia-WVG-Test,TruthfulQA,TruthfulQA,817,43,-1.1342,0.4411,0.1719,0.4461,0.2695,0.4461,0.2692,0.005,0.1715,0.005,0.6439,0.0526
 open-llm-leaderboard/details_llm-agents__tora-7b-v1.0,TruthfulQA,TruthfulQA,817,43,-0.9089,0.379,0.1664,0.4256,0.2593,0.4273,0.2126,0.0466,0.1197,0.0483,0.6439,0.0526
-open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,TruthfulQA,TruthfulQA,817,43,1.8134,0.3873,0.1349,0.3586,0.2146,0.3588,0.2524,0.0286,0.1726,0.0285,0.6439,0.0526
+open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,TruthfulQA,TruthfulQA,817,43,1.8135,0.3873,0.1349,0.3586,0.2146,0.3588,0.2524,0.0286,0.1726,0.0285,0.6439,0.0526
 open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,TruthfulQA,TruthfulQA,817,43,-1.2741,0.456,0.1815,0.4315,0.271,0.4329,0.2745,0.0246,0.185,0.0231,0.6439,0.0526
 open-llm-leaderboard/details_BELLE-2__BELLE-Llama2-13B-chat-0.4M,TruthfulQA,TruthfulQA,817,43,1.7443,0.5085,0.2,0.4873,0.3024,0.4875,0.3085,0.0213,0.2061,0.021,0.6439,0.0526
 open-llm-leaderboard/details_beaugogh__Llama2-7b-openorca-mc-v2-dpo,TruthfulQA,TruthfulQA,817,43,-1.2888,0.5313,0.1954,0.4778,0.2964,0.4789,0.336,0.0536,0.235,0.0524,0.6439,0.0526
@@ -167,7 +167,7 @@ open-llm-leaderboard/details_AlekseyKorshuk__vic15-exp-syn-fight-cp3838,Winogran
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE5_4w-r4-q_k_v_o,Winogrande,Winogrande,1267,57,1.6025,0.7664,0.4563,0.761,0.6549,0.7602,0.31,0.0054,0.1114,0.0062,0.3464,0.045
 open-llm-leaderboard/details_LTC-AI-Labs__L2-7b-Synthia-WVG-Test,Winogrande,Winogrande,1267,57,-1.1342,0.7411,0.4635,0.7295,0.6384,0.731,0.2776,0.0116,0.1027,0.0101,0.3464,0.045
 open-llm-leaderboard/details_llm-agents__tora-7b-v1.0,Winogrande,Winogrande,1267,57,-0.9089,0.7356,0.406,0.671,0.5793,0.6712,0.3296,0.0646,0.1563,0.0644,0.3464,0.045
-open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,Winogrande,Winogrande,1267,57,1.8134,0.738,0.4635,0.7264,0.6354,0.7265,0.2744,0.0116,0.1025,0.0114,0.3464,0.045
+open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,Winogrande,Winogrande,1267,57,1.8135,0.738,0.4635,0.7264,0.6354,0.7265,0.2744,0.0116,0.1025,0.0114,0.3464,0.045
 open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval,Winogrande,Winogrande,1267,57,-1.2741,0.7261,0.4559,0.7494,0.6482,0.7502,0.2703,0.0233,0.0779,0.024,0.3464,0.045
 open-llm-leaderboard/details_BELLE-2__BELLE-Llama2-13B-chat-0.4M,Winogrande,Winogrande,1267,57,1.7443,0.7553,0.4746,0.7557,0.6591,0.7569,0.2808,0.0004,0.0962,0.0015,0.3464,0.045
 open-llm-leaderboard/details_beaugogh__Llama2-7b-openorca-mc-v2-dpo,Winogrande,Winogrande,1267,57,-1.2888,0.7285,0.4299,0.715,0.6168,0.7158,0.2986,0.0135,0.1117,0.0127,0.3464,0.045

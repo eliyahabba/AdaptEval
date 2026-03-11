@@ -1,6 +1,6 @@
 model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_CallComply__Starling-LM-11B-alpha,TruthfulQA,TruthfulQA,817,100,0.6628,0.4153,0.4068,0.3746,0.3765,0.3745,0.0085,0.0407,0.0388,0.0408,0.0638,0.1224
-open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,-0.3963,0.7252,0.7255,0.6841,0.6875,0.6849,0.0003,0.0411,0.0377,0.0403,0.0638,0.1224
-open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,TruthfulQA,TruthfulQA,817,100,3.4403,0.4988,0.4982,0.4332,0.4384,0.4343,0.0006,0.0656,0.0604,0.0645,0.0638,0.1224
-open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,TruthfulQA,TruthfulQA,817,100,1.1294,0.5586,0.5384,0.4659,0.4723,0.4678,0.0202,0.0927,0.0862,0.0907,0.0638,0.1224
-open-llm-leaderboard/details_TFLai__Luban-Platypus2-13B-QLora-0.80-epoch,TruthfulQA,TruthfulQA,817,100,5.1454,0.5526,0.5468,0.4911,0.4956,0.4921,0.0058,0.0615,0.057,0.0605,0.0638,0.1224
+open-llm-leaderboard/details_CallComply__Starling-LM-11B-alpha,TruthfulQA,TruthfulQA,817,100,1.1357,0.4153,0.4243,0.4434,0.4319,0.432,0.009,0.0281,0.0166,0.0167,0.0131,0.1224
+open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0,TruthfulQA,TruthfulQA,817,100,0.0152,0.7252,0.7588,0.7361,0.7294,0.729,0.0335,0.0108,0.0042,0.0038,0.0131,0.1224
+open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b,TruthfulQA,TruthfulQA,817,100,5.0156,0.4988,0.5215,0.5165,0.5155,0.5154,0.0227,0.0177,0.0168,0.0167,0.0131,0.1224
+open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b,TruthfulQA,TruthfulQA,817,100,1.8491,0.5586,0.5503,0.5565,0.5491,0.5491,0.0082,0.002,0.0094,0.0094,0.0131,0.1224
+open-llm-leaderboard/details_TFLai__Luban-Platypus2-13B-QLora-0.80-epoch,TruthfulQA,TruthfulQA,817,100,6.7939,0.5526,0.5626,0.5436,0.5434,0.5431,0.01,0.009,0.0092,0.0095,0.0131,0.1224
