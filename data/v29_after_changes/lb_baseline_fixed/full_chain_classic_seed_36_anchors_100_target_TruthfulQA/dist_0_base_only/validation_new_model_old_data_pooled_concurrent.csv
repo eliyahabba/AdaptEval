@@ -40,12 +40,12 @@ open-llm-leaderboard/details_HenryJJ__Instruct_Mistral-7B-v0.1_Dolly15K,MMLU,MML
 open-llm-leaderboard/details_KnutJaegersberg__Qwen-1_8B-Llamafied,MMLU,MMLU,14042,100,-0.4055,0.4474,0.4434,0.429,0.439,0.4291,0.0041,0.0184,0.0085,0.0183,0.6913,0.0071
 open-llm-leaderboard/details_decapoda-research__Antares-11b-v1,MMLU,MMLU,14042,100,-0.7882,0.6436,0.6855,0.5966,0.6582,0.5971,0.0419,0.0471,0.0146,0.0465,0.6913,0.0071
 open-llm-leaderboard/details_dfurman__Mistral-7B-Instruct-v0.2,MMLU,MMLU,14042,100,0.0624,0.5887,0.5919,0.563,0.5831,0.5633,0.0032,0.0258,0.0057,0.0255,0.6913,0.0071
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,MMLU,MMLU,14042,100,-9.49,0.6539,0.6515,0.6651,0.6557,0.6651,0.0024,0.0112,0.0018,0.0112,0.6913,0.0071
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,MMLU,MMLU,14042,100,-9.4839,0.6539,0.6515,0.6651,0.6557,0.6651,0.0024,0.0112,0.0018,0.0112,0.6913,0.0071
 open-llm-leaderboard/details_Walmart-the-bag__Solar-10.7B-Cato,MMLU,MMLU,14042,100,-0.999,0.6445,0.6184,0.6254,0.6206,0.6254,0.0261,0.0191,0.0239,0.0191,0.6913,0.0071
 open-llm-leaderboard/details_Azazelle__xDAN-SlimOrca,MMLU,MMLU,14042,100,-0.6162,0.6305,0.6649,0.6303,0.6542,0.6304,0.0344,0.0002,0.0238,0.0,0.6913,0.0071
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,MMLU,MMLU,14042,100,-7.395,0.7715,0.7527,0.732,0.7464,0.7322,0.0187,0.0395,0.0251,0.0393,0.6913,0.0071
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,MMLU,MMLU,14042,100,-0.3037,0.6141,0.6162,0.5881,0.6076,0.5883,0.0021,0.026,0.0065,0.0258,0.6913,0.0071
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,-26.6853,0.6552,0.6579,0.6758,0.6634,0.6758,0.0027,0.0206,0.0082,0.0206,0.6913,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,-26.6246,0.6552,0.6579,0.6758,0.6634,0.6758,0.0027,0.0206,0.0082,0.0206,0.6913,0.0071
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,MMLU,MMLU,14042,100,-0.0388,0.6176,0.613,0.5984,0.6086,0.5987,0.0046,0.0192,0.0091,0.019,0.6913,0.0071
 open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp,MMLU,MMLU,14042,100,0.5055,0.6426,0.6406,0.6395,0.6403,0.6395,0.0021,0.0032,0.0024,0.0031,0.6913,0.0071
 open-llm-leaderboard/details_zyh3826__GML-Mistral-merged-v1,MMLU,MMLU,14042,100,2.8399,0.6459,0.6757,0.6623,0.6716,0.6624,0.0298,0.0164,0.0257,0.0165,0.6913,0.0071
