@@ -274,6 +274,7 @@ class ParallelChainConfig(ExperimentConfig):
     filter_zero_variance: bool = False
     validate_dimensions: bool = True
     compare_anchor_methods: bool = False  # Compare IRT vs correctness clustering
+    anchor_method: str = "irt_clustering"  # Anchor selection method: irt_clustering | top_k_discrimination | correctness_clustering
     epochs: int = 2000
     epochs_fixed: int = 1000
     n_anchors_per_dataset: int = 100
@@ -362,6 +363,7 @@ class ScenarioTask:
 
     # Research mode: compare anchor selection methods
     compare_anchor_methods: bool = False
+    anchor_method: str = "irt_clustering"  # irt_clustering | top_k_discrimination | correctness_clustering
 
 
 def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
@@ -526,14 +528,16 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             all_anchors_comparison = None
             all_weights_comparison = None
     else:
-        # Standard mode - use IRT clustering only
+        # Standard mode
+        anchor_method = getattr(task, 'anchor_method', 'irt_clustering')
         if task.method == 'concurrent':
             # Concurrent: Re-select ALL anchors from the new IRT (not from cache)
             # This is the correct behavior since we trained a completely new IRT model
 
             # First, select anchors from ALL datasets (including Target)
             all_anchors, all_weights = select_anchors(
-                irt_params, task.n_anchors_per_dataset, final_df, A_matrix, B_matrix
+                irt_params, task.n_anchors_per_dataset, final_df, A_matrix, B_matrix,
+                clustering_method=anchor_method,
             )
 
             all_anchors_comparison = None
@@ -543,7 +547,8 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             # Fixed: use prev_anchors (from cache) + new target anchors
             # This maintains the frozen anchor selection from previous steps
             target_anchors, target_weights = select_anchors_for_dataset(
-                irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix
+                irt_params, task.n_anchors_per_dataset, task.target_name, final_df, A_matrix, B_matrix,
+                method=anchor_method,
             )
             if prev_anchors is not None:
                 all_anchors = list(prev_anchors) + target_anchors
@@ -1683,7 +1688,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             print(f"   🧹 Cleaned base training data: {freed_mb:.1f}MB freed")
     
     base_anchors, base_weights = select_anchors(
-        base_irt, config.n_anchors_per_dataset, base_df, A_base, B_base
+        base_irt, config.n_anchors_per_dataset, base_df, A_base, B_base,
+        clustering_method=config.anchor_method,
     )
     # Ensure each Base dataset has enough LOCAL anchors (prefix-based) for stable evaluation.
     base_anchor_counts = {ds: sum(1 for a in base_anchors if str(a).startswith(f"{ds}:")) for ds in base_names}
@@ -1813,7 +1819,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 new_B = np.array(B_list)
         
         chain_anchors, chain_weights = select_anchors_for_dataset(
-            new_irt, config.n_anchors_per_dataset, chain_ds, combined_df, new_A, new_B
+            new_irt, config.n_anchors_per_dataset, chain_ds, combined_df, new_A, new_B,
+            method=config.anchor_method,
         )
         
         new_anchors = current_anchors + chain_anchors
@@ -2052,6 +2059,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
                 cleanup_training_data=config.cleanup_training_data,
                 cumulative_chain_time=cumulative_chain_time,
                 compare_anchor_methods=config.compare_anchor_methods,
+                anchor_method=config.anchor_method,
             )
             tasks.append(task)
             task_id += 1
@@ -2430,6 +2438,9 @@ if __name__ == "__main__":
                         help="Force resume existing experiment (skip auto-increment seed check)")
     parser.add_argument("--compare-anchor-methods", action="store_true", default=False,
                         help="Compare IRT clustering vs correctness clustering for anchor selection (research mode)")
+    parser.add_argument("--anchor-method", type=str, default="irt_clustering",
+                        choices=["irt_clustering", "top_k_discrimination", "correctness_clustering"],
+                        help="Anchor selection method (default: irt_clustering)")
 
     args = parser.parse_args()
     
@@ -2453,6 +2464,7 @@ if __name__ == "__main__":
         cleanup_training_data=args.cleanup_training_data,
         force_resume=args.force_resume,
         compare_anchor_methods=args.compare_anchor_methods,
+        anchor_method=args.anchor_method,
     )
     
     if args.output_dir:

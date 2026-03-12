@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Anchor Point Selection for TinyBenchmarks.
 
@@ -30,7 +31,7 @@ from sklearn.metrics.pairwise import pairwise_distances
 @dataclass
 class AnchorConfig:
     number_items: int = 100  # total number of anchor points per dataset (from notebook)
-    method: Literal["irt_clustering", "correctness_clustering", "anchor", "anchor-irt", "difficulty_binning"] = "irt_clustering"  # selection method
+    method: Literal["irt_clustering", "correctness_clustering", "anchor", "anchor-irt", "difficulty_binning", "top_k_discrimination"] = "irt_clustering"  # selection method
     random_state: int = 42  # for reproducible clustering (base seed)
     n_trials: int = 1  # number of KMeans trials (1=backward compatible, efficbench uses 5)
     balance_weights: np.ndarray | None = None  # balance weights for multi-subscenario datasets
@@ -66,7 +67,13 @@ def find_anchor_items_clustering(
     
     if not {"a", "b"}.issubset(item_params.columns):
         raise ValueError("item_params must have columns 'a' and 'b'")
-    
+
+    # top_k_discrimination: bypass clustering entirely
+    if cfg.method == "top_k_discrimination":
+        anchor_ids = find_anchor_items_top_k_discrimination(item_params, cfg)
+        weights = np.ones(len(anchor_ids)) / max(len(anchor_ids), 1)
+        return anchor_ids, weights
+
     # Normalize method names (support both efficbench and our naming)
     method = cfg.method
     if method == "anchor-irt":
@@ -232,6 +239,28 @@ def find_anchor_items_difficulty_binning(item_params: pd.DataFrame, config: Anch
     return picked
 
 
+def find_anchor_items_top_k_discrimination(
+    item_params: pd.DataFrame,
+    config: AnchorConfig | None = None,
+) -> list[str]:
+    """Select the top-K items with the highest discrimination parameter (a).
+
+    This is the naive baseline for the reviewer's ablation:
+    "What if you just pick the most discriminative items?"
+    Unlike IRT-clustering which spreads coverage across the (a,b) space,
+    this concentrates anchors on the items with highest a — which all tend
+    to cluster near medium difficulty (b ≈ 0), leaving the difficulty axis
+    uncovered and leading to biased estimates for extreme-ability models.
+    """
+    cfg = config or AnchorConfig()
+    if item_params.empty:
+        return []
+    if "a" not in item_params.columns:
+        raise ValueError("item_params must have column 'a'")
+    n = min(cfg.number_items, len(item_params))
+    return item_params.nlargest(n, "a").index.tolist()
+
+
 def find_anchor_items(item_params: pd.DataFrame, config: AnchorConfig | None = None) -> list[str]:
     """Find anchor items using the specified method.
     
@@ -244,6 +273,8 @@ def find_anchor_items(item_params: pd.DataFrame, config: AnchorConfig | None = N
     
     if cfg.method == "difficulty_binning":
         return find_anchor_items_difficulty_binning(item_params, config)
+    elif cfg.method == "top_k_discrimination":
+        return find_anchor_items_top_k_discrimination(item_params, config)
     elif cfg.method in ["irt_clustering", "correctness_clustering", "anchor", "anchor-irt"]:
         anchor_ids, _ = find_anchor_items_clustering(item_params, config=config)
         return anchor_ids

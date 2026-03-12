@@ -1186,6 +1186,7 @@ def select_anchors_for_dataset(
     train_df: pd.DataFrame,
     A_matrix: np.ndarray | None = None,
     B_matrix: np.ndarray | None = None,
+    method: str = "irt_clustering",
 ) -> tuple[list[str], list[float]]:
     """Select anchor items from a SPECIFIC dataset.
     
@@ -1195,6 +1196,7 @@ def select_anchors_for_dataset(
         dataset_name: Name of the dataset to select anchors from
         train_df: Training data to identify which questions belong to which dataset
         A_matrix, B_matrix: MIRT matrices for clustering
+        method: Anchor selection method (irt_clustering | top_k_discrimination | correctness_clustering)
     
     Returns:
         (anchor_ids, anchor_weights) for the specified dataset
@@ -1246,7 +1248,7 @@ def select_anchors_for_dataset(
     
     anchor_config = AnchorConfig(
         number_items=n_anchors,
-        method="irt_clustering",
+        method=method,
         balance_weights=balance_weights,
     )
     
@@ -1259,7 +1261,7 @@ def select_anchors_for_dataset(
         )
         
         weights_list = anchor_weights.tolist() if hasattr(anchor_weights, 'tolist') else list(anchor_weights)
-        print(f"      ✓ {dataset_name}: {len(anchor_ids)} anchors selected")
+        print(f"      ✓ {dataset_name}: {len(anchor_ids)} anchors selected (method={method})")
         return anchor_ids, weights_list
         
     except Exception as e:
