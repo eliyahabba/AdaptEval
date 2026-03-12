@@ -17,7 +17,7 @@ open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,MMLU,MMLU,14042,100,0
 open-llm-leaderboard/details_qblocks__codellama_7b_DolphinCoder,MMLU,MMLU,14042,100,-1.0408,0.3714,0.3268,0.3741,0.3422,0.374,0.0446,0.0028,0.0292,0.0026,0.6739,0.0071
 open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,MMLU,MMLU,14042,100,-0.0148,0.5477,0.5801,0.5901,0.5833,0.5899,0.0324,0.0424,0.0356,0.0422,0.6739,0.0071
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough_v0.1,MMLU,MMLU,14042,100,-0.1045,0.6391,0.6377,0.6122,0.6294,0.6122,0.0014,0.0269,0.0097,0.0269,0.6739,0.0071
-open-llm-leaderboard/details_TomGrc__FusionNet,MMLU,MMLU,14042,100,528.6949,0.6532,0.6546,0.6441,0.6512,0.6441,0.0014,0.0091,0.002,0.0091,0.6739,0.0071
+open-llm-leaderboard/details_TomGrc__FusionNet,MMLU,MMLU,14042,100,527.9034,0.6532,0.6546,0.6441,0.6512,0.6441,0.0014,0.0091,0.002,0.0091,0.6739,0.0071
 open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,MMLU,MMLU,14042,100,5.5106,0.6439,0.6275,0.615,0.6234,0.615,0.0165,0.0289,0.0205,0.0289,0.6739,0.0071
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,MMLU,MMLU,14042,100,1.2043,0.6536,0.6748,0.6646,0.6715,0.6646,0.0212,0.011,0.0179,0.011,0.6739,0.0071
 open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,MMLU,MMLU,14042,100,0.3057,0.6467,0.6353,0.6041,0.6251,0.6041,0.0114,0.0426,0.0216,0.0426,0.6739,0.0071

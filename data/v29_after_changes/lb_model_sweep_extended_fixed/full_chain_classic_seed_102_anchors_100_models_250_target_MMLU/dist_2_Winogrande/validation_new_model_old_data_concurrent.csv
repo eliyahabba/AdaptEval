@@ -23,7 +23,7 @@ open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,GSM8K,GSM8K
 open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,GSM8K,GSM8K,1319,100,0.6436,0.5095,0.5762,0.5444,0.5741,0.5452,0.0667,0.0349,0.0646,0.0358,0.9325,0.0758
 open-llm-leaderboard/details_Walmart-the-bag__Solar-10.7B-Cato,GSM8K,GSM8K,1319,100,0.6626,0.6459,0.6497,0.6198,0.6478,0.6204,0.0038,0.0262,0.0018,0.0256,0.9325,0.0758
 open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,GSM8K,GSM8K,1319,100,-0.8096,0.0508,0.0637,0.1288,0.0677,0.1233,0.0129,0.078,0.0169,0.0725,0.9325,0.0758
-open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k,GSM8K,GSM8K,1319,100,-0.7257,0.0311,0.0265,0.1199,0.0323,0.1123,0.0045,0.0888,0.0012,0.0812,0.9325,0.0758
+open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k,GSM8K,GSM8K,1319,100,-0.7256,0.0311,0.0265,0.1199,0.0323,0.1123,0.0045,0.0888,0.0012,0.0812,0.9325,0.0758
 open-llm-leaderboard/details_spmurrayzzz__Mistral-Syndicate-7B,GSM8K,GSM8K,1319,100,1.3359,0.4405,0.4723,0.4806,0.4729,0.4809,0.0318,0.0401,0.0324,0.0404,0.9325,0.0758
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,GSM8K,GSM8K,1319,100,1.8493,0.7005,0.7923,0.7355,0.7885,0.7363,0.0917,0.035,0.088,0.0358,0.9325,0.0758
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,GSM8K,GSM8K,1319,100,0.618,0.5459,0.5853,0.5033,0.58,0.5075,0.0394,0.0425,0.0342,0.0384,0.9325,0.0758
@@ -121,7 +121,7 @@ open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,Winogrande,
 open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,Winogrande,Winogrande,1267,100,0.6436,0.8106,0.7845,0.7559,0.772,0.7591,0.026,0.0547,0.0386,0.0515,0.5069,0.0789
 open-llm-leaderboard/details_Walmart-the-bag__Solar-10.7B-Cato,Winogrande,Winogrande,1267,100,0.6626,0.8122,0.8256,0.803,0.8153,0.8047,0.0134,0.0091,0.0031,0.0074,0.5069,0.0789
 open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,Winogrande,Winogrande,1267,100,-0.8096,0.7743,0.8524,0.8214,0.8378,0.8227,0.0781,0.0471,0.0635,0.0485,0.5069,0.0789
-open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k,Winogrande,Winogrande,1267,100,-0.7257,0.6425,0.6898,0.6918,0.6899,0.6901,0.0474,0.0493,0.0475,0.0476,0.5069,0.0789
+open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k,Winogrande,Winogrande,1267,100,-0.7256,0.6425,0.6898,0.6918,0.6899,0.6901,0.0474,0.0493,0.0475,0.0476,0.5069,0.0789
 open-llm-leaderboard/details_spmurrayzzz__Mistral-Syndicate-7B,Winogrande,Winogrande,1267,100,1.3359,0.7845,0.7853,0.7927,0.7888,0.7923,0.0008,0.0081,0.0043,0.0078,0.5069,0.0789
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,Winogrande,Winogrande,1267,100,1.8493,0.8295,0.8177,0.8685,0.8406,0.8643,0.0118,0.039,0.0111,0.0347,0.5069,0.0789
 open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2,Winogrande,Winogrande,1267,100,0.618,0.85,0.8493,0.8634,0.8558,0.8625,0.0008,0.0133,0.0057,0.0124,0.5069,0.0789

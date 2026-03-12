@@ -73,7 +73,7 @@ open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,MMLU,MMLU,14042,100,0.8628,0.597,0.5928,0.595,0.5931,0.595,0.0042,0.002,0.0039,0.002,0.8692,0.0071
 open-llm-leaderboard/details_vikash06__mistral_v1,MMLU,MMLU,14042,100,-0.3438,0.4761,0.5154,0.4207,0.5031,0.4214,0.0392,0.0554,0.0269,0.0547,0.8692,0.0071
 open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,MMLU,MMLU,14042,100,0.335,0.6037,0.5793,0.6188,0.5844,0.6185,0.0244,0.0151,0.0193,0.0148,0.8692,0.0071
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,MMLU,MMLU,14042,100,17.5304,0.6543,0.6679,0.6612,0.667,0.6612,0.0137,0.0069,0.0128,0.0069,0.8692,0.0071
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,MMLU,MMLU,14042,100,17.5372,0.6543,0.6679,0.6612,0.667,0.6612,0.0137,0.0069,0.0128,0.0069,0.8692,0.0071
 open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,1.3804,0.6552,0.6679,0.6424,0.6646,0.6425,0.0127,0.0128,0.0094,0.0127,0.8692,0.0071
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,MMLU,MMLU,14042,100,1.089,0.6176,0.5688,0.5887,0.5714,0.5886,0.0489,0.0289,0.0463,0.029,0.8692,0.0071
 open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,MMLU,MMLU,14042,100,1.8426,0.6424,0.6698,0.6532,0.6676,0.6533,0.0274,0.0109,0.0253,0.011,0.8692,0.0071
@@ -216,7 +216,7 @@ open-llm-leaderboard/details_huggingface__llama-30b,MMLU,MMLU,14042,100,-0.9034,
 open-llm-leaderboard/details_Aeala__GPT4-x-AlpacaDente2-30b,MMLU,MMLU,14042,100,-0.6389,0.5644,0.5487,0.5885,0.5539,0.5882,0.0157,0.0241,0.0105,0.0238,0.8692,0.0071
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_FINETUNE2_3w,MMLU,MMLU,14042,100,-2.4363,0.5321,0.4931,0.5521,0.5008,0.5517,0.039,0.02,0.0314,0.0196,0.8692,0.0071
 open-llm-leaderboard/details_openlm-research__open_llama_7b,MMLU,MMLU,14042,100,-0.9336,0.3023,0.2245,0.3418,0.2398,0.3412,0.0778,0.0395,0.0625,0.0389,0.8692,0.0071
-open-llm-leaderboard/details_TaylorAI__Flash-Llama-7B,MMLU,MMLU,14042,100,-46.9212,0.4591,0.4274,0.4601,0.4317,0.4601,0.0317,0.0009,0.0274,0.0009,0.8692,0.0071
+open-llm-leaderboard/details_TaylorAI__Flash-Llama-7B,MMLU,MMLU,14042,100,-46.8798,0.4591,0.4274,0.4601,0.4317,0.4601,0.0317,0.0009,0.0274,0.0009,0.8692,0.0071
 open-llm-leaderboard/details_davzoku__cria-llama2-7b-v1.3,MMLU,MMLU,14042,100,-0.9561,0.4727,0.4939,0.4731,0.4912,0.4733,0.0213,0.0004,0.0186,0.0006,0.8692,0.0071
 open-llm-leaderboard/details_WizardLM__WizardLM-70B-V1.0,MMLU,MMLU,14042,100,-0.4704,0.6381,0.6733,0.6578,0.6713,0.6579,0.0352,0.0197,0.0332,0.0198,0.8692,0.0071
 open-llm-leaderboard/details_ehartford__based-30b,MMLU,MMLU,14042,100,-1.2027,0.5783,0.6077,0.6177,0.6091,0.6177,0.0294,0.0394,0.0307,0.0394,0.8692,0.0071
@@ -231,7 +231,7 @@ open-llm-leaderboard/details_augtoma__qCammel-70x,MMLU,MMLU,14042,100,-0.0661,0.
 open-llm-leaderboard/details_mosaicml__mpt-7b,MMLU,MMLU,14042,100,-0.6219,0.2755,0.2801,0.3807,0.2932,0.3803,0.0046,0.1052,0.0177,0.1048,0.8692,0.0071
 open-llm-leaderboard/details_elinas__chronos-13b-v2,MMLU,MMLU,14042,100,-2.3177,0.5322,0.5397,0.5263,0.5379,0.5264,0.0075,0.0059,0.0057,0.0058,0.8692,0.0071
 open-llm-leaderboard/details_Gryphe__MythoMix-L2-13b,MMLU,MMLU,14042,100,-7.1483,0.5555,0.5229,0.554,0.5269,0.5539,0.0327,0.0015,0.0286,0.0016,0.8692,0.0071
-open-llm-leaderboard/details_kashif__stack-llama-2,MMLU,MMLU,14042,100,-18.0431,0.4591,0.4274,0.4597,0.4317,0.4597,0.0317,0.0006,0.0275,0.0006,0.8692,0.0071
+open-llm-leaderboard/details_kashif__stack-llama-2,MMLU,MMLU,14042,100,-18.0065,0.4591,0.4274,0.4597,0.4317,0.4597,0.0317,0.0006,0.0275,0.0006,0.8692,0.0071
 open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,MMLU,MMLU,14042,100,-3.1242,0.5558,0.5792,0.5674,0.5777,0.5676,0.0234,0.0116,0.0219,0.0118,0.8692,0.0071
 open-llm-leaderboard/details_openbmb__UltraLM-65b,MMLU,MMLU,14042,100,-0.447,0.6315,0.6244,0.6437,0.6269,0.6435,0.0071,0.0122,0.0046,0.012,0.8692,0.0071
 open-llm-leaderboard/details_kevinpro__Vicuna-13B-CoT,MMLU,MMLU,14042,100,-0.9642,0.5123,0.4662,0.5083,0.4716,0.5079,0.0461,0.0041,0.0407,0.0044,0.8692,0.0071
@@ -246,6 +246,6 @@ open-llm-leaderboard/details_lmsys__vicuna-13b-v1.5-16k,MMLU,MMLU,14042,100,-1.8
 open-llm-leaderboard/details_shareAI__bimoGPT-llama2-13b,MMLU,MMLU,14042,100,-2.3082,0.5494,0.5294,0.5619,0.5336,0.5617,0.02,0.0125,0.0158,0.0123,0.8692,0.0071
 open-llm-leaderboard/details_Open-Orca__OpenOrca-Preview1-13B,MMLU,MMLU,14042,100,-0.7468,0.4917,0.4805,0.4775,0.4801,0.4776,0.0112,0.0141,0.0116,0.0141,0.8692,0.0071
 open-llm-leaderboard/details_Neko-Institute-of-Science__metharme-7b,MMLU,MMLU,14042,100,-1.1057,0.3534,0.3139,0.3575,0.3196,0.3574,0.0395,0.004,0.0338,0.004,0.8692,0.0071
-open-llm-leaderboard/details_bongchoi__test-llama2-7b,MMLU,MMLU,14042,100,-46.9212,0.4596,0.4274,0.4601,0.4317,0.4601,0.0322,0.0004,0.0279,0.0004,0.8692,0.0071
+open-llm-leaderboard/details_bongchoi__test-llama2-7b,MMLU,MMLU,14042,100,-46.8798,0.4596,0.4274,0.4601,0.4317,0.4601,0.0322,0.0004,0.0279,0.0004,0.8692,0.0071
 open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-v1.2,MMLU,MMLU,14042,100,-1.877,0.56,0.4925,0.5178,0.4958,0.5178,0.0675,0.0422,0.0642,0.0422,0.8692,0.0071
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v0,MMLU,MMLU,14042,100,-1.2085,0.5151,0.5643,0.5203,0.5586,0.5206,0.0492,0.0052,0.0435,0.0055,0.8692,0.0071

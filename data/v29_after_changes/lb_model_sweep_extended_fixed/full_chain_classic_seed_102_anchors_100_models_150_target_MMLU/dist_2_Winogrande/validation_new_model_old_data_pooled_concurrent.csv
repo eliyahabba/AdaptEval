@@ -17,7 +17,7 @@ open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,GSM8K,GSM8K,1319,40,0
 open-llm-leaderboard/details_qblocks__codellama_7b_DolphinCoder,GSM8K,GSM8K,1319,40,-1.3325,0.097,0.0101,0.127,0.0622,0.1239,0.087,0.0299,0.0348,0.0269,0.5418,0.0303
 open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,GSM8K,GSM8K,1319,40,-0.7301,0.3677,0.232,0.432,0.3238,0.4325,0.1357,0.0643,0.0439,0.0647,0.5418,0.0303
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough_v0.1,GSM8K,GSM8K,1319,40,-1.2597,0.2282,0.1361,0.3878,0.2493,0.3831,0.0921,0.1596,0.0211,0.1549,0.5418,0.0303
-open-llm-leaderboard/details_TomGrc__FusionNet,GSM8K,GSM8K,1319,40,-4.3967,0.6505,0.3534,0.7338,0.5279,0.7342,0.2971,0.0833,0.1226,0.0837,0.5418,0.0303
+open-llm-leaderboard/details_TomGrc__FusionNet,GSM8K,GSM8K,1319,40,-4.3968,0.6505,0.3534,0.7338,0.5279,0.7342,0.2971,0.0833,0.1226,0.0837,0.5418,0.0303
 open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,GSM8K,GSM8K,1319,40,0.873,0.7089,0.408,0.8005,0.5876,0.7999,0.3009,0.0916,0.1213,0.0911,0.5418,0.0303
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,GSM8K,GSM8K,1319,40,1.0718,0.6945,0.4033,0.7528,0.5637,0.7534,0.2911,0.0583,0.1308,0.0589,0.5418,0.0303
 open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,GSM8K,GSM8K,1319,40,-0.0655,0.5095,0.2525,0.5874,0.4046,0.5845,0.257,0.0779,0.1049,0.075,0.5418,0.0303
@@ -115,7 +115,7 @@ open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2,Winogrande,Winogrande
 open-llm-leaderboard/details_qblocks__codellama_7b_DolphinCoder,Winogrande,Winogrande,1267,60,-1.3325,0.6361,0.3345,0.6094,0.3919,0.6116,0.3017,0.0267,0.2443,0.0245,0.7929,0.0474
 open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,Winogrande,Winogrande,1267,60,-0.7301,0.7782,0.3674,0.7702,0.4508,0.7702,0.4109,0.008,0.3274,0.008,0.7929,0.0474
 open-llm-leaderboard/details_TomGrc__FusionNet_passthrough_v0.1,Winogrande,Winogrande,1267,60,-1.2597,0.8153,0.4049,0.7486,0.4766,0.7513,0.4104,0.0668,0.3387,0.064,0.7929,0.0474
-open-llm-leaderboard/details_TomGrc__FusionNet,Winogrande,Winogrande,1267,60,-4.3967,0.8327,0.4103,0.8333,0.4979,0.8335,0.4224,0.0006,0.3347,0.0008,0.7929,0.0474
+open-llm-leaderboard/details_TomGrc__FusionNet,Winogrande,Winogrande,1267,60,-4.3968,0.8327,0.4103,0.8333,0.4979,0.8335,0.4224,0.0006,0.3347,0.0008,0.7929,0.0474
 open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,Winogrande,Winogrande,1267,60,0.873,0.8161,0.4026,0.8184,0.4887,0.8184,0.4135,0.0023,0.3274,0.0023,0.7929,0.0474
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,Winogrande,Winogrande,1267,60,1.0718,0.8279,0.4234,0.8319,0.5083,0.8332,0.4045,0.004,0.3196,0.0052,0.7929,0.0474
 open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR,Winogrande,Winogrande,1267,60,-0.0655,0.8106,0.3964,0.7785,0.4757,0.7792,0.4142,0.032,0.3349,0.0314,0.7929,0.0474
