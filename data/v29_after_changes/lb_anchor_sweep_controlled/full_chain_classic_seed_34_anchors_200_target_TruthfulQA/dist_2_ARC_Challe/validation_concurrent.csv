@@ -80,7 +80,7 @@ open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-FP16,TruthfulQA,Tru
 open-llm-leaderboard/details_OpenAssistant__llama2-70b-oasst-sft-v10,TruthfulQA,TruthfulQA,817,200,0.1534,0.5645,0.5547,0.5238,0.5512,0.5313,0.0098,0.0407,0.0133,0.0331,0.8507,0.2448
 open-llm-leaderboard/details_huggingface__llama-30b,TruthfulQA,TruthfulQA,817,200,0.4103,0.4227,0.4383,0.4567,0.4405,0.4535,0.0156,0.034,0.0178,0.0308,0.8507,0.2448
 open-llm-leaderboard/details_WizardLM__WizardMath-7B-V1.0,TruthfulQA,TruthfulQA,817,200,0.3141,0.4365,0.4396,0.3773,0.4331,0.3966,0.003,0.0592,0.0034,0.04,0.8507,0.2448
-open-llm-leaderboard/details_stabilityai__StableBeluga-13B,TruthfulQA,TruthfulQA,817,200,3.3294,0.4961,0.5017,0.488,0.5002,0.4915,0.0056,0.0081,0.0041,0.0046,0.8507,0.2448
+open-llm-leaderboard/details_stabilityai__StableBeluga-13B,TruthfulQA,TruthfulQA,817,200,3.3295,0.4961,0.5017,0.488,0.5002,0.4915,0.0056,0.0081,0.0041,0.0046,0.8507,0.2448
 open-llm-leaderboard/details_ehartford__based-30b,TruthfulQA,TruthfulQA,817,200,0.2616,0.357,0.3589,0.4444,0.3688,0.4248,0.002,0.0874,0.0118,0.0678,0.8507,0.2448
 open-llm-leaderboard/details_digitous__Javalion-R,TruthfulQA,TruthfulQA,817,200,0.4226,0.3444,0.3426,0.3113,0.339,0.3186,0.0017,0.033,0.0053,0.0257,0.8507,0.2448
 open-llm-leaderboard/details_camel-ai__CAMEL-13B-Combined-Data,TruthfulQA,TruthfulQA,817,200,0.7067,0.4742,0.4617,0.4116,0.4564,0.4263,0.0125,0.0626,0.0178,0.0479,0.8507,0.2448
@@ -90,7 +90,7 @@ open-llm-leaderboard/details_elinas__chronos-13b-v2,TruthfulQA,TruthfulQA,817,20
 open-llm-leaderboard/details_GOAT-AI__GOAT-7B-Community,TruthfulQA,TruthfulQA,817,200,0.2191,0.4248,0.4353,0.3678,0.4271,0.3799,0.0105,0.057,0.0022,0.0449,0.8507,0.2448
 open-llm-leaderboard/details_IGeniusDev__llama13B-quant8-testv1-openorca-customdataset,TruthfulQA,TruthfulQA,817,200,0.9629,0.3727,0.4112,0.4452,0.415,0.4367,0.0385,0.0724,0.0423,0.0639,0.8507,0.2448
 open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B,TruthfulQA,TruthfulQA,817,200,2.5293,0.4458,0.4581,0.475,0.4601,0.4715,0.0124,0.0293,0.0144,0.0257,0.8507,0.2448
-open-llm-leaderboard/details_The-Face-Of-Goonery__Chronos-Beluga-v2-13bfp16,TruthfulQA,TruthfulQA,817,200,4.0229,0.5323,0.5385,0.5038,0.5345,0.5115,0.0062,0.0285,0.0022,0.0208,0.8507,0.2448
+open-llm-leaderboard/details_The-Face-Of-Goonery__Chronos-Beluga-v2-13bfp16,TruthfulQA,TruthfulQA,817,200,4.023,0.5323,0.5385,0.5038,0.5345,0.5115,0.0062,0.0285,0.0022,0.0208,0.8507,0.2448
 open-llm-leaderboard/details_HiTZ__alpaca-lora-65b-en-pt-es-ca,TruthfulQA,TruthfulQA,817,200,0.4979,0.4606,0.4572,0.4988,0.4623,0.4916,0.0034,0.0382,0.0017,0.031,0.8507,0.2448
 open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V2-16k,TruthfulQA,TruthfulQA,817,200,1.319,0.4737,0.4571,0.4493,0.4567,0.4547,0.0166,0.0244,0.017,0.019,0.8507,0.2448
 open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,TruthfulQA,TruthfulQA,817,200,0.3626,0.4577,0.4494,0.3833,0.442,0.3998,0.0083,0.0744,0.0157,0.0579,0.8507,0.2448

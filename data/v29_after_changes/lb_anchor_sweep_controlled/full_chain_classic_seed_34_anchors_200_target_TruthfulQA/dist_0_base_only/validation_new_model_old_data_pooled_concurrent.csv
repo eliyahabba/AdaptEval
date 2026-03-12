@@ -34,7 +34,7 @@ open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,MMLU,MMLU,1
 open-llm-leaderboard/details_nlpguy__ColorShadow-7B,MMLU,MMLU,14042,200,0.2781,0.6139,0.5679,0.5998,0.5705,0.5995,0.046,0.014,0.0434,0.0144,0.9172,0.0142
 open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,MMLU,MMLU,14042,200,-0.3849,0.5852,0.5623,0.5768,0.5635,0.5766,0.0229,0.0084,0.0217,0.0086,0.9172,0.0142
 open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,MMLU,MMLU,14042,200,-0.6749,0.6183,0.5845,0.6142,0.5869,0.6138,0.0338,0.0041,0.0314,0.0045,0.9172,0.0142
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,200,14.0004,0.6528,0.6498,0.6541,0.6502,0.6541,0.0029,0.0013,0.0026,0.0013,0.9172,0.0142
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,200,14.0015,0.6528,0.6498,0.6541,0.6502,0.6541,0.0029,0.0013,0.0026,0.0013,0.9172,0.0142
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,MMLU,MMLU,14042,200,-0.0203,0.6141,0.6128,0.6297,0.6142,0.6296,0.0013,0.0156,0.0001,0.0156,0.9172,0.0142
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,MMLU,MMLU,14042,200,-0.9576,0.6176,0.62,0.6185,0.6199,0.6185,0.0024,0.0009,0.0022,0.0008,0.9172,0.0142
 open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5,MMLU,MMLU,14042,200,-0.3664,0.7776,0.7917,0.7954,0.792,0.7949,0.0141,0.0178,0.0144,0.0173,0.9172,0.0142

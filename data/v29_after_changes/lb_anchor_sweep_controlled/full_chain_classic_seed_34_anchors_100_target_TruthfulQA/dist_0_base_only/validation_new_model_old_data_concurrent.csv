@@ -34,11 +34,11 @@ open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B,MMLU,MMLU,1
 open-llm-leaderboard/details_nlpguy__ColorShadow-7B,MMLU,MMLU,14042,100,0.1831,0.6139,0.5847,0.6173,0.5879,0.6172,0.0291,0.0035,0.0259,0.0033,0.9019,0.0071
 open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,MMLU,MMLU,14042,100,-0.5759,0.5852,0.6314,0.6093,0.6292,0.6093,0.0462,0.0241,0.0441,0.0242,0.9019,0.0071
 open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1,MMLU,MMLU,14042,100,1.2282,0.6183,0.6251,0.6173,0.6243,0.6174,0.0068,0.001,0.006,0.0009,0.9019,0.0071
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,10.7363,0.6528,0.6407,0.6561,0.6422,0.6561,0.012,0.0033,0.0105,0.0033,0.9019,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,10.73,0.6528,0.6407,0.6561,0.6422,0.6561,0.012,0.0033,0.0105,0.0033,0.9019,0.0071
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,MMLU,MMLU,14042,100,-0.3048,0.6141,0.6241,0.6187,0.6235,0.6188,0.01,0.0046,0.0095,0.0047,0.9019,0.0071
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,MMLU,MMLU,14042,100,1.5034,0.6176,0.6401,0.6234,0.6385,0.6235,0.0224,0.0058,0.0208,0.0059,0.9019,0.0071
-open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5,MMLU,MMLU,14042,100,77.8544,0.7776,0.8245,0.83,0.8251,0.83,0.0469,0.0524,0.0475,0.0524,0.9019,0.0071
-open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,MMLU,MMLU,14042,100,14.9453,0.6519,0.6467,0.6678,0.6488,0.6678,0.0052,0.0159,0.0031,0.0159,0.9019,0.0071
+open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5,MMLU,MMLU,14042,100,77.7133,0.7776,0.8245,0.83,0.8251,0.83,0.0469,0.0524,0.0475,0.0524,0.9019,0.0071
+open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct,MMLU,MMLU,14042,100,14.9455,0.6519,0.6467,0.6678,0.6488,0.6678,0.0052,0.0159,0.0031,0.0159,0.9019,0.0071
 open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3,MMLU,MMLU,14042,100,-1.6643,0.5541,0.5714,0.5719,0.5715,0.5718,0.0173,0.0178,0.0173,0.0177,0.9019,0.0071
 open-llm-leaderboard/details_acrastt__kalomaze-stuff,MMLU,MMLU,14042,100,1.6932,0.6216,0.6243,0.6315,0.625,0.6315,0.0028,0.0099,0.0035,0.0099,0.9019,0.0071
 open-llm-leaderboard/details_Mihaiii__Pallas-0.4,MMLU,MMLU,14042,100,-0.5944,0.7521,0.8062,0.7947,0.805,0.7946,0.0541,0.0426,0.0529,0.0425,0.9019,0.0071
