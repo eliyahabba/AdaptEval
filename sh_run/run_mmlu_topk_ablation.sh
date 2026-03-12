@@ -10,10 +10,12 @@
 #   (specifically: top-K by discrimination parameter ablation)
 #
 # Design:
-#   - MMLU fields (57 subjects), dist=1 only (direct, no chain needed)
+#   - MMLU fields (57 subjects), dist=1..5 (direct + 4 chain steps)
 #   - 3 seeds → 3 different target subjects per method
 #   - N=10 anchors per dataset (matches existing v29 mmlu_baseline experiments)
-#   - Runs locally (no sbatch), ~30-60 min total
+#   - Using 5 chain steps lets us see how error accumulates along the chain
+#     for each anchor method, not just the trivial dist=1 case
+#   - Runs locally (no sbatch), ~1-2 hrs total
 #
 # Usage:
 #   cd /path/to/AdaptEval
@@ -31,7 +33,7 @@ BASE_DIR="data/v29_after_changes"
 N_SEEDS=3
 SKIP_EXISTING=""
 ANCHORS=10
-MAX_CHAIN=1        # Only dist=1 (direct): base + target, no intermediate chain steps
+MAX_CHAIN=5        # dist=1..5: direct + 4 chain steps (enough to show degradation curve)
 NUM_WORKERS=4
 
 while [[ $# -gt 0 ]]; do
@@ -55,7 +57,7 @@ echo "MMLU Top-K Discrimination Ablation"
 echo "=================================================================="
 echo "Seeds: $N_SEEDS (seeds 11 to $((10 + N_SEEDS)))"
 echo "Anchors per dataset: $ANCHORS"
-echo "Max chain: $MAX_CHAIN (direct only)"
+echo "Max chain: $MAX_CHAIN (dist 1..5)"
 echo "IRT output:  $IRT_DIR"
 echo "Top-K output: $TOPK_DIR"
 echo ""
