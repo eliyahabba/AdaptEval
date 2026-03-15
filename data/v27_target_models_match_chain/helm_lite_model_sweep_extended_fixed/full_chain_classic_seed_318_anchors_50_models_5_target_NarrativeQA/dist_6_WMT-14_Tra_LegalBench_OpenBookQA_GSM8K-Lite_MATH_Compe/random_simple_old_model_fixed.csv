@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-anthropic/claude-2.1,1,0.0432,0.0,0.7228,0.0,0.6796,0.0
-meta/llama-3.1-8b-instruct-turbo,1,0.006,0.0,0.7679,0.0,0.7619,0.0
-openai/gpt-4-0613,1,0.0392,0.0,0.8178,0.0,0.7787,0.0
-qwen/qwen1.5-110b-chat,1,0.0045,0.0,0.7349,0.0,0.7304,0.0
-tiiuae/falcon-7b,1,0.105,0.0,0.738,0.0,0.633,0.0

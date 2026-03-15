@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-anthropic/claude-instant-1.2,OpenBookQA,OpenBookQA,500,50,1.5003,0.844,0.75,0.7647,0.7576,0.7652,0.094,0.0793,0.0864,0.0788,0.5,0.1
-google/text-unicorn@001,OpenBookQA,OpenBookQA,500,50,-0.476,0.938,0.96,0.9286,0.9475,0.935,0.022,0.0094,0.0095,0.003,0.5,0.1
-meta/llama-3.1-405b-instruct-turbo,OpenBookQA,OpenBookQA,500,50,-3.5523,0.94,0.958,0.9516,0.9542,0.9504,0.018,0.0116,0.0142,0.0104,0.5,0.1
-microsoft/phi-2,OpenBookQA,OpenBookQA,500,50,3.7271,0.798,0.792,0.7229,0.7608,0.7297,0.006,0.0751,0.0372,0.0683,0.5,0.1
-openai/text-davinci-003,OpenBookQA,OpenBookQA,500,50,8.1928,0.828,0.826,0.8196,0.8231,0.8203,0.002,0.0084,0.0049,0.0077,0.5,0.1

@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-ai21/j2-grande,1,0.046,0.0,0.34,0.0,0.386,0.0
-deepseek-ai/deepseek-llm-67b-chat,1,0.094,0.0,0.52,0.0,0.614,0.0
-google/gemini-1.5-flash-002,1,0.024,0.0,0.62,0.0,0.644,0.0
-mistralai/mixtral-8x7b-32kseqlen,1,0.034,0.0,0.6,0.0,0.634,0.0
-openai/gpt-4o-mini-2024-07-18,1,0.024,0.0,0.72,0.0,0.744,0.0

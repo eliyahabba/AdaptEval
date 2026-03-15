@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-anthropic/claude-2.1,NarrativeQA,NarrativeQA,470,50,-0.217,0.6796,0.6873,0.6363,0.6692,0.6326,0.0076,0.0433,0.0104,0.047,0.669,0.1064
-meta/llama-3.1-8b-instruct-turbo,NarrativeQA,NarrativeQA,470,50,0.2676,0.7619,0.7629,0.6117,0.7151,0.6184,0.0011,0.1501,0.0468,0.1435,0.669,0.1064
-openai/gpt-4-0613,NarrativeQA,NarrativeQA,470,50,-0.8333,0.7787,0.7811,0.7823,0.7795,0.7762,0.0025,0.0037,0.0008,0.0025,0.669,0.1064
-qwen/qwen1.5-110b-chat,NarrativeQA,NarrativeQA,470,50,-0.0673,0.7304,0.7156,0.709,0.7117,0.7038,0.0148,0.0214,0.0187,0.0266,0.669,0.1064
-tiiuae/falcon-7b,NarrativeQA,NarrativeQA,470,50,1.1016,0.633,0.6383,0.3667,0.5553,0.3876,0.0053,0.2662,0.0777,0.2454,0.669,0.1064

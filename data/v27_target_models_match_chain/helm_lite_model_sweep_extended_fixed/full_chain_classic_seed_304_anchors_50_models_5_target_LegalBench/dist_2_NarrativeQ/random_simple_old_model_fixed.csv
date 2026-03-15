@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-ai21/jamba-1.5-large,1,0.0316,0.0,0.56,0.0,0.5916,0.0
-anthropic/claude-3-5-sonnet-20241022,1,0.0348,0.0,0.58,0.0,0.5452,0.0
-cohere/command,1,0.0129,0.0,0.48,0.0,0.4929,0.0
-mistralai/mistral-7b-v0.1,1,0.0208,0.0,0.54,0.0,0.5608,0.0
-tiiuae/falcon-40b,1,0.0725,0.0,0.52,0.0,0.4475,0.0

@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-anthropic/claude-3-opus-20240229,NaturalQA,NaturalQA,1000,50,1.3657,0.4405,0.4073,0.5184,0.4202,0.5158,0.0332,0.0779,0.0203,0.0752,0.8809,0.05
-deepseek-ai/deepseek-v3,NaturalQA,NaturalQA,1000,50,0.0925,0.467,0.4682,0.6007,0.4832,0.5946,0.0012,0.1337,0.0162,0.1276,0.8809,0.05
-google/gemma-2-9b-it,NaturalQA,NaturalQA,1000,50,-1.6389,0.3278,0.2813,0.4798,0.3039,0.4709,0.0465,0.152,0.0239,0.143,0.8809,0.05
-mistralai/mistral-medium-2312,NaturalQA,NaturalQA,1000,50,-2.8395,0.2897,0.2785,0.3649,0.2883,0.3607,0.0112,0.0753,0.0014,0.071,0.8809,0.05
-openai/gpt-3.5-turbo-0613,NaturalQA,NaturalQA,1000,50,-0.0373,0.3346,0.3072,0.4235,0.3204,0.4181,0.0274,0.0889,0.0142,0.0836,0.8809,0.05

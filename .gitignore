@@ -1,4 +1,5 @@
 /.idea/
+data/
 /.venv311/
 /src/download_helm/convertor_json_back
 /src/download_helm/convertor_json

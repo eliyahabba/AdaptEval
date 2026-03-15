@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-anthropic/claude-3-5-haiku-20241022,1,0.0726,0.0,0.7029,0.0,0.7755,0.0
-cohere/command-light,1,0.0416,0.0,0.6026,0.0,0.6442,0.0
-meta/llama-2-13b,1,0.079,0.0,0.6716,0.0,0.7506,0.0
-openai/gpt-4o-2024-05-13,1,0.0729,0.0,0.7348,0.0,0.8076,0.0
-qwen/qwen1.5-7b,1,0.046,0.0,0.411,0.0,0.457,0.0

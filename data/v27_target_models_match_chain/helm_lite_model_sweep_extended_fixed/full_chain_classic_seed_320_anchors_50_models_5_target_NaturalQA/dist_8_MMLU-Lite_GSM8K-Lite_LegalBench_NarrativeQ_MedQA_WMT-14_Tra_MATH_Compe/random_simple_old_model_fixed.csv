@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-google/gemma-7b,1,0.0188,0.0,0.3168,0.0,0.3356,0.0
-meta/llama-2-70b,1,0.0121,0.0,0.4474,0.0,0.4596,0.0
-meta/llama-3.2-90b-vision-instruct-turbo,1,0.1064,0.0,0.5632,0.0,0.4568,0.0
-openai/gpt-4-0613,1,0.0689,0.0,0.5258,0.0,0.4569,0.0
-openai/text-davinci-002,1,0.0925,0.0,0.4866,0.0,0.3941,0.0

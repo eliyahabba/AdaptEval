@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,1,0.0192,0.0,0.66,0.0,0.6792,0.0
-open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,1,0.0512,0.0,0.57,0.0,0.6212,0.0
-open-llm-leaderboard/details_TheBloke__tulu-7B-fp16,1,0.1117,0.0,0.39,0.0,0.5017,0.0
-open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,1,0.0319,0.0,0.37,0.0,0.4019,0.0
-open-llm-leaderboard/details_shareAI__bimoGPT-llama2-13b,1,0.0179,0.0,0.57,0.0,0.5879,0.0

@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-anthropic/claude-2.1,1,0.0086,0.0,0.1733,0.0,0.1819,0.0
-google/gemini-1.5-pro-001,1,0.0211,0.0,0.1496,0.0,0.1707,0.0
-meta/llama-2-13b,1,0.0005,0.0,0.1522,0.0,0.1518,0.0
-mistralai/mistral-medium-2312,1,0.0042,0.0,0.1466,0.0,0.1508,0.0
-openai/gpt-4-1106-preview,1,0.0357,0.0,0.1459,0.0,0.1816,0.0

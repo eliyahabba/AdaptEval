@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-cohere/command-light,1,0.0973,0.0,0.48,0.0,0.3827,0.0
-cohere/command-r-plus,1,0.0168,0.0,0.62,0.0,0.6032,0.0
-google/gemini-1.0-pro-002,1,0.0691,0.0,0.6,0.0,0.5309,0.0
-qwen/qwen2-72b-instruct,1,0.0143,0.0,0.76,0.0,0.7743,0.0
-qwen/qwen2.5-72b-instruct-turbo,1,0.0107,0.0,0.76,0.0,0.7707,0.0

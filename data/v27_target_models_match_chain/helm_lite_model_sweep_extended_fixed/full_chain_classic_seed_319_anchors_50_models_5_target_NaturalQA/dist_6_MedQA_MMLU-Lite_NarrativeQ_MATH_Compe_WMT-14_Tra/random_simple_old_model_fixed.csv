@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-AlephAlpha/luminous-extended,1,0.0154,0.0,0.2683,0.0,0.2529,0.0
-deepseek-ai/deepseek-v3,1,0.0842,0.0,0.5512,0.0,0.467,0.0
-openai/gpt-3.5-turbo-0613,1,0.0815,0.0,0.4161,0.0,0.3346,0.0
-openai/text-davinci-003,1,0.0475,0.0,0.4609,0.0,0.4134,0.0
-upstage/solar-pro-241126,1,0.0287,0.0,0.3261,0.0,0.2973,0.0

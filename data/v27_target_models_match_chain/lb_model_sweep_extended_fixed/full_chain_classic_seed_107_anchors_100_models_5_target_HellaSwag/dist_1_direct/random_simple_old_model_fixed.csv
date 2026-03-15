@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-open-llm-leaderboard/details_h2m__mhm-7b-v1.3,1,0.0231,0.0,0.63,0.0,0.6531,0.0
-open-llm-leaderboard/details_AA051611__limb,1,0.0407,0.0,0.79,0.0,0.8307,0.0
-open-llm-leaderboard/details_rishiraj__oswald-7b,1,0.0082,0.0,0.86,0.0,0.8518,0.0
-open-llm-leaderboard/details_nlpguy__ColorShadow-7B,1,0.0185,0.0,0.87,0.0,0.8515,0.0
-open-llm-leaderboard/details_jondurbin__airoboros-7b-gpt4-1.4.1-qlora,1,0.0189,0.0,0.76,0.0,0.7789,0.0

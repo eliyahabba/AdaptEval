@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_h2m__mhm-7b-v1.3,HellaSwag,HellaSwag,10042,100,-0.3751,0.6531,0.6534,0.2342,0.2562,0.2362,0.0003,0.4189,0.3968,0.4168,0.048,0.01
-open-llm-leaderboard/details_AA051611__limb,HellaSwag,HellaSwag,10042,100,-1.3969,0.8307,0.8285,0.5492,0.5639,0.5506,0.0022,0.2815,0.2668,0.2801,0.048,0.01
-open-llm-leaderboard/details_rishiraj__oswald-7b,HellaSwag,HellaSwag,10042,100,-1.4643,0.8518,0.8624,0.5716,0.5876,0.5737,0.0106,0.2802,0.2642,0.2781,0.048,0.01
-open-llm-leaderboard/details_nlpguy__ColorShadow-7B,HellaSwag,HellaSwag,10042,100,-1.3911,0.8515,0.8478,0.5884,0.6021,0.5897,0.0037,0.2632,0.2494,0.2618,0.048,0.01
-open-llm-leaderboard/details_jondurbin__airoboros-7b-gpt4-1.4.1-qlora,HellaSwag,HellaSwag,10042,100,-0.4301,0.7789,0.778,0.4175,0.4367,0.4195,0.0009,0.3614,0.3422,0.3594,0.048,0.01

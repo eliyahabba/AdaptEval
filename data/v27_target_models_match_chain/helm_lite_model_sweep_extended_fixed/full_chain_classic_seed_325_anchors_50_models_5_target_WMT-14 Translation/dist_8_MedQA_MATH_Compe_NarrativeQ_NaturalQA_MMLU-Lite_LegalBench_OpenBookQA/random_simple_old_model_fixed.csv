@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-ai21/jamba-1.5-mini,1,0.0213,0.0,0.1862,0.0,0.1648,0.0
-mistralai/mistral-7b-v0.1,1,0.0332,0.0,0.1791,0.0,0.146,0.0
-mistralai/mixtral-8x22b,1,0.0511,0.0,0.2378,0.0,0.1867,0.0
-openai/gpt-4-1106-preview,1,0.0541,0.0,0.2358,0.0,0.1816,0.0
-openai/gpt-4o-2024-05-13,1,0.0416,0.0,0.2473,0.0,0.2057,0.0

@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_flemmingmiguel__NeuDist-Ro-7B,GSM8K,GSM8K,1319,100,0.7321,0.7096,0.7036,0.7433,0.7198,0.7402,0.0061,0.0337,0.0101,0.0306,0.5586,0.0758
-open-llm-leaderboard/details_rishiraj__oswald-7b,GSM8K,GSM8K,1319,100,0.6418,0.6929,0.7316,0.7216,0.7282,0.7239,0.0387,0.0286,0.0353,0.031,0.5586,0.0758
-open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,GSM8K,GSM8K,1319,100,2.155,0.0,0.0,0.0896,0.0351,0.0796,0.0,0.0896,0.0351,0.0796,0.5586,0.0758
-open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,GSM8K,GSM8K,1319,100,0.187,0.1433,0.1425,0.3304,0.2217,0.3219,0.0008,0.1871,0.0784,0.1786,0.5586,0.0758
-open-llm-leaderboard/details_ashercn97__manatee-7b,GSM8K,GSM8K,1319,100,1.5524,0.0705,0.0652,0.1777,0.1116,0.1702,0.0053,0.1072,0.041,0.0997,0.5586,0.0758

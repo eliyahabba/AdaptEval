@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-google/gemini-2.0-flash-exp,1,0.006,0.0,0.94,0.0,0.946,0.0
-meta/llama-3.1-70b-instruct-turbo,1,0.018,0.0,0.92,0.0,0.938,0.0
-meta/llama-3.2-11b-vision-instruct-turbo,1,0.063,0.0,0.76,0.0,0.823,0.0
-openai/gpt-4o-2024-05-13,1,0.025,0.0,0.88,0.0,0.905,0.0
-writer/palmyra-x-v3,1,0.091,0.0,0.74,0.0,0.831,0.0

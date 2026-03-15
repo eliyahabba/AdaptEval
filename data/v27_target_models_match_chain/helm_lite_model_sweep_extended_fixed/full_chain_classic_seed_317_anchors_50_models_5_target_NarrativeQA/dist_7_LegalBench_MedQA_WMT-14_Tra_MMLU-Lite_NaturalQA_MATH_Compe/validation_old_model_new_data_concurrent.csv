@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-anthropic/claude-3-5-haiku-20241022,NarrativeQA,NarrativeQA,470,50,2.8412,0.7755,0.7838,0.6321,0.716,0.6482,0.0084,0.1433,0.0595,0.1273,0.5,0.1064
-cohere/command-light,NarrativeQA,NarrativeQA,470,50,-3.9572,0.6442,0.6558,0.4669,0.5695,0.4831,0.0116,0.1773,0.0748,0.1611,0.5,0.1064
-meta/llama-2-13b,NarrativeQA,NarrativeQA,470,50,-2.1296,0.7506,0.7803,0.5155,0.6613,0.5422,0.0297,0.2351,0.0893,0.2084,0.5,0.1064
-openai/gpt-4o-2024-05-13,NarrativeQA,NarrativeQA,470,50,4.2399,0.8076,0.8021,0.7197,0.7662,0.7304,0.0055,0.088,0.0414,0.0773,0.5,0.1064
-qwen/qwen1.5-7b,NarrativeQA,NarrativeQA,470,50,-0.0277,0.457,0.4238,0.4375,0.4316,0.4394,0.0332,0.0195,0.0254,0.0176,0.5,0.1064

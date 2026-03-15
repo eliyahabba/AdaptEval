@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_umd-zhou-lab__claude2-alpaca-13B,Winogrande,Winogrande,1267,100,0.8775,0.768,0.7514,0.4374,0.5075,0.4564,0.0166,0.3306,0.2605,0.3115,0.173,0.0789
-open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B,Winogrande,Winogrande,1267,100,0.5788,0.7987,0.7901,0.4231,0.5059,0.4465,0.0087,0.3756,0.2928,0.3522,0.173,0.0789
-open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2,Winogrande,Winogrande,1267,100,1.055,0.7758,0.7672,0.4902,0.5522,0.5072,0.0087,0.2856,0.2237,0.2686,0.173,0.0789
-open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B,Winogrande,Winogrande,1267,100,0.9963,0.7593,0.7656,0.4963,0.5547,0.5106,0.0063,0.263,0.2046,0.2487,0.173,0.0789
-open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,Winogrande,Winogrande,1267,100,1.0649,0.7885,0.8058,0.5169,0.5824,0.5357,0.0174,0.2716,0.206,0.2528,0.173,0.0789

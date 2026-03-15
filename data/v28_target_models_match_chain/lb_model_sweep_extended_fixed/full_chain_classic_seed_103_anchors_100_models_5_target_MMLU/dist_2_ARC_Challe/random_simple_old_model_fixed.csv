@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-open-llm-leaderboard/details_Delcos__Velara-11B-V2,1,0.0732,0.0,0.7,0.0,0.6268,0.0
-open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2.03,1,0.0696,0.0,0.69,0.0,0.6204,0.0
-open-llm-leaderboard/details_DopeorNope__LaOT,1,0.0137,0.0,0.51,0.0,0.4963,0.0
-open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b,1,0.0261,0.0,0.51,0.0,0.4839,0.0
-open-llm-leaderboard/details_heegyu__RedTulu-Uncensored-3B-0719,1,0.0288,0.0,0.27,0.0,0.2988,0.0

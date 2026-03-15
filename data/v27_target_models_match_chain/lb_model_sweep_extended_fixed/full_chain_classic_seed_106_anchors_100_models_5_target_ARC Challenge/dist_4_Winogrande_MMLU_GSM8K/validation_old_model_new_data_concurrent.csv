@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,ARC Challenge,ARC Challenge,1172,100,1.3833,0.6792,0.6903,0.699,0.6907,0.7007,0.0111,0.0198,0.0115,0.0215,0.9598,0.0853
-open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3,ARC Challenge,ARC Challenge,1172,100,0.8053,0.6212,0.6408,0.5499,0.6374,0.5555,0.0196,0.0713,0.0162,0.0656,0.9598,0.0853
-open-llm-leaderboard/details_TheBloke__tulu-7B-fp16,ARC Challenge,ARC Challenge,1172,100,0.7578,0.5017,0.4932,0.4052,0.4898,0.4082,0.0085,0.0965,0.012,0.0935,0.9598,0.0853
-open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,ARC Challenge,ARC Challenge,1172,100,-5.0965,0.4019,0.4027,0.365,0.4014,0.3685,0.0009,0.0369,0.0005,0.0334,0.9598,0.0853
-open-llm-leaderboard/details_shareAI__bimoGPT-llama2-13b,ARC Challenge,ARC Challenge,1172,100,0.7082,0.5879,0.5845,0.4813,0.5807,0.4895,0.0034,0.1066,0.0072,0.0983,0.9598,0.0853

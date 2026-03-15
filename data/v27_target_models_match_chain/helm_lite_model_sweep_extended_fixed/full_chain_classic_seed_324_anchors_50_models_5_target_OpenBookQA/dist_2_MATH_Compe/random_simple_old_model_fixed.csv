@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-amazon/nova-micro-v1:0,1,0.028,0.0,0.86,0.0,0.888,0.0
-amazon/nova-pro-v1:0,1,0.02,0.0,0.98,0.0,0.96,0.0
-anthropic/claude-instant-1.2,1,0.084,0.0,0.76,0.0,0.844,0.0
-anthropic/claude-v1.3,1,0.028,0.0,0.88,0.0,0.908,0.0
-writer/palmyra-x-v2,1,0.018,0.0,0.86,0.0,0.878,0.0

@@ -1,6 +1,0 @@
-model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
-open-llm-leaderboard/details_UCLA-AGI__test,GSM8K,GSM8K,1319,100,1.2601,0.3086,0.298,0.2479,0.2911,0.2526,0.0106,0.0607,0.0175,0.056,0.8489,0.0758
-open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6,GSM8K,GSM8K,1319,100,1.163,0.0508,0.0523,0.0357,0.0501,0.038,0.0015,0.0151,0.0007,0.0128,0.8489,0.0758
-open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0,GSM8K,GSM8K,1319,100,1.4881,0.3108,0.3093,0.1857,0.2918,0.1936,0.0015,0.1251,0.019,0.1173,0.8489,0.0758
-open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3,GSM8K,GSM8K,1319,100,1.5766,0.5451,0.5504,0.4088,0.5298,0.4142,0.0053,0.1363,0.0153,0.1309,0.8489,0.0758
-open-llm-leaderboard/details_JosephusCheung__Pwen-14B-Chat-20_30,GSM8K,GSM8K,1319,100,1.0994,0.2699,0.2661,0.1524,0.2498,0.1582,0.0038,0.1175,0.0201,0.1117,0.8489,0.0758

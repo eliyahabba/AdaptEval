@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-meta/llama-2-7b,1,0.0176,0.0,0.1481,0.0,0.1305,0.0
-meta/llama-3.1-405b-instruct-turbo,1,0.0443,0.0,0.2534,0.0,0.209,0.0
-meta/llama-3.2-11b-vision-instruct-turbo,1,0.0421,0.0,0.2004,0.0,0.1583,0.0
-mistralai/open-mistral-nemo-2407,1,0.0507,0.0,0.2114,0.0,0.1607,0.0
-openai/gpt-4-turbo-2024-04-09,1,0.0634,0.0,0.2576,0.0,0.1942,0.0

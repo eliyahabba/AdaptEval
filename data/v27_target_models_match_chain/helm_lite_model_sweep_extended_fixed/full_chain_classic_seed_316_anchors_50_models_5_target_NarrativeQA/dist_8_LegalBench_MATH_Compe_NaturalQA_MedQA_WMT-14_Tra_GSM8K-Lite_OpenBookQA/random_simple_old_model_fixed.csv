@@ -1,6 +1,0 @@
-model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
-AlephAlpha/luminous-supreme,1,0.0499,0.0,0.7971,0.0,0.7472,0.0
-allenai/olmo-7b,1,0.0352,0.0,0.648,0.0,0.6128,0.0
-google/gemma-7b,1,0.0371,0.0,0.8029,0.0,0.7659,0.0
-qwen/qwen1.5-110b-chat,1,0.0006,0.0,0.7299,0.0,0.7304,0.0
-tiiuae/falcon-7b,1,0.0785,0.0,0.7115,0.0,0.633,0.0
