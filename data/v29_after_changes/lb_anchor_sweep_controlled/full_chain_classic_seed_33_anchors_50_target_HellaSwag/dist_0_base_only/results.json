@@ -12,7 +12,7 @@
   "concurrent_n_items": 1267,
   "concurrent_n_anchors": 50,
   "concurrent_best_dimension": 5,
-  "concurrent_training_time_sec": 0.17,
+  "concurrent_training_time_sec": 0.42,
   "concurrent_cumulative_chain_time": 0,
   "concurrent_min_anchors_per_eval_dataset": 50,
   "concurrent_new_model_old_data_n_models": 98,
