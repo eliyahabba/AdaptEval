@@ -30,7 +30,7 @@ open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k,MMLU,MMLU,
 open-llm-leaderboard/details_decapoda-research__Antares-11b-v1,MMLU,MMLU,14042,100,-0.371,0.6436,0.6431,0.6195,0.6421,0.6197,0.0006,0.0241,0.0015,0.024,0.9591,0.0071
 open-llm-leaderboard/details_nlpguy__ColorShadow-7B,MMLU,MMLU,14042,100,-1.5825,0.6139,0.6013,0.6245,0.6023,0.6243,0.0125,0.0106,0.0116,0.0104,0.9591,0.0071
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,MMLU,MMLU,14042,100,-1.2797,0.6087,0.6023,0.6158,0.6029,0.6157,0.0064,0.007,0.0059,0.0069,0.9591,0.0071
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,-330.2607,0.6528,0.6543,0.6491,0.654,0.6491,0.0015,0.0036,0.0013,0.0036,0.9591,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,-333.5288,0.6528,0.6543,0.6491,0.654,0.6491,0.0015,0.0036,0.0013,0.0036,0.9591,0.0071
 open-llm-leaderboard/details_SuperAGI__SAM,MMLU,MMLU,14042,100,-1.4075,0.6115,0.6322,0.6018,0.6309,0.6019,0.0207,0.0097,0.0195,0.0096,0.9591,0.0071
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,MMLU,MMLU,14042,100,-1.727,0.6141,0.6112,0.6033,0.6108,0.6033,0.0029,0.0108,0.0032,0.0107,0.9591,0.0071
 open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge,MMLU,MMLU,14042,100,-1.2522,0.597,0.5954,0.5794,0.5948,0.5794,0.0016,0.0176,0.0022,0.0176,0.9591,0.0071

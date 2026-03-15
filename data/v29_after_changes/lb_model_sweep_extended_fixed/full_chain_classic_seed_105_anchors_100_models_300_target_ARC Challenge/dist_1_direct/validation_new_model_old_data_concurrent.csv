@@ -16,12 +16,12 @@ open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter,TruthfulQA,Trut
 open-llm-leaderboard/details_ewqr2130__mistral-se-inst-ppo,TruthfulQA,TruthfulQA,817,100,-1.4101,0.5134,0.5015,0.4447,0.4919,0.4524,0.0119,0.0687,0.0215,0.061,0.8053,0.1224
 open-llm-leaderboard/details_chargoddard__mixtralmerge-8x7B-rebalanced-test,TruthfulQA,TruthfulQA,817,100,-0.6684,0.5375,0.5379,0.4885,0.5296,0.495,0.0004,0.049,0.008,0.0425,0.8053,0.1224
 open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-exp2-0.1,TruthfulQA,TruthfulQA,817,100,-0.3144,0.5524,0.5695,0.5441,0.5648,0.5452,0.0171,0.0083,0.0124,0.0072,0.8053,0.1224
-open-llm-leaderboard/details_TomGrc__FusionNet,TruthfulQA,TruthfulQA,817,100,-0.9585,0.7195,0.7058,0.7064,0.7061,0.7072,0.0138,0.0131,0.0135,0.0123,0.8053,0.1224
+open-llm-leaderboard/details_TomGrc__FusionNet,TruthfulQA,TruthfulQA,817,100,-0.9586,0.7195,0.7058,0.7064,0.7061,0.7072,0.0138,0.0131,0.0135,0.0123,0.8053,0.1224
 open-llm-leaderboard/details_Azazelle__xDAN-SlimOrca,TruthfulQA,TruthfulQA,817,100,-0.1932,0.5768,0.5499,0.547,0.5497,0.5489,0.0269,0.0298,0.0271,0.0279,0.8053,0.1224
 open-llm-leaderboard/details_spmurrayzzz__Mistral-Syndicate-7B,TruthfulQA,TruthfulQA,817,100,-1.3492,0.4373,0.4194,0.3893,0.4143,0.3932,0.0179,0.048,0.023,0.0441,0.8053,0.1224
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,TruthfulQA,TruthfulQA,817,100,-0.4107,0.641,0.6616,0.6424,0.6587,0.6471,0.0206,0.0014,0.0178,0.0061,0.8053,0.1224
 open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B,TruthfulQA,TruthfulQA,817,100,0.365,0.6037,0.5815,0.5747,0.5809,0.5787,0.0223,0.029,0.0228,0.025,0.8053,0.1224
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,TruthfulQA,TruthfulQA,817,100,-1.118,0.721,0.7053,0.705,0.7054,0.7059,0.0156,0.0159,0.0155,0.015,0.8053,0.1224
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,TruthfulQA,TruthfulQA,817,100,-1.119,0.721,0.7053,0.705,0.7054,0.7059,0.0156,0.0159,0.0155,0.015,0.8053,0.1224
 open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,TruthfulQA,TruthfulQA,817,100,-1.2242,0.5775,0.5731,0.5447,0.5684,0.549,0.0044,0.0328,0.0091,0.0284,0.8053,0.1224
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored,TruthfulQA,TruthfulQA,817,100,-1.0005,0.5687,0.5635,0.5163,0.5555,0.522,0.0052,0.0524,0.0133,0.0467,0.8053,0.1224
 open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me,TruthfulQA,TruthfulQA,817,100,-0.4104,0.626,0.5844,0.5585,0.5804,0.5637,0.0416,0.0675,0.0456,0.0623,0.8053,0.1224

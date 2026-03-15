@@ -95,7 +95,7 @@ open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,GSM8K,GSM8K,1319
 open-llm-leaderboard/details_ashercn97__manatee-7b,GSM8K,GSM8K,1319,11,1.081,0.0705,0.0252,0.0761,0.0333,0.0767,0.0453,0.0056,0.0372,0.0062,0.8437,0.0083
 open-llm-leaderboard/details_shareAI__CodeLLaMA-chat-13b-Chinese,GSM8K,GSM8K,1319,11,0.9228,0.1077,0.0135,0.1089,0.0284,0.1085,0.0941,0.0013,0.0793,0.0009,0.8437,0.0083
 open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,GSM8K,GSM8K,1319,11,-0.0202,0.0955,0.0252,0.1087,0.0383,0.1088,0.0703,0.0131,0.0572,0.0133,0.8437,0.0083
-open-llm-leaderboard/details_bongchoi__test-llama2-7b,GSM8K,GSM8K,1319,11,26.8527,0.0713,0.0142,0.0654,0.0222,0.0654,0.057,0.0059,0.0491,0.0059,0.8437,0.0083
+open-llm-leaderboard/details_bongchoi__test-llama2-7b,GSM8K,GSM8K,1319,11,26.8453,0.0713,0.0142,0.0654,0.0222,0.0654,0.057,0.0059,0.0491,0.0059,0.8437,0.0083
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v0,GSM8K,GSM8K,1319,11,0.9829,0.0273,0.011,0.0732,0.0207,0.0729,0.0163,0.0459,0.0066,0.0456,0.8437,0.0083
 open-llm-leaderboard/details_Swisslex__Mixtral-Orca-v0.1,TruthfulQA,TruthfulQA,817,0,0.9272,0.6385,,0.5862,,0.5862,,0.0524,,0.0524,0.9769,0.0
 open-llm-leaderboard/details_CallComply__SOLAR-10.7B-Instruct-v1.0-128k,TruthfulQA,TruthfulQA,817,0,0.4775,0.6542,,0.4646,,0.4646,,0.1897,,0.1897,0.9769,0.0
@@ -193,7 +193,7 @@ open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,TruthfulQA,Truth
 open-llm-leaderboard/details_ashercn97__manatee-7b,TruthfulQA,TruthfulQA,817,0,1.081,0.4677,,0.328,,0.328,,0.1397,,0.1397,0.9769,0.0
 open-llm-leaderboard/details_shareAI__CodeLLaMA-chat-13b-Chinese,TruthfulQA,TruthfulQA,817,0,0.9228,0.4897,,0.2778,,0.2778,,0.2119,,0.2119,0.9769,0.0
 open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,TruthfulQA,TruthfulQA,817,0,-0.0202,0.4577,,0.4199,,0.4199,,0.0378,,0.0378,0.9769,0.0
-open-llm-leaderboard/details_bongchoi__test-llama2-7b,TruthfulQA,TruthfulQA,817,0,26.8527,0.3875,,0.375,,0.375,,0.0125,,0.0125,0.9769,0.0
+open-llm-leaderboard/details_bongchoi__test-llama2-7b,TruthfulQA,TruthfulQA,817,0,26.8453,0.3875,,0.375,,0.375,,0.0125,,0.0125,0.9769,0.0
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v0,TruthfulQA,TruthfulQA,817,0,0.9829,0.5168,,0.3893,,0.3893,,0.1276,,0.1276,0.9769,0.0
 open-llm-leaderboard/details_Swisslex__Mixtral-Orca-v0.1,MMLU,MMLU,14042,89,0.9272,0.6566,0.5716,0.6335,0.5752,0.6336,0.085,0.0231,0.0814,0.023,0.9421,0.0063
 open-llm-leaderboard/details_CallComply__SOLAR-10.7B-Instruct-v1.0-128k,MMLU,MMLU,14042,89,0.4775,0.5643,0.5423,0.5403,0.5422,0.5407,0.022,0.024,0.0221,0.0236,0.9421,0.0063
@@ -291,5 +291,5 @@ open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf,MMLU,MMLU,14042,
 open-llm-leaderboard/details_ashercn97__manatee-7b,MMLU,MMLU,14042,89,1.081,0.4865,0.4642,0.4614,0.4641,0.4619,0.0223,0.0251,0.0225,0.0246,0.9421,0.0063
 open-llm-leaderboard/details_shareAI__CodeLLaMA-chat-13b-Chinese,MMLU,MMLU,14042,89,0.9228,0.3365,0.3546,0.3923,0.3567,0.3924,0.0181,0.0558,0.0203,0.0559,0.9421,0.0063
 open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini,MMLU,MMLU,14042,89,-0.0202,0.4885,0.5041,0.4901,0.5034,0.4906,0.0156,0.0016,0.0148,0.0021,0.9421,0.0063
-open-llm-leaderboard/details_bongchoi__test-llama2-7b,MMLU,MMLU,14042,89,26.8527,0.4596,0.4098,0.4604,0.4127,0.4604,0.0498,0.0008,0.0469,0.0008,0.9421,0.0063
+open-llm-leaderboard/details_bongchoi__test-llama2-7b,MMLU,MMLU,14042,89,26.8453,0.4596,0.4098,0.4604,0.4127,0.4604,0.0498,0.0008,0.0469,0.0008,0.9421,0.0063
 open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v0,MMLU,MMLU,14042,89,0.9829,0.5151,0.4743,0.4972,0.4757,0.4975,0.0407,0.0179,0.0394,0.0176,0.9421,0.0063

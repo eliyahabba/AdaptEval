@@ -40,7 +40,7 @@ open-llm-leaderboard/details_KnutJaegersberg__Walter-Mistral-7B,ARC Challenge,AR
 open-llm-leaderboard/details_abhinand__tamil-llama-13b-instruct-v0.1,ARC Challenge,ARC Challenge,1172,100,1.0414,0.5452,0.5341,0.5534,0.535,0.5513,0.0111,0.0082,0.0102,0.0061,0.9484,0.0853
 open-llm-leaderboard/details_microsoft__phi-2,ARC Challenge,ARC Challenge,1172,100,1.7412,0.6109,0.599,0.6002,0.5992,0.6036,0.0119,0.0108,0.0117,0.0074,0.9484,0.0853
 open-llm-leaderboard/details_martyn__llama-megamerge-dare-13b,ARC Challenge,ARC Challenge,1172,100,1.8228,0.6058,0.6374,0.6154,0.6363,0.6176,0.0316,0.0096,0.0305,0.0117,0.9484,0.0853
-open-llm-leaderboard/details_janhq__supermario-slerp,ARC Challenge,ARC Challenge,1172,100,3.0864,0.6894,0.6741,0.6774,0.6743,0.6785,0.0154,0.012,0.0151,0.0109,0.9484,0.0853
+open-llm-leaderboard/details_janhq__supermario-slerp,ARC Challenge,ARC Challenge,1172,100,3.0865,0.6894,0.6741,0.6774,0.6743,0.6785,0.0154,0.012,0.0151,0.0109,0.9484,0.0853
 open-llm-leaderboard/details_cyberagent__calm2-7b-chat,ARC Challenge,ARC Challenge,1172,100,0.8537,0.4027,0.4317,0.4756,0.4338,0.4722,0.029,0.0728,0.0311,0.0695,0.9484,0.0853
 open-llm-leaderboard/details_OpenBuddy__openbuddy-deepseek-67b-v15-base,ARC Challenge,ARC Challenge,1172,100,2.0138,0.663,0.6433,0.6383,0.6432,0.6412,0.0196,0.0247,0.0197,0.0218,0.9484,0.0853
 open-llm-leaderboard/details_TokenBender__pic_7B_mistral_Full_v0.1,ARC Challenge,ARC Challenge,1172,100,2.0177,0.6391,0.5913,0.6139,0.5924,0.6125,0.0478,0.0252,0.0467,0.0266,0.9484,0.0853

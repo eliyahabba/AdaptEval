@@ -84,7 +84,7 @@ open-llm-leaderboard/details_lmsys__vicuna-7b-v1.5,MMLU,MMLU,14042,100,1.7297,0.
 open-llm-leaderboard/details_Undi95__MLewd-L2-13B,MMLU,MMLU,14042,100,0.1956,0.5409,0.5664,0.5747,0.5674,0.5745,0.0254,0.0337,0.0265,0.0335,0.8707,0.0071
 open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_Fintune_1_17w-q_k_v_o_proj,MMLU,MMLU,14042,100,-0.4427,0.5397,0.5553,0.6043,0.5616,0.6039,0.0156,0.0646,0.0219,0.0642,0.8707,0.0071
 open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-FP16,MMLU,MMLU,14042,100,-0.4027,0.5335,0.5819,0.596,0.5837,0.5958,0.0484,0.0624,0.0502,0.0623,0.8707,0.0071
-open-llm-leaderboard/details_TaylorAI__Flash-Llama-7B,MMLU,MMLU,14042,100,25.4907,0.4591,0.4616,0.4446,0.4594,0.4446,0.0025,0.0145,0.0003,0.0145,0.8707,0.0071
+open-llm-leaderboard/details_TaylorAI__Flash-Llama-7B,MMLU,MMLU,14042,100,25.5014,0.4591,0.4616,0.4446,0.4594,0.4446,0.0025,0.0145,0.0003,0.0145,0.8707,0.0071
 open-llm-leaderboard/details_davzoku__cria-llama2-7b-v1.3,MMLU,MMLU,14042,100,1.1537,0.4727,0.4232,0.4803,0.4306,0.4799,0.0494,0.0077,0.0421,0.0073,0.8707,0.0071
 open-llm-leaderboard/details_jarradh__llama2_70b_chat_uncensored,MMLU,MMLU,14042,100,0.6782,0.6834,0.6832,0.6987,0.6852,0.6987,0.0001,0.0153,0.0019,0.0153,0.8707,0.0071
 open-llm-leaderboard/details_Aeala__GPT4-x-Alpasta-13b,MMLU,MMLU,14042,100,0.219,0.4561,0.4882,0.537,0.4944,0.5366,0.0321,0.0809,0.0384,0.0805,0.8707,0.0071
