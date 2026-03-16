@@ -13,7 +13,8 @@
 # - LB Extended Model Sweep: 9 model counts × 6 datasets × N seeds → lb_model_sweep_extended_fixed/
 # - MMLU Extended Model Sweep: 9 model counts × N seeds → mmlu_model_sweep_extended_fixed/
 # - HELM Lite Extended Model Sweep: 6 model counts × 9 datasets × N seeds → helm_lite_model_sweep_extended_fixed/
-# - MMLU Anchor Sweep: 4 seeds (targets) × 3 anchor counts (10, 25, 50) → mmlu_anchor_sweep_controlled/
+# - MMLU Anchor Sweep: 4 seeds (targets) × 4 anchor counts (10, 25, 50, 100) → mmlu_anchor_sweep_controlled/
+# - MMLU Baseline 50 anchors: same as cat 3 but 50 anchors → mmlu_baseline_50/
 #
 # Total: depends on --seeds N (default N=3)
 #
@@ -21,12 +22,13 @@
 #   bash run_all_balanced.sh                    # Run all missing
 #   bash run_all_balanced.sh --category 1       # Only LB
 #   bash run_all_balanced.sh --category 2       # Only HELM Lite
-#   bash run_all_balanced.sh --category 3       # Only MMLU
+#   bash run_all_balanced.sh --category 3       # Only MMLU (10 anchors)
 #   bash run_all_balanced.sh --category 4       # Only Disjoint
 #   bash run_all_balanced.sh --category 5       # Only LB Model Sweep Extended
 #   bash run_all_balanced.sh --category 6       # Only MMLU Model Sweep Extended
 #   bash run_all_balanced.sh --category 7       # Only HELM Lite Model Sweep Extended
-#   bash run_all_balanced.sh --category 8       # Only MMLU Anchor Sweep (10, 25, 50)
+#   bash run_all_balanced.sh --category 8       # Only MMLU Anchor Sweep (10, 25, 50, 100)
+#   bash run_all_balanced.sh --category 9       # Only MMLU Baseline 50 anchors
 #   bash run_all_balanced.sh --seeds 5          # Use 5 seeds per config (categories 5,6,7)
 #   bash run_all_balanced.sh --setup-only       # Test only
 #   bash run_all_balanced.sh --force            # Re-run all (ignore existing)
@@ -141,7 +143,7 @@ echo ""
 
 mkdir -p "${BASE_DIR}/lb_baseline_fixed" "${BASE_DIR}/lb_anchor_sweep" "${BASE_DIR}/lb_anchor_sweep_controlled" "${BASE_DIR}/lb_model_sweep" "${BASE_DIR}/lb_model_sweep_controlled"
 mkdir -p "${BASE_DIR}/helm_lite_baseline" "${BASE_DIR}/helm_lite_base4"
-mkdir -p "${BASE_DIR}/mmlu_baseline" "${BASE_DIR}/mmlu_anchor_sweep_controlled"
+mkdir -p "${BASE_DIR}/mmlu_baseline" "${BASE_DIR}/mmlu_baseline_50" "${BASE_DIR}/mmlu_anchor_sweep_controlled"
 mkdir -p "${BASE_DIR}/lb_disjoint_fixed" "${BASE_DIR}/lb_disjoint_random"
 
 # ============================================================
@@ -310,7 +312,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "3" ]; then
     echo "=================================================================="
     echo ""
     
-    echo "-- MMLU Fields Baseline (seeds 11-30) --"
+    echo "-- MMLU Fields Baseline (seeds 11-30, 10 anchors) --"
     for seed in $(seq 11 30); do
         if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_baseline" $seed 10 "" ""; then
             echo "   ⏭️  SKIP (complete): MMLU Fields (seed=$seed)"
@@ -451,7 +453,7 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
     mkdir -p "${BASE_DIR}/mmlu_model_sweep_extended_fixed"
     
     echo "-- MMLU Model Sweep Extended ($CAT6_TOTAL experiments) --"
-    echo "   Model counts: 5, 10, 25, 50, 100, 150, 200, 250, 300"
+    echo "   Model counts: 5, 10, 25, 50, 100, 150, 200, 250, 300 | 50 anchors"
     echo "   $N_SEEDS seeds (each seed = different target dataset)"
     echo "   Output: ${BASE_DIR}/mmlu_model_sweep_extended_fixed"
     
@@ -459,14 +461,15 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "6" ]; then
     for seed_offset in $(seq 0 $((N_SEEDS - 1))); do
         RUN_SEED=$((SEED + seed_offset))
         for models in 5 10 25 50 100 150 200 250 300; do
-            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_model_sweep_extended_fixed" $RUN_SEED 10 "" "$models"; then
+            if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_model_sweep_extended_fixed" $RUN_SEED 50 "" "$models"; then
                 echo "   ⏭️  SKIP (complete): MMLU models=$models (seed=$RUN_SEED)"
                 SKIPPED=$((SKIPPED + 1))
             else
-                echo "   Submitting MMLU Fields (models=$models, seed=$RUN_SEED)..."
+                echo "   Submitting MMLU Fields (models=$models, seed=$RUN_SEED, 50 anchors)..."
                 submit_job sbatch --mem=8g --time=24:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
                     --output-dir ${BASE_DIR}/mmlu_model_sweep_extended_fixed \
                     --preset mmlu_fields \
+                    --n-anchors 50 \
                     --n-models $models \
                     --shuffle-seed $RUN_SEED \
                     --seed $RUN_SEED \
@@ -538,22 +541,22 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "7" ]; then
 fi
 
 # ============================================================
-# CATEGORY 8: MMLU Anchor Sweep (4 seeds × 3 anchor counts = 12 experiments)
+# CATEGORY 8: MMLU Anchor Sweep (4 seeds × 4 anchor counts = 16 experiments)
 # ============================================================
-# Same seed per "target" (each seed = different MMLU subject), only anchors vary: 10, 25, 50
+# Same seed per "target" (each seed = different MMLU subject), only anchors vary: 10, 25, 50, 100
 if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "8" ]; then
-    CAT8_TOTAL=12
+    CAT8_TOTAL=16
     echo "=================================================================="
     echo "CATEGORY 8: MMLU Anchor Sweep ($CAT8_TOTAL experiments)"
     echo "=================================================================="
     echo ""
     
-    echo "-- MMLU Anchor Sweep Controlled (12 experiments) --"
-    echo "   4 seeds (4 different targets), anchors: 10, 25, 50"
+    echo "-- MMLU Anchor Sweep Controlled (16 experiments) --"
+    echo "   4 seeds (4 different targets), anchors: 10, 25, 50, 100"
     echo "   Output: ${BASE_DIR}/mmlu_anchor_sweep_controlled"
     
     for RUN_SEED in 11 12 13 14; do
-        for anchors in 10 25 50; do
+        for anchors in 10 25 50 100; do
             if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_anchor_sweep_controlled" $RUN_SEED $anchors "" ""; then
                 echo "   ⏭️  SKIP (complete): MMLU anchors=$anchors (seed=$RUN_SEED)"
                 SKIPPED=$((SKIPPED + 1))
@@ -573,7 +576,41 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "8" ]; then
     done
     
     echo ""
-    echo "✓ Category 8 complete: $CAT8_TOTAL experiments (4 seeds × 3 anchor counts)"
+    echo "✓ Category 8 complete: $CAT8_TOTAL experiments (4 seeds × 4 anchor counts)"
+fi
+
+# ============================================================
+# CATEGORY 9: MMLU Baseline 50 anchors (20 experiments)
+# ============================================================
+# Same as Category 3 but with 50 anchors per dataset → mmlu_baseline_50/
+if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "9" ]; then
+    CAT9_TOTAL=20
+    echo "=================================================================="
+    echo "CATEGORY 9: MMLU Baseline 50 Anchors ($CAT9_TOTAL experiments)"
+    echo "=================================================================="
+    echo ""
+    
+    echo "-- MMLU Fields Baseline 50 anchors (seeds 11-30) --"
+    for seed in $(seq 11 30); do
+        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/mmlu_baseline_50" $seed 50 "" ""; then
+            echo "   ⏭️  SKIP (complete): MMLU 50 anchors (seed=$seed)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo "   Submitting MMLU Fields 50 anchors (seed=$seed)..."
+            submit_job sbatch --mem=8g --time=10:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                --output-dir ${BASE_DIR}/mmlu_baseline_50 \
+                --preset mmlu_fields \
+                --n-anchors 50 \
+                --shuffle-seed $seed \
+                --seed $seed \
+                --random-seed 1000 \
+                $SKIP_EXISTING $FORCE_RESUME
+            SUBMITTED=$((SUBMITTED + 1))
+        fi
+    done
+    
+    echo ""
+    echo "✓ Category 9 complete: $CAT9_TOTAL experiments (MMLU baseline, 50 anchors)"
 fi
 
 # Summary
@@ -591,15 +628,16 @@ else
     CAT5_EXP=$((9 * 6 * N_SEEDS))
     CAT6_EXP=$((9 * N_SEEDS))
     CAT7_EXP=$((6 * 9 * N_SEEDS))
-    TOTAL_EXP=$((60 + 18 + 20 + 12 + 12 + CAT5_EXP + CAT6_EXP + CAT7_EXP))
+    TOTAL_EXP=$((60 + 18 + 20 + 12 + 16 + 20 + CAT5_EXP + CAT6_EXP + CAT7_EXP))
     echo "  Category 1 (LB):              60 experiments (24 baseline + 24 anchor + 12 model)"
     echo "  Category 2 (HELM Lite):       18 experiments"
-    echo "  Category 3 (MMLU):            20 experiments"
+    echo "  Category 3 (MMLU):            20 experiments (10 anchors)"
     echo "  Category 4 (Disjoint):        12 experiments"
     echo "  Category 5 (LB Model Ext):    $CAT5_EXP experiments (9 counts × 6 datasets × $N_SEEDS seeds)"
     echo "  Category 6 (MMLU Model Ext):  $CAT6_EXP experiments (9 counts × $N_SEEDS targets)"
     echo "  Category 7 (HELM Model Ext):  $CAT7_EXP experiments (6 counts × 9 datasets × $N_SEEDS seeds)"
-    echo "  Category 8 (MMLU Anchor):    12 experiments (4 seeds × 3 anchor counts 10,25,50)"
+    echo "  Category 8 (MMLU Anchor):    16 experiments (4 seeds × 4 anchor counts 10,25,50,100)"
+    echo "  Category 9 (MMLU 50 anchors): 20 experiments (same as cat 3, 50 anchors)"
     echo "  ───────────────────────────────────────"
     echo "  TOTAL:                        $TOTAL_EXP experiments (with --seeds $N_SEEDS)"
     echo ""
