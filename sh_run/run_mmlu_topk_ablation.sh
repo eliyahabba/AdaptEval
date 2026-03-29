@@ -1,33 +1,25 @@
 #!/bin/bash
 # run_mmlu_topk_ablation.sh
 #
-# Minimal ablation experiment comparing two anchor selection strategies on MMLU:
-#   1. irt_clustering   — our method (covers joint discrimination+difficulty space)
-#   2. top_k_discrimination — baseline: just pick the K most discriminative items
+# MMLU anchor ablation: irt_clustering vs top_k_discrimination.
 #
-# This directly addresses the ACL meta-reviewer comment:
-#   "Detailed analysis of most discriminative items"
-#   (specifically: top-K by discrimination parameter ablation)
+# איך להריץ (פשוט, כמו run_all_balanced.sh):
+#   מה-login node (בלי sbatch עוטף):
+#     bash sh_run/run_mmlu_topk_ablation.sh
+#   כל ניסוי נשלח כ-sbatch נפרד — Slurm יכול לשבץ כל job על node אחר (וורקר אחר).
+#   בתוך כל job, chain_linking משתמש ב־--num-workers (ברירת מחדל 4 כמו preset).
+#   רוצים רק תהליך Python אחד לכל job?  bash ... --num-workers 1
+#
+# מחשב מקומי בלי Slurm:
+#     bash sh_run/run_mmlu_topk_ablation.sh --direct
+#
+# Same flags as run_all_balanced.sh where applicable: --skip-existing, --resume, --force, --setup-only, --base-dir, --seeds
 #
 # Design:
-#   - MMLU fields (57 subjects), same hyperparameters as run_all_balanced.sh Category 3
-#     (--preset mmlu_fields: 10 anchors, max_chain 10, etc.)
-#   - 3 seeds → 3 different target subjects per method
-#   - Only extra flag vs Category 3: --anchor-method (irt_clustering vs top_k_discrimination)
+#   - MMLU fields, same hyperparameters as run_all_balanced.sh Category 3 (--preset mmlu_fields)
+#   - Extra flag only: --anchor-method (irt_clustering vs top_k_discrimination)
 #
-# Usage (from repository root, same as sh_run/run_all_balanced.sh):
-#   # Recommended on cluster: queue jobs via sbatch + run_chain_linking_unified.sh
-#   bash sh_run/run_mmlu_topk_ablation.sh --submit
-#
-#   # Run Python in-process (needs venv — same setup as run_chain_linking_unified.sh)
-#   bash sh_run/run_mmlu_topk_ablation.sh
-#
-#   bash sh_run/run_mmlu_topk_ablation.sh --seeds 5
-#   bash sh_run/run_mmlu_topk_ablation.sh --skip-existing
-#   bash sh_run/run_mmlu_topk_ablation.sh --submit --resume
-#   bash sh_run/run_mmlu_topk_ablation.sh --submit --setup-only   # test sbatch commands only
-#
-# Skip / resume flags match run_all_balanced.sh (default: skip completed runs).
+# Skip / resume: same defaults as run_all_balanced.sh (skip completed unless --resume / --force).
 
 set -e
 
@@ -47,34 +39,69 @@ BASE_DIR="data/v29_after_changes"
 N_SEEDS=3
 SKIP_EXISTING=""
 FORCE_RESUME=""
-FORCE_RERUN=""   # set by --force: do not apply default --skip-existing (balanced intent)
-ANCHORS=10       # mmlu_fields preset default; used for direct mode + skip path checks
-MAX_CHAIN=10     # mmlu_fields preset (same as Category 3)
-NUM_WORKERS=4    # defaults.num_workers; direct mode only
+FORCE_RERUN=""
+ANCHORS=10
+MAX_CHAIN=10
+NUM_WORKERS=4    # per Slurm job (preset default); use 1 for a single in-job worker
 SETUP_ONLY=""
+# USE_SUBMIT: 1 = queue sbatch per run (like run_all_balanced.sh). Empty = run Python locally.
 USE_SUBMIT=""
+DIRECT_ONLY=""   # --direct: never auto-sbatch
+ALLOW_DIRECT_ON_SLURM=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         --seeds) N_SEEDS="$2"; shift 2 ;;
         --skip-existing) SKIP_EXISTING="--skip-existing"; shift ;;
-        --force) SKIP_EXISTING=""; FORCE_RESUME=""; FORCE_RERUN=1; shift ;;  # Re-run all (ignore existing)
+        --force) SKIP_EXISTING=""; FORCE_RESUME=""; FORCE_RERUN=1; shift ;;
         --resume) FORCE_RESUME="--force-resume"; shift ;;
         --base-dir) BASE_DIR="$2"; shift 2 ;;
         --num-workers) NUM_WORKERS="$2"; shift 2 ;;
         --setup-only) SETUP_ONLY="--setup-only"; shift ;;
-        --submit) USE_SUBMIT=1; shift ;;
+        --submit) USE_SUBMIT=1; shift ;;   # explicit (optional; same as default on cluster login)
+        --direct) DIRECT_ONLY=1; shift ;;  # local Python only
+        --allow-direct-on-slurm) ALLOW_DIRECT_ON_SLURM=1; shift ;;
         *) echo "Unknown argument: $1"; exit 1 ;;
     esac
 done
 
-# Default: skip existing if not forcing or resuming (same intent as run_all_balanced.sh;
-# --force clears skip and must not be overwritten)
+# Default workflow: like run_all_balanced — from login node, submit one job per experiment.
+if [ -n "$DIRECT_ONLY" ]; then
+    USE_SUBMIT=""
+elif [ -n "$USE_SUBMIT" ]; then
+    USE_SUBMIT=1
+elif [ -z "${SLURM_JOB_ID:-}" ] && command -v sbatch >/dev/null 2>&1; then
+    USE_SUBMIT=1
+else
+    USE_SUBMIT=""
+fi
+
+# Refuse one big Python run inside a normal batch step (OOM).
+if [ -n "${SLURM_JOB_ID:-}" ] && [ -z "$USE_SUBMIT" ] && [ -z "$ALLOW_DIRECT_ON_SLURM" ]; then
+    echo "=================================================================="
+    echo "ERROR: Inside Slurm job $SLURM_JOB_ID — do not run direct-Python mode here."
+    echo ""
+    echo "run_all_balanced.sh runs from the login node and only calls sbatch per experiment."
+    echo "Submit from login (no wrapping sbatch):"
+    echo "  cd $PROJECT_DIR && bash sh_run/run_mmlu_topk_ablation.sh"
+    echo ""
+    echo "Or from a job that only submits: bash ... (auto-sbatch is disabled inside SLURM)."
+    echo "Fat node + intentional direct run: add --allow-direct-on-slurm"
+    echo "=================================================================="
+    exit 1
+fi
+
+# Default: skip existing if not forcing or resuming
 if [ -z "$FORCE_RESUME" ] && [ -z "$SKIP_EXISTING" ] && [ -z "$FORCE_RERUN" ]; then
     SKIP_EXISTING="--skip-existing"
 fi
 
-# Output directories (separate so results don't mix)
+# Warn: cluster login but forced --direct
+if [ -z "$USE_SUBMIT" ] && [ -n "$DIRECT_ONLY" ] && command -v sbatch >/dev/null 2>&1 && [ -z "${SLURM_JOB_ID:-}" ]; then
+    echo "Note: --direct — running Python on this machine. On cluster, omit --direct to submit separate sbatch jobs."
+    echo ""
+fi
+
 IRT_DIR="${BASE_DIR}/mmlu_topk_ablation_irt"
 TOPK_DIR="${BASE_DIR}/mmlu_topk_ablation_topk"
 
@@ -85,12 +112,13 @@ echo "MMLU Top-K Discrimination Ablation"
 echo "=================================================================="
 echo "Seeds: $N_SEEDS (seeds 11 to $((10 + N_SEEDS)))"
 echo "Preset mmlu_fields: $ANCHORS anchors/dataset, max_chain $MAX_CHAIN, n_base 8"
+echo "Num workers (per experiment job): $NUM_WORKERS"
 echo "IRT output:  $IRT_DIR"
 echo "Top-K output: $TOPK_DIR"
 if [ -n "$USE_SUBMIT" ]; then
-    echo "Mode: --submit (sbatch + run_chain_linking_unified.sh, like run_all_balanced.sh)"
+    echo "Mode: sbatch per experiment (same idea as run_all_balanced.sh; each job may run on a different node)."
 else
-    echo "Mode: direct Python (venv + PYTHONPATH, same as run_chain_linking_unified.sh)"
+    echo "Mode: direct Python on this host (--direct or no sbatch in PATH)"
 fi
 echo ""
 
@@ -102,7 +130,7 @@ submit_job() {
 }
 
 # =============================================================================
-# Mode A: SLURM — Category 3 MMLU from run_all_balanced.sh + --anchor-method only
+# Mode A: one sbatch per run (Category 3 MMLU + --anchor-method + --num-workers)
 # =============================================================================
 if [ -n "$USE_SUBMIT" ]; then
     for seed in $(seq 11 $((10 + N_SEEDS))); do
@@ -116,6 +144,7 @@ if [ -n "$USE_SUBMIT" ]; then
             --seed "$seed" \
             --random-seed 1000 \
             --anchor-method irt_clustering \
+            --num-workers "$NUM_WORKERS" \
             $SKIP_EXISTING $FORCE_RESUME
         SUBMITTED=$((SUBMITTED + 1))
 
@@ -127,6 +156,7 @@ if [ -n "$USE_SUBMIT" ]; then
             --seed "$seed" \
             --random-seed 1000 \
             --anchor-method top_k_discrimination \
+            --num-workers "$NUM_WORKERS" \
             $SKIP_EXISTING $FORCE_RESUME
         SUBMITTED=$((SUBMITTED + 1))
 
@@ -136,19 +166,17 @@ if [ -n "$USE_SUBMIT" ]; then
     echo "=================================================================="
     echo "Done. $SUBMITTED sbatch jobs submitted."
     echo ""
-    echo "Results will appear under:"
-    echo "  IRT-cluster:  $PROJECT_DIR/$IRT_DIR"
-    echo "  Top-K:        $PROJECT_DIR/$TOPK_DIR"
+    echo "Each job is independent; Slurm places them on nodes as it sees fit (often different workers)."
+    echo "Results under: $PROJECT_DIR/$IRT_DIR  and  $PROJECT_DIR/$TOPK_DIR"
     echo ""
     echo "Monitor: squeue -u \$USER"
-    echo "Visualize with:"
-    echo "  python src/experiments/visualization/visualize_discriminative_items_mmlu.py --skip-irt"
+    echo "Visualize: python src/experiments/visualization/visualize_discriminative_items_mmlu.py --skip-irt"
     echo "=================================================================="
     exit 0
 fi
 
 # =============================================================================
-# Mode B: Direct Python — match environment setup in run_chain_linking_unified.sh
+# Mode B: Direct Python
 # =============================================================================
 if [ -d "/cs/snapless/gabis/gabis/shared/huggingface/" ]; then
     export HF_HOME=/cs/snapless/gabis/gabis/shared/huggingface/
@@ -169,8 +197,7 @@ if command -v python &>/dev/null; then
 elif command -v python3 &>/dev/null; then
     PYTHON_CMD=(python3)
 else
-    echo "Error: neither python nor python3 found in PATH after venv setup."
-    echo "On the cluster, use: bash sh_run/run_mmlu_topk_ablation.sh --submit"
+    echo "Error: neither python nor python3 in PATH. On cluster use login node: bash $0"
     exit 1
 fi
 
@@ -181,7 +208,6 @@ fi
 for seed in $(seq 11 $((10 + N_SEEDS))); do
     echo "--- Seed $seed ---"
 
-    # 1. IRT-cluster (our method)
     IRT_CHECK="${IRT_DIR}/full_chain_classic_seed_${seed}_anchors_${ANCHORS}"
     if [ -n "$SKIP_EXISTING" ] && ls "${IRT_CHECK}"*/all_results.csv 2>/dev/null | head -1 | grep -q .; then
         echo "  [SKIP] IRT-cluster seed=$seed (already done)"
@@ -203,7 +229,6 @@ for seed in $(seq 11 $((10 + N_SEEDS))); do
         SUBMITTED=$((SUBMITTED + 1))
     fi
 
-    # 2. Top-K by discrimination (ablation baseline)
     TOPK_CHECK="${TOPK_DIR}/full_chain_classic_seed_${seed}_anchors_${ANCHORS}"
     if [ -n "$SKIP_EXISTING" ] && ls "${TOPK_CHECK}"*/all_results.csv 2>/dev/null | head -1 | grep -q .; then
         echo "  [SKIP] Top-K seed=$seed (already done)"
@@ -230,11 +255,4 @@ done
 
 echo "=================================================================="
 echo "Done. $SUBMITTED experiments run."
-echo ""
-echo "Results saved to:"
-echo "  IRT-cluster:  $IRT_DIR"
-echo "  Top-K:        $TOPK_DIR"
-echo ""
-echo "Visualize with:"
-echo "  ${PYTHON_CMD[*]} src/experiments/visualization/visualize_discriminative_items_mmlu.py --skip-irt"
 echo "=================================================================="
