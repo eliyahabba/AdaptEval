@@ -169,6 +169,7 @@ EPOCHS=""
 EPOCHS_FIXED=""
 TEST_RATIO=""
 NUM_WORKERS=""
+ANCHOR_METHOD=""  # Optional: irt_clustering | top_k_discrimination | correctness_clustering (passed to chain_linking_parallel.py)
 
 # Disjoint-specific parameters
 N_BRIDGE_MODELS=""
@@ -254,6 +255,10 @@ while [[ $# -gt 0 ]]; do
             NUM_WORKERS="$2"
             shift 2
             ;;
+        --anchor-method)
+            ANCHOR_METHOD="$2"
+            shift 2
+            ;;
         --n-bridge-models)
             N_BRIDGE_MODELS="$2"
             shift 2
@@ -327,6 +332,7 @@ if [ -n "$PRESET" ]; then
     CLI_EPOCHS="$EPOCHS"
     CLI_NUM_WORKERS="$NUM_WORKERS"
     CLI_RANDOM_SEED="$RANDOM_SEED"
+    CLI_ANCHOR_METHOD="$ANCHOR_METHOD"
     
     # Load preset configuration
     eval $(parse_yaml "$PRESET_FILE" "$PRESET")
@@ -342,6 +348,7 @@ if [ -n "$PRESET" ]; then
     [ -n "$CLI_EPOCHS" ] && EPOCHS="$CLI_EPOCHS"
     [ -n "$CLI_NUM_WORKERS" ] && NUM_WORKERS="$CLI_NUM_WORKERS"
     [ -n "$CLI_RANDOM_SEED" ] && RANDOM_SEED="$CLI_RANDOM_SEED"
+    [ -n "$CLI_ANCHOR_METHOD" ] && ANCHOR_METHOD="$CLI_ANCHOR_METHOD"
 fi
 
 # Set defaults if still empty
@@ -512,6 +519,7 @@ echo "  DIMS: $DIMS"
 echo "  EPOCHS: $EPOCHS"
 echo "  EPOCHS_FIXED: $EPOCHS_FIXED"
 echo "  NUM_WORKERS: $NUM_WORKERS"
+echo "  ANCHOR_METHOD: ${ANCHOR_METHOD:-default}"
 echo ""
 echo "SLURM Resources (override at submission with sbatch --mem=Xg --time=H:M:S):"
 echo "  Defaults: 10g RAM, 6 hours, 4 GPUs, 2 CPUs"
@@ -647,6 +655,10 @@ else
     ARGS="$ARGS --epochs-fixed ${EPOCHS_FIXED}"
     ARGS="$ARGS --data-source-mode ${DATA_SOURCE_MODE}"
     ARGS="$ARGS --num-workers ${NUM_WORKERS}"
+    
+    if [ -n "$ANCHOR_METHOD" ]; then
+        ARGS="$ARGS --anchor-method ${ANCHOR_METHOD}"
+    fi
     
     if [ -n "$N_MODELS_PER_CHAIN" ] && [ "$N_MODELS_PER_CHAIN" != "null" ]; then
         ARGS="$ARGS --n-models-per-chain ${N_MODELS_PER_CHAIN}"
