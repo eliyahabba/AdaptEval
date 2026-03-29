@@ -70,14 +70,19 @@ if [ -n "$DIRECT_ONLY" ]; then
     USE_SUBMIT=""
 elif [ -n "$USE_SUBMIT" ]; then
     USE_SUBMIT=1
-elif [ -z "${SLURM_JOB_ID:-}" ] && command -v sbatch >/dev/null 2>&1; then
+elif command -v sbatch >/dev/null 2>&1; then
+    # ALWAYS default to submit if sbatch is available (like run_all_balanced.sh)
+    # even if we are already inside a Slurm job (e.g. a master job submitting workers)
     USE_SUBMIT=1
 else
     USE_SUBMIT=""
 fi
 
 # Refuse one big Python run inside a normal batch step (OOM).
+# EXCEPT if we are inside a Slurm job but we are just SUBMITTING other jobs (like run_all_balanced.sh).
 if [ -n "${SLURM_JOB_ID:-}" ] && [ -z "$USE_SUBMIT" ] && [ -z "$ALLOW_DIRECT_ON_SLURM" ]; then
+    # If we are in a Slurm job, we should check if we are trying to run Python directly
+    # or if we are just submitting. If USE_SUBMIT is not set, it means we are in direct mode.
     echo "=================================================================="
     echo "ERROR: Inside Slurm job $SLURM_JOB_ID — do not run direct-Python mode here."
     echo ""
