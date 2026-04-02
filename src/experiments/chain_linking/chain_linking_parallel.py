@@ -72,6 +72,7 @@ from src.experiments.equating.cross_dataset_equating import (
     run_validation,
     run_random_baseline_validation,
     run_random_simple_baseline,
+    run_discriminative_baseline_validation,
 )
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import train_item_parameters
@@ -860,6 +861,26 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 pooled_irt_new_model_old_data['per_dataset_errors'] = pooled_irt_per_dataset_errors
     
     # ==========================================================================
+    # Discriminative Baselines for Validation 1: New Model + New Data
+    # SKIP for distance=0 (Base only - no target dataset)
+    # ==========================================================================
+    discriminative_baseline_results = {}
+    discriminative_baseline_per_model_df = pd.DataFrame()
+    if task.distance >= 1:  # Only run if target is involved
+        print(f"      Task {task.task_id}: Running discriminative baselines for Validation 1...")
+        discriminative_baseline_results, discriminative_baseline_per_model_df = run_discriminative_baseline_validation(
+            test_df=target_test_df,
+            item_params=irt_params,
+            n_anchors=task.n_anchors_per_dataset,
+            target_name=task.target_name,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=None,  # Keep baseline truly discriminative (theta from top-K anchors)
+            return_per_model=True,
+        )
+
+    # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
     # SKIP for distance=0 (Base only - no target dataset)
     # ==========================================================================
@@ -924,6 +945,26 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         )
     
     # ==========================================================================
+    # Discriminative Baselines for Validation 2b: All Train Models on New Data
+    # KEY for model sweep!
+    # ==========================================================================
+    discriminative_baseline_all_train = {}
+    discriminative_baseline_all_train_per_model_df = pd.DataFrame()
+    if target_all_train_df is not None and len(target_all_train_df) > 0:
+        print(f"      Task {task.task_id}: Running discriminative baselines for Validation 2b (All Train on Target)...")
+        discriminative_baseline_all_train, discriminative_baseline_all_train_per_model_df = run_discriminative_baseline_validation(
+            test_df=target_all_train_df,
+            item_params=irt_params,
+            n_anchors=task.n_anchors_per_dataset,
+            target_name=task.target_name,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=None,  # Keep baseline truly discriminative (theta from top-K anchors)
+            return_per_model=True,
+        )
+
+    # ==========================================================================
     # Random Baselines for Validation 2b: All Train Models on New Data
     # This is the KEY random baseline for the model sweep experiment!
     # ==========================================================================
@@ -955,6 +996,49 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             return_per_model=True,
         )
     
+    # ==========================================================================
+    # Discriminative Baselines for Validation 3: New Model + Old Data
+    # ==========================================================================
+    discriminative_baseline_new_model_old_data = {}
+    discriminative_baseline_new_model_old_data_per_model_dfs = []
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and precomputed_thetas_base_chain is not None:
+        print(f"      Task {task.task_id}: Running discriminative baselines for Validation 3...")
+        base_chain_datasets = base_chain_test_df['dataset'].unique()
+        all_discriminative_errors = []
+        
+        for ds_name in base_chain_datasets:
+            ds_test_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name].copy()
+            if len(ds_test_df) == 0:
+                continue
+            
+            ds_disc, ds_disc_per_model = run_discriminative_baseline_validation(
+                test_df=ds_test_df,
+                item_params=irt_params,
+                n_anchors=min(task.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
+                target_name=ds_name,
+                train_df=final_df,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                precomputed_thetas=None,
+                return_per_model=True,
+            )
+            
+            if 'discriminative_gp_irt_error_mean' in ds_disc:
+                all_discriminative_errors.append(ds_disc['discriminative_gp_irt_error_mean'])
+            
+            if len(ds_disc_per_model) > 0:
+                ds_disc_per_model['dataset'] = ds_name
+                discriminative_baseline_new_model_old_data_per_model_dfs.append(ds_disc_per_model)
+        
+        if all_discriminative_errors:
+            discriminative_baseline_new_model_old_data = {
+                'discriminative_gp_irt_error_mean': np.mean(all_discriminative_errors),
+                'discriminative_gp_irt_error_std': np.std(all_discriminative_errors),
+                'n_datasets': len(all_discriminative_errors),
+            }
+    
+    discriminative_baseline_new_model_old_data_per_model_df = pd.concat(discriminative_baseline_new_model_old_data_per_model_dfs) if discriminative_baseline_new_model_old_data_per_model_dfs else pd.DataFrame()
+
     # ==========================================================================
     # Random Baselines for Validation 3: New Model + Old Data
     # ==========================================================================
@@ -1305,6 +1389,14 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Validation 3: multiple datasets (Base+Chain) - use mean-of-means for consistency with random baselines
     add_metrics_mean_of_means(val_test_on_base_df, 'new_model_old_data')
     
+    # Add Discriminative baselines
+    for key, val in discriminative_baseline_results.items():
+        results[f'discriminative_{key}'] = val
+    for key, val in discriminative_baseline_all_train.items():
+        results[f'discriminative_all_train_{key}'] = val
+    for key, val in discriminative_baseline_new_model_old_data.items():
+        results[f'discriminative_new_model_old_data_{key}'] = val
+
     # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
         result[key] = val
@@ -1454,6 +1546,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     save_per_model_df(val_all_train_on_target_df, 'validation_all_train_new_data')  # KEY metric!
     save_per_model_df(val_test_on_base_df, 'validation_new_model_old_data')
     save_per_model_df(val_test_on_base_pooled_df, 'validation_new_model_old_data_pooled')
+    save_per_model_df(discriminative_baseline_per_model_df, 'discriminative_irt')
+    save_per_model_df(discriminative_baseline_all_train_per_model_df, 'discriminative_irt_all_train')
+    save_per_model_df(discriminative_baseline_new_model_old_data_per_model_df, 'discriminative_irt_new_model_old_data')
+
     save_per_model_df(random_baseline_per_model_df, 'random_irt')
     save_per_model_df(random_simple_per_model_df, 'random_simple')
     save_per_model_df(random_baseline_old_model_per_model_df, 'random_irt_old_model')
