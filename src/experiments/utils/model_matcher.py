@@ -26,7 +26,9 @@ import streamlit as st
 # Configuration
 # =============================================================================
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+# File is at: src/experiments/utils/model_matcher.py
+# Need to go up 3 levels to reach project root
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 TINYBENCHMARKS_DIR = PROJECT_ROOT / "aggregated_data/tinybenchmarks"
 AGGREGATED_DIR = PROJECT_ROOT / "aggregated_data/aggregated"
 MAPPINGS_DIR = PROJECT_ROOT / "src/experiments/model_mappings"
@@ -38,23 +40,41 @@ MAPPINGS_DIR = PROJECT_ROOT / "src/experiments/model_mappings"
 
 @st.cache_data(show_spinner="Loading data sources...")
 def load_all_sources():
-    """Load all model sources."""
+    """Load all model sources from both pickle and parquet files.
+    
+    Pickle files (tinybenchmarks/) - used in current experiments:
+    - lb.pickle: 395 models (Open LLM Leaderboard)
+    - helm_lite.pickle: 30 models
+    - mmlu_fields.pickle: 428 models
+    
+    Parquet files (aggregated/) - for future use:
+    - helm_lite_aggregated.parquet: 91 models (more than pickle!)
+    - helm_classic_aggregated.parquet: 70 models, 59 datasets
+    - helm_mmlu_aggregated.parquet: 79 models
+    
+    NOTE: Model naming conventions differ between sources!
+    - Pickle: uses underscore (e.g., '01-ai_yi-34b')
+    - Parquet: uses slash (e.g., '01-ai/yi-34b')
+    """
     sources = {}
+    
+    # Pickle files used in run_all_balanced.sh experiments
+    RELEVANT_PICKLES = ['lb.pickle', 'helm_lite.pickle', 'mmlu_fields.pickle']
     
     # Load pickles
     for p in sorted(TINYBENCHMARKS_DIR.glob('*.pickle')):
+        if p.name not in RELEVANT_PICKLES:
+            continue
         with open(p, 'rb') as f:
             data = pickle.load(f)
         models = list(np.array(data.get('models', [])).flatten())
-        # Sort models alphabetically
         models_sorted = sorted([str(m) for m in models])
         sources[p.name] = {'type': 'pickle', 'models': models_sorted, 'count': len(models_sorted)}
     
-    # Load parquets
+    # Load all parquet files (for potential future use)
     for p in sorted(AGGREGATED_DIR.glob('*.parquet')):
         df = pd.read_parquet(p)
         models = list(df['model_name'].unique())
-        # Sort models alphabetically
         models_sorted = sorted(models)
         sources[p.name] = {'type': 'parquet', 'models': models_sorted, 'count': len(models_sorted)}
     
@@ -79,6 +99,42 @@ def load_mappings(source_file: str, target_file: str) -> dict:
     return {}
 
 
+def auto_match_models(source_models: list, target_models: list, threshold: float = 1.0) -> dict:
+    """Automatically match models that have similarity >= threshold.
+    
+    Returns dict of {source_model: target_model} for matches.
+    """
+    matches = {}
+    
+    # Build normalized lookup for targets
+    target_lookup = {}
+    for t in target_models:
+        norm = normalize_model_name(t)
+        target_lookup[norm] = t
+    
+    for source in source_models:
+        source_norm = normalize_model_name(source)
+        
+        # Check for exact normalized match (100%)
+        if source_norm in target_lookup:
+            matches[source] = target_lookup[source_norm]
+            continue
+        
+        # If threshold < 1.0, also check similarity scores
+        if threshold < 1.0:
+            best_match = None
+            best_score = 0
+            for target_norm, target_orig in target_lookup.items():
+                score = SequenceMatcher(None, source_norm, target_norm).ratio()
+                if score >= threshold and score > best_score:
+                    best_score = score
+                    best_match = target_orig
+            if best_match:
+                matches[source] = best_match
+    
+    return matches
+
+
 def save_mappings(mappings: dict, source_file: str, target_file: str):
     """Save mappings for a specific file pair."""
     mapping_file = get_mapping_file(source_file, target_file)
@@ -89,6 +145,63 @@ def save_mappings(mappings: dict, source_file: str, target_file: str):
 # =============================================================================
 # Matching Logic
 # =============================================================================
+
+def clean_model_name_for_display(model_name: str) -> str:
+    """Clean model name for display by removing common prefixes.
+    
+    Handles both pickle naming (underscore) and parquet naming (slash).
+    
+    Example transformations:
+    - 'open-llm-leaderboard/details_mistralai__Mixtral-8x7B-v0.1' 
+      → 'mistralai/Mixtral-8x7B-v0.1'
+    """
+    name = str(model_name)
+    
+    # Remove common prefixes that add clutter
+    prefixes_to_remove = [
+        'open-llm-leaderboard/details_',
+        'open-llm-leaderboard/',
+    ]
+    
+    for prefix in prefixes_to_remove:
+        if name.startswith(prefix):
+            name = name[len(prefix):]
+            break  # Only remove one prefix
+    
+    # Convert double underscore to slash (LB naming convention)
+    # 'mistralai__Mixtral-8x7B-v0.1' → 'mistralai/Mixtral-8x7B-v0.1'
+    if '__' in name:
+        name = name.replace('__', '/')
+    
+    return name
+
+
+def normalize_model_name(model_name: str) -> str:
+    """Normalize model name for matching (convert to common format).
+    
+    Handles different naming conventions:
+    - LB: 'open-llm-leaderboard/details_mistralai__Mixtral-8x7B-v0.1'
+    - HELM: 'mistralai/mixtral-8x7b-32kseqlen'
+    
+    Normalizes to: 'mistralai_mixtral-8x7b-v0.1' (lowercase, underscores)
+    """
+    name = str(model_name).lower()
+    
+    # Remove common prefixes first
+    prefixes = ['open-llm-leaderboard/details_', 'open-llm-leaderboard_details_', 'open-llm-leaderboard_', 'open-llm-leaderboard/']
+    for prefix in prefixes:
+        if name.startswith(prefix):
+            name = name[len(prefix):]
+            break
+    
+    # Convert double underscore to single (LB convention: org__model)
+    name = name.replace('__', '_')
+    
+    # Replace slashes with underscores for uniform comparison
+    name = name.replace('/', '_')
+    
+    return name
+
 
 def extract_keywords(model_name: str) -> set:
     """Extract keywords from a model name for matching."""
@@ -122,7 +235,17 @@ def extract_keywords(model_name: str) -> set:
 
 
 def similarity_score(name1: str, name2: str) -> float:
-    """Calculate similarity between two model names."""
+    """Calculate similarity between two model names.
+    
+    Handles different naming conventions (pickle vs parquet).
+    """
+    # First check for exact match after normalization
+    norm1 = normalize_model_name(name1)
+    norm2 = normalize_model_name(name2)
+    
+    if norm1 == norm2:
+        return 1.0  # Perfect match despite different formatting
+    
     # Keyword overlap
     kw1 = extract_keywords(name1)
     kw2 = extract_keywords(name2)
@@ -134,13 +257,11 @@ def similarity_score(name1: str, name2: str) -> float:
     union = len(kw1 | kw2)
     jaccard = overlap / union if union > 0 else 0.0
     
-    # Sequence matching on cleaned names
-    clean1 = ''.join(sorted(kw1))
-    clean2 = ''.join(sorted(kw2))
-    seq_ratio = SequenceMatcher(None, clean1, clean2).ratio()
+    # Sequence matching on normalized names
+    seq_ratio = SequenceMatcher(None, norm1, norm2).ratio()
     
     # Combined score
-    return 0.6 * jaccard + 0.4 * seq_ratio
+    return 0.5 * jaccard + 0.5 * seq_ratio
 
 
 def find_candidates(source_model: str, target_models: list, top_k: int = 10) -> list:
@@ -206,6 +327,11 @@ def main():
     
     source_names = list(sources.keys())
     
+    if not source_names:
+        st.error("No data sources found in aggregated_data folders!")
+        st.info(f"Checked: \n- {TINYBENCHMARKS_DIR}\n- {AGGREGATED_DIR}")
+        return
+    
     # Source (smaller group)
     source_file = st.sidebar.selectbox(
         "Source (to match FROM)",
@@ -215,12 +341,21 @@ def main():
     )
     
     # Target (larger group)
+    target_options = [n for n in source_names if n != source_file]
+    if not target_options:
+        st.warning("Need at least two data sources to perform matching.")
+        return
+
     target_file = st.sidebar.selectbox(
         "Target (to match TO)",
-        [n for n in source_names if n != source_file],
+        target_options,
         index=0,
         key="target_file_select"
     )
+    
+    if not source_file or not target_file:
+        st.error("Please select both source and target files.")
+        st.stop()
     
     # Load mappings for this specific file pair
     pair_key = f"{source_file}|{target_file}"
@@ -231,12 +366,6 @@ def main():
     
     source_models = sources[source_file]['models']
     target_models = sources[target_file]['models']
-    
-    # #region agent log - Hypothesis A,D: Check initial source_models
-    import json as _json
-    with open('/Users/ehabba/PycharmProjects/AdaptEval/.cursor/debug.log', 'a') as _f:
-        _f.write(_json.dumps({"location":"model_matcher.py:232","message":"Initial source_models","data":{"source_file":source_file,"count":len(source_models),"first_3":source_models[:3] if source_models else []},"hypothesisId":"A,D","timestamp":__import__('time').time()}) + '\n')
-    # #endregion
     
     # Debug: verify counts match
     expected_source_count = sources[source_file].get('count', len(source_models))
@@ -266,11 +395,6 @@ def main():
     if selected_family != 'All':
         source_models = [m for m in source_models if get_model_family(m) == selected_family]
     
-    # #region agent log - Hypothesis A: After family filter
-    with open('/Users/ehabba/PycharmProjects/AdaptEval/.cursor/debug.log', 'a') as _f:
-        _f.write(_json.dumps({"location":"model_matcher.py:261","message":"After family filter","data":{"selected_family":selected_family,"count":len(source_models)},"hypothesisId":"A","timestamp":__import__('time').time()}) + '\n')
-    # #endregion
-    
     # Show only unmatched
     show_unmatched = st.sidebar.checkbox("Show only unmatched", value=True)
     
@@ -278,17 +402,38 @@ def main():
         matched_sources = set(st.session_state.mappings.keys())
         source_models = [m for m in source_models if m not in matched_sources]
     
-    # #region agent log - Hypothesis A,C: After unmatched filter
-    with open('/Users/ehabba/PycharmProjects/AdaptEval/.cursor/debug.log', 'a') as _f:
-        _f.write(_json.dumps({"location":"model_matcher.py:268","message":"After unmatched filter","data":{"show_unmatched":show_unmatched,"count":len(source_models),"n_matched":len(matched_sources) if show_unmatched else 0},"hypothesisId":"A,C","timestamp":__import__('time').time()}) + '\n')
-    # #endregion
-    
     st.sidebar.markdown(f"**Showing**: {len(source_models)} models")
     
-    # #region agent log - Hypothesis B: Expander header count
-    with open('/Users/ehabba/PycharmProjects/AdaptEval/.cursor/debug.log', 'a') as _f:
-        _f.write(_json.dumps({"location":"model_matcher.py:273","message":"Expander header","data":{"expander_count":len(source_models),"source_file":source_file},"hypothesisId":"B","timestamp":__import__('time').time()}) + '\n')
-    # #endregion
+    # Auto-match section
+    st.sidebar.header("⚡ Auto-Match")
+    
+    # Get all unmatched source models (not just filtered ones)
+    all_source_models = sources[source_file]['models']
+    unmatched_models = [m for m in all_source_models if m not in st.session_state.mappings]
+    
+    # Find potential auto-matches
+    potential_matches = auto_match_models(unmatched_models, target_models, threshold=1.0)
+    
+    if potential_matches:
+        st.sidebar.success(f"🎯 Found {len(potential_matches)} exact matches!")
+        
+        if st.sidebar.button(f"✅ Accept all {len(potential_matches)} matches", type="primary", use_container_width=True):
+            # Add all matches to mappings
+            st.session_state.mappings.update(potential_matches)
+            save_mappings(st.session_state.mappings, source_file, target_file)
+            st.rerun()
+        
+        # Show preview of matches
+        with st.sidebar.expander(f"Preview matches ({len(potential_matches)})", expanded=False):
+            for src, tgt in list(potential_matches.items())[:10]:
+                src_clean = clean_model_name_for_display(src)
+                st.caption(f"`{src_clean[:30]}` → `{tgt[:30]}`")
+            if len(potential_matches) > 10:
+                st.caption(f"... and {len(potential_matches) - 10} more")
+    else:
+        st.sidebar.info("No exact matches found for unmatched models.")
+    
+    st.sidebar.markdown("---")
     
     # Show all source models in sidebar expander - ALL of them in a text area
     with st.sidebar.expander(f"📋 All Source Models ({len(source_models)})", expanded=False):
@@ -307,12 +452,6 @@ def main():
         
         # Text area with all models (sorted)
         all_source_text = "\n".join(source_models)
-        
-        # #region agent log - Hypothesis B,E: Text area content
-        with open('/Users/ehabba/PycharmProjects/AdaptEval/.cursor/debug.log', 'a') as _f:
-            _f.write(_json.dumps({"location":"model_matcher.py:288","message":"Text area content","data":{"text_lines":len(all_source_text.split('\n')) if all_source_text else 0,"source_models_count":len(source_models),"first_line":all_source_text.split('\n')[0] if all_source_text else ""},"hypothesisId":"B,E","timestamp":__import__('time').time()}) + '\n')
-        # #endregion
-        
         st.text_area("All source models:", value=all_source_text, height=300, 
                     key="all_source_textarea")
     
@@ -350,13 +489,18 @@ def main():
     
     current_model = source_models[current_idx]
     
+    # Clean name for display
+    display_name = clean_model_name_for_display(current_model)
+    
     # Main area
     col1, col2 = st.columns([1, 2])
     
     with col1:
         st.header("📌 Source Model")
         st.markdown(f"**{current_idx + 1} / {len(source_models)}**")
-        st.code(current_model, language=None)
+        st.code(display_name, language=None)
+        if display_name != current_model:
+            st.caption(f"Full: `{current_model}`")
         
         family = get_model_family(current_model)
         st.markdown(f"**Family**: {family}")
@@ -420,8 +564,12 @@ def main():
                 
                 with col_name:
                     candidate_family = get_model_family(candidate)
-                    st.markdown(f"`{candidate}`")
-                    st.caption(f"Family: {candidate_family}")
+                    candidate_display = clean_model_name_for_display(candidate)
+                    st.markdown(f"`{candidate_display}`")
+                    if candidate_display != candidate:
+                        st.caption(f"Family: {candidate_family} | Full: {candidate[:50]}...")
+                    else:
+                        st.caption(f"Family: {candidate_family}")
                 
                 with col_btn:
                     # Use closure to capture candidate value
