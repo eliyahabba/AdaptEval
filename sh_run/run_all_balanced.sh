@@ -214,35 +214,6 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "1" ]; then
         SEED=$((SEED + 1))  # Next target gets next seed
     done
     
-    # 1.4: Top-K Discrimination Baseline (6 experiments)
-    # Added to Category 1 to have a direct comparison with IRT clustering in the same run
-    echo ""
-    echo "-- LB Top-K Discrimination Baseline (6 experiments) --"
-    echo "   Same seed per target, 100 anchors, top_k_discrimination method"
-    echo "   Output: ${BASE_DIR}/lb_topk_baseline"
-    mkdir -p "${BASE_DIR}/lb_topk_baseline"
-    SEED=31  # Match Anchor Sweep seeds for direct comparison
-    for target in "${LB_DATASETS[@]}"; do
-        TARGET_SEED=$SEED
-        if [ -n "$FORCE_RESUME" ] && is_experiment_complete "${BASE_DIR}/lb_topk_baseline" $TARGET_SEED 100 "$target" ""; then
-            echo "   ⏭️  SKIP (complete): $target top-k (seed=$TARGET_SEED)"
-            SKIPPED=$((SKIPPED + 1))
-        else
-            echo "   Submitting $target (top-k, seed=$TARGET_SEED)..."
-            submit_job sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
-                --output-dir ${BASE_DIR}/lb_topk_baseline \
-                --preset lb_standard \
-                --anchor-method top_k_discrimination \
-                --shuffle-seed $TARGET_SEED \
-                --seed $TARGET_SEED \
-                --target "$target" \
-                --random-seed 1000 \
-                $SKIP_EXISTING $FORCE_RESUME
-            SUBMITTED=$((SUBMITTED + 1))
-        fi
-        SEED=$((SEED + 1))
-    done
-    
     # 1.3: Model Sweep - CONTROLLED (same seed per target, only model count varies)
     # Output to NEW directory to avoid mixing with old uncontrolled experiments
     echo ""
