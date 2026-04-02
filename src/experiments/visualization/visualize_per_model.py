@@ -251,7 +251,7 @@ def plot_per_model_error_by_distance(output_dir: Path, config: dict):
                 ax.plot(rand_d, rand_e, marker=MARKERS['random_simple'], color=COLORS['random_simple'],
                         label='Random Baseline', linestyle=':', alpha=0.6)
 
-            ax.set_xlabel('Chain Distance')
+            ax.set_xlabel('Chain Step')
             ax.set_ylabel('GP-IRT Error (%)')
             ax.set_title(f"{model_name}\n{scenario_info['title']} | Target: {target_name}")
             ax.grid(True, alpha=0.3)

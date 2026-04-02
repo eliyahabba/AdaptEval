@@ -871,7 +871,7 @@ def plot_error_by_distance_per_scenario(results_df, config, output_dir):
 
         models_info = f"n={n_models} models" if n_models else ""
 
-        ax.set_xlabel('Chain Distance', fontsize=12)
+        ax.set_xlabel('Chain Step', fontsize=12)
         ax.set_ylabel('Prediction Error (%)', fontsize=12)
 
         title_text = f"{scenario_info['title']}\n{data_info} | {scenario_info['what_tested']} | {models_info}"
@@ -1227,7 +1227,7 @@ def plot_scenario3_error_by_distance(results_df, config, output_dir):
     if n_datasets:
         cost_info += f" × {n_datasets} datasets = {n_anchors * n_datasets} total"
 
-    ax1.set_xlabel('Chain Distance', fontsize=12)
+    ax1.set_xlabel('Chain Step', fontsize=12)
     ax1.set_ylabel('Prediction Error (%)', fontsize=12)
     title1 = f"{scenario_info['title']}: Per-Dataset Methods\n"
     title1 += f"Budget: {cost_info}\n"
@@ -1292,7 +1292,7 @@ def plot_scenario3_error_by_distance(results_df, config, output_dir):
                                color=COLORS[method_key], alpha=0.08)
 
     if has_data:
-        ax2.set_xlabel('Chain Distance', fontsize=12)
+        ax2.set_xlabel('Chain Step', fontsize=12)
         ax2.set_ylabel('Prediction Error (%)', fontsize=12)
         title2 = f"{scenario_info['title']}: Same-Budget Methods (N={n_anchors} total)\n"
         title2 += "FAIR COMPARISON: Pooled vs Proportional anchor selection\n"
@@ -1347,7 +1347,7 @@ def plot_scenario3_error_by_distance(results_df, config, output_dir):
             ax3.plot(d_range, means, marker=MARKERS[method_key], color=COLORS[method_key],
                     label=label, linestyle=linestyle, linewidth=2, markersize=7)
 
-    ax3.set_xlabel('Chain Distance', fontsize=12)
+    ax3.set_xlabel('Chain Step', fontsize=12)
     ax3.set_ylabel('Prediction Error (%)', fontsize=12)
 
     # Add warning about different costs
@@ -1411,7 +1411,7 @@ def plot_cost_analysis(results_df, config, output_dir):
     target_name = get_target_name(config)
     chain_models_info = format_models_info(config)
 
-    ax.set_xlabel('Chain Distance', fontsize=12)
+    ax.set_xlabel('Chain Step', fontsize=12)
     ax.set_ylabel('Evaluation Cost (API Calls)', fontsize=12)
 
     title_text = f'Computational Cost per Target Dataset Addition\nTarget: {target_name} ({target_size} questions)'
@@ -1604,7 +1604,7 @@ def create_combined_error_by_distance_base_only(experiment_data: list, parent_di
         base_names_str = ", ".join(base_datasets)
         subplot_title += f"\nEvaluated on: {base_names_str}"
 
-        ax.set_xlabel('Chain Distance', fontsize=9)
+        ax.set_xlabel('Chain Step', fontsize=9)
         ax.set_ylabel('Error (%)', fontsize=9)
         ax.set_title(subplot_title, fontsize=10, fontweight='bold')
         ax.grid(True, alpha=0.3)
@@ -1746,7 +1746,7 @@ def create_aggregated_error_by_distance_base_only(experiment_data: list, parent_
         plt.close(fig)
         return
 
-    ax.set_xlabel('Chain Distance', fontsize=12)
+    ax.set_xlabel('Chain Step', fontsize=12)
     ax.set_ylabel('Prediction Error (%)', fontsize=12)
     ax.set_title(f"{scenario_info['title']}\nAggregated Across Datasets - BASE ONLY (excluding Chain)\n(Shaded = ±1 SEM across datasets)",
                 fontsize=13, fontweight='bold')
@@ -1891,7 +1891,7 @@ def create_combined_error_by_distance(experiment_data: list, parent_dir: Path, c
                     datasets_str = ", ".join(base_datasets)
                     subplot_title += f"\nEval on: {datasets_str} + Chain"
 
-            ax.set_xlabel('Chain Distance', fontsize=9)
+            ax.set_xlabel('Chain Step', fontsize=9)
             ax.set_ylabel('Error (%)', fontsize=9)
             ax.set_title(subplot_title, fontsize=10, fontweight='bold')
             ax.grid(True, alpha=0.3)
@@ -2143,7 +2143,7 @@ def create_combined_cost_analysis(experiment_data: list, parent_dir: Path, cols_
         if models_info:
             subplot_title += f"\n[{models_info}]"
 
-        ax.set_xlabel('Chain Distance', fontsize=9)
+        ax.set_xlabel('Chain Step', fontsize=9)
         ax.set_ylabel('Cost (API Calls)', fontsize=9)
         ax.set_title(subplot_title, fontsize=10, fontweight='bold')
         ax.grid(True, alpha=0.3)
@@ -2364,7 +2364,7 @@ def create_aggregated_error_by_distance(experiment_data: list, parent_dir: Path)
             continue
 
         # Formatting
-        ax.set_xlabel('Chain Distance', fontsize=12)
+        ax.set_xlabel('Chain Step', fontsize=12)
         ax.set_ylabel('Prediction Error (%)', fontsize=12)
         ax.set_title(f"{scenario_info['title']}\nAggregated Across All Target Datasets\n(Shaded = ±1 SEM across datasets)",
                     fontsize=13, fontweight='bold')
@@ -2603,7 +2603,7 @@ def create_grouped_aggregated_error_by_distance(experiment_data: list, parent_di
                                   color=COLORS[method], alpha=0.15)
             
             # Formatting
-            ax.set_xlabel('Chain Distance', fontsize=10)
+            ax.set_xlabel('Chain Step', fontsize=10)
             ax.set_ylabel('Prediction Error (%)' if ax_idx == 0 else '', fontsize=10)
             ax.set_title(format_group_title(group_key), fontsize=10, fontweight='bold')
             ax.legend(loc='best', fontsize=7)
@@ -2723,7 +2723,7 @@ def create_grouped_aggregated_error_by_distance_pooled(experiment_data: list, pa
                 ax.fill_between(d_range, means - sems, means + sems, color=color, alpha=0.15)
         
         # Formatting
-        ax.set_xlabel('Chain Distance', fontsize=10)
+        ax.set_xlabel('Chain Step', fontsize=10)
         ax.set_ylabel('Prediction Error (%)' if ax_idx == 0 else '', fontsize=10)
         ax.set_title(format_group_title(group_key), fontsize=10, fontweight='bold')
         ax.legend(loc='best', fontsize=7)
@@ -2843,7 +2843,7 @@ def create_grouped_aggregated_error_by_distance_proportional(experiment_data: li
                 ax.fill_between(d_range, means - sems, means + sems, color=color, alpha=0.15)
         
         # Formatting
-        ax.set_xlabel('Chain Distance', fontsize=10)
+        ax.set_xlabel('Chain Step', fontsize=10)
         ax.set_ylabel('Prediction Error (%)' if ax_idx == 0 else '', fontsize=10)
         ax.set_title(format_group_title(group_key), fontsize=10, fontweight='bold')
         ax.legend(loc='best', fontsize=7)
@@ -3063,7 +3063,7 @@ def create_grouped_combined_error_by_distance(experiment_data: list, parent_dir:
                 elif n_eval_models:
                     subplot_title += f" (n={n_eval_models})"
                 
-                ax.set_xlabel('Chain Distance', fontsize=9)
+                ax.set_xlabel('Chain Step', fontsize=9)
                 ax.set_ylabel('Error (%)', fontsize=9)
                 ax.set_title(subplot_title, fontsize=9, fontweight='bold')
                 ax.grid(True, alpha=0.3)
@@ -3149,7 +3149,7 @@ def create_grouped_combined_error_by_distance_pooled(experiment_data: list, pare
                            label=label, color=color, linewidth=1.5, markersize=5)
             
             if has_data:
-                ax.set_xlabel('Chain Distance', fontsize=9)
+                ax.set_xlabel('Chain Step', fontsize=9)
                 ax.set_ylabel('Error (%)', fontsize=9)
                 ax.set_title(f'{target_name}', fontsize=9, fontweight='bold')
                 ax.grid(True, alpha=0.3)
@@ -3235,7 +3235,7 @@ def create_grouped_combined_error_by_distance_proportional(experiment_data: list
                            label=label, color=color, linewidth=1.5, markersize=5)
             
             if has_data:
-                ax.set_xlabel('Chain Distance', fontsize=9)
+                ax.set_xlabel('Chain Step', fontsize=9)
                 ax.set_ylabel('Error (%)', fontsize=9)
                 ax.set_title(f'{target_name}', fontsize=9, fontweight='bold')
                 ax.grid(True, alpha=0.3)
@@ -3335,7 +3335,7 @@ def create_grouped_comparison_across_params(experiment_data: list, parent_dir: P
                 ax.fill_between(d_range, means - sems, means + sems,
                               color=group_colors[group_idx], alpha=0.1)
         
-        ax.set_xlabel('Chain Distance', fontsize=12)
+        ax.set_xlabel('Chain Step', fontsize=12)
         ax.set_ylabel('Fixed-Anchor IRT Error (%)', fontsize=12)
         ax.set_title(f"{scenario_info['title']}\nComparing Different (Anchors, Chain) Settings\n(Shaded = ±1 SEM)",
                     fontsize=13, fontweight='bold')
@@ -3617,14 +3617,14 @@ def create_aggregated_three_scenarios_error_by_distance(experiment_data: list, p
             ax.set_xticklabels(common_distances)
         
         # Common formatting for all subplots
-        ax.set_xlabel('Chain Distance', fontsize=11)
+        ax.set_xlabel('Chain Step', fontsize=11)
         ax.set_ylabel('Prediction Error (%)' if idx == 0 else '', fontsize=11)
         ax.set_title(scenario_title, fontsize=11, fontweight='bold')
         ax.legend(loc='best', fontsize=7)
         ax.grid(True, alpha=0.3)
         ax.set_ylim(bottom=0)
     
-    fig.suptitle('Prediction Error by Chain Distance Across All Validation Scenarios\n(Shaded = ±1 SEM across datasets)',
+    fig.suptitle('Prediction Error by Chain Step Across All Validation Scenarios\n(Shaded = ±1 SEM across datasets)',
                 fontsize=13, fontweight='bold')
     plt.tight_layout()
     
@@ -4028,7 +4028,7 @@ def create_aggregated_error_by_distance_same_budget(experiment_data: list, paren
         plt.close(fig)
         return
     
-    ax.set_xlabel('Chain Distance', fontsize=12)
+    ax.set_xlabel('Chain Step', fontsize=12)
     ax.set_ylabel('Prediction Error (%)', fontsize=12)
     ax.set_title(f"{scenario_info['title']}: Same-Budget Methods (N total anchors)\n"
                 f"FAIR COMPARISON: Pooled vs Proportional | IRT vs Random\n"
@@ -4272,7 +4272,7 @@ def create_combined_scenario3_error_by_distance(experiment_data: list, parent_di
         elif n_models:
             subplot_title += f" (n={n_models})"
 
-        ax.set_xlabel('Chain Distance', fontsize=9)
+        ax.set_xlabel('Chain Step', fontsize=9)
         ax.set_ylabel('Error (%)', fontsize=9)
         ax.set_title(subplot_title, fontsize=10, fontweight='bold')
         ax.grid(True, alpha=0.3)

@@ -81,6 +81,8 @@ All presets are defined in [`experiment_presets.yaml`](experiment_presets.yaml).
 | `--random-seed` | Seed for random baseline scenarios | `--random-seed 1000` |
 | `--target` | Specific target dataset | `--target "MMLU"` |
 | `--type` | Experiment type: parallel (default) or disjoint | `--type disjoint` |
+| `--skip-existing` | Skip if output dir exists (resume failures only) | `--skip-existing` |
+| `--setup-only` | Only create config, don't run experiment | `--setup-only` |
 
 **Understanding the two seeds:**
 - `--seed` (shuffle_seed): Controls which datasets become base/chain/target and train/test model split. Keep this constant across experiments where you want the same data configuration.
@@ -113,7 +115,11 @@ All presets are defined in [`experiment_presets.yaml`](experiment_presets.yaml).
 | `--gpus` | Number of GPUs | `--gpus 4` |
 | `--time` | Time limit | `--time "5:0:0"` |
 
-## Auto-Increment Seed Feature
+## Seed Management
+
+The script supports **two modes** for handling existing experiments:
+
+### 1. Auto-Increment Mode (Default)
 
 The unified runner automatically finds the next available seed to avoid conflicts with running experiments. It checks for both exact directory matches AND directories with target suffixes:
 
@@ -127,6 +133,38 @@ sbatch run_chain_linking_unified.sh --output-dir data/v24_lb --preset lb_standar
 
 **Benefits:**
 - Multiple workers can submit jobs in parallel without conflicts
+- All experiments complete, just with different seeds
+
+### 2. Skip-Existing Mode (Resume Failures)
+
+Use `--skip-existing` to skip experiments where the output directory already exists. This is useful when you've run many experiments and only want to re-run the ones that failed:
+
+```bash
+# Will skip if output directory exists, won't auto-increment seed
+sbatch run_chain_linking_unified.sh \
+    --output-dir data/v24_lb \
+    --preset lb_standard \
+    --seed 11 \
+    --skip-existing
+
+# Output if exists: "⏭️  SKIP: Output directory already exists..."
+# Exit code: 0 (success, skipped)
+```
+
+**Benefits:**
+- Resume a batch of experiments without running successful ones again
+- Faster re-runs after cluster failures
+- No need to track which experiments succeeded/failed manually
+
+**Example with run_all_experiments.sh:**
+
+```bash
+# First run (some fail due to cluster issues)
+bash sh_run/run_all_experiments.sh
+
+# Later: resume only failed experiments
+bash sh_run/run_all_experiments.sh --skip-existing
+```
 - No need to manually track which seeds have been used
 - Each experiment gets a unique output directory
 - Correctly detects existing experiments even with `_target_<name>` suffix
@@ -210,10 +248,19 @@ sbatch sh_run/run_chain_linking_unified.sh \
 ### 5. Disjoint experiment
 
 ```bash
+# Using run_chain_linking_unified.sh (if using unified approach)
 sbatch sh_run/run_chain_linking_unified.sh \
     --output-dir data/v24_disjoint \
     --preset lb_disjoint \
     --seed 21
+
+# Using run_chain_linking_disjoint_lb.sh (direct disjoint script)
+sbatch sh_run/run_chain_linking_disjoint_lb.sh \
+    data/v24_disjoint/full_chain_disjoint 42 100 20 50 "" fixed
+
+# With skip-existing (8th positional argument)
+sbatch sh_run/run_chain_linking_disjoint_lb.sh \
+    data/v24_disjoint/full_chain_disjoint 42 100 20 50 "" fixed skip
 ```
 
 ## Creating Custom Presets
@@ -237,6 +284,31 @@ presets:
 Then use it:
 ```bash
 sbatch sh_run/run_chain_linking_unified.sh --preset my_custom_preset --seed 11
+```
+
+## Disjoint Experiments Script
+
+The `run_chain_linking_disjoint_lb.sh` script runs experiments with zero model overlap between datasets.
+
+**Positional Arguments:**
+1. `output_dir` - Base output directory
+2. `shuffle_seed` - Seed for dataset/model split (default: 42)
+3. `n_anchors` - Anchors per dataset (default: 100)
+4. `n_bridge` - Bridge models count (default: 20)
+5. `n_isolated` - Isolated models per chain (default: 50)
+6. `target_dataset` - Target dataset name (default: auto)
+7. `bridge_mode` - "fixed" or "random" (default: "fixed")
+8. `skip_existing` - Pass "skip" to skip if exists (optional)
+
+**Examples:**
+```bash
+# Basic usage
+sbatch sh_run/run_chain_linking_disjoint_lb.sh \
+    data/v24_disjoint/output 42 100 20 50 "" fixed
+
+# With skip-existing
+sbatch sh_run/run_chain_linking_disjoint_lb.sh \
+    data/v24_disjoint/output 42 100 20 50 "" fixed skip
 ```
 
 ## Monitoring Experiments

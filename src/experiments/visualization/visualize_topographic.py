@@ -102,7 +102,7 @@ def get_random_col(df: pd.DataFrame, scenario: str) -> Optional[str]:
 
 
 # =============================================================================
-# OPTION 1: Error Heatmap - Cost vs Chain Distance
+# OPTION 1: Error Heatmap - Cost vs Chain Step
 # =============================================================================
 def plot_error_heatmap_cost_vs_distance(results_df: pd.DataFrame, config: dict, 
                                          output_dir: Path, scenario: str = 'new_model_new_data'):
@@ -184,7 +184,7 @@ def plot_error_heatmap_cost_vs_distance(results_df: pd.DataFrame, config: dict,
     cbar.set_label('Prediction Error (%)', fontsize=11)
     
     scenario_title = SCENARIOS.get(scenario, scenario)
-    fig.suptitle(f'Error by Cost × Chain Distance\n{scenario_title} | Target: {target_name}',
+    fig.suptitle(f'Error by Cost × Chain Step\n{scenario_title} | Target: {target_name}',
                 fontsize=14, fontweight='bold')
     
     plt.tight_layout()
@@ -608,7 +608,7 @@ def plot_error_matrix(experiment_dirs: list, parent_dir: Path,
     ax.set_yticks(range(n_datasets))
     ax.set_yticklabels(dataset_names, fontsize=9)
     
-    ax.set_xlabel('Chain Distance', fontsize=12)
+    ax.set_xlabel('Chain Step', fontsize=12)
     ax.set_ylabel('Target Dataset', fontsize=12)
     
     # Colorbar
@@ -895,7 +895,7 @@ def plot_3d_wireframe_comparison(experiment_dirs: list, parent_dir: Path,
     """
     Create 3D wireframe showing error surface across multiple datasets.
     
-    X = Chain Distance
+    X = Chain Step
     Y = Cost (API Calls) - actual evaluation cost for each dataset
     Z = Error
     
@@ -1026,7 +1026,7 @@ def plot_3d_wireframe_comparison(experiment_dirs: list, parent_dir: Path,
             # Fallback to scatter plot if interpolation fails
             ax.scatter(all_x, all_y, all_z, c=all_z, cmap='RdYlGn_r', 
                       s=50, edgecolor='black', alpha=0.8)
-            ax.set_xlabel('Chain Distance', fontsize=10)
+            ax.set_xlabel('Chain Step', fontsize=10)
             ax.set_ylabel('Cost (API Calls)', fontsize=10)
             ax.set_zlabel('Error (%)', fontsize=10)
             ax.set_title(METHODS[method]['label'], fontsize=12, fontweight='bold')
@@ -1044,7 +1044,7 @@ def plot_3d_wireframe_comparison(experiment_dirs: list, parent_dir: Path,
         # Also show actual data points
         ax.scatter(all_x, all_y, all_z, c='black', s=20, alpha=0.5, zorder=10)
         
-        ax.set_xlabel('Chain Distance', fontsize=10)
+        ax.set_xlabel('Chain Step', fontsize=10)
         ax.set_ylabel('Cost (API Calls)', fontsize=10)
         ax.set_zlabel('Error (%)', fontsize=10)
         ax.set_title(METHODS[method]['label'], fontsize=12, fontweight='bold')
@@ -1076,7 +1076,7 @@ def plot_3d_terrain_comparison(experiment_dirs: list, parent_dir: Path,
     - Lower terrain = better performance
     - You can see which method's "mountain" is lower
     
-    X = Chain Distance
+    X = Chain Step
     Y = Dataset index  
     Z = Error (%)
     """
@@ -1170,7 +1170,7 @@ def plot_3d_terrain_comparison(experiment_dirs: list, parent_dir: Path,
         except:
             pass
     
-    ax.set_xlabel('Chain Distance', fontsize=12, labelpad=10)
+    ax.set_xlabel('Chain Step', fontsize=12, labelpad=10)
     ax.set_ylabel('Dataset Index', fontsize=12, labelpad=10)
     ax.set_zlabel('Prediction Error (%)', fontsize=12, labelpad=10)
     
@@ -1205,7 +1205,7 @@ def plot_3d_cost_error_surface(experiment_dirs: list, parent_dir: Path,
                                 scenario: str = 'new_model_new_data'):
     """
     3D surface where:
-    - X = Chain Distance
+    - X = Chain Step
     - Y = Evaluation Cost
     - Z = Prediction Error
     
@@ -1285,7 +1285,7 @@ def plot_3d_cost_error_surface(experiment_dirs: list, parent_dir: Path,
         except:
             pass
     
-    ax.set_xlabel('Chain Distance', fontsize=12, labelpad=10)
+    ax.set_xlabel('Chain Step', fontsize=12, labelpad=10)
     ax.set_ylabel('Evaluation Cost (API Calls)', fontsize=12, labelpad=10)
     ax.set_zlabel('Prediction Error (%)', fontsize=12, labelpad=10)
     

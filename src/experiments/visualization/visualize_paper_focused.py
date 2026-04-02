@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 
 # Import cost vs performance plotting
-from plot_cost_vs_performance import create_cost_vs_performance_from_aggregated_data
+from plot_cost_vs_performance2 import create_cost_vs_performance_from_aggregated_data
 
 # Publication-quality settings - LARGER fonts for Overleaf papers
 plt.rcParams.update({
@@ -74,11 +74,14 @@ LAYOUT_PAD = 0.8            # Padding between subplots
 # =============================================================================
 
 # Colorblind-friendly palette (Wong 2011 + adjusted)
+# Extended to support both GP-IRT and Anchor-only metrics
 COLORS = {
-    'full_eval': '#000000',    # Black
-    'fixed': '#009E73',        # Green (colorblind safe)
-    'concurrent': '#D55E00',   # Orange-red (colorblind safe)
-    'random_simple': '#0072B2', # Blue (colorblind safe)
+    'full_eval': '#000000',       # Black
+    'fixed': '#009E73',           # Green (colorblind safe) - GP-IRT
+    'concurrent': '#D55E00',      # Orange-red (colorblind safe) - GP-IRT
+    'random_simple': '#0072B2',   # Blue (colorblind safe)
+    'fixed_anchor': '#2E8B57',    # Sea Green - Anchor only
+    'concurrent_anchor': '#FF6B6B', # Coral Red - Anchor only
 }
 
 # Distinct markers (no filled markers to avoid visual clutter)
@@ -86,14 +89,18 @@ MARKERS = {
     'fixed': 'o',              # Circle
     'concurrent': 's',         # Square
     'random_simple': '^',      # Triangle
+    'fixed_anchor': 'D',       # Diamond
+    'concurrent_anchor': 'v',  # Down triangle
 }
 
 # Clean labels (capitalized, no jargon)
 LABELS = {
-    'fixed': 'Fixed-Anchor IRT',
-    'concurrent': 'Concurrent IRT',
+    'fixed': 'Fixed (GP-IRT)',
+    'concurrent': 'Concurrent (GP-IRT)',
     'random_simple': 'Random Baseline',
     'full_eval': 'Full Evaluation',
+    'fixed_anchor': 'Fixed (Anchor)',
+    'concurrent_anchor': 'Concurrent (Anchor)',
 }
 
 SCENARIOS = {
@@ -824,6 +831,48 @@ def create_combined_error_by_distance(experiment_data: list, parent_dir: Path,
                 if means:
                     methods_data['random_simple'] = (means, sems)
 
+            # Fixed-Anchor (anchor_error)
+            err_col = get_error_col(results_df, 'fixed', scenario_key, metric='anchor_error')
+            std_col = err_col.replace('_mean', '_std') if err_col else None
+            if err_col:
+                means = []
+                sems = []
+                for d in distances:
+                    row = results_df[results_df['distance'] == d]
+                    val = row[err_col].iloc[0]
+                    if not pd.isna(val):
+                        means.append(val * 100)
+                        if std_col and std_col in results_df.columns:
+                            std_val = row[std_col].iloc[0] * 100
+                            n = row[n_models_col].iloc[0] if n_models_col and n_models_col in row.columns else 1
+                            sem = std_val / np.sqrt(n) if n > 0 else 0
+                            sems.append(sem)
+                        else:
+                            sems.append(0)
+                if means:
+                    methods_data['fixed_anchor'] = (means, sems)
+
+            # Concurrent-Anchor (anchor_error)
+            err_col = get_error_col(results_df, 'concurrent', scenario_key, metric='anchor_error')
+            std_col = err_col.replace('_mean', '_std') if err_col else None
+            if err_col:
+                means = []
+                sems = []
+                for d in distances:
+                    row = results_df[results_df['distance'] == d]
+                    val = row[err_col].iloc[0]
+                    if not pd.isna(val):
+                        means.append(val * 100)
+                        if std_col and std_col in results_df.columns:
+                            std_val = row[std_col].iloc[0] * 100
+                            n = row[conc_n_models_col].iloc[0] if conc_n_models_col and conc_n_models_col in row.columns else 1
+                            sem = std_val / np.sqrt(n) if n > 0 else 0
+                            sems.append(sem)
+                        else:
+                            sems.append(0)
+                if means:
+                    methods_data['concurrent_anchor'] = (means, sems)
+
             # Plot each method
             # #region agent log
             import json
@@ -896,8 +945,8 @@ def create_combined_error_by_distance(experiment_data: list, parent_dir: Path,
                    transform=ax.transAxes, fontsize=12, 
                    verticalalignment='top', fontweight='normal')
 
-            ax.set_xlabel('Chain Distance', fontsize=13)
-            ax.set_ylabel('Error vs Full Eval (%)', fontsize=13)
+            ax.set_xlabel('Chain Step', fontsize=13)
+            ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=13)
             ax.grid(True, alpha=0.2, linewidth=0.4)  # Subtle grid
             ax.set_xticks(range(len(distances)))
             ax.set_xticklabels([d+1 for d in distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
@@ -1075,8 +1124,8 @@ def create_combined_error_by_distance_base_only(experiment_data: list, parent_di
                transform=ax.transAxes, fontsize=15, alpha=0.7,
                verticalalignment='bottom')
 
-        ax.set_xlabel('Chain Distance', fontsize=13)
-        ax.set_ylabel('Error vs Full Eval (%)', fontsize=13)
+        ax.set_xlabel('Chain Step', fontsize=13)
+        ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=13)
         ax.grid(True, alpha=0.25, linewidth=0.5)
         ax.set_xticks(range(len(distances)))
         ax.set_xticklabels([d+1 for d in distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
@@ -1203,8 +1252,8 @@ def create_combined_error_by_distance_proportional(experiment_data: list, parent
             ax_pooled.text(0.02, 0.87, params_str, transform=ax_pooled.transAxes,
                           fontsize=12, verticalalignment='top', fontweight='normal')
                           
-            ax_pooled.set_xlabel('Chain Distance', fontsize=16)
-            ax_pooled.set_ylabel('Error vs Full Eval (%)', fontsize=16)
+            ax_pooled.set_xlabel('Chain Step', fontsize=16)
+            ax_pooled.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=16)
             ax_pooled.grid(True, alpha=0.25, linewidth=0.5)
             ax_pooled.set_xticks(range(len(distances)))
             ax_pooled.set_xticklabels([d+1 for d in distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
@@ -1251,8 +1300,8 @@ def create_combined_error_by_distance_proportional(experiment_data: list, parent
             ax_prop.text(0.02, 0.87, params_str, transform=ax_prop.transAxes,
                         fontsize=12, verticalalignment='top', fontweight='normal')
                         
-            ax_prop.set_xlabel('Chain Distance', fontsize=16)
-            ax_prop.set_ylabel('Error vs Full Eval (%)', fontsize=16)
+            ax_prop.set_xlabel('Chain Step', fontsize=16)
+            ax_prop.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=16)
             ax_prop.grid(True, alpha=0.25, linewidth=0.5)
             ax_prop.set_xticks(range(len(distances)))
             ax_prop.set_xticklabels([d+1 for d in distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
@@ -1396,17 +1445,19 @@ def create_grouped_aggregated_error_by_distance(experiment_data: list, parent_di
                        transform=ax.transAxes, fontsize=16)
                 continue
             
-            # Collect data for each method
+            # Collect data for each method (GP-IRT + Anchor + Random)
             methods_aggregated = {
                 'fixed': {'data': [], 'valid_experiments': []},
                 'concurrent': {'data': [], 'valid_experiments': []},
                 'random_simple': {'data': [], 'valid_experiments': []},
+                'fixed_anchor': {'data': [], 'valid_experiments': []},
+                'concurrent_anchor': {'data': [], 'valid_experiments': []},
             }
             
             for exp_dir, results_df, config in group_experiments:
                 target_name = get_target_name(config)
                 
-                # Fixed-Anchor
+                # Fixed GP-IRT
                 err_col = get_error_col(results_df, 'fixed', scenario_key)
                 if err_col and err_col in results_df.columns:
                     errors = []
@@ -1422,7 +1473,7 @@ def create_grouped_aggregated_error_by_distance(experiment_data: list, parent_di
                         methods_aggregated['fixed']['data'].append(errors)
                         methods_aggregated['fixed']['valid_experiments'].append(target_name)
                 
-                # Concurrent
+                # Concurrent GP-IRT
                 err_col = get_error_col(results_df, 'concurrent', scenario_key)
                 if err_col and err_col in results_df.columns:
                     errors = []
@@ -1453,6 +1504,38 @@ def create_grouped_aggregated_error_by_distance(experiment_data: list, parent_di
                     if valid and errors:
                         methods_aggregated['random_simple']['data'].append(errors)
                         methods_aggregated['random_simple']['valid_experiments'].append(target_name)
+                
+                # Fixed Anchor
+                err_col = get_error_col(results_df, 'fixed', scenario_key, metric='anchor_error')
+                if err_col and err_col in results_df.columns:
+                    errors = []
+                    valid = True
+                    for d in common_distances:
+                        row = results_df[results_df['distance'] == d]
+                        if row.empty or pd.isna(row[err_col].iloc[0]):
+                            valid = False
+                            break
+                        errors.append(row[err_col].iloc[0] * 100)
+                    
+                    if valid and errors:
+                        methods_aggregated['fixed_anchor']['data'].append(errors)
+                        methods_aggregated['fixed_anchor']['valid_experiments'].append(target_name)
+                
+                # Concurrent Anchor
+                err_col = get_error_col(results_df, 'concurrent', scenario_key, metric='anchor_error')
+                if err_col and err_col in results_df.columns:
+                    errors = []
+                    valid = True
+                    for d in common_distances:
+                        row = results_df[results_df['distance'] == d]
+                        if row.empty or pd.isna(row[err_col].iloc[0]):
+                            valid = False
+                            break
+                        errors.append(row[err_col].iloc[0] * 100)
+                    
+                    if valid and errors:
+                        methods_aggregated['concurrent_anchor']['data'].append(errors)
+                        methods_aggregated['concurrent_anchor']['valid_experiments'].append(target_name)
             
             # Plot aggregated results
             has_data = False
@@ -1498,9 +1581,9 @@ def create_grouped_aggregated_error_by_distance(experiment_data: list, parent_di
             #            verticalalignment='bottom', ha='center', alpha=0.6)
             
             # Axis labels (+5 points total from original 13)
-            ax.set_xlabel('Chain Distance', fontsize=18)
+            ax.set_xlabel('Chain Step', fontsize=18)
             if ax_idx % n_cols == 0:  # Only leftmost column gets y-label
-                ax.set_ylabel('Error vs Full Eval (%)', fontsize=18)
+                ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=18)
             ax.grid(True, alpha=0.25, linewidth=0.5)
             ax.set_xticks(range(len(common_distances)))
             # Tick labels (+1.5 points: 12 -> 13.5)
@@ -1752,7 +1835,7 @@ def create_grouped_aggregated_method_comparison(experiment_data: list, parent_di
             # Short, clear labels for bar chart
             ax.set_xticklabels(['Fixed-Anchor', 'Concurrent', 'Random'], fontsize=11, rotation=20, ha='right')
             if ax_idx % n_cols == 0:  # Only leftmost column gets y-label
-                ax.set_ylabel('Error vs Full Eval (%)', fontsize=16)
+                ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=16)
             ax.grid(True, alpha=0.2, linewidth=0.4, axis='y')  # Subtle horizontal grid only
             ax.set_ylim(bottom=0)
             
@@ -1952,9 +2035,9 @@ def create_grouped_aggregated_base_only(experiment_data: list, parent_dir: Path,
                        transform=ax.transAxes, fontsize=13,
                        verticalalignment='bottom', ha='center', alpha=0.6)
             
-            ax.set_xlabel('Chain Distance', fontsize=13)
+            ax.set_xlabel('Chain Step', fontsize=13)
             if ax_idx % n_cols == 0:  # Only leftmost column gets y-label
-                ax.set_ylabel('Error vs Full Eval (%)', fontsize=13)
+                ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=13)
             ax.grid(True, alpha=0.25, linewidth=0.5)
             ax.set_xticks(range(len(common_distances)))
             ax.set_xticklabels([d+1 for d in common_distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
@@ -2133,8 +2216,8 @@ def create_grouped_combined_error_by_distance(experiment_data: list, parent_dir:
                        transform=ax.transAxes, fontsize=13.5,
                        verticalalignment='top', fontweight='normal')
                 
-                ax.set_xlabel('Chain Distance', fontsize=13)
-                ax.set_ylabel('Error vs Full Eval (%)', fontsize=13)
+                ax.set_xlabel('Chain Step', fontsize=13)
+                ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=13)
                 ax.grid(True, alpha=0.25, linewidth=0.5)
                 ax.set_xticks(range(len(distances)))
                 ax.set_xticklabels([d+1 for d in distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
@@ -2304,8 +2387,8 @@ def create_grouped_combined_proportional(experiment_data: list, parent_dir: Path
                            transform=ax.transAxes, fontsize=12,
                            verticalalignment='top', fontweight='normal')
                     
-                    ax.set_xlabel('Chain Distance', fontsize=13)
-                    ax.set_ylabel('Error vs Full Eval (%)', fontsize=13)
+                    ax.set_xlabel('Chain Step', fontsize=13)
+                    ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=13)
                     ax.grid(True, alpha=0.25, linewidth=0.5)
                     ax.set_xticks(range(len(distances)))
                     ax.set_xticklabels([d+1 for d in distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
@@ -2578,8 +2661,8 @@ def create_grouped_aggregated_proportional(experiment_data: list, parent_dir: Pa
                 group_title = format_group_title(group_key, proportional=True)
                 ax.set_title(group_title, fontsize=SUBPLOT_TITLE_FONTSIZE, pad=SUBPLOT_TITLE_PAD, loc='left')
                 
-                ax.set_xlabel('Chain Distance', fontsize=13)
-                ax.set_ylabel('Error vs Full Eval (%)', fontsize=13)
+                ax.set_xlabel('Chain Step', fontsize=13)
+                ax.set_ylabel('Absolute Error vs. Full Evaluation (percentage points)', fontsize=13)
                 ax.grid(True, alpha=0.25, linewidth=0.5)
                 ax.set_xticks(range(len(common_distances)))
                 ax.set_xticklabels([d+1 for d in common_distances], fontsize=10)  # Display as 1, 2, 3... instead of 0, 1, 2...
