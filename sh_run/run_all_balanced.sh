@@ -36,7 +36,7 @@
 
 set -e
 
-BASE_DIR="data/v29_after_changes"
+BASE_DIR="data/v30_with_top_k"
 SETUP_ONLY=""
 SKIP_EXISTING=""
 FORCE_RESUME=""
