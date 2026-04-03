@@ -1391,11 +1391,11 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     
     # Add Discriminative baselines
     for key, val in discriminative_baseline_results.items():
-        results[f'discriminative_{key}'] = val
+        result[f'discriminative_{key}'] = val
     for key, val in discriminative_baseline_all_train.items():
-        results[f'discriminative_all_train_{key}'] = val
+        result[f'discriminative_all_train_{key}'] = val
     for key, val in discriminative_baseline_new_model_old_data.items():
-        results[f'discriminative_new_model_old_data_{key}'] = val
+        result[f'discriminative_new_model_old_data_{key}'] = val
 
     # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
