@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+amazon/nova-micro-v1:0,MATH Competition,MATH Competition,437,50,-2.2956,0.7918,0.7574,0.799,0.7767,0.7959,0.0343,0.0073,0.015,0.0042,0.4983,0.1144
+anthropic/claude-2.1,MATH Competition,MATH Competition,437,50,1.7061,0.6957,0.7391,0.7021,0.7198,0.7007,0.0435,0.0065,0.0242,0.005,0.4983,0.1144
+meta/llama-3.2-11b-vision-instruct-turbo,MATH Competition,MATH Competition,437,50,0.0789,0.7689,0.7529,0.7395,0.746,0.7392,0.016,0.0294,0.0229,0.0297,0.4983,0.1144
+qwen/qwen1.5-72b,MATH Competition,MATH Competition,437,50,1.0193,0.7048,0.7483,0.6969,0.7222,0.6963,0.0435,0.0079,0.0174,0.0085,0.4983,0.1144
+snowflake/snowflake-arctic-instruct,MATH Competition,MATH Competition,437,50,-0.4214,0.5927,0.5744,0.6125,0.5916,0.6087,0.0183,0.0198,0.0011,0.016,0.4983,0.1144

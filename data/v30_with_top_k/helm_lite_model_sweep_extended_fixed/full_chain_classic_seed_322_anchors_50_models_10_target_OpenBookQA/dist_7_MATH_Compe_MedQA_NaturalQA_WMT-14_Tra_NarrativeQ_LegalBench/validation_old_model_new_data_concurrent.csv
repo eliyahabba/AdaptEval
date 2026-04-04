@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+ai21/jamba-1.5-mini,OpenBookQA,OpenBookQA,500,50,-0.3974,0.89,0.89,0.6956,0.869,0.7104,0.0,0.1944,0.021,0.1796,0.8833,0.1
+anthropic/claude-instant-1.2,OpenBookQA,OpenBookQA,500,50,1.2541,0.844,0.908,0.6871,0.8842,0.7043,0.064,0.1569,0.0402,0.1397,0.8833,0.1
+cohere/command,OpenBookQA,OpenBookQA,500,50,-1.9132,0.774,0.774,0.6079,0.7559,0.6193,0.0,0.1661,0.0181,0.1547,0.8833,0.1
+google/text-unicorn@001,OpenBookQA,OpenBookQA,500,50,2.247,0.938,0.914,0.7552,0.8971,0.7692,0.024,0.1828,0.0409,0.1688,0.8833,0.1
+meta/llama-3.1-405b-instruct-turbo,OpenBookQA,OpenBookQA,500,50,2.6454,0.94,0.97,0.8398,0.9564,0.8532,0.03,0.1002,0.0164,0.0868,0.8833,0.1
+meta/llama-65b,OpenBookQA,OpenBookQA,500,50,-2.7937,0.754,0.768,0.6573,0.7552,0.6586,0.014,0.0967,0.0012,0.0954,0.8833,0.1
+microsoft/phi-2,OpenBookQA,OpenBookQA,500,50,-1.7574,0.798,0.796,0.5217,0.7666,0.5441,0.002,0.2763,0.0314,0.2539,0.8833,0.1
+openai/gpt-4-1106-preview,OpenBookQA,OpenBookQA,500,50,2.0518,0.95,0.964,0.829,0.9498,0.842,0.014,0.121,0.0002,0.108,0.8833,0.1
+openai/text-davinci-003,OpenBookQA,OpenBookQA,500,50,-1.7662,0.828,0.874,0.6955,0.8545,0.7067,0.046,0.1325,0.0265,0.1213,0.8833,0.1
+writer/palmyra-x-004,OpenBookQA,OpenBookQA,500,50,2.268,0.926,0.886,0.8309,0.8799,0.8336,0.04,0.0951,0.0461,0.0924,0.8833,0.1

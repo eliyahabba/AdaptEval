@@ -1,0 +1,155 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+01-ai/yi-6b,1,0.0,0.0,0.8,0.0,0.8,0.0,OpenBookQA
+AlephAlpha/luminous-extended,1,0.012,0.0,0.26,0.0,0.272,0.0,OpenBookQA
+ai21/j2-jumbo,1,0.032,0.0,0.72,0.0,0.688,0.0,OpenBookQA
+ai21/jamba-1.5-large,1,0.032,0.0,0.98,0.0,0.948,0.0,OpenBookQA
+allenai/olmo-7b,1,0.042,0.0,0.18,0.0,0.222,0.0,OpenBookQA
+anthropic/claude-3-5-sonnet-20240620,1,0.012,0.0,0.96,0.0,0.972,0.0,OpenBookQA
+cohere/command-r,1,0.002,0.0,0.78,0.0,0.782,0.0,OpenBookQA
+deepseek-ai/deepseek-v3,1,0.006,0.0,0.96,0.0,0.954,0.0,OpenBookQA
+google/gemini-1.5-flash-002,1,0.006,0.0,0.92,0.0,0.914,0.0,OpenBookQA
+google/gemini-1.5-pro-002,1,0.008,0.0,0.96,0.0,0.952,0.0,OpenBookQA
+google/gemma-2-9b-it,1,0.05,0.0,0.96,0.0,0.91,0.0,OpenBookQA
+google/text-unicorn@001,1,0.022,0.0,0.96,0.0,0.938,0.0,OpenBookQA
+meta/llama-3.1-405b-instruct-turbo,1,0.04,0.0,0.98,0.0,0.94,0.0,OpenBookQA
+microsoft/phi-2,1,0.002,0.0,0.8,0.0,0.798,0.0,OpenBookQA
+mistralai/mistral-large-2407,1,0.048,0.0,0.98,0.0,0.932,0.0,OpenBookQA
+qwen/qwen1.5-110b-chat,1,0.018,0.0,0.94,0.0,0.922,0.0,OpenBookQA
+qwen/qwen1.5-32b,1,0.052,0.0,0.88,0.0,0.932,0.0,OpenBookQA
+qwen/qwen2.5-72b-instruct-turbo,1,0.022,0.0,0.94,0.0,0.962,0.0,OpenBookQA
+snowflake/snowflake-arctic-instruct,1,0.072,0.0,0.9,0.0,0.828,0.0,OpenBookQA
+tiiuae/falcon-40b,1,0.022,0.0,0.64,0.0,0.662,0.0,OpenBookQA
+upstage/solar-pro-241126,1,0.002,0.0,0.92,0.0,0.922,0.0,OpenBookQA
+writer/palmyra-x-v2,1,0.002,0.0,0.88,0.0,0.878,0.0,OpenBookQA
+01-ai/yi-6b,1,0.0009,0.0,0.7115,0.0,0.7124,0.0,NarrativeQA
+AlephAlpha/luminous-extended,1,0.0051,0.0,0.6898,0.0,0.6847,0.0,NarrativeQA
+ai21/j2-jumbo,1,0.0018,0.0,0.7439,0.0,0.7421,0.0,NarrativeQA
+ai21/jamba-1.5-large,1,0.0288,0.0,0.7082,0.0,0.6794,0.0,NarrativeQA
+allenai/olmo-7b,1,0.05,0.0,0.5628,0.0,0.6128,0.0,NarrativeQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0516,0.0,0.8125,0.0,0.7609,0.0,NarrativeQA
+cohere/command-r,1,0.0639,0.0,0.7968,0.0,0.7329,0.0,NarrativeQA
+deepseek-ai/deepseek-v3,1,0.0449,0.0,0.8412,0.0,0.7964,0.0,NarrativeQA
+google/gemini-1.5-flash-002,1,0.0339,0.0,0.7878,0.0,0.7539,0.0,NarrativeQA
+google/gemini-1.5-pro-002,1,0.0267,0.0,0.7934,0.0,0.7667,0.0,NarrativeQA
+google/gemma-2-9b-it,1,0.0313,0.0,0.8111,0.0,0.7797,0.0,NarrativeQA
+google/text-unicorn@001,1,0.0403,0.0,0.5397,0.0,0.58,0.0,NarrativeQA
+meta/llama-3.1-405b-instruct-turbo,1,0.0022,0.0,0.7543,0.0,0.7521,0.0,NarrativeQA
+microsoft/phi-2,1,0.0576,0.0,0.7778,0.0,0.7202,0.0,NarrativeQA
+mistralai/mistral-large-2407,1,0.0731,0.0,0.8545,0.0,0.7814,0.0,NarrativeQA
+qwen/qwen1.5-110b-chat,1,0.0674,0.0,0.7978,0.0,0.7304,0.0,NarrativeQA
+qwen/qwen1.5-32b,1,0.014,0.0,0.6047,0.0,0.5907,0.0,NarrativeQA
+qwen/qwen2.5-72b-instruct-turbo,1,0.0412,0.0,0.7983,0.0,0.757,0.0,NarrativeQA
+snowflake/snowflake-arctic-instruct,1,0.015,0.0,0.6354,0.0,0.6503,0.0,NarrativeQA
+tiiuae/falcon-40b,1,0.038,0.0,0.635,0.0,0.6729,0.0,NarrativeQA
+upstage/solar-pro-241126,1,0.0085,0.0,0.7708,0.0,0.7623,0.0,NarrativeQA
+writer/palmyra-x-v2,1,0.0131,0.0,0.7514,0.0,0.7645,0.0,NarrativeQA
+01-ai/yi-6b,1,0.0499,0.0,0.1566,0.0,0.1067,0.0,WMT-14 Translation
+AlephAlpha/luminous-extended,1,0.0008,0.0,0.076,0.0,0.0769,0.0,WMT-14 Translation
+ai21/j2-jumbo,1,0.0239,0.0,0.1271,0.0,0.1032,0.0,WMT-14 Translation
+ai21/jamba-1.5-large,1,0.0297,0.0,0.215,0.0,0.1853,0.0,WMT-14 Translation
+allenai/olmo-7b,1,0.0048,0.0,0.0961,0.0,0.0912,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20240620,1,0.06,0.0,0.265,0.0,0.205,0.0,WMT-14 Translation
+cohere/command-r,1,0.0408,0.0,0.1717,0.0,0.1309,0.0,WMT-14 Translation
+deepseek-ai/deepseek-v3,1,0.0463,0.0,0.2347,0.0,0.1883,0.0,WMT-14 Translation
+google/gemini-1.5-flash-002,1,0.043,0.0,0.2345,0.0,0.1915,0.0,WMT-14 Translation
+google/gemini-1.5-pro-002,1,0.0539,0.0,0.2582,0.0,0.2043,0.0,WMT-14 Translation
+google/gemma-2-9b-it,1,0.0337,0.0,0.2165,0.0,0.1828,0.0,WMT-14 Translation
+google/text-unicorn@001,1,0.0725,0.0,0.2991,0.0,0.2266,0.0,WMT-14 Translation
+meta/llama-3.1-405b-instruct-turbo,1,0.0465,0.0,0.2555,0.0,0.209,0.0,WMT-14 Translation
+microsoft/phi-2,1,0.0059,0.0,0.0429,0.0,0.037,0.0,WMT-14 Translation
+mistralai/mistral-large-2407,1,0.0352,0.0,0.2075,0.0,0.1723,0.0,WMT-14 Translation
+qwen/qwen1.5-110b-chat,1,0.0215,0.0,0.1953,0.0,0.1738,0.0,WMT-14 Translation
+qwen/qwen1.5-32b,1,0.0405,0.0,0.2139,0.0,0.1734,0.0,WMT-14 Translation
+qwen/qwen2.5-72b-instruct-turbo,1,0.0607,0.0,0.2465,0.0,0.1858,0.0,WMT-14 Translation
+snowflake/snowflake-arctic-instruct,1,0.0353,0.0,0.1908,0.0,0.1554,0.0,WMT-14 Translation
+tiiuae/falcon-40b,1,0.0449,0.0,0.189,0.0,0.1441,0.0,WMT-14 Translation
+upstage/solar-pro-241126,1,0.022,0.0,0.1746,0.0,0.1527,0.0,WMT-14 Translation
+writer/palmyra-x-v2,1,0.0471,0.0,0.2589,0.0,0.2119,0.0,WMT-14 Translation
+01-ai/yi-6b,1,0.0422,0.0,0.3522,0.0,0.31,0.0,NaturalQA
+AlephAlpha/luminous-extended,1,0.0047,0.0,0.2482,0.0,0.2529,0.0,NaturalQA
+ai21/j2-jumbo,1,0.0398,0.0,0.3456,0.0,0.3853,0.0,NaturalQA
+ai21/jamba-1.5-large,1,0.0031,0.0,0.3968,0.0,0.3937,0.0,NaturalQA
+allenai/olmo-7b,1,0.0144,0.0,0.273,0.0,0.2586,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20240620,1,0.005,0.0,0.4966,0.0,0.5016,0.0,NaturalQA
+cohere/command-r,1,0.0832,0.0,0.2691,0.0,0.3522,0.0,NaturalQA
+deepseek-ai/deepseek-v3,1,0.0393,0.0,0.4277,0.0,0.467,0.0,NaturalQA
+google/gemini-1.5-flash-002,1,0.029,0.0,0.2938,0.0,0.3228,0.0,NaturalQA
+google/gemini-1.5-pro-002,1,0.0668,0.0,0.3886,0.0,0.4555,0.0,NaturalQA
+google/gemma-2-9b-it,1,0.0464,0.0,0.3743,0.0,0.3278,0.0,NaturalQA
+google/text-unicorn@001,1,0.0198,0.0,0.4546,0.0,0.4348,0.0,NaturalQA
+meta/llama-3.1-405b-instruct-turbo,1,0.0354,0.0,0.4206,0.0,0.456,0.0,NaturalQA
+microsoft/phi-2,1,0.0207,0.0,0.1344,0.0,0.1552,0.0,NaturalQA
+mistralai/mistral-large-2407,1,0.0013,0.0,0.4514,0.0,0.4527,0.0,NaturalQA
+qwen/qwen1.5-110b-chat,1,0.0462,0.0,0.3037,0.0,0.3499,0.0,NaturalQA
+qwen/qwen1.5-32b,1,0.0219,0.0,0.3315,0.0,0.3534,0.0,NaturalQA
+qwen/qwen2.5-72b-instruct-turbo,1,0.0584,0.0,0.301,0.0,0.3594,0.0,NaturalQA
+snowflake/snowflake-arctic-instruct,1,0.0351,0.0,0.3546,0.0,0.3898,0.0,NaturalQA
+tiiuae/falcon-40b,1,0.033,0.0,0.4254,0.0,0.3924,0.0,NaturalQA
+upstage/solar-pro-241126,1,0.0377,0.0,0.2596,0.0,0.2973,0.0,NaturalQA
+writer/palmyra-x-v2,1,0.0643,0.0,0.3638,0.0,0.4281,0.0,NaturalQA
+01-ai/yi-6b,1,0.0222,0.0,0.5,0.0,0.5222,0.0,LegalBench
+AlephAlpha/luminous-extended,1,0.0545,0.0,0.48,0.0,0.4255,0.0,LegalBench
+ai21/j2-jumbo,1,0.011,0.0,0.48,0.0,0.491,0.0,LegalBench
+ai21/jamba-1.5-large,1,0.0316,0.0,0.56,0.0,0.5916,0.0,LegalBench
+allenai/olmo-7b,1,0.0434,0.0,0.42,0.0,0.3766,0.0,LegalBench
+anthropic/claude-3-5-sonnet-20240620,1,0.0596,0.0,0.68,0.0,0.6204,0.0,LegalBench
+cohere/command-r,1,0.0442,0.0,0.52,0.0,0.4758,0.0,LegalBench
+deepseek-ai/deepseek-v3,1,0.0551,0.0,0.58,0.0,0.6351,0.0,LegalBench
+google/gemini-1.5-flash-002,1,0.0176,0.0,0.64,0.0,0.6224,0.0,LegalBench
+google/gemini-1.5-pro-002,1,0.0771,0.0,0.62,0.0,0.6971,0.0,LegalBench
+google/gemma-2-9b-it,1,0.0168,0.0,0.56,0.0,0.5432,0.0,LegalBench
+google/text-unicorn@001,1,0.0138,0.0,0.6,0.0,0.5862,0.0,LegalBench
+meta/llama-3.1-405b-instruct-turbo,1,0.0599,0.0,0.52,0.0,0.5799,0.0,LegalBench
+microsoft/phi-2,1,0.0956,0.0,0.44,0.0,0.3444,0.0,LegalBench
+mistralai/mistral-large-2407,1,0.0496,0.0,0.48,0.0,0.5296,0.0,LegalBench
+qwen/qwen1.5-110b-chat,1,0.0305,0.0,0.5,0.0,0.5305,0.0,LegalBench
+qwen/qwen1.5-32b,1,0.1547,0.0,0.76,0.0,0.6053,0.0,LegalBench
+qwen/qwen2.5-72b-instruct-turbo,1,0.1161,0.0,0.56,0.0,0.6761,0.0,LegalBench
+snowflake/snowflake-arctic-instruct,1,0.0403,0.0,0.52,0.0,0.5603,0.0,LegalBench
+tiiuae/falcon-40b,1,0.0275,0.0,0.42,0.0,0.4475,0.0,LegalBench
+upstage/solar-pro-241126,1,0.0682,0.0,0.56,0.0,0.6282,0.0,LegalBench
+writer/palmyra-x-v2,1,0.016,0.0,0.56,0.0,0.576,0.0,LegalBench
+01-ai/yi-6b,1,0.0065,0.0,0.14,0.0,0.1465,0.0,MATH Competition
+AlephAlpha/luminous-extended,1,0.0012,0.0,0.04,0.0,0.0412,0.0,MATH Competition
+ai21/j2-jumbo,1,0.0053,0.0,0.1,0.0,0.1053,0.0,MATH Competition
+ai21/jamba-1.5-large,1,0.1637,0.0,0.58,0.0,0.7437,0.0,MATH Competition
+allenai/olmo-7b,1,0.0234,0.0,0.06,0.0,0.0366,0.0,MATH Competition
+anthropic/claude-3-5-sonnet-20240620,1,0.0539,0.0,0.88,0.0,0.8261,0.0,MATH Competition
+cohere/command-r,1,0.0483,0.0,0.24,0.0,0.2883,0.0,MATH Competition
+deepseek-ai/deepseek-v3,1,0.0091,0.0,0.92,0.0,0.9291,0.0,MATH Competition
+google/gemini-1.5-flash-002,1,0.0309,0.0,0.96,0.0,0.9291,0.0,MATH Competition
+google/gemini-1.5-pro-002,1,0.0264,0.0,0.96,0.0,0.9336,0.0,MATH Competition
+google/gemma-2-9b-it,1,0.0289,0.0,0.74,0.0,0.7689,0.0,MATH Competition
+google/text-unicorn@001,1,0.0523,0.0,0.68,0.0,0.7323,0.0,MATH Competition
+meta/llama-3.1-405b-instruct-turbo,1,0.0004,0.0,0.86,0.0,0.8604,0.0,MATH Competition
+microsoft/phi-2,1,0.1735,0.0,0.14,0.0,0.3135,0.0,MATH Competition
+mistralai/mistral-large-2407,1,0.0208,0.0,0.7,0.0,0.7208,0.0,MATH Competition
+qwen/qwen1.5-110b-chat,1,0.027,0.0,0.6,0.0,0.627,0.0,MATH Competition
+qwen/qwen1.5-32b,1,0.0335,0.0,0.74,0.0,0.7735,0.0,MATH Competition
+qwen/qwen2.5-72b-instruct-turbo,1,0.0062,0.0,0.9,0.0,0.9062,0.0,MATH Competition
+snowflake/snowflake-arctic-instruct,1,0.0273,0.0,0.62,0.0,0.5927,0.0,MATH Competition
+tiiuae/falcon-40b,1,0.0104,0.0,0.12,0.0,0.1304,0.0,MATH Competition
+upstage/solar-pro-241126,1,0.1333,0.0,0.48,0.0,0.6133,0.0,MATH Competition
+writer/palmyra-x-v2,1,0.0676,0.0,0.58,0.0,0.6476,0.0,MATH Competition
+01-ai/yi-6b,1,0.0197,0.0,0.54,0.0,0.5203,0.0,MMLU-Lite
+AlephAlpha/luminous-extended,1,0.0207,0.0,0.28,0.0,0.2593,0.0,MMLU-Lite
+ai21/j2-jumbo,1,0.1327,0.0,0.34,0.0,0.4727,0.0,MMLU-Lite
+ai21/jamba-1.5-large,1,0.0696,0.0,0.62,0.0,0.6896,0.0,MMLU-Lite
+allenai/olmo-7b,1,0.0381,0.0,0.26,0.0,0.2981,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.0442,0.0,0.76,0.0,0.8042,0.0,MMLU-Lite
+cohere/command-r,1,0.018,0.0,0.6,0.0,0.582,0.0,MMLU-Lite
+deepseek-ai/deepseek-v3,1,0.0322,0.0,0.84,0.0,0.8078,0.0,MMLU-Lite
+google/gemini-1.5-flash-002,1,0.059,0.0,0.62,0.0,0.679,0.0,MMLU-Lite
+google/gemini-1.5-pro-002,1,0.0354,0.0,0.76,0.0,0.7954,0.0,MMLU-Lite
+google/gemma-2-9b-it,1,0.0273,0.0,0.62,0.0,0.6473,0.0,MMLU-Lite
+google/text-unicorn@001,1,0.0363,0.0,0.74,0.0,0.7037,0.0,MMLU-Lite
+meta/llama-3.1-405b-instruct-turbo,1,0.0363,0.0,0.8,0.0,0.7637,0.0,MMLU-Lite
+microsoft/phi-2,1,0.0774,0.0,0.42,0.0,0.4974,0.0,MMLU-Lite
+mistralai/mistral-large-2407,1,0.0154,0.0,0.72,0.0,0.7354,0.0,MMLU-Lite
+qwen/qwen1.5-110b-chat,1,0.0216,0.0,0.72,0.0,0.6984,0.0,MMLU-Lite
+qwen/qwen1.5-32b,1,0.0349,0.0,0.6,0.0,0.6349,0.0,MMLU-Lite
+qwen/qwen2.5-72b-instruct-turbo,1,0.0307,0.0,0.74,0.0,0.7707,0.0,MMLU-Lite
+snowflake/snowflake-arctic-instruct,1,0.0732,0.0,0.5,0.0,0.5732,0.0,MMLU-Lite
+tiiuae/falcon-40b,1,0.0209,0.0,0.48,0.0,0.5009,0.0,MMLU-Lite
+upstage/solar-pro-241126,1,0.0251,0.0,0.72,0.0,0.6949,0.0,MMLU-Lite
+writer/palmyra-x-v2,1,0.0243,0.0,0.6,0.0,0.6243,0.0,MMLU-Lite

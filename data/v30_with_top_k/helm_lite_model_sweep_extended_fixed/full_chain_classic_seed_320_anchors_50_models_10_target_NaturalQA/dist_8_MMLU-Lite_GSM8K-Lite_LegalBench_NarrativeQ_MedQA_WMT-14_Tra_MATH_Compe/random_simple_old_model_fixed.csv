@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+google/gemini-1.5-pro-001,1,0.0165,0.0,0.3615,0.0,0.378,0.0
+google/gemma-7b,1,0.095,0.0,0.2406,0.0,0.3356,0.0
+meta/llama-2-70b,1,0.0232,0.0,0.4363,0.0,0.4596,0.0
+meta/llama-2-7b,1,0.0731,0.0,0.2595,0.0,0.3326,0.0
+meta/llama-3.2-90b-vision-instruct-turbo,1,0.0662,0.0,0.3906,0.0,0.4568,0.0
+openai/gpt-4-0613,1,0.0389,0.0,0.4958,0.0,0.4569,0.0
+openai/text-davinci-002,1,0.0352,0.0,0.4293,0.0,0.3941,0.0
+qwen/qwen1.5-72b,1,0.003,0.0,0.4201,0.0,0.4171,0.0
+qwen/qwen2.5-72b-instruct-turbo,1,0.0431,0.0,0.3163,0.0,0.3594,0.0
+writer/palmyra-x-004,1,0.0592,0.0,0.3974,0.0,0.4566,0.0

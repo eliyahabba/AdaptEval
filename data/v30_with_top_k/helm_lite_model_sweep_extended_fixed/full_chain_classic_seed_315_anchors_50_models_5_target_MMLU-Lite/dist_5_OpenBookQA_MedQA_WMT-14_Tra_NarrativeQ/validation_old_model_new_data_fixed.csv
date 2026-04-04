@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-large-preview,MMLU-Lite,MMLU-Lite,567,50,0.0916,0.716,0.739,0.7874,0.76,0.781,0.0229,0.0714,0.0439,0.0649,0.5,0.0882
+cohere/command-r-plus,MMLU-Lite,MMLU-Lite,567,50,0.4931,0.6032,0.6049,0.7019,0.6474,0.6899,0.0018,0.0988,0.0442,0.0867,0.5,0.0882
+mistralai/mistral-7b-instruct-v0.3,MMLU-Lite,MMLU-Lite,567,50,0.7213,0.5097,0.515,0.6158,0.5602,0.6053,0.0053,0.1061,0.0505,0.0956,0.5,0.0882
+openai/gpt-4o-mini-2024-07-18,MMLU-Lite,MMLU-Lite,567,50,-0.0809,0.6667,0.6384,0.7075,0.6693,0.7002,0.0282,0.0409,0.0026,0.0335,0.5,0.0882
+writer/palmyra-x-v3,MMLU-Lite,MMLU-Lite,567,50,0.371,0.7037,0.6949,0.7809,0.7319,0.769,0.0088,0.0772,0.0282,0.0653,0.5,0.0882

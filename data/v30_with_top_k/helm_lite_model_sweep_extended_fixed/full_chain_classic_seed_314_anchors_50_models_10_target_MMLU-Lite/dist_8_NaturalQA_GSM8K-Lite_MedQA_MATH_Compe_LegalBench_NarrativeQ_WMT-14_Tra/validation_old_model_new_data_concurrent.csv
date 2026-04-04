@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-base,MMLU-Lite,MMLU-Lite,567,50,4.3001,0.2293,0.2205,0.2309,0.2215,0.2319,0.0088,0.0016,0.0077,0.0026,0.906,0.0882
+ai21/jamba-1.5-mini,MMLU-Lite,MMLU-Lite,567,50,0.1027,0.5785,0.5485,0.5164,0.5452,0.5137,0.03,0.0621,0.0333,0.0648,0.906,0.0882
+anthropic/claude-2.1,MMLU-Lite,MMLU-Lite,567,50,-0.5037,0.6508,0.5961,0.6014,0.5966,0.6012,0.0547,0.0493,0.0542,0.0496,0.906,0.0882
+cohere/command-light,MMLU-Lite,MMLU-Lite,567,50,-7.4525,0.3827,0.4039,0.3667,0.4006,0.369,0.0212,0.016,0.0179,0.0137,0.906,0.0882
+cohere/command-r-plus,MMLU-Lite,MMLU-Lite,567,50,-0.3489,0.6032,0.6067,0.5783,0.6039,0.5772,0.0035,0.0248,0.0008,0.026,0.906,0.0882
+google/gemini-1.0-pro-002,MMLU-Lite,MMLU-Lite,567,50,-0.4637,0.5309,0.5185,0.5577,0.5221,0.5563,0.0123,0.0269,0.0088,0.0255,0.906,0.0882
+google/text-unicorn@001,MMLU-Lite,MMLU-Lite,567,50,-0.0595,0.7037,0.7513,0.6447,0.7422,0.6542,0.0476,0.059,0.0385,0.0495,0.906,0.0882
+meta/llama-65b,MMLU-Lite,MMLU-Lite,567,50,0.5274,0.5785,0.6226,0.4991,0.6119,0.5085,0.0441,0.0794,0.0334,0.07,0.906,0.0882
+qwen/qwen2-72b-instruct,MMLU-Lite,MMLU-Lite,567,50,-1.6546,0.7743,0.7795,0.7296,0.7752,0.7337,0.0053,0.0447,0.001,0.0405,0.906,0.0882
+qwen/qwen2.5-72b-instruct-turbo,MMLU-Lite,MMLU-Lite,567,50,-1.9287,0.7707,0.7637,0.7315,0.761,0.7353,0.0071,0.0392,0.0097,0.0355,0.906,0.0882

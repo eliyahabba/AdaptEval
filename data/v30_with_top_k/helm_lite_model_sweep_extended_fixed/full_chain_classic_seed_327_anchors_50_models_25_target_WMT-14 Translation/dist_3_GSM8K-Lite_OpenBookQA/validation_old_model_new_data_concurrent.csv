@@ -1,0 +1,26 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-extended,WMT-14 Translation,WMT-14 Translation,5000,50,-3.8709,0.0769,0.084,0.0871,0.0858,0.0869,0.0071,0.0102,0.009,0.01,0.3586,0.01
+ai21/j2-jumbo,WMT-14 Translation,WMT-14 Translation,5000,50,3.1507,0.1032,0.0907,0.1114,0.1037,0.1109,0.0125,0.0082,0.0005,0.0077,0.3586,0.01
+ai21/jamba-instruct,WMT-14 Translation,WMT-14 Translation,5000,50,3.6366,0.148,0.1405,0.1746,0.1623,0.1744,0.0075,0.0265,0.0142,0.0264,0.3586,0.0082
+anthropic/claude-3-5-haiku-20241022,WMT-14 Translation,WMT-14 Translation,5000,50,1.3137,0.1208,0.138,0.2075,0.182,0.2066,0.0172,0.0867,0.0612,0.0858,0.3586,0.01
+anthropic/claude-3-5-sonnet-20241022,WMT-14 Translation,WMT-14 Translation,5000,50,-0.2713,0.2023,0.2134,0.3688,0.3121,0.3672,0.0111,0.1665,0.1098,0.1649,0.3586,0.01
+anthropic/claude-instant-1.2,WMT-14 Translation,WMT-14 Translation,5000,50,0.827,0.1737,0.2292,0.225,0.2263,0.2247,0.0555,0.0513,0.0526,0.051,0.3586,0.01
+anthropic/claude-v1.3,WMT-14 Translation,WMT-14 Translation,5000,50,1.1897,0.1945,0.23,0.2989,0.2736,0.2979,0.0356,0.1044,0.0791,0.1034,0.3586,0.01
+cohere/command,WMT-14 Translation,WMT-14 Translation,5000,50,3.1602,0.0802,0.0785,0.1473,0.1219,0.1461,0.0017,0.0671,0.0417,0.0659,0.3586,0.01
+deepseek-ai/deepseek-v3,WMT-14 Translation,WMT-14 Translation,5000,50,0.0967,0.1883,0.2256,0.3084,0.2779,0.3072,0.0372,0.12,0.0896,0.1189,0.3586,0.01
+google/gemini-2.0-flash-exp,WMT-14 Translation,WMT-14 Translation,5000,50,0.0409,0.1908,0.2129,0.2959,0.2654,0.2948,0.0222,0.1051,0.0747,0.104,0.3586,0.01
+google/gemma-2-9b-it,WMT-14 Translation,WMT-14 Translation,5000,50,-0.0383,0.1828,0.2014,0.2704,0.245,0.2694,0.0185,0.0875,0.0622,0.0866,0.3586,0.01
+meta/llama-2-7b,WMT-14 Translation,WMT-14 Translation,5000,50,-0.6876,0.1305,0.1095,0.1434,0.1308,0.1427,0.021,0.0129,0.0003,0.0121,0.3586,0.01
+meta/llama-3-8b,WMT-14 Translation,WMT-14 Translation,5000,50,-0.816,0.1664,0.1866,0.208,0.1999,0.2074,0.0201,0.0416,0.0335,0.041,0.3586,0.01
+meta/llama-3.1-405b-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,0.1774,0.209,0.2409,0.2918,0.273,0.291,0.0318,0.0828,0.064,0.0819,0.3586,0.01
+meta/llama-3.2-11b-vision-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,-0.0734,0.1583,0.1643,0.2189,0.1987,0.218,0.006,0.0606,0.0404,0.0597,0.3586,0.01
+mistralai/mistral-large-2407,WMT-14 Translation,WMT-14 Translation,5000,50,1.8421,0.1723,0.1838,0.2731,0.2404,0.2721,0.0115,0.1008,0.0681,0.0998,0.3586,0.01
+mistralai/mistral-small-2402,WMT-14 Translation,WMT-14 Translation,5000,50,1.6337,0.1535,0.1883,0.2173,0.2066,0.2168,0.0347,0.0637,0.053,0.0632,0.3586,0.01
+mistralai/open-mistral-nemo-2407,WMT-14 Translation,WMT-14 Translation,5000,50,1.2873,0.1607,0.1897,0.2172,0.2071,0.2168,0.029,0.0565,0.0464,0.0561,0.3586,0.01
+openai/gpt-3.5-turbo-0613,WMT-14 Translation,WMT-14 Translation,5000,50,0.4308,0.1699,0.2077,0.1919,0.1976,0.1919,0.0378,0.0219,0.0276,0.022,0.3586,0.01
+openai/gpt-4-turbo-2024-04-09,WMT-14 Translation,WMT-14 Translation,5000,50,1.116,0.1942,0.2283,0.2888,0.2667,0.2882,0.0341,0.0946,0.0725,0.094,0.3586,0.01
+openai/gpt-4o-mini-2024-07-18,WMT-14 Translation,WMT-14 Translation,5000,50,1.2064,0.1855,0.2131,0.2614,0.2438,0.2609,0.0276,0.0759,0.0583,0.0754,0.3586,0.01
+qwen/qwen1.5-32b,WMT-14 Translation,WMT-14 Translation,5000,50,1.2748,0.1734,0.1901,0.2814,0.2479,0.2802,0.0167,0.108,0.0745,0.1069,0.3586,0.01
+qwen/qwen1.5-72b,WMT-14 Translation,WMT-14 Translation,5000,50,1.2124,0.1799,0.2201,0.2749,0.2547,0.2741,0.0402,0.095,0.0748,0.0942,0.3586,0.01
+snowflake/snowflake-arctic-instruct,WMT-14 Translation,WMT-14 Translation,5000,50,2.228,0.1554,0.1663,0.2176,0.1985,0.2166,0.0109,0.0621,0.0431,0.0611,0.3586,0.01
+tiiuae/falcon-40b,WMT-14 Translation,WMT-14 Translation,5000,50,-0.1498,0.1441,0.1389,0.1631,0.154,0.1625,0.0052,0.019,0.0099,0.0184,0.3586,0.01

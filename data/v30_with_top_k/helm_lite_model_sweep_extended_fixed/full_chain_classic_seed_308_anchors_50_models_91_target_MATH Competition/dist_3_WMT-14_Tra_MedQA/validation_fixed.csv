@@ -1,0 +1,23 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-6b,MATH Competition,MATH Competition,437,50,-2.0186,0.1465,0.135,0.1269,0.1333,0.1233,0.0114,0.0196,0.0132,0.0231,0.8525,0.1144
+ai21/jamba-1.5-large,MATH Competition,MATH Competition,437,50,-3.5563,0.7437,0.7414,0.7011,0.7359,0.7042,0.0023,0.0426,0.0078,0.0396,0.8525,0.1144
+allenai/olmo-7b,MATH Competition,MATH Competition,437,50,-0.3514,0.0366,0.0297,0.0636,0.0345,0.0621,0.0069,0.027,0.0021,0.0254,0.8525,0.1144
+anthropic/claude-3-5-haiku-20241022,MATH Competition,MATH Competition,437,50,-2.185,0.8993,0.9245,0.8933,0.9213,0.9028,0.0252,0.0061,0.022,0.0035,0.8525,0.1144
+anthropic/claude-3-5-sonnet-20240620,MATH Competition,MATH Competition,437,50,-2.2448,0.8261,0.8032,0.8061,0.8042,0.8098,0.0229,0.02,0.0219,0.0163,0.8525,0.1144
+anthropic/claude-3-5-sonnet-20241022,MATH Competition,MATH Competition,437,50,-2.1004,0.9245,0.8719,0.8572,0.8708,0.865,0.0526,0.0673,0.0536,0.0595,0.8525,0.1144
+cohere/command-r-plus,MATH Competition,MATH Competition,437,50,-1.8002,0.4577,0.508,0.4066,0.4933,0.4084,0.0503,0.051,0.0356,0.0493,0.8525,0.1144
+google/gemini-1.5-flash-002,MATH Competition,MATH Competition,437,50,-1.8977,0.9291,0.9222,0.8137,0.9085,0.8296,0.0069,0.1154,0.0205,0.0994,0.8525,0.1144
+google/gemini-1.5-pro-002,MATH Competition,MATH Competition,437,50,-1.9456,0.9336,0.9474,0.8736,0.9382,0.8852,0.0137,0.06,0.0046,0.0485,0.8525,0.1144
+google/text-bison@001,MATH Competition,MATH Competition,437,50,-1.5496,0.4416,0.4462,0.3806,0.4366,0.3808,0.0046,0.061,0.0051,0.0609,0.8525,0.1144
+meta/llama-65b,MATH Competition,MATH Competition,437,50,-1.4429,0.3181,0.3181,0.2174,0.3033,0.2182,0.0,0.1006,0.0147,0.0999,0.8525,0.1144
+mistralai/mistral-large-2407,MATH Competition,MATH Competition,437,50,-2.005,0.7208,0.8055,0.7679,0.8002,0.7698,0.0847,0.0471,0.0794,0.049,0.8525,0.1144
+mistralai/mixtral-8x22b,MATH Competition,MATH Competition,437,50,-2.3303,0.7025,0.7185,0.6032,0.7021,0.6074,0.016,0.0994,0.0004,0.0951,0.8525,0.1144
+openai/gpt-4-0613,MATH Competition,MATH Competition,437,50,-2.3018,0.8398,0.8215,0.8027,0.8191,0.8055,0.0183,0.0371,0.0207,0.0343,0.8525,0.1144
+openai/gpt-4o-mini-2024-07-18,MATH Competition,MATH Competition,437,50,-3.2101,0.849,0.8558,0.8042,0.8484,0.8053,0.0069,0.0448,0.0006,0.0436,0.8525,0.1144
+openai/text-davinci-002,MATH Competition,MATH Competition,437,50,-1.7251,0.4668,0.524,0.4586,0.5149,0.4624,0.0572,0.0082,0.0481,0.0044,0.8525,0.1144
+openai/text-davinci-003,MATH Competition,MATH Competition,437,50,-1.9829,0.4805,0.4783,0.4225,0.4699,0.4215,0.0023,0.0581,0.0107,0.059,0.8525,0.1144
+qwen/qwen1.5-110b-chat,MATH Competition,MATH Competition,437,50,-2.0914,0.627,0.6018,0.5818,0.5989,0.582,0.0252,0.0452,0.0281,0.045,0.8525,0.1144
+qwen/qwen1.5-72b,MATH Competition,MATH Competition,437,50,-1.8185,0.7048,0.7689,0.6619,0.7537,0.6659,0.0641,0.0429,0.0489,0.0389,0.8525,0.1144
+qwen/qwen1.5-7b,MATH Competition,MATH Competition,437,50,-1.4054,0.5995,0.5584,0.5057,0.5507,0.5063,0.0412,0.0939,0.0489,0.0932,0.8525,0.1144
+qwen/qwen2-72b-instruct,MATH Competition,MATH Competition,437,50,-2.0669,0.8238,0.8993,0.8345,0.891,0.8432,0.0755,0.0107,0.0672,0.0194,0.8525,0.1144
+writer/palmyra-x-v2,MATH Competition,MATH Competition,437,50,-2.1187,0.6476,0.746,0.6379,0.7304,0.64,0.0984,0.0097,0.0828,0.0076,0.8525,0.1144

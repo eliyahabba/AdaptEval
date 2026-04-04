@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+amazon/nova-pro-v1:0,OpenBookQA,OpenBookQA,500,50,0.0054,0.96,0.944,0.9102,0.9279,0.9118,0.016,0.0498,0.0321,0.0482,0.5,0.1
+anthropic/claude-2.1,OpenBookQA,OpenBookQA,500,50,-2.4598,0.872,0.878,0.8616,0.8703,0.8625,0.006,0.0104,0.0017,0.0095,0.5,0.1
+anthropic/claude-3-sonnet-20240229,OpenBookQA,OpenBookQA,500,50,-5.6502,0.918,0.91,0.8801,0.894,0.878,0.008,0.0379,0.024,0.04,0.5,0.1
+anthropic/claude-v1.3,OpenBookQA,OpenBookQA,500,50,3.4603,0.908,0.894,0.8936,0.8937,0.8935,0.014,0.0144,0.0143,0.0145,0.5,0.1
+meta/llama-2-70b,OpenBookQA,OpenBookQA,500,50,-4.6632,0.838,0.854,0.8119,0.8311,0.8082,0.016,0.0261,0.0069,0.0298,0.5,0.1
+meta/llama-3-70b,OpenBookQA,OpenBookQA,500,50,-4.4473,0.934,0.952,0.9243,0.9369,0.9219,0.018,0.0097,0.0029,0.0121,0.5,0.1
+meta/llama-3.1-405b-instruct-turbo,OpenBookQA,OpenBookQA,500,50,-1.8582,0.94,0.958,0.9435,0.951,0.9441,0.018,0.0035,0.011,0.0041,0.5,0.1
+mistralai/mistral-large-2402,OpenBookQA,OpenBookQA,500,50,-6.6418,0.894,0.91,0.9119,0.9102,0.9104,0.016,0.0179,0.0162,0.0164,0.5,0.1
+qwen/qwen1.5-14b,OpenBookQA,OpenBookQA,500,50,-2.8421,0.862,0.862,0.8254,0.843,0.824,0.0,0.0366,0.019,0.038,0.5,0.1
+tiiuae/falcon-7b,OpenBookQA,OpenBookQA,500,50,1.798,0.26,0.278,0.3128,0.2946,0.3111,0.018,0.0528,0.0346,0.0511,0.5,0.1

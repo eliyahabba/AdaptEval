@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+cohere/command-light,MedQA,MedQA,1000,50,-3.0633,0.294,0.292,0.318,0.3016,0.3181,0.002,0.024,0.0076,0.0241,0.6334,0.05
+meta/llama-3.2-90b-vision-instruct-turbo,MedQA,MedQA,1000,50,1.5966,0.824,0.833,0.6516,0.7682,0.6561,0.009,0.1724,0.0558,0.1679,0.6334,0.05
+qwen/qwen1.5-110b-chat,MedQA,MedQA,1000,50,0.6121,0.64,0.676,0.4367,0.5892,0.4392,0.036,0.2033,0.0508,0.2008,0.6334,0.05
+qwen/qwen1.5-72b,MedQA,MedQA,1000,50,0.9755,0.664,0.638,0.4946,0.5856,0.4951,0.026,0.1694,0.0784,0.1689,0.6334,0.05
+tiiuae/falcon-7b,MedQA,MedQA,1000,50,-3.3381,0.267,0.263,0.1216,0.213,0.1266,0.004,0.1454,0.054,0.1404,0.6334,0.05

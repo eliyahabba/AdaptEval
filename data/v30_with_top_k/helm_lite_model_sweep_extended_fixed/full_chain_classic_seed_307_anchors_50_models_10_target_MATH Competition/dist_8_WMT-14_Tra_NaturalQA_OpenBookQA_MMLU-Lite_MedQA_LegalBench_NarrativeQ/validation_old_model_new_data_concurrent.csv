@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+databricks/dbrx-instruct,MATH Competition,MATH Competition,437,50,1.2465,0.2998,0.2746,0.3038,0.281,0.2954,0.0252,0.0041,0.0187,0.0044,0.6906,0.1144
+google/gemini-1.5-flash-001,MATH Competition,MATH Competition,437,50,-2.6308,0.7872,0.8009,0.7309,0.7778,0.7262,0.0137,0.0563,0.0094,0.061,0.6906,0.1144
+google/gemini-1.5-flash-002,MATH Competition,MATH Competition,437,50,-3.8088,0.9291,0.9405,0.7052,0.8741,0.7258,0.0114,0.2238,0.055,0.2033,0.6906,0.1144
+google/gemini-2.0-flash-exp,MATH Competition,MATH Competition,437,50,0.2573,0.9268,0.9588,0.8132,0.9164,0.8219,0.032,0.1135,0.0103,0.1049,0.6906,0.1144
+meta/llama-2-13b,MATH Competition,MATH Competition,437,50,0.7459,0.1281,0.1648,0.1926,0.1705,0.1835,0.0366,0.0645,0.0424,0.0553,0.6906,0.1144
+meta/llama-3.1-8b-instruct-turbo,MATH Competition,MATH Competition,437,50,0.9333,0.7368,0.714,0.6632,0.6977,0.6613,0.0229,0.0736,0.0392,0.0756,0.6906,0.1144
+microsoft/phi-3-medium-4k-instruct,MATH Competition,MATH Competition,437,50,0.2663,0.6201,0.7094,0.5857,0.6711,0.5857,0.0892,0.0344,0.051,0.0344,0.6906,0.1144
+qwen/qwen1.5-32b,MATH Competition,MATH Competition,437,50,0.7564,0.7735,0.8032,0.5634,0.7323,0.574,0.0297,0.21,0.0412,0.1994,0.6906,0.1144
+qwen/qwen2-72b-instruct,MATH Competition,MATH Competition,437,50,0.3618,0.8238,0.8284,0.717,0.7944,0.7186,0.0046,0.1068,0.0294,0.1052,0.6906,0.1144
+tiiuae/falcon-40b,MATH Competition,MATH Competition,437,50,1.9754,0.1304,0.0847,0.1547,0.1019,0.1402,0.0458,0.0243,0.0286,0.0098,0.6906,0.1144

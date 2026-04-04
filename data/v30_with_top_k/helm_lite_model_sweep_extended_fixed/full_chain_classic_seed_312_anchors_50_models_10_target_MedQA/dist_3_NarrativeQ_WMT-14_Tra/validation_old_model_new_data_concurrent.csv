@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-34b,MedQA,MedQA,1000,50,-0.6923,0.652,0.643,0.6358,0.6399,0.6356,0.009,0.0162,0.0121,0.0164,0.5839,0.05
+ai21/jamba-1.5-mini,MedQA,MedQA,1000,50,-0.6852,0.617,0.632,0.6026,0.6203,0.6039,0.015,0.0144,0.0033,0.0131,0.5839,0.05
+amazon/nova-lite-v1:0,MedQA,MedQA,1000,50,-0.4841,0.7,0.641,0.6345,0.6387,0.6355,0.059,0.0655,0.0613,0.0645,0.5839,0.05
+google/gemini-2.0-flash-exp,MedQA,MedQA,1000,50,-0.468,0.723,0.806,0.7124,0.7689,0.7168,0.083,0.0106,0.0459,0.0062,0.5839,0.05
+meta/llama-2-13b,MedQA,MedQA,1000,50,-0.5707,0.384,0.382,0.457,0.4129,0.4562,0.002,0.073,0.0289,0.0722,0.5839,0.05
+mistralai/mixtral-8x7b-32kseqlen,MedQA,MedQA,1000,50,-0.4356,0.634,0.648,0.6108,0.6334,0.6129,0.014,0.0232,0.0006,0.0211,0.5839,0.05
+mistralai/open-mistral-nemo-2407,MedQA,MedQA,1000,50,-0.4548,0.571,0.552,0.5509,0.5511,0.5499,0.019,0.0201,0.0199,0.0211,0.5839,0.05
+openai/gpt-3.5-turbo-0613,MedQA,MedQA,1000,50,-0.4311,0.61,0.668,0.5634,0.6263,0.5678,0.058,0.0466,0.0163,0.0422,0.5839,0.05
+openai/gpt-4-1106-preview,MedQA,MedQA,1000,50,-0.5411,0.817,0.84,0.7258,0.7953,0.7326,0.023,0.0912,0.0217,0.0844,0.5839,0.05
+writer/palmyra-x-v3,MedQA,MedQA,1000,50,-0.4155,0.681,0.641,0.6693,0.6527,0.6691,0.04,0.0117,0.0283,0.0119,0.5839,0.05

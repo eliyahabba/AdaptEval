@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+amazon/nova-pro-v1:0,1,0.0,0.0,0.96,0.0,0.96,0.0
+anthropic/claude-2.1,1,0.032,0.0,0.84,0.0,0.872,0.0
+anthropic/claude-3-sonnet-20240229,1,0.098,0.0,0.82,0.0,0.918,0.0
+anthropic/claude-v1.3,1,0.032,0.0,0.94,0.0,0.908,0.0
+meta/llama-2-70b,1,0.018,0.0,0.82,0.0,0.838,0.0
+meta/llama-3-70b,1,0.026,0.0,0.96,0.0,0.934,0.0
+meta/llama-3.1-405b-instruct-turbo,1,0.0,0.0,0.94,0.0,0.94,0.0
+mistralai/mistral-large-2402,1,0.014,0.0,0.88,0.0,0.894,0.0
+qwen/qwen1.5-14b,1,0.002,0.0,0.86,0.0,0.862,0.0
+tiiuae/falcon-7b,1,0.0,0.0,0.26,0.0,0.26,0.0

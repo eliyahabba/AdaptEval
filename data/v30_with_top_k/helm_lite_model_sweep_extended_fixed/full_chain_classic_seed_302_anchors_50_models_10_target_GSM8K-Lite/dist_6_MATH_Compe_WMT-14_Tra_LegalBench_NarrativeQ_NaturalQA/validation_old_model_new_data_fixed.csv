@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+allenai/olmo-7b,GSM8K-Lite,GSM8K-Lite,1000,50,0.232,0.044,0.038,0.0359,0.0379,0.0372,0.006,0.0081,0.0061,0.0068,0.9274,0.05
+cohere/command-r-plus,GSM8K-Lite,GSM8K-Lite,1000,50,0.3531,0.738,0.716,0.5001,0.7005,0.5025,0.022,0.2379,0.0375,0.2355,0.9274,0.05
+deepseek-ai/deepseek-llm-67b-chat,GSM8K-Lite,GSM8K-Lite,1000,50,0.2186,0.795,0.809,0.5351,0.7895,0.5399,0.014,0.2599,0.0055,0.2551,0.9274,0.05
+google/gemini-2.0-flash-exp,GSM8K-Lite,GSM8K-Lite,1000,50,0.0203,0.946,0.958,0.7458,0.9431,0.753,0.012,0.2002,0.0029,0.193,0.9274,0.05
+meta/llama-3.1-70b-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,0.2411,0.938,0.924,0.7715,0.9134,0.7774,0.014,0.1665,0.0246,0.1606,0.9274,0.05
+meta/llama-3.2-11b-vision-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,0.0084,0.823,0.832,0.3615,0.7989,0.3758,0.009,0.4615,0.0241,0.4472,0.9274,0.05
+meta/llama-3.2-90b-vision-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,0.2191,0.936,0.958,0.791,0.9463,0.797,0.022,0.145,0.0103,0.139,0.9274,0.05
+mistralai/open-mistral-nemo-2407,GSM8K-Lite,GSM8K-Lite,1000,50,0.2009,0.782,0.749,0.4086,0.7248,0.4156,0.033,0.3734,0.0572,0.3664,0.9274,0.05
+openai/gpt-4o-2024-05-13,GSM8K-Lite,GSM8K-Lite,1000,50,0.062,0.905,0.918,0.7211,0.9041,0.7266,0.013,0.1839,0.0009,0.1784,0.9274,0.05
+writer/palmyra-x-v3,GSM8K-Lite,GSM8K-Lite,1000,50,0.2002,0.831,0.852,0.664,0.8385,0.6664,0.021,0.167,0.0075,0.1646,0.9274,0.05

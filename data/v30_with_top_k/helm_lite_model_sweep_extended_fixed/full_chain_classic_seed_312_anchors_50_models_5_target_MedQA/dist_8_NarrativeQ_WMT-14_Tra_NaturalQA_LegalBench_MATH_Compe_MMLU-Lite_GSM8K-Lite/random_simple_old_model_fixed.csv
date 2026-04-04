@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+01-ai/yi-34b,1,0.012,0.0,0.64,0.0,0.652,0.0
+google/gemini-2.0-flash-exp,1,0.017,0.0,0.74,0.0,0.723,0.0
+meta/llama-2-13b,1,0.064,0.0,0.32,0.0,0.384,0.0
+mistralai/mixtral-8x7b-32kseqlen,1,0.034,0.0,0.6,0.0,0.634,0.0
+openai/gpt-4-1106-preview,1,0.037,0.0,0.78,0.0,0.817,0.0

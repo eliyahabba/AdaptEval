@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+ai21/jamba-1.5-large,LegalBench,LegalBench,2047,50,0.2983,0.5916,0.5965,0.5593,0.5792,0.5592,0.0049,0.0323,0.0124,0.0324,0.5368,0.0244
+anthropic/claude-3-5-sonnet-20241022,LegalBench,LegalBench,2047,50,0.5847,0.5452,0.5476,0.5836,0.5635,0.5819,0.0024,0.0384,0.0183,0.0367,0.5368,0.0244
+cohere/command,LegalBench,LegalBench,2047,50,-0.4983,0.4929,0.491,0.4813,0.486,0.4802,0.002,0.0116,0.0069,0.0127,0.5368,0.0244
+mistralai/mistral-7b-v0.1,LegalBench,LegalBench,2047,50,-0.2507,0.5608,0.5554,0.5245,0.5411,0.5244,0.0054,0.0363,0.0197,0.0364,0.5368,0.0244
+tiiuae/falcon-40b,LegalBench,LegalBench,2047,50,0.3314,0.4475,0.4573,0.4828,0.4691,0.4828,0.0098,0.0353,0.0216,0.0353,0.5368,0.0244

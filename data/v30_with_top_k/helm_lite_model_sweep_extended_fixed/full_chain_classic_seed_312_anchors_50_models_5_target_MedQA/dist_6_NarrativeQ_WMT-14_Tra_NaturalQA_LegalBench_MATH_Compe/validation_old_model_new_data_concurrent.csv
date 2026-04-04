@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-34b,MedQA,MedQA,1000,50,0.7311,0.652,0.642,0.561,0.6378,0.5629,0.01,0.091,0.0142,0.0891,0.9463,0.05
+google/gemini-2.0-flash-exp,MedQA,MedQA,1000,50,3.8165,0.723,0.729,0.6553,0.7251,0.6571,0.006,0.0677,0.0021,0.0659,0.9463,0.05
+meta/llama-2-13b,MedQA,MedQA,1000,50,0.4747,0.384,0.382,0.3095,0.3781,0.3102,0.002,0.0745,0.0059,0.0738,0.9463,0.05
+mistralai/mixtral-8x7b-32kseqlen,MedQA,MedQA,1000,50,-0.4949,0.634,0.63,0.558,0.6261,0.5575,0.004,0.076,0.0079,0.0765,0.9463,0.05
+openai/gpt-4-1106-preview,MedQA,MedQA,1000,50,-3.188,0.817,0.828,0.6863,0.8206,0.6901,0.011,0.1307,0.0036,0.1269,0.9463,0.05

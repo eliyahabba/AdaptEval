@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+ai21/jamba-instruct,WMT-14 Translation,WMT-14 Translation,5000,50,0.3729,0.148,0.099,0.1195,0.1113,0.1195,0.0491,0.0286,0.0367,0.0285,0.399,0.008
+anthropic/claude-3-5-haiku-20241022,WMT-14 Translation,WMT-14 Translation,5000,50,-0.4221,0.1208,0.1118,0.1378,0.1273,0.1376,0.009,0.017,0.0065,0.0168,0.399,0.01
+cohere/command,WMT-14 Translation,WMT-14 Translation,5000,50,0.3762,0.0802,0.0684,0.1012,0.0879,0.1009,0.0118,0.021,0.0078,0.0208,0.399,0.01
+meta/llama-2-7b,WMT-14 Translation,WMT-14 Translation,5000,50,0.4338,0.1305,0.1188,0.1712,0.1502,0.171,0.0117,0.0407,0.0197,0.0405,0.399,0.01
+meta/llama-3.1-405b-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,-0.0051,0.209,0.1892,0.2028,0.1973,0.2027,0.0198,0.0062,0.0117,0.0064,0.399,0.01
+meta/llama-3.2-11b-vision-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,-0.2613,0.1583,0.131,0.1743,0.1569,0.1741,0.0273,0.016,0.0014,0.0158,0.399,0.01
+mistralai/mistral-small-2402,WMT-14 Translation,WMT-14 Translation,5000,50,-0.121,0.1535,0.141,0.1796,0.1641,0.1794,0.0126,0.0261,0.0105,0.0258,0.399,0.01
+mistralai/open-mistral-nemo-2407,WMT-14 Translation,WMT-14 Translation,5000,50,0.0533,0.1607,0.1448,0.1855,0.1691,0.1853,0.0159,0.0248,0.0084,0.0245,0.399,0.01
+openai/gpt-4-turbo-2024-04-09,WMT-14 Translation,WMT-14 Translation,5000,50,-0.0781,0.1942,0.194,0.2341,0.2179,0.2338,0.0002,0.0399,0.0237,0.0396,0.399,0.01
+openai/gpt-4o-mini-2024-07-18,WMT-14 Translation,WMT-14 Translation,5000,50,-0.2474,0.1855,0.1535,0.1845,0.172,0.1843,0.0319,0.001,0.0134,0.0012,0.399,0.01

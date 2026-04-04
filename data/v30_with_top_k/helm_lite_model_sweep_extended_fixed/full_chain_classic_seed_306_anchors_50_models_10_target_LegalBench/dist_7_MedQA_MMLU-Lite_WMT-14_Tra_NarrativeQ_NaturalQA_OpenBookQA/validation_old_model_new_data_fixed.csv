@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+amazon/nova-lite-v1:0,LegalBench,LegalBench,2142,50,0.0539,0.6507,0.6195,0.8338,0.7372,0.8291,0.0312,0.1831,0.0865,0.1783,0.4384,0.0229
+anthropic/claude-3-5-haiku-20241022,LegalBench,LegalBench,2142,50,0.1952,0.575,0.4809,0.7882,0.6498,0.7817,0.0941,0.2132,0.0748,0.2067,0.4384,0.0229
+anthropic/claude-instant-1.2,LegalBench,LegalBench,2142,50,0.1049,0.4734,0.5019,0.6352,0.5754,0.6328,0.0285,0.1618,0.102,0.1594,0.4384,0.0229
+cohere/command,LegalBench,LegalBench,2142,50,-0.0558,0.4929,0.4561,0.469,0.4633,0.4689,0.0368,0.024,0.0296,0.0241,0.4384,0.0229
+google/gemini-1.5-flash-001,LegalBench,LegalBench,2142,50,0.2059,0.6023,0.5696,0.8033,0.6986,0.7994,0.0328,0.2009,0.0963,0.197,0.4384,0.0215
+google/gemini-1.5-flash-002,LegalBench,LegalBench,2142,50,0.2787,0.6224,0.5952,0.8811,0.7528,0.8757,0.0271,0.2587,0.1304,0.2533,0.4384,0.0229
+google/text-bison@001,LegalBench,LegalBench,2142,50,0.0522,0.5677,0.5331,0.6113,0.5763,0.6099,0.0345,0.0436,0.0086,0.0423,0.4384,0.0229
+meta/llama-3.1-8b-instruct-turbo,LegalBench,LegalBench,2142,50,0.4424,0.2281,0.1844,0.4348,0.3226,0.4305,0.0437,0.2067,0.0945,0.2024,0.4384,0.0229
+mistralai/mistral-large-2407,LegalBench,LegalBench,2142,50,-0.0406,0.5296,0.5159,0.8018,0.6729,0.7954,0.0137,0.2722,0.1433,0.2659,0.4384,0.0229
+openai/gpt-4-0613,LegalBench,LegalBench,2142,50,-0.0585,0.6619,0.6354,0.885,0.7728,0.88,0.0266,0.2231,0.1108,0.2181,0.4384,0.0229

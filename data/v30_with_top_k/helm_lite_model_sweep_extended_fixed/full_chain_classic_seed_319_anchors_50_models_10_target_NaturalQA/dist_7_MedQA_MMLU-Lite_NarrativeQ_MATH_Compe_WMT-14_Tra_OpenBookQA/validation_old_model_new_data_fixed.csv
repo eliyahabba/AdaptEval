@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-extended,NaturalQA,NaturalQA,1000,50,0.7286,0.2529,0.2103,0.0743,0.1895,0.0811,0.0426,0.1786,0.0634,0.1719,0.8394,0.05
+ai21/j2-grande,NaturalQA,NaturalQA,1000,50,0.9554,0.35,0.3085,0.1229,0.2804,0.1338,0.0415,0.227,0.0695,0.2161,0.8394,0.05
+ai21/jamba-1.5-large,NaturalQA,NaturalQA,1000,50,0.0159,0.3937,0.3855,0.3518,0.3807,0.3556,0.0082,0.0419,0.013,0.0381,0.8394,0.05
+anthropic/claude-v1.3,NaturalQA,NaturalQA,1000,50,0.0953,0.4089,0.4156,0.3263,0.4028,0.3355,0.0068,0.0826,0.0061,0.0733,0.8394,0.05
+deepseek-ai/deepseek-v3,NaturalQA,NaturalQA,1000,50,-0.0659,0.467,0.4748,0.457,0.4729,0.4629,0.0078,0.01,0.0059,0.0041,0.8394,0.05
+mistralai/mixtral-8x22b,NaturalQA,NaturalQA,1000,50,0.1788,0.4776,0.4189,0.3324,0.4065,0.3415,0.0586,0.1452,0.0711,0.136,0.8394,0.05
+openai/gpt-3.5-turbo-0613,NaturalQA,NaturalQA,1000,50,0.3558,0.3346,0.2913,0.2381,0.2833,0.2415,0.0433,0.0965,0.0513,0.0931,0.8394,0.05
+openai/text-davinci-003,NaturalQA,NaturalQA,1000,50,0.2319,0.4134,0.4036,0.2398,0.379,0.2508,0.0099,0.1736,0.0344,0.1626,0.8394,0.05
+upstage/solar-pro-241126,NaturalQA,NaturalQA,1000,50,0.0624,0.2973,0.2292,0.2611,0.2347,0.2633,0.0681,0.0363,0.0627,0.0341,0.8394,0.05
+writer/palmyra-x-v3,NaturalQA,NaturalQA,1000,50,0.0544,0.4072,0.4284,0.3654,0.4192,0.3711,0.0212,0.0418,0.012,0.0361,0.8394,0.05

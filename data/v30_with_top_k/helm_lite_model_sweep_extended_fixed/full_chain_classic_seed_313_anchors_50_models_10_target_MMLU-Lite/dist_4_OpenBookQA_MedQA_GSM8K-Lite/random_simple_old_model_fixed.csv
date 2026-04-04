@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+AlephAlpha/luminous-base,1,0.1293,0.0,0.1,0.0,0.2293,0.0
+anthropic/claude-3-5-sonnet-20240620,1,0.0042,0.0,0.8,0.0,0.8042,0.0
+cohere/command-light,1,0.0373,0.0,0.42,0.0,0.3827,0.0
+cohere/command,1,0.002,0.0,0.52,0.0,0.522,0.0
+meta/llama-65b,1,0.0185,0.0,0.56,0.0,0.5785,0.0
+microsoft/phi-3-small-8k-instruct,1,0.0204,0.0,0.68,0.0,0.6596,0.0
+mistralai/mistral-medium-2312,1,0.0427,0.0,0.66,0.0,0.6173,0.0
+tiiuae/falcon-40b,1,0.0791,0.0,0.58,0.0,0.5009,0.0
+upstage/solar-pro-241126,1,0.0051,0.0,0.7,0.0,0.6949,0.0
+writer/palmyra-x-v2,1,0.0557,0.0,0.68,0.0,0.6243,0.0

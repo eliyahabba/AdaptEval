@@ -1,0 +1,45 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-supreme,LegalBench,LegalBench,2142,42,0.5474,0.4768,0.4996,0.5311,0.5268,0.5322,0.0228,0.0543,0.05,0.0554,0.1666,0.0196
+ai21/jamba-1.5-mini,LegalBench,LegalBench,2142,42,-1.2164,0.4245,0.3341,0.4446,0.4256,0.4439,0.0904,0.02,0.0011,0.0194,0.1666,0.0196
+allenai/olmo-7b,LegalBench,LegalBench,2142,42,-4.5438,0.3766,0.2971,0.3108,0.3092,0.3116,0.0795,0.0659,0.0675,0.0651,0.1666,0.0196
+anthropic/claude-2.0,LegalBench,LegalBench,2142,42,-0.2222,0.5335,0.3583,0.5138,0.4859,0.5115,0.1752,0.0196,0.0475,0.022,0.1666,0.0196
+anthropic/claude-3-5-haiku-20241022,LegalBench,LegalBench,2142,42,0.3381,0.575,0.5238,0.6886,0.6602,0.6875,0.0512,0.1136,0.0852,0.1125,0.1666,0.0196
+anthropic/claude-3-5-sonnet-20241022,LegalBench,LegalBench,2142,42,-3.3831,0.5452,0.5081,0.6277,0.6073,0.6271,0.0371,0.0826,0.0621,0.0819,0.1666,0.0196
+cohere/command-r-plus,LegalBench,LegalBench,2142,42,0.0119,0.6419,0.5556,0.6832,0.6613,0.6824,0.0864,0.0413,0.0193,0.0405,0.1666,0.0196
+databricks/dbrx-instruct,LegalBench,LegalBench,2142,42,0.6129,0.403,0.3289,0.465,0.4407,0.463,0.0741,0.062,0.0376,0.06,0.1666,0.0196
+deepseek-ai/deepseek-v3,LegalBench,LegalBench,2142,42,-1.9903,0.6351,0.5411,0.6741,0.6514,0.6735,0.094,0.039,0.0163,0.0384,0.1666,0.0196
+google/gemini-1.5-flash-001,LegalBench,LegalBench,2142,42,0.6434,0.6023,0.5105,0.6947,0.663,0.6935,0.0919,0.0924,0.0606,0.0911,0.1666,0.0187
+google/gemini-1.5-pro-001,LegalBench,LegalBench,2142,42,-0.018,0.7015,0.5918,0.7779,0.7455,0.7762,0.1097,0.0763,0.044,0.0747,0.1666,0.0196
+google/gemini-1.5-pro-002,LegalBench,LegalBench,2142,42,-0.3396,0.6971,0.6131,0.7438,0.7218,0.7435,0.084,0.0466,0.0246,0.0463,0.1666,0.0196
+google/gemma-2-9b-it,LegalBench,LegalBench,2142,42,3.611,0.5432,0.3921,0.5104,0.4901,0.5097,0.1511,0.0328,0.0531,0.0335,0.1666,0.0196
+google/gemma-7b,LegalBench,LegalBench,2142,42,2.0131,0.5642,0.4924,0.5856,0.57,0.5856,0.0719,0.0213,0.0058,0.0213,0.1666,0.0196
+google/text-bison@001,LegalBench,LegalBench,2142,42,3.7614,0.5677,0.4964,0.6078,0.5889,0.6074,0.0713,0.0401,0.0213,0.0398,0.1666,0.0196
+meta/llama-65b,LegalBench,LegalBench,2142,42,-0.8521,0.4177,0.4187,0.4107,0.4131,0.412,0.001,0.007,0.0046,0.0057,0.1666,0.0196
+openai/gpt-4-0613,LegalBench,LegalBench,2142,42,-0.1962,0.6619,0.5576,0.7032,0.6783,0.7024,0.1044,0.0412,0.0163,0.0405,0.1666,0.0196
+openai/gpt-4o-2024-08-06,LegalBench,LegalBench,2142,42,-1.9915,0.6478,0.5906,0.7421,0.7163,0.7414,0.0572,0.0943,0.0685,0.0936,0.1666,0.0196
+qwen/qwen1.5-7b,LegalBench,LegalBench,2142,42,1.2515,0.5784,0.3647,0.5365,0.5057,0.5339,0.2137,0.0419,0.0727,0.0445,0.1666,0.0196
+snowflake/snowflake-arctic-instruct,LegalBench,LegalBench,2142,42,2.7652,0.5603,0.4448,0.5393,0.5233,0.539,0.1155,0.021,0.037,0.0213,0.1666,0.0196
+upstage/solar-pro-241126,LegalBench,LegalBench,2142,42,1.5063,0.6282,0.5632,0.6992,0.6761,0.6986,0.065,0.0709,0.0478,0.0704,0.1666,0.0196
+writer/palmyra-x-v2,LegalBench,LegalBench,2142,42,0.1521,0.576,0.5068,0.6484,0.6241,0.6475,0.0691,0.0724,0.0481,0.0715,0.1666,0.0196
+AlephAlpha/luminous-supreme,MATH Competition,MATH Competition,437,8,0.5474,0.0801,0.0,0.1113,0.0549,0.1098,0.0801,0.0312,0.0252,0.0297,0.5,0.0183
+ai21/jamba-1.5-mini,MATH Competition,MATH Competition,437,8,-1.2164,0.3295,0.0612,0.4596,0.2606,0.4601,0.2683,0.1301,0.0689,0.1305,0.5,0.0183
+allenai/olmo-7b,MATH Competition,MATH Competition,437,8,-4.5438,0.0366,0.0177,0.2492,0.1329,0.2481,0.0189,0.2126,0.0963,0.2115,0.5,0.0183
+anthropic/claude-2.0,MATH Competition,MATH Competition,437,8,-0.2222,0.6613,0.1369,0.5487,0.3443,0.5517,0.5245,0.1126,0.317,0.1096,0.5,0.0183
+anthropic/claude-3-5-haiku-20241022,MATH Competition,MATH Competition,437,8,0.3381,0.8993,0.1546,0.8089,0.4821,0.8096,0.7447,0.0904,0.4172,0.0897,0.5,0.0183
+anthropic/claude-3-5-sonnet-20241022,MATH Competition,MATH Competition,437,8,-3.3831,0.9245,0.1546,0.7903,0.4728,0.7911,0.7699,0.1342,0.4517,0.1334,0.5,0.0183
+cohere/command-r-plus,MATH Competition,MATH Competition,437,8,0.0119,0.4577,0.0789,0.4703,0.2756,0.4723,0.3788,0.0127,0.1821,0.0146,0.5,0.0183
+databricks/dbrx-instruct,MATH Competition,MATH Competition,437,8,0.6129,0.2998,0.0668,0.1092,0.0894,0.1119,0.2329,0.1906,0.2104,0.1879,0.5,0.0183
+deepseek-ai/deepseek-v3,MATH Competition,MATH Competition,437,8,-1.9903,0.9291,0.1546,0.7976,0.4765,0.7983,0.7745,0.1315,0.4526,0.1307,0.5,0.0183
+google/gemini-1.5-flash-001,MATH Competition,MATH Competition,437,8,0.6434,0.7872,0.1546,0.8277,0.4916,0.8286,0.6326,0.0405,0.2956,0.0414,0.5,0.0183
+google/gemini-1.5-pro-001,MATH Competition,MATH Competition,437,8,-0.018,0.8627,0.1655,0.7945,0.4812,0.7968,0.6972,0.0682,0.3815,0.0659,0.5,0.0183
+google/gemini-1.5-pro-002,MATH Competition,MATH Competition,437,8,-0.3396,0.9336,0.1546,0.8229,0.489,0.8235,0.779,0.1108,0.4446,0.1102,0.5,0.0183
+google/gemma-2-9b-it,MATH Competition,MATH Competition,437,8,3.611,0.7689,0.1405,0.756,0.4485,0.7565,0.6284,0.0129,0.3204,0.0124,0.5,0.0183
+google/gemma-7b,MATH Competition,MATH Competition,437,8,2.0131,0.5652,0.0789,0.5688,0.3245,0.5701,0.4863,0.0036,0.2407,0.0049,0.5,0.0183
+google/text-bison@001,MATH Competition,MATH Competition,437,8,3.7614,0.4416,0.1002,0.6117,0.3562,0.6122,0.3414,0.17,0.0854,0.1706,0.5,0.0183
+meta/llama-65b,MATH Competition,MATH Competition,437,8,-0.8521,0.3181,0.0833,0.5536,0.3181,0.5529,0.2347,0.2355,0.0001,0.2349,0.5,0.0183
+openai/gpt-4-0613,MATH Competition,MATH Competition,437,8,-0.1962,0.8398,0.1546,0.786,0.471,0.7873,0.6852,0.0538,0.3689,0.0525,0.5,0.0183
+openai/gpt-4o-2024-08-06,MATH Competition,MATH Competition,437,8,-1.9915,0.8787,0.1546,0.786,0.4707,0.7868,0.7241,0.0927,0.408,0.0919,0.5,0.0183
+qwen/qwen1.5-7b,MATH Competition,MATH Competition,437,8,1.2515,0.5995,0.118,0.4616,0.2915,0.465,0.4816,0.1379,0.308,0.1345,0.5,0.0183
+snowflake/snowflake-arctic-instruct,MATH Competition,MATH Competition,437,8,2.7652,0.5927,0.0853,0.6049,0.3455,0.6056,0.5073,0.0123,0.2472,0.013,0.5,0.0183
+upstage/solar-pro-241126,MATH Competition,MATH Competition,437,8,1.5063,0.6133,0.0789,0.5744,0.3271,0.5753,0.5344,0.0388,0.2862,0.038,0.5,0.0183
+writer/palmyra-x-v2,MATH Competition,MATH Competition,437,8,0.1521,0.6476,0.118,0.6647,0.3921,0.6662,0.5296,0.0171,0.2555,0.0186,0.5,0.0183

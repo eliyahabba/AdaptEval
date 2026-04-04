@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+cohere/command-light,MMLU-Lite,MMLU-Lite,567,50,-4.5752,0.3827,0.3827,0.3217,0.373,0.323,0.0,0.0611,0.0097,0.0597,0.8376,0.0882
+cohere/command-r-plus,MMLU-Lite,MMLU-Lite,567,50,-0.5089,0.6032,0.6332,0.5974,0.6273,0.597,0.03,0.0058,0.0241,0.0062,0.8376,0.0882
+google/gemini-1.0-pro-002,MMLU-Lite,MMLU-Lite,567,50,-1.4362,0.5309,0.5238,0.5363,0.5253,0.5332,0.0071,0.0055,0.0055,0.0023,0.8376,0.0882
+qwen/qwen2-72b-instruct,MMLU-Lite,MMLU-Lite,567,50,-2.3894,0.7743,0.7919,0.7748,0.7889,0.7733,0.0176,0.0005,0.0146,0.001,0.8376,0.0882
+qwen/qwen2.5-72b-instruct-turbo,MMLU-Lite,MMLU-Lite,567,50,-2.2562,0.7707,0.7954,0.7739,0.7915,0.7715,0.0247,0.0032,0.0208,0.0008,0.8376,0.0882

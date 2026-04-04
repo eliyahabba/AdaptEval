@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+amazon/nova-micro-v1:0,1,0.0482,0.0,0.84,0.0,0.7918,0.0
+anthropic/claude-2.1,1,0.0243,0.0,0.72,0.0,0.6957,0.0
+meta/llama-3.2-11b-vision-instruct-turbo,1,0.0111,0.0,0.78,0.0,0.7689,0.0
+qwen/qwen1.5-72b,1,0.0752,0.0,0.78,0.0,0.7048,0.0
+snowflake/snowflake-arctic-instruct,1,0.0473,0.0,0.64,0.0,0.5927,0.0

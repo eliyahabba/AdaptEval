@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+databricks/dbrx-instruct,MATH Competition,MATH Competition,437,50,-2.5709,0.2998,0.2998,0.2878,0.2929,0.2877,0.0,0.012,0.0069,0.0121,0.4272,0.1144
+google/gemini-1.0-pro-002,MATH Competition,MATH Competition,437,50,-1.0399,0.7162,0.714,0.5019,0.599,0.5132,0.0023,0.2144,0.1173,0.203,0.4272,0.1144
+meta/llama-3.1-8b-instruct-turbo,MATH Competition,MATH Competition,437,50,-1.3582,0.7368,0.73,0.4687,0.59,0.4856,0.0069,0.2682,0.1468,0.2512,0.4272,0.1144
+openai/gpt-4o-2024-05-13,MATH Competition,MATH Competition,437,50,2.4245,0.865,0.8627,0.665,0.7534,0.672,0.0023,0.2,0.1115,0.193,0.4272,0.1144
+qwen/qwen2.5-72b-instruct-turbo,MATH Competition,MATH Competition,437,50,2.995,0.9062,0.9176,0.6306,0.7685,0.6572,0.0114,0.2755,0.1377,0.249,0.4272,0.1144

@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-large-preview,MMLU-Lite,MMLU-Lite,567,50,2.9015,0.716,0.7072,0.5237,0.6522,0.5301,0.0088,0.1923,0.0638,0.186,0.6894,0.0882
+allenai/olmo-7b,MMLU-Lite,MMLU-Lite,567,50,2.5838,0.2981,0.2892,0.2435,0.2761,0.2468,0.0088,0.0546,0.022,0.0513,0.6894,0.0882
+cohere/command-r-plus,MMLU-Lite,MMLU-Lite,567,50,-0.3869,0.6032,0.6332,0.4772,0.5873,0.4856,0.03,0.1259,0.0158,0.1176,0.6894,0.0882
+cohere/command,MMLU-Lite,MMLU-Lite,567,50,2.7558,0.522,0.5556,0.3742,0.5002,0.3773,0.0335,0.1478,0.0219,0.1448,0.6894,0.0882
+google/gemma-2-27b-it,MMLU-Lite,MMLU-Lite,567,50,0.2246,0.6684,0.709,0.5313,0.6546,0.5337,0.0406,0.1372,0.0139,0.1347,0.6894,0.0882
+microsoft/phi-2,MMLU-Lite,MMLU-Lite,567,50,1.1113,0.4974,0.4797,0.326,0.4326,0.3279,0.0176,0.1713,0.0648,0.1694,0.6894,0.0882
+mistralai/mistral-7b-instruct-v0.3,MMLU-Lite,MMLU-Lite,567,50,-1.6301,0.5097,0.5026,0.3896,0.4672,0.3886,0.0071,0.1201,0.0425,0.1211,0.6894,0.0882
+openai/gpt-4o-mini-2024-07-18,MMLU-Lite,MMLU-Lite,567,50,0.1744,0.6667,0.6755,0.5318,0.6315,0.534,0.0088,0.1348,0.0351,0.1327,0.6894,0.0882
+qwen/qwen2.5-7b-instruct-turbo,MMLU-Lite,MMLU-Lite,567,50,1.682,0.6596,0.6402,0.4659,0.5875,0.4705,0.0194,0.1937,0.0721,0.1892,0.6894,0.0882
+writer/palmyra-x-v3,MMLU-Lite,MMLU-Lite,567,50,0.2957,0.7037,0.7443,0.5594,0.6894,0.5677,0.0406,0.1443,0.0143,0.136,0.6894,0.0882

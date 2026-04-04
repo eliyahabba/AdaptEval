@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+google/gemini-1.5-pro-001,NaturalQA,NaturalQA,1000,50,-1.7215,0.378,0.3901,0.3657,0.3722,0.3654,0.012,0.0123,0.0058,0.0126,0.2747,0.05
+google/gemma-7b,NaturalQA,NaturalQA,1000,50,-0.0694,0.3356,0.3237,0.3367,0.3325,0.3358,0.012,0.0011,0.0031,0.0002,0.2747,0.05
+meta/llama-2-70b,NaturalQA,NaturalQA,1000,50,2.4016,0.4596,0.4822,0.4836,0.4833,0.4837,0.0226,0.024,0.0237,0.0241,0.2747,0.05
+meta/llama-2-7b,NaturalQA,NaturalQA,1000,50,-1.7131,0.3326,0.3663,0.3734,0.3713,0.3732,0.0336,0.0408,0.0386,0.0405,0.2747,0.05
+meta/llama-3.2-90b-vision-instruct-turbo,NaturalQA,NaturalQA,1000,50,4.8183,0.4568,0.4704,0.4696,0.4693,0.4689,0.0136,0.0128,0.0125,0.0121,0.2747,0.05
+openai/gpt-4-0613,NaturalQA,NaturalQA,1000,50,1.7534,0.4569,0.4522,0.4633,0.4602,0.4632,0.0046,0.0064,0.0033,0.0063,0.2747,0.05
+openai/text-davinci-002,NaturalQA,NaturalQA,1000,50,-0.2298,0.3941,0.4412,0.4491,0.4474,0.4497,0.0471,0.055,0.0532,0.0555,0.2747,0.05
+qwen/qwen1.5-72b,NaturalQA,NaturalQA,1000,50,0.348,0.4171,0.4544,0.454,0.454,0.4539,0.0373,0.0369,0.0369,0.0367,0.2747,0.05
+qwen/qwen2.5-72b-instruct-turbo,NaturalQA,NaturalQA,1000,50,-2.895,0.3594,0.3379,0.3562,0.3508,0.3556,0.0214,0.0032,0.0086,0.0037,0.2747,0.05
+writer/palmyra-x-004,NaturalQA,NaturalQA,1000,50,3.2961,0.4566,0.437,0.429,0.4314,0.4292,0.0196,0.0276,0.0253,0.0274,0.2747,0.05

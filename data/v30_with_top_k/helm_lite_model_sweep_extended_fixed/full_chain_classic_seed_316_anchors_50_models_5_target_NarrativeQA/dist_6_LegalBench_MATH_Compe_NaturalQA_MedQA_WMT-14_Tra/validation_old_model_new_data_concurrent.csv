@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-supreme,NarrativeQA,NarrativeQA,470,50,0.2355,0.7472,0.7819,0.5157,0.7547,0.5409,0.0347,0.2315,0.0075,0.2063,0.887,0.1064
+allenai/olmo-7b,NarrativeQA,NarrativeQA,470,50,1.8912,0.6128,0.682,0.4452,0.6576,0.4658,0.0692,0.1676,0.0448,0.1471,0.887,0.1064
+google/gemma-7b,NarrativeQA,NarrativeQA,470,50,-1.507,0.7659,0.7805,0.5846,0.7602,0.601,0.0146,0.1812,0.0057,0.1648,0.887,0.1064
+qwen/qwen1.5-110b-chat,NarrativeQA,NarrativeQA,470,50,0.9286,0.7304,0.7748,0.5966,0.7568,0.6157,0.0443,0.1338,0.0264,0.1147,0.887,0.1064
+tiiuae/falcon-7b,NarrativeQA,NarrativeQA,470,50,-1.492,0.633,0.6508,0.4096,0.6257,0.4284,0.0179,0.2233,0.0073,0.2046,0.887,0.1064

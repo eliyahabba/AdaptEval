@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-extended,MedQA,MedQA,1000,50,-0.7311,0.26,0.193,0.2228,0.2107,0.2246,0.067,0.0372,0.0493,0.0354,0.4381,0.05
+cohere/command-light,MedQA,MedQA,1000,50,-1.3596,0.294,0.289,0.2693,0.2784,0.2702,0.005,0.0247,0.0156,0.0238,0.4381,0.05
+cohere/command-r,MedQA,MedQA,1000,50,3.0047,0.531,0.512,0.3654,0.4321,0.3698,0.019,0.1656,0.0989,0.1612,0.4381,0.05
+deepseek-ai/deepseek-llm-67b-chat,MedQA,MedQA,1000,50,-1.0361,0.614,0.556,0.5019,0.5271,0.5045,0.058,0.1121,0.0869,0.1095,0.4381,0.05
+google/text-bison@001,MedQA,MedQA,1000,50,4.7289,0.54,0.561,0.441,0.4954,0.4442,0.021,0.099,0.0446,0.0958,0.4381,0.05
+meta/llama-3.2-90b-vision-instruct-turbo,MedQA,MedQA,1000,50,-2.9593,0.824,0.861,0.6539,0.7497,0.6629,0.037,0.1701,0.0743,0.1611,0.4381,0.05
+openai/gpt-4o-2024-08-06,MedQA,MedQA,1000,50,-2.7933,0.869,0.912,0.6939,0.7956,0.7048,0.043,0.1751,0.0734,0.1642,0.4381,0.05
+qwen/qwen1.5-110b-chat,MedQA,MedQA,1000,50,-1.3817,0.64,0.6,0.5492,0.5723,0.5507,0.04,0.0908,0.0677,0.0893,0.4381,0.05
+qwen/qwen1.5-72b,MedQA,MedQA,1000,50,-1.3674,0.664,0.712,0.5637,0.6298,0.5657,0.048,0.1003,0.0342,0.0983,0.4381,0.05
+tiiuae/falcon-7b,MedQA,MedQA,1000,50,-2.0162,0.267,0.32,0.2266,0.2694,0.23,0.053,0.0404,0.0024,0.037,0.4381,0.05

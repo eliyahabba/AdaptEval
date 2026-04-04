@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+amazon/nova-micro-v1:0,OpenBookQA,OpenBookQA,500,50,3.0336,0.888,0.884,0.7377,0.879,0.7466,0.004,0.1503,0.009,0.1414,0.9634,0.1
+amazon/nova-pro-v1:0,OpenBookQA,OpenBookQA,500,50,0.7445,0.96,0.976,0.8263,0.9709,0.8372,0.016,0.1337,0.0109,0.1228,0.9634,0.1
+anthropic/claude-instant-1.2,OpenBookQA,OpenBookQA,500,50,-2.2131,0.844,0.84,0.6866,0.8346,0.6931,0.004,0.1574,0.0094,0.1509,0.9634,0.1
+anthropic/claude-v1.3,OpenBookQA,OpenBookQA,500,50,-1.82,0.908,0.906,0.7656,0.9012,0.7757,0.002,0.1424,0.0068,0.1323,0.9634,0.1
+writer/palmyra-x-v2,OpenBookQA,OpenBookQA,500,50,-0.8382,0.878,0.882,0.7253,0.8766,0.7345,0.004,0.1527,0.0014,0.1435,0.9634,0.1

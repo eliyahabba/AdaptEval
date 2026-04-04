@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+ai21/jamba-1.5-mini,1,0.03,0.0,0.86,0.0,0.89,0.0
+anthropic/claude-instant-1.2,1,0.016,0.0,0.86,0.0,0.844,0.0
+cohere/command,1,0.014,0.0,0.76,0.0,0.774,0.0
+google/text-unicorn@001,1,0.002,0.0,0.94,0.0,0.938,0.0
+meta/llama-3.1-405b-instruct-turbo,1,0.0,0.0,0.94,0.0,0.94,0.0
+meta/llama-65b,1,0.046,0.0,0.8,0.0,0.754,0.0
+microsoft/phi-2,1,0.018,0.0,0.78,0.0,0.798,0.0
+openai/gpt-4-1106-preview,1,0.03,0.0,0.98,0.0,0.95,0.0
+openai/text-davinci-003,1,0.008,0.0,0.82,0.0,0.828,0.0
+writer/palmyra-x-004,1,0.034,0.0,0.96,0.0,0.926,0.0

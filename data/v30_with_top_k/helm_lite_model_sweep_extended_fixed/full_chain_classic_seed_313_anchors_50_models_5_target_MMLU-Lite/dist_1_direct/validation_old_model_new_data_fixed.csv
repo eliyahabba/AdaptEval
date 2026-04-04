@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+cohere/command-light,MMLU-Lite,MMLU-Lite,567,50,-2.3253,0.3827,0.388,0.4107,0.4043,0.4076,0.0053,0.028,0.0216,0.0249,0.1704,0.0882
+meta/llama-65b,MMLU-Lite,MMLU-Lite,567,50,0.9004,0.5785,0.575,0.5621,0.5623,0.5598,0.0035,0.0164,0.0161,0.0187,0.1704,0.0882
+mistralai/mistral-medium-2312,MMLU-Lite,MMLU-Lite,567,50,5.4971,0.6173,0.6473,0.6454,0.6426,0.6417,0.03,0.0281,0.0253,0.0244,0.1704,0.0882
+upstage/solar-pro-241126,MMLU-Lite,MMLU-Lite,567,50,1.5619,0.6949,0.7319,0.6827,0.6906,0.6822,0.037,0.0122,0.0042,0.0127,0.1704,0.0882
+writer/palmyra-x-v2,MMLU-Lite,MMLU-Lite,567,50,2.4074,0.6243,0.6296,0.6287,0.6277,0.6273,0.0053,0.0044,0.0034,0.003,0.1704,0.0882

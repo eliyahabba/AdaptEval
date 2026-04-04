@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-extended,GSM8K-Lite,GSM8K-Lite,1000,50,-1.7276,0.075,0.073,0.0763,0.076,0.078,0.002,0.0013,0.001,0.003,0.3959,0.05
+anthropic/claude-3-5-sonnet-20240620,GSM8K-Lite,GSM8K-Lite,1000,50,0.6327,0.949,0.957,0.7046,0.8117,0.7164,0.008,0.2444,0.1373,0.2326,0.3959,0.05
+google/gemini-1.5-pro-002,GSM8K-Lite,GSM8K-Lite,1000,50,-0.7704,0.817,0.78,0.5871,0.6685,0.5954,0.037,0.2299,0.1485,0.2216,0.3959,0.05
+mistralai/mistral-7b-v0.1,GSM8K-Lite,GSM8K-Lite,1000,50,3.2459,0.377,0.371,0.2838,0.3214,0.2889,0.006,0.0932,0.0556,0.0881,0.3959,0.05
+openai/gpt-4o-2024-05-13,GSM8K-Lite,GSM8K-Lite,1000,50,-0.3212,0.905,0.909,0.7069,0.7929,0.7169,0.004,0.1981,0.1121,0.1881,0.3959,0.05

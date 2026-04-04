@@ -1,0 +1,26 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-extended,WMT-14 Translation,WMT-14 Translation,5000,50,-3.8793,0.0769,0.0699,0.0792,0.0718,0.0791,0.007,0.0023,0.005,0.0022,0.7876,0.01
+ai21/j2-jumbo,WMT-14 Translation,WMT-14 Translation,5000,50,-2.2792,0.1032,0.0914,0.0956,0.0923,0.0956,0.0118,0.0076,0.0109,0.0076,0.7876,0.01
+ai21/jamba-instruct,WMT-14 Translation,WMT-14 Translation,5000,50,-0.0668,0.148,0.1428,0.1882,0.1524,0.1879,0.0053,0.0402,0.0043,0.0398,0.7876,0.0084
+anthropic/claude-3-5-haiku-20241022,WMT-14 Translation,WMT-14 Translation,5000,50,1.848,0.1208,0.13,0.1411,0.1324,0.1411,0.0092,0.0203,0.0116,0.0203,0.7876,0.01
+anthropic/claude-3-5-sonnet-20241022,WMT-14 Translation,WMT-14 Translation,5000,50,1.911,0.2023,0.2042,0.2069,0.2048,0.2069,0.0019,0.0046,0.0025,0.0046,0.7876,0.01
+anthropic/claude-instant-1.2,WMT-14 Translation,WMT-14 Translation,5000,50,0.2346,0.1737,0.1561,0.1719,0.1595,0.1718,0.0176,0.0018,0.0142,0.0019,0.7876,0.01
+anthropic/claude-v1.3,WMT-14 Translation,WMT-14 Translation,5000,50,0.5154,0.1945,0.1894,0.2029,0.1923,0.2028,0.0051,0.0084,0.0022,0.0083,0.7876,0.01
+cohere/command,WMT-14 Translation,WMT-14 Translation,5000,50,-1.7106,0.0802,0.0638,0.0803,0.0673,0.0803,0.0164,0.0001,0.0129,0.0001,0.7876,0.01
+deepseek-ai/deepseek-v3,WMT-14 Translation,WMT-14 Translation,5000,50,2.1176,0.1883,0.1832,0.193,0.1853,0.1929,0.0051,0.0047,0.0031,0.0046,0.7876,0.01
+google/gemini-2.0-flash-exp,WMT-14 Translation,WMT-14 Translation,5000,50,2.6263,0.1908,0.1862,0.1948,0.188,0.1947,0.0046,0.004,0.0028,0.0039,0.7876,0.01
+google/gemma-2-9b-it,WMT-14 Translation,WMT-14 Translation,5000,50,0.6494,0.1828,0.1991,0.204,0.2001,0.2039,0.0162,0.0211,0.0173,0.0211,0.7876,0.01
+meta/llama-2-7b,WMT-14 Translation,WMT-14 Translation,5000,50,-2.4162,0.1305,0.1065,0.1164,0.1086,0.1163,0.024,0.0141,0.0219,0.0142,0.7876,0.01
+meta/llama-3-8b,WMT-14 Translation,WMT-14 Translation,5000,50,-0.6707,0.1664,0.1711,0.1667,0.1702,0.1667,0.0047,0.0002,0.0037,0.0002,0.7876,0.01
+meta/llama-3.1-405b-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,1.7364,0.209,0.1964,0.1962,0.1963,0.196,0.0127,0.0129,0.0127,0.013,0.7876,0.01
+meta/llama-3.2-11b-vision-instruct-turbo,WMT-14 Translation,WMT-14 Translation,5000,50,0.513,0.1583,0.1525,0.1527,0.1525,0.1527,0.0058,0.0056,0.0058,0.0056,0.7876,0.01
+mistralai/mistral-large-2407,WMT-14 Translation,WMT-14 Translation,5000,50,0.2765,0.1723,0.1744,0.1876,0.1772,0.1875,0.0021,0.0153,0.0049,0.0152,0.7876,0.01
+mistralai/mistral-small-2402,WMT-14 Translation,WMT-14 Translation,5000,50,0.3555,0.1535,0.1393,0.1543,0.1425,0.1542,0.0143,0.0007,0.0111,0.0006,0.7876,0.01
+mistralai/open-mistral-nemo-2407,WMT-14 Translation,WMT-14 Translation,5000,50,0.6833,0.1607,0.1627,0.1687,0.1639,0.1687,0.002,0.008,0.0032,0.0079,0.7876,0.01
+openai/gpt-3.5-turbo-0613,WMT-14 Translation,WMT-14 Translation,5000,50,0.4472,0.1699,0.1557,0.1779,0.1604,0.1778,0.0143,0.0079,0.0096,0.0078,0.7876,0.01
+openai/gpt-4-turbo-2024-04-09,WMT-14 Translation,WMT-14 Translation,5000,50,1.2621,0.1942,0.2112,0.2218,0.2134,0.2218,0.017,0.0276,0.0192,0.0275,0.7876,0.01
+openai/gpt-4o-mini-2024-07-18,WMT-14 Translation,WMT-14 Translation,5000,50,1.4543,0.1855,0.1867,0.1905,0.1875,0.1904,0.0013,0.005,0.002,0.005,0.7876,0.01
+qwen/qwen1.5-32b,WMT-14 Translation,WMT-14 Translation,5000,50,0.5143,0.1734,0.1722,0.1784,0.1735,0.1783,0.0012,0.005,0.0001,0.005,0.7876,0.01
+qwen/qwen1.5-72b,WMT-14 Translation,WMT-14 Translation,5000,50,0.5595,0.1799,0.1837,0.1995,0.187,0.1995,0.0038,0.0196,0.0071,0.0195,0.7876,0.01
+snowflake/snowflake-arctic-instruct,WMT-14 Translation,WMT-14 Translation,5000,50,-0.0959,0.1554,0.1335,0.1379,0.1345,0.1378,0.0219,0.0176,0.021,0.0176,0.7876,0.01
+tiiuae/falcon-40b,WMT-14 Translation,WMT-14 Translation,5000,50,-1.8437,0.1441,0.139,0.1483,0.141,0.1484,0.0051,0.0042,0.0031,0.0043,0.7876,0.01

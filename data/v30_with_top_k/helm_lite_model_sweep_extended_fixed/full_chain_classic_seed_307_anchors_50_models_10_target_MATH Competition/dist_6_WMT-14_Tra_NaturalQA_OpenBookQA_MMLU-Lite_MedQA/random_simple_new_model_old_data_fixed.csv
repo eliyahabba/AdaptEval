@@ -1,0 +1,133 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+01-ai/yi-large-preview,1,0.05,0.0,0.74,0.0,0.69,0.0,GSM8K-Lite
+AlephAlpha/luminous-supreme,1,0.023,0.0,0.16,0.0,0.137,0.0,GSM8K-Lite
+ai21/jamba-instruct,1,0.03,0.0,0.7,0.0,0.67,0.0,GSM8K-Lite
+amazon/nova-lite-v1:0,1,0.029,0.0,0.8,0.0,0.829,0.0,GSM8K-Lite
+anthropic/claude-2.1,1,0.096,0.0,0.7,0.0,0.604,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.011,0.0,0.96,0.0,0.949,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.036,0.0,0.92,0.0,0.956,0.0,GSM8K-Lite
+google/gemma-2-27b-it,1,0.012,0.0,0.8,0.0,0.812,0.0,GSM8K-Lite
+google/gemma-2-9b-it,1,0.018,0.0,0.78,0.0,0.762,0.0,GSM8K-Lite
+google/text-bison@001,1,0.03,0.0,0.64,0.0,0.61,0.0,GSM8K-Lite
+meta/llama-2-70b,1,0.093,0.0,0.66,0.0,0.567,0.0,GSM8K-Lite
+meta/llama-3.1-405b-instruct-turbo,1,0.049,0.0,0.9,0.0,0.949,0.0,GSM8K-Lite
+microsoft/phi-2,1,0.061,0.0,0.52,0.0,0.581,0.0,GSM8K-Lite
+mistralai/mistral-7b-v0.1,1,0.017,0.0,0.36,0.0,0.377,0.0,GSM8K-Lite
+openai/gpt-4-0613,1,0.012,0.0,0.92,0.0,0.932,0.0,GSM8K-Lite
+openai/gpt-4-1106-preview,1,0.032,0.0,0.7,0.0,0.668,0.0,GSM8K-Lite
+qwen/qwen1.5-110b-chat,1,0.075,0.0,0.74,0.0,0.815,0.0,GSM8K-Lite
+qwen/qwen2.5-7b-instruct-turbo,1,0.03,0.0,0.86,0.0,0.83,0.0,GSM8K-Lite
+snowflake/snowflake-arctic-instruct,1,0.028,0.0,0.74,0.0,0.768,0.0,GSM8K-Lite
+tiiuae/falcon-7b,1,0.005,0.0,0.06,0.0,0.055,0.0,GSM8K-Lite
+writer/palmyra-x-004,1,0.005,0.0,0.9,0.0,0.905,0.0,GSM8K-Lite
+writer/palmyra-x-v2,1,0.015,0.0,0.72,0.0,0.735,0.0,GSM8K-Lite
+01-ai/yi-large-preview,1,0.0116,0.0,0.1485,0.0,0.1601,0.0,WMT-14 Translation
+AlephAlpha/luminous-supreme,1,0.0165,0.0,0.1097,0.0,0.0932,0.0,WMT-14 Translation
+ai21/jamba-instruct,1,0.0345,0.0,0.1825,0.0,0.148,0.0,WMT-14 Translation
+amazon/nova-lite-v1:0,1,0.0017,0.0,0.1796,0.0,0.1812,0.0,WMT-14 Translation
+anthropic/claude-2.1,1,0.0095,0.0,0.1724,0.0,0.1819,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20240620,1,0.0165,0.0,0.2215,0.0,0.205,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20241022,1,0.0133,0.0,0.2157,0.0,0.2023,0.0,WMT-14 Translation
+google/gemma-2-27b-it,1,0.0254,0.0,0.217,0.0,0.1917,0.0,WMT-14 Translation
+google/gemma-2-9b-it,1,0.0136,0.0,0.1964,0.0,0.1828,0.0,WMT-14 Translation
+google/text-bison@001,1,0.0187,0.0,0.1921,0.0,0.2108,0.0,WMT-14 Translation
+meta/llama-2-70b,1,0.008,0.0,0.1694,0.0,0.1774,0.0,WMT-14 Translation
+meta/llama-3.1-405b-instruct-turbo,1,0.0259,0.0,0.2349,0.0,0.209,0.0,WMT-14 Translation
+microsoft/phi-2,1,0.0084,0.0,0.0286,0.0,0.037,0.0,WMT-14 Translation
+mistralai/mistral-7b-v0.1,1,0.0098,0.0,0.1362,0.0,0.146,0.0,WMT-14 Translation
+openai/gpt-4-0613,1,0.0095,0.0,0.1794,0.0,0.1889,0.0,WMT-14 Translation
+openai/gpt-4-1106-preview,1,0.0015,0.0,0.1801,0.0,0.1816,0.0,WMT-14 Translation
+qwen/qwen1.5-110b-chat,1,0.0105,0.0,0.1843,0.0,0.1738,0.0,WMT-14 Translation
+qwen/qwen2.5-7b-instruct-turbo,1,0.0065,0.0,0.135,0.0,0.1415,0.0,WMT-14 Translation
+snowflake/snowflake-arctic-instruct,1,0.0013,0.0,0.1541,0.0,0.1554,0.0,WMT-14 Translation
+tiiuae/falcon-7b,1,0.0066,0.0,0.0906,0.0,0.084,0.0,WMT-14 Translation
+writer/palmyra-x-004,1,0.0325,0.0,0.2129,0.0,0.1804,0.0,WMT-14 Translation
+writer/palmyra-x-v2,1,0.0532,0.0,0.265,0.0,0.2119,0.0,WMT-14 Translation
+01-ai/yi-large-preview,1,0.0595,0.0,0.3682,0.0,0.4277,0.0,NaturalQA
+AlephAlpha/luminous-supreme,1,0.0045,0.0,0.3037,0.0,0.2992,0.0,NaturalQA
+ai21/jamba-instruct,1,0.0528,0.0,0.3308,0.0,0.3836,0.0,NaturalQA
+amazon/nova-lite-v1:0,1,0.0642,0.0,0.2882,0.0,0.3524,0.0,NaturalQA
+anthropic/claude-2.1,1,0.0853,0.0,0.2898,0.0,0.3751,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0376,0.0,0.464,0.0,0.5016,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20241022,1,0.0368,0.0,0.4302,0.0,0.467,0.0,NaturalQA
+google/gemma-2-27b-it,1,0.0677,0.0,0.2852,0.0,0.3529,0.0,NaturalQA
+google/gemma-2-9b-it,1,0.0443,0.0,0.2836,0.0,0.3278,0.0,NaturalQA
+google/text-bison@001,1,0.0429,0.0,0.3471,0.0,0.39,0.0,NaturalQA
+meta/llama-2-70b,1,0.0426,0.0,0.417,0.0,0.4596,0.0,NaturalQA
+meta/llama-3.1-405b-instruct-turbo,1,0.0343,0.0,0.4217,0.0,0.456,0.0,NaturalQA
+microsoft/phi-2,1,0.013,0.0,0.1682,0.0,0.1552,0.0,NaturalQA
+mistralai/mistral-7b-v0.1,1,0.0657,0.0,0.3013,0.0,0.367,0.0,NaturalQA
+openai/gpt-4-0613,1,0.0676,0.0,0.3893,0.0,0.4569,0.0,NaturalQA
+openai/gpt-4-1106-preview,1,0.0377,0.0,0.397,0.0,0.4347,0.0,NaturalQA
+qwen/qwen1.5-110b-chat,1,0.0731,0.0,0.2768,0.0,0.3499,0.0,NaturalQA
+qwen/qwen2.5-7b-instruct-turbo,1,0.0029,0.0,0.2022,0.0,0.2051,0.0,NaturalQA
+snowflake/snowflake-arctic-instruct,1,0.0875,0.0,0.3022,0.0,0.3898,0.0,NaturalQA
+tiiuae/falcon-7b,1,0.0215,0.0,0.3067,0.0,0.2852,0.0,NaturalQA
+writer/palmyra-x-004,1,0.0339,0.0,0.4227,0.0,0.4566,0.0,NaturalQA
+writer/palmyra-x-v2,1,0.0414,0.0,0.3867,0.0,0.4281,0.0,NaturalQA
+01-ai/yi-large-preview,1,0.034,0.0,0.98,0.0,0.946,0.0,OpenBookQA
+AlephAlpha/luminous-supreme,1,0.044,0.0,0.24,0.0,0.284,0.0,OpenBookQA
+ai21/jamba-instruct,1,0.044,0.0,0.84,0.0,0.796,0.0,OpenBookQA
+amazon/nova-lite-v1:0,1,0.048,0.0,0.88,0.0,0.928,0.0,OpenBookQA
+anthropic/claude-2.1,1,0.008,0.0,0.88,0.0,0.872,0.0,OpenBookQA
+anthropic/claude-3-5-sonnet-20240620,1,0.028,0.0,1.0,0.0,0.972,0.0,OpenBookQA
+anthropic/claude-3-5-sonnet-20241022,1,0.014,0.0,0.98,0.0,0.966,0.0,OpenBookQA
+google/gemma-2-27b-it,1,0.022,0.0,0.94,0.0,0.918,0.0,OpenBookQA
+google/gemma-2-9b-it,1,0.03,0.0,0.94,0.0,0.91,0.0,OpenBookQA
+google/text-bison@001,1,0.022,0.0,0.9,0.0,0.878,0.0,OpenBookQA
+meta/llama-2-70b,1,0.002,0.0,0.84,0.0,0.838,0.0,OpenBookQA
+meta/llama-3.1-405b-instruct-turbo,1,0.02,0.0,0.96,0.0,0.94,0.0,OpenBookQA
+microsoft/phi-2,1,0.018,0.0,0.78,0.0,0.798,0.0,OpenBookQA
+mistralai/mistral-7b-v0.1,1,0.024,0.0,0.8,0.0,0.776,0.0,OpenBookQA
+openai/gpt-4-0613,1,0.04,0.0,1.0,0.0,0.96,0.0,OpenBookQA
+openai/gpt-4-1106-preview,1,0.03,0.0,0.98,0.0,0.95,0.0,OpenBookQA
+qwen/qwen1.5-110b-chat,1,0.018,0.0,0.94,0.0,0.922,0.0,OpenBookQA
+qwen/qwen2.5-7b-instruct-turbo,1,0.018,0.0,0.88,0.0,0.862,0.0,OpenBookQA
+snowflake/snowflake-arctic-instruct,1,0.008,0.0,0.82,0.0,0.828,0.0,OpenBookQA
+tiiuae/falcon-7b,1,0.0,0.0,0.26,0.0,0.26,0.0,OpenBookQA
+writer/palmyra-x-004,1,0.054,0.0,0.98,0.0,0.926,0.0,OpenBookQA
+writer/palmyra-x-v2,1,0.002,0.0,0.88,0.0,0.878,0.0,OpenBookQA
+01-ai/yi-large-preview,1,0.056,0.0,0.66,0.0,0.716,0.0,MMLU-Lite
+AlephAlpha/luminous-supreme,1,0.1234,0.0,0.18,0.0,0.3034,0.0,MMLU-Lite
+ai21/jamba-instruct,1,0.095,0.0,0.48,0.0,0.575,0.0,MMLU-Lite
+amazon/nova-lite-v1:0,1,0.1051,0.0,0.8,0.0,0.6949,0.0,MMLU-Lite
+anthropic/claude-2.1,1,0.1308,0.0,0.52,0.0,0.6508,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.0158,0.0,0.82,0.0,0.8042,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.0287,0.0,0.84,0.0,0.8113,0.0,MMLU-Lite
+google/gemma-2-27b-it,1,0.0116,0.0,0.68,0.0,0.6684,0.0,MMLU-Lite
+google/gemma-2-9b-it,1,0.0873,0.0,0.56,0.0,0.6473,0.0,MMLU-Lite
+google/text-bison@001,1,0.0151,0.0,0.62,0.0,0.6049,0.0,MMLU-Lite
+meta/llama-2-70b,1,0.0585,0.0,0.52,0.0,0.5785,0.0,MMLU-Lite
+meta/llama-3.1-405b-instruct-turbo,1,0.0163,0.0,0.78,0.0,0.7637,0.0,MMLU-Lite
+microsoft/phi-2,1,0.0774,0.0,0.42,0.0,0.4974,0.0,MMLU-Lite
+mistralai/mistral-7b-v0.1,1,0.0802,0.0,0.5,0.0,0.5802,0.0,MMLU-Lite
+openai/gpt-4-0613,1,0.0172,0.0,0.72,0.0,0.7372,0.0,MMLU-Lite
+openai/gpt-4-1106-preview,1,0.0072,0.0,0.7,0.0,0.7072,0.0,MMLU-Lite
+qwen/qwen1.5-110b-chat,1,0.0984,0.0,0.6,0.0,0.6984,0.0,MMLU-Lite
+qwen/qwen2.5-7b-instruct-turbo,1,0.0204,0.0,0.68,0.0,0.6596,0.0,MMLU-Lite
+snowflake/snowflake-arctic-instruct,1,0.0268,0.0,0.6,0.0,0.5732,0.0,MMLU-Lite
+tiiuae/falcon-7b,1,0.0857,0.0,0.2,0.0,0.2857,0.0,MMLU-Lite
+writer/palmyra-x-004,1,0.0522,0.0,0.8,0.0,0.7478,0.0,MMLU-Lite
+writer/palmyra-x-v2,1,0.0643,0.0,0.56,0.0,0.6243,0.0,MMLU-Lite
+01-ai/yi-large-preview,1,0.016,0.0,0.68,0.0,0.664,0.0,MedQA
+AlephAlpha/luminous-supreme,1,0.07,0.0,0.2,0.0,0.27,0.0,MedQA
+ai21/jamba-instruct,1,0.017,0.0,0.52,0.0,0.537,0.0,MedQA
+amazon/nova-lite-v1:0,1,0.08,0.0,0.78,0.0,0.7,0.0,MedQA
+anthropic/claude-2.1,1,0.017,0.0,0.62,0.0,0.637,0.0,MedQA
+anthropic/claude-3-5-sonnet-20240620,1,0.031,0.0,0.8,0.0,0.831,0.0,MedQA
+anthropic/claude-3-5-sonnet-20241022,1,0.033,0.0,0.82,0.0,0.853,0.0,MedQA
+google/gemma-2-27b-it,1,0.068,0.0,0.74,0.0,0.672,0.0,MedQA
+google/gemma-2-9b-it,1,0.055,0.0,0.66,0.0,0.605,0.0,MedQA
+google/text-bison@001,1,0.02,0.0,0.52,0.0,0.54,0.0,MedQA
+meta/llama-2-70b,1,0.022,0.0,0.56,0.0,0.582,0.0,MedQA
+meta/llama-3.1-405b-instruct-turbo,1,0.013,0.0,0.84,0.0,0.853,0.0,MedQA
+microsoft/phi-2,1,0.032,0.0,0.36,0.0,0.392,0.0,MedQA
+mistralai/mistral-7b-v0.1,1,0.084,0.0,0.6,0.0,0.516,0.0,MedQA
+openai/gpt-4-0613,1,0.063,0.0,0.88,0.0,0.817,0.0,MedQA
+openai/gpt-4-1106-preview,1,0.043,0.0,0.86,0.0,0.817,0.0,MedQA
+qwen/qwen1.5-110b-chat,1,0.02,0.0,0.66,0.0,0.64,0.0,MedQA
+qwen/qwen2.5-7b-instruct-turbo,1,0.083,0.0,0.66,0.0,0.577,0.0,MedQA
+snowflake/snowflake-arctic-instruct,1,0.068,0.0,0.62,0.0,0.552,0.0,MedQA
+tiiuae/falcon-7b,1,0.007,0.0,0.26,0.0,0.267,0.0,MedQA
+writer/palmyra-x-004,1,0.002,0.0,0.78,0.0,0.778,0.0,MedQA
+writer/palmyra-x-v2,1,0.065,0.0,0.64,0.0,0.575,0.0,MedQA

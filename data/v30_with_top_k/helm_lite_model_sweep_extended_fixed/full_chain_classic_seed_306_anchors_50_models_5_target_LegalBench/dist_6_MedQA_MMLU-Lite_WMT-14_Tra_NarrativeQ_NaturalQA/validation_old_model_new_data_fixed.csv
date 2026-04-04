@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+cohere/command,LegalBench,LegalBench,2142,50,0.2015,0.4929,0.4636,0.4348,0.4518,0.4352,0.0293,0.0581,0.0411,0.0577,0.5862,0.0205
+google/gemini-1.5-flash-001,LegalBench,LegalBench,2142,50,-0.1644,0.6023,0.5803,0.4928,0.5449,0.4948,0.022,0.1095,0.0574,0.1075,0.5862,0.0224
+google/gemini-1.5-flash-002,LegalBench,LegalBench,2142,50,-0.0426,0.6224,0.5345,0.4205,0.4883,0.4227,0.0878,0.2018,0.1341,0.1996,0.5862,0.0205
+google/text-bison@001,LegalBench,LegalBench,2142,50,0.2504,0.5677,0.5556,0.5606,0.5578,0.5611,0.0121,0.007,0.0098,0.0066,0.5862,0.0205
+openai/gpt-4-0613,LegalBench,LegalBench,2142,50,-0.3246,0.6619,0.6531,0.608,0.6347,0.6087,0.0088,0.054,0.0272,0.0533,0.5862,0.0205

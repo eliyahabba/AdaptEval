@@ -1,0 +1,176 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+ai21/j2-jumbo,1,0.0273,0.0,0.5,0.0,0.4727,0.0,MMLU-Lite
+anthropic/claude-2.1,1,0.0108,0.0,0.64,0.0,0.6508,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.0758,0.0,0.88,0.0,0.8042,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.0287,0.0,0.84,0.0,0.8113,0.0,MMLU-Lite
+cohere/command-r-plus,1,0.0168,0.0,0.62,0.0,0.6032,0.0,MMLU-Lite
+cohere/command,1,0.018,0.0,0.54,0.0,0.522,0.0,MMLU-Lite
+databricks/dbrx-instruct,1,0.018,0.0,0.66,0.0,0.642,0.0,MMLU-Lite
+google/gemini-2.0-flash-exp,1,0.0422,0.0,0.76,0.0,0.7178,0.0,MMLU-Lite
+meta/llama-2-13b,1,0.0862,0.0,0.42,0.0,0.5062,0.0,MMLU-Lite
+meta/llama-2-70b,1,0.0815,0.0,0.66,0.0,0.5785,0.0,MMLU-Lite
+meta/llama-3-8b,1,0.1168,0.0,0.72,0.0,0.6032,0.0,MMLU-Lite
+meta/llama-3.1-405b-instruct-turbo,1,0.0763,0.0,0.84,0.0,0.7637,0.0,MMLU-Lite
+microsoft/phi-2,1,0.0226,0.0,0.52,0.0,0.4974,0.0,MMLU-Lite
+microsoft/phi-3-small-8k-instruct,1,0.0204,0.0,0.68,0.0,0.6596,0.0,MMLU-Lite
+mistralai/mistral-7b-v0.1,1,0.0998,0.0,0.68,0.0,0.5802,0.0,MMLU-Lite
+mistralai/mixtral-8x22b,1,0.1075,0.0,0.82,0.0,0.7125,0.0,MMLU-Lite
+mistralai/open-mistral-nemo-2407,1,0.0204,0.0,0.62,0.0,0.5996,0.0,MMLU-Lite
+openai/gpt-3.5-turbo-0613,1,0.0298,0.0,0.64,0.0,0.6102,0.0,MMLU-Lite
+qwen/qwen1.5-32b,1,0.1051,0.0,0.74,0.0,0.6349,0.0,MMLU-Lite
+qwen/qwen2.5-7b-instruct-turbo,1,0.0604,0.0,0.72,0.0,0.6596,0.0,MMLU-Lite
+tiiuae/falcon-40b,1,0.0391,0.0,0.54,0.0,0.5009,0.0,MMLU-Lite
+writer/palmyra-x-v3,1,0.0037,0.0,0.7,0.0,0.7037,0.0,MMLU-Lite
+ai21/j2-jumbo,1,0.051,0.0,0.44,0.0,0.491,0.0,LegalBench
+anthropic/claude-2.1,1,0.1028,0.0,0.46,0.0,0.5628,0.0,LegalBench
+anthropic/claude-3-5-sonnet-20240620,1,0.0404,0.0,0.58,0.0,0.6204,0.0,LegalBench
+anthropic/claude-3-5-sonnet-20241022,1,0.0452,0.0,0.5,0.0,0.5452,0.0,LegalBench
+cohere/command-r-plus,1,0.0219,0.0,0.62,0.0,0.6419,0.0,LegalBench
+cohere/command,1,0.0729,0.0,0.42,0.0,0.4929,0.0,LegalBench
+databricks/dbrx-instruct,1,0.003,0.0,0.4,0.0,0.403,0.0,LegalBench
+google/gemini-2.0-flash-exp,1,0.0604,0.0,0.52,0.0,0.5804,0.0,LegalBench
+meta/llama-2-13b,1,0.0492,0.0,0.54,0.0,0.5892,0.0,LegalBench
+meta/llama-2-70b,1,0.0282,0.0,0.6,0.0,0.6282,0.0,LegalBench
+meta/llama-3-8b,1,0.0552,0.0,0.66,0.0,0.6048,0.0,LegalBench
+meta/llama-3.1-405b-instruct-turbo,1,0.1399,0.0,0.44,0.0,0.5799,0.0,LegalBench
+microsoft/phi-2,1,0.0244,0.0,0.32,0.0,0.3444,0.0,LegalBench
+microsoft/phi-3-small-8k-instruct,1,0.0925,0.0,0.44,0.0,0.5325,0.0,LegalBench
+mistralai/mistral-7b-v0.1,1,0.1808,0.0,0.38,0.0,0.5608,0.0,LegalBench
+mistralai/mixtral-8x22b,1,0.1438,0.0,0.48,0.0,0.6238,0.0,LegalBench
+mistralai/open-mistral-nemo-2407,1,0.1298,0.0,0.24,0.0,0.3698,0.0,LegalBench
+openai/gpt-3.5-turbo-0613,1,0.034,0.0,0.52,0.0,0.554,0.0,LegalBench
+qwen/qwen1.5-32b,1,0.0147,0.0,0.62,0.0,0.6053,0.0,LegalBench
+qwen/qwen2.5-7b-instruct-turbo,1,0.023,0.0,0.64,0.0,0.617,0.0,LegalBench
+tiiuae/falcon-40b,1,0.0525,0.0,0.5,0.0,0.4475,0.0,LegalBench
+writer/palmyra-x-v3,1,0.0522,0.0,0.6,0.0,0.6522,0.0,LegalBench
+ai21/j2-jumbo,1,0.0147,0.0,0.12,0.0,0.1053,0.0,MATH Competition
+anthropic/claude-2.1,1,0.0243,0.0,0.72,0.0,0.6957,0.0,MATH Competition
+anthropic/claude-3-5-sonnet-20240620,1,0.0661,0.0,0.76,0.0,0.8261,0.0,MATH Competition
+anthropic/claude-3-5-sonnet-20241022,1,0.0155,0.0,0.94,0.0,0.9245,0.0,MATH Competition
+cohere/command-r-plus,1,0.0423,0.0,0.5,0.0,0.4577,0.0,MATH Competition
+cohere/command,1,0.1054,0.0,0.16,0.0,0.2654,0.0,MATH Competition
+databricks/dbrx-instruct,1,0.1202,0.0,0.42,0.0,0.2998,0.0,MATH Competition
+google/gemini-2.0-flash-exp,1,0.0132,0.0,0.94,0.0,0.9268,0.0,MATH Competition
+meta/llama-2-13b,1,0.0081,0.0,0.12,0.0,0.1281,0.0,MATH Competition
+meta/llama-2-70b,1,0.0362,0.0,0.4,0.0,0.3638,0.0,MATH Competition
+meta/llama-3-8b,1,0.0456,0.0,0.38,0.0,0.4256,0.0,MATH Competition
+meta/llama-3.1-405b-instruct-turbo,1,0.0204,0.0,0.84,0.0,0.8604,0.0,MATH Competition
+microsoft/phi-2,1,0.0265,0.0,0.34,0.0,0.3135,0.0,MATH Competition
+microsoft/phi-3-small-8k-instruct,1,0.0329,0.0,0.72,0.0,0.7529,0.0,MATH Competition
+mistralai/mistral-7b-v0.1,1,0.0278,0.0,0.32,0.0,0.3478,0.0,MATH Competition
+mistralai/mixtral-8x22b,1,0.0375,0.0,0.74,0.0,0.7025,0.0,MATH Competition
+mistralai/open-mistral-nemo-2407,1,0.0392,0.0,0.76,0.0,0.7208,0.0,MATH Competition
+openai/gpt-3.5-turbo-0613,1,0.0415,0.0,0.76,0.0,0.7185,0.0,MATH Competition
+qwen/qwen1.5-32b,1,0.0065,0.0,0.78,0.0,0.7735,0.0,MATH Competition
+qwen/qwen2.5-7b-instruct-turbo,1,0.0127,0.0,0.88,0.0,0.8673,0.0,MATH Competition
+tiiuae/falcon-40b,1,0.0096,0.0,0.14,0.0,0.1304,0.0,MATH Competition
+writer/palmyra-x-v3,1,0.0265,0.0,0.8,0.0,0.7735,0.0,MATH Competition
+ai21/j2-jumbo,1,0.0652,0.0,0.3201,0.0,0.3853,0.0,NaturalQA
+anthropic/claude-2.1,1,0.0431,0.0,0.4182,0.0,0.3751,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0333,0.0,0.5349,0.0,0.5016,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20241022,1,0.0419,0.0,0.5089,0.0,0.467,0.0,NaturalQA
+cohere/command-r-plus,1,0.0768,0.0,0.2664,0.0,0.3432,0.0,NaturalQA
+cohere/command,1,0.0783,0.0,0.3129,0.0,0.3911,0.0,NaturalQA
+databricks/dbrx-instruct,1,0.0558,0.0,0.2281,0.0,0.2839,0.0,NaturalQA
+google/gemini-2.0-flash-exp,1,0.007,0.0,0.4501,0.0,0.4431,0.0,NaturalQA
+meta/llama-2-13b,1,0.0689,0.0,0.3017,0.0,0.3706,0.0,NaturalQA
+meta/llama-2-70b,1,0.0297,0.0,0.4299,0.0,0.4596,0.0,NaturalQA
+meta/llama-3-8b,1,0.072,0.0,0.3061,0.0,0.378,0.0,NaturalQA
+meta/llama-3.1-405b-instruct-turbo,1,0.0536,0.0,0.4024,0.0,0.456,0.0,NaturalQA
+microsoft/phi-2,1,0.0295,0.0,0.1257,0.0,0.1552,0.0,NaturalQA
+microsoft/phi-3-small-8k-instruct,1,0.0829,0.0,0.2407,0.0,0.3237,0.0,NaturalQA
+mistralai/mistral-7b-v0.1,1,0.0029,0.0,0.3641,0.0,0.367,0.0,NaturalQA
+mistralai/mixtral-8x22b,1,0.0614,0.0,0.4162,0.0,0.4776,0.0,NaturalQA
+mistralai/open-mistral-nemo-2407,1,0.0708,0.0,0.194,0.0,0.2648,0.0,NaturalQA
+openai/gpt-3.5-turbo-0613,1,0.1118,0.0,0.2228,0.0,0.3346,0.0,NaturalQA
+qwen/qwen1.5-32b,1,0.0562,0.0,0.2972,0.0,0.3534,0.0,NaturalQA
+qwen/qwen2.5-7b-instruct-turbo,1,0.0494,0.0,0.1557,0.0,0.2051,0.0,NaturalQA
+tiiuae/falcon-40b,1,0.0191,0.0,0.3733,0.0,0.3924,0.0,NaturalQA
+writer/palmyra-x-v3,1,0.008,0.0,0.4152,0.0,0.4072,0.0,NaturalQA
+ai21/j2-jumbo,1,0.162,0.0,0.6,0.0,0.438,0.0,MedQA
+anthropic/claude-2.1,1,0.017,0.0,0.62,0.0,0.637,0.0,MedQA
+anthropic/claude-3-5-sonnet-20240620,1,0.071,0.0,0.76,0.0,0.831,0.0,MedQA
+anthropic/claude-3-5-sonnet-20241022,1,0.093,0.0,0.76,0.0,0.853,0.0,MedQA
+cohere/command-r-plus,1,0.079,0.0,0.64,0.0,0.561,0.0,MedQA
+cohere/command,1,0.015,0.0,0.42,0.0,0.435,0.0,MedQA
+databricks/dbrx-instruct,1,0.06,0.0,0.62,0.0,0.68,0.0,MedQA
+google/gemini-2.0-flash-exp,1,0.003,0.0,0.72,0.0,0.723,0.0,MedQA
+meta/llama-2-13b,1,0.056,0.0,0.44,0.0,0.384,0.0,MedQA
+meta/llama-2-70b,1,0.062,0.0,0.52,0.0,0.582,0.0,MedQA
+meta/llama-3-8b,1,0.008,0.0,0.56,0.0,0.568,0.0,MedQA
+meta/llama-3.1-405b-instruct-turbo,1,0.033,0.0,0.82,0.0,0.853,0.0,MedQA
+microsoft/phi-2,1,0.012,0.0,0.38,0.0,0.392,0.0,MedQA
+microsoft/phi-3-small-8k-instruct,1,0.089,0.0,0.74,0.0,0.651,0.0,MedQA
+mistralai/mistral-7b-v0.1,1,0.024,0.0,0.54,0.0,0.516,0.0,MedQA
+mistralai/mixtral-8x22b,1,0.012,0.0,0.72,0.0,0.708,0.0,MedQA
+mistralai/open-mistral-nemo-2407,1,0.051,0.0,0.52,0.0,0.571,0.0,MedQA
+openai/gpt-3.5-turbo-0613,1,0.13,0.0,0.74,0.0,0.61,0.0,MedQA
+qwen/qwen1.5-32b,1,0.037,0.0,0.68,0.0,0.643,0.0,MedQA
+qwen/qwen2.5-7b-instruct-turbo,1,0.017,0.0,0.56,0.0,0.577,0.0,MedQA
+tiiuae/falcon-40b,1,0.108,0.0,0.52,0.0,0.412,0.0,MedQA
+writer/palmyra-x-v3,1,0.019,0.0,0.7,0.0,0.681,0.0,MedQA
+ai21/j2-jumbo,1,0.0401,0.0,0.0631,0.0,0.1032,0.0,WMT-14 Translation
+anthropic/claude-2.1,1,0.0034,0.0,0.1853,0.0,0.1819,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20240620,1,0.0114,0.0,0.1936,0.0,0.205,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20241022,1,0.0149,0.0,0.1874,0.0,0.2023,0.0,WMT-14 Translation
+cohere/command-r-plus,1,0.0212,0.0,0.1613,0.0,0.1825,0.0,WMT-14 Translation
+cohere/command,1,0.0027,0.0,0.0828,0.0,0.0802,0.0,WMT-14 Translation
+databricks/dbrx-instruct,1,0.0216,0.0,0.095,0.0,0.1166,0.0,WMT-14 Translation
+google/gemini-2.0-flash-exp,1,0.0167,0.0,0.1741,0.0,0.1908,0.0,WMT-14 Translation
+meta/llama-2-13b,1,0.0103,0.0,0.1415,0.0,0.1518,0.0,WMT-14 Translation
+meta/llama-2-70b,1,0.005,0.0,0.1723,0.0,0.1774,0.0,WMT-14 Translation
+meta/llama-3-8b,1,0.0058,0.0,0.1606,0.0,0.1664,0.0,WMT-14 Translation
+meta/llama-3.1-405b-instruct-turbo,1,0.0249,0.0,0.1841,0.0,0.209,0.0,WMT-14 Translation
+microsoft/phi-2,1,0.0188,0.0,0.0182,0.0,0.037,0.0,WMT-14 Translation
+microsoft/phi-3-small-8k-instruct,1,0.0136,0.0,0.1543,0.0,0.1407,0.0,WMT-14 Translation
+mistralai/mistral-7b-v0.1,1,0.0035,0.0,0.1495,0.0,0.146,0.0,WMT-14 Translation
+mistralai/mixtral-8x22b,1,0.0076,0.0,0.1791,0.0,0.1867,0.0,WMT-14 Translation
+mistralai/open-mistral-nemo-2407,1,0.0064,0.0,0.1671,0.0,0.1607,0.0,WMT-14 Translation
+openai/gpt-3.5-turbo-0613,1,0.0041,0.0,0.1741,0.0,0.1699,0.0,WMT-14 Translation
+qwen/qwen1.5-32b,1,0.0052,0.0,0.1786,0.0,0.1734,0.0,WMT-14 Translation
+qwen/qwen2.5-7b-instruct-turbo,1,0.0071,0.0,0.1344,0.0,0.1415,0.0,WMT-14 Translation
+tiiuae/falcon-40b,1,0.0046,0.0,0.1395,0.0,0.1441,0.0,WMT-14 Translation
+writer/palmyra-x-v3,1,0.0114,0.0,0.2178,0.0,0.2292,0.0,WMT-14 Translation
+ai21/j2-jumbo,1,0.021,0.0,0.26,0.0,0.239,0.0,GSM8K-Lite
+anthropic/claude-2.1,1,0.004,0.0,0.6,0.0,0.604,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.051,0.0,1.0,0.0,0.949,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.024,0.0,0.98,0.0,0.956,0.0,GSM8K-Lite
+cohere/command-r-plus,1,0.042,0.0,0.78,0.0,0.738,0.0,GSM8K-Lite
+cohere/command,1,0.028,0.0,0.48,0.0,0.452,0.0,GSM8K-Lite
+databricks/dbrx-instruct,1,0.049,0.0,0.72,0.0,0.671,0.0,GSM8K-Lite
+google/gemini-2.0-flash-exp,1,0.034,0.0,0.98,0.0,0.946,0.0,GSM8K-Lite
+meta/llama-2-13b,1,0.094,0.0,0.36,0.0,0.266,0.0,GSM8K-Lite
+meta/llama-2-70b,1,0.073,0.0,0.64,0.0,0.567,0.0,GSM8K-Lite
+meta/llama-3-8b,1,0.061,0.0,0.56,0.0,0.499,0.0,GSM8K-Lite
+meta/llama-3.1-405b-instruct-turbo,1,0.031,0.0,0.98,0.0,0.949,0.0,GSM8K-Lite
+microsoft/phi-2,1,0.079,0.0,0.66,0.0,0.581,0.0,GSM8K-Lite
+mistralai/mistral-7b-v0.1,1,0.023,0.0,0.4,0.0,0.377,0.0,GSM8K-Lite
+mistralai/mixtral-8x22b,1,0.04,0.0,0.76,0.0,0.8,0.0,GSM8K-Lite
+mistralai/open-mistral-nemo-2407,1,0.038,0.0,0.82,0.0,0.782,0.0,GSM8K-Lite
+openai/gpt-3.5-turbo-0613,1,0.199,0.0,0.7,0.0,0.501,0.0,GSM8K-Lite
+qwen/qwen1.5-32b,1,0.127,0.0,0.9,0.0,0.773,0.0,GSM8K-Lite
+qwen/qwen2.5-7b-instruct-turbo,1,0.03,0.0,0.86,0.0,0.83,0.0,GSM8K-Lite
+tiiuae/falcon-40b,1,0.073,0.0,0.34,0.0,0.267,0.0,GSM8K-Lite
+writer/palmyra-x-v3,1,0.069,0.0,0.9,0.0,0.831,0.0,GSM8K-Lite
+ai21/j2-jumbo,1,0.012,0.0,0.7,0.0,0.688,0.0,OpenBookQA
+anthropic/claude-2.1,1,0.092,0.0,0.78,0.0,0.872,0.0,OpenBookQA
+anthropic/claude-3-5-sonnet-20240620,1,0.028,0.0,1.0,0.0,0.972,0.0,OpenBookQA
+anthropic/claude-3-5-sonnet-20241022,1,0.034,0.0,1.0,0.0,0.966,0.0,OpenBookQA
+cohere/command-r-plus,1,0.032,0.0,0.86,0.0,0.828,0.0,OpenBookQA
+cohere/command,1,0.006,0.0,0.78,0.0,0.774,0.0,OpenBookQA
+databricks/dbrx-instruct,1,0.03,0.0,0.88,0.0,0.91,0.0,OpenBookQA
+google/gemini-2.0-flash-exp,1,0.046,0.0,0.9,0.0,0.946,0.0,OpenBookQA
+meta/llama-2-13b,1,0.054,0.0,0.58,0.0,0.634,0.0,OpenBookQA
+meta/llama-2-70b,1,0.018,0.0,0.82,0.0,0.838,0.0,OpenBookQA
+meta/llama-3-8b,1,0.126,0.0,0.64,0.0,0.766,0.0,OpenBookQA
+meta/llama-3.1-405b-instruct-turbo,1,0.02,0.0,0.92,0.0,0.94,0.0,OpenBookQA
+microsoft/phi-2,1,0.022,0.0,0.82,0.0,0.798,0.0,OpenBookQA
+microsoft/phi-3-small-8k-instruct,1,0.052,0.0,0.86,0.0,0.912,0.0,OpenBookQA
+mistralai/mistral-7b-v0.1,1,0.036,0.0,0.74,0.0,0.776,0.0,OpenBookQA
+mistralai/mixtral-8x22b,1,0.042,0.0,0.84,0.0,0.882,0.0,OpenBookQA
+mistralai/open-mistral-nemo-2407,1,0.102,0.0,0.72,0.0,0.822,0.0,OpenBookQA
+openai/gpt-3.5-turbo-0613,1,0.018,0.0,0.82,0.0,0.838,0.0,OpenBookQA
+qwen/qwen1.5-32b,1,0.032,0.0,0.9,0.0,0.932,0.0,OpenBookQA
+qwen/qwen2.5-7b-instruct-turbo,1,0.042,0.0,0.82,0.0,0.862,0.0,OpenBookQA
+tiiuae/falcon-40b,1,0.022,0.0,0.64,0.0,0.662,0.0,OpenBookQA
+writer/palmyra-x-v3,1,0.038,0.0,0.9,0.0,0.938,0.0,OpenBookQA

@@ -1,0 +1,11 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+AlephAlpha/luminous-supreme,NarrativeQA,NarrativeQA,470,50,2.3933,0.7472,0.7553,0.3375,0.6811,0.37,0.0081,0.4097,0.0661,0.3773,0.8075,0.1064
+allenai/olmo-7b,NarrativeQA,NarrativeQA,470,50,-0.7978,0.6128,0.5629,0.2491,0.5068,0.2716,0.0499,0.3637,0.106,0.3413,0.8075,0.1064
+cohere/command-r,NarrativeQA,NarrativeQA,470,50,-1.5662,0.7329,0.7535,0.344,0.6809,0.3767,0.0206,0.3889,0.052,0.3562,0.8075,0.1064
+google/gemma-7b,NarrativeQA,NarrativeQA,470,50,0.2068,0.7659,0.7636,0.4498,0.7077,0.473,0.0022,0.316,0.0582,0.2929,0.8075,0.1064
+google/text-bison@001,NarrativeQA,NarrativeQA,470,50,-0.1918,0.7217,0.7534,0.4054,0.6913,0.431,0.0317,0.3163,0.0304,0.2908,0.8075,0.1064
+openai/gpt-4-turbo-2024-04-09,NarrativeQA,NarrativeQA,470,50,3.3408,0.7732,0.7569,0.5693,0.7225,0.5781,0.0163,0.2039,0.0507,0.1951,0.8075,0.1064
+qwen/qwen1.5-110b-chat,NarrativeQA,NarrativeQA,470,50,-0.9568,0.7304,0.7045,0.3779,0.646,0.4005,0.0259,0.3526,0.0845,0.3299,0.8075,0.1064
+tiiuae/falcon-7b,NarrativeQA,NarrativeQA,470,50,-0.83,0.633,0.6144,0.2571,0.5502,0.2812,0.0186,0.3759,0.0827,0.3517,0.8075,0.1064
+upstage/solar-pro-241126,NarrativeQA,NarrativeQA,470,50,3.4528,0.7623,0.7791,0.4316,0.7167,0.4551,0.0168,0.3307,0.0456,0.3072,0.8075,0.1064
+writer/palmyra-x-004,NarrativeQA,NarrativeQA,470,50,1.7772,0.7764,0.7522,0.5274,0.7118,0.5424,0.0242,0.249,0.0646,0.2341,0.8075,0.1064

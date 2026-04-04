@@ -1,0 +1,155 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std,dataset
+01-ai/yi-6b,1,0.1203,0.0,0.4,0.0,0.5203,0.0,MMLU-Lite
+ai21/jamba-1.5-large,1,0.1496,0.0,0.54,0.0,0.6896,0.0,MMLU-Lite
+allenai/olmo-7b,1,0.0819,0.0,0.38,0.0,0.2981,0.0,MMLU-Lite
+anthropic/claude-3-5-haiku-20241022,1,0.0267,0.0,0.64,0.0,0.6667,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.0642,0.0,0.74,0.0,0.8042,0.0,MMLU-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.0513,0.0,0.76,0.0,0.8113,0.0,MMLU-Lite
+cohere/command-r-plus,1,0.0232,0.0,0.58,0.0,0.6032,0.0,MMLU-Lite
+google/gemini-1.5-flash-002,1,0.159,0.0,0.52,0.0,0.679,0.0,MMLU-Lite
+google/gemini-1.5-pro-002,1,0.0354,0.0,0.76,0.0,0.7954,0.0,MMLU-Lite
+google/text-bison@001,1,0.1449,0.0,0.46,0.0,0.6049,0.0,MMLU-Lite
+meta/llama-65b,1,0.0785,0.0,0.5,0.0,0.5785,0.0,MMLU-Lite
+mistralai/mistral-large-2407,1,0.1154,0.0,0.62,0.0,0.7354,0.0,MMLU-Lite
+mistralai/mixtral-8x22b,1,0.0125,0.0,0.7,0.0,0.7125,0.0,MMLU-Lite
+openai/gpt-4-0613,1,0.0972,0.0,0.64,0.0,0.7372,0.0,MMLU-Lite
+openai/gpt-4o-mini-2024-07-18,1,0.1267,0.0,0.54,0.0,0.6667,0.0,MMLU-Lite
+openai/text-davinci-002,1,0.0261,0.0,0.54,0.0,0.5661,0.0,MMLU-Lite
+openai/text-davinci-003,1,0.072,0.0,0.48,0.0,0.552,0.0,MMLU-Lite
+qwen/qwen1.5-110b-chat,1,0.0984,0.0,0.6,0.0,0.6984,0.0,MMLU-Lite
+qwen/qwen1.5-72b,1,0.0673,0.0,0.58,0.0,0.6473,0.0,MMLU-Lite
+qwen/qwen1.5-7b,1,0.0591,0.0,0.5,0.0,0.5591,0.0,MMLU-Lite
+qwen/qwen2-72b-instruct,1,0.0943,0.0,0.68,0.0,0.7743,0.0,MMLU-Lite
+writer/palmyra-x-v2,1,0.1043,0.0,0.52,0.0,0.6243,0.0,MMLU-Lite
+01-ai/yi-6b,1,0.0122,0.0,0.1189,0.0,0.1067,0.0,WMT-14 Translation
+ai21/jamba-1.5-large,1,0.0317,0.0,0.217,0.0,0.1853,0.0,WMT-14 Translation
+allenai/olmo-7b,1,0.013,0.0,0.1042,0.0,0.0912,0.0,WMT-14 Translation
+anthropic/claude-3-5-haiku-20241022,1,0.0285,0.0,0.1493,0.0,0.1208,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20240620,1,0.0744,0.0,0.2794,0.0,0.205,0.0,WMT-14 Translation
+anthropic/claude-3-5-sonnet-20241022,1,0.0959,0.0,0.2982,0.0,0.2023,0.0,WMT-14 Translation
+cohere/command-r-plus,1,0.0475,0.0,0.23,0.0,0.1825,0.0,WMT-14 Translation
+google/gemini-1.5-flash-002,1,0.0662,0.0,0.2577,0.0,0.1915,0.0,WMT-14 Translation
+google/gemini-1.5-pro-002,1,0.0235,0.0,0.2278,0.0,0.2043,0.0,WMT-14 Translation
+google/text-bison@001,1,0.0446,0.0,0.2554,0.0,0.2108,0.0,WMT-14 Translation
+meta/llama-65b,1,0.0658,0.0,0.235,0.0,0.1692,0.0,WMT-14 Translation
+mistralai/mistral-large-2407,1,0.0353,0.0,0.2076,0.0,0.1723,0.0,WMT-14 Translation
+mistralai/mixtral-8x22b,1,0.0492,0.0,0.2359,0.0,0.1867,0.0,WMT-14 Translation
+openai/gpt-4-0613,1,0.0642,0.0,0.2531,0.0,0.1889,0.0,WMT-14 Translation
+openai/gpt-4o-mini-2024-07-18,1,0.0497,0.0,0.2352,0.0,0.1855,0.0,WMT-14 Translation
+openai/text-davinci-002,1,0.0365,0.0,0.1939,0.0,0.1574,0.0,WMT-14 Translation
+openai/text-davinci-003,1,0.0768,0.0,0.2472,0.0,0.1705,0.0,WMT-14 Translation
+qwen/qwen1.5-110b-chat,1,0.0262,0.0,0.2,0.0,0.1738,0.0,WMT-14 Translation
+qwen/qwen1.5-72b,1,0.0546,0.0,0.2345,0.0,0.1799,0.0,WMT-14 Translation
+qwen/qwen1.5-7b,1,0.0291,0.0,0.1713,0.0,0.1422,0.0,WMT-14 Translation
+qwen/qwen2-72b-instruct,1,0.0616,0.0,0.2467,0.0,0.1851,0.0,WMT-14 Translation
+writer/palmyra-x-v2,1,0.054,0.0,0.2659,0.0,0.2119,0.0,WMT-14 Translation
+01-ai/yi-6b,1,0.063,0.0,0.42,0.0,0.483,0.0,MedQA
+ai21/jamba-1.5-large,1,0.003,0.0,0.7,0.0,0.697,0.0,MedQA
+allenai/olmo-7b,1,0.055,0.0,0.16,0.0,0.215,0.0,MedQA
+anthropic/claude-3-5-haiku-20241022,1,0.016,0.0,0.74,0.0,0.724,0.0,MedQA
+anthropic/claude-3-5-sonnet-20240620,1,0.031,0.0,0.8,0.0,0.831,0.0,MedQA
+anthropic/claude-3-5-sonnet-20241022,1,0.013,0.0,0.84,0.0,0.853,0.0,MedQA
+cohere/command-r-plus,1,0.099,0.0,0.66,0.0,0.561,0.0,MedQA
+google/gemini-1.5-flash-002,1,0.116,0.0,0.76,0.0,0.644,0.0,MedQA
+google/gemini-1.5-pro-002,1,0.01,0.0,0.78,0.0,0.77,0.0,MedQA
+google/text-bison@001,1,0.08,0.0,0.62,0.0,0.54,0.0,MedQA
+meta/llama-65b,1,0.04,0.0,0.54,0.0,0.5,0.0,MedQA
+mistralai/mistral-large-2407,1,0.062,0.0,0.84,0.0,0.778,0.0,MedQA
+mistralai/mixtral-8x22b,1,0.072,0.0,0.78,0.0,0.708,0.0,MedQA
+openai/gpt-4-0613,1,0.043,0.0,0.86,0.0,0.817,0.0,MedQA
+openai/gpt-4o-mini-2024-07-18,1,0.056,0.0,0.8,0.0,0.744,0.0,MedQA
+openai/text-davinci-002,1,0.001,0.0,0.52,0.0,0.519,0.0,MedQA
+openai/text-davinci-003,1,0.011,0.0,0.54,0.0,0.529,0.0,MedQA
+qwen/qwen1.5-110b-chat,1,0.04,0.0,0.68,0.0,0.64,0.0,MedQA
+qwen/qwen1.5-72b,1,0.076,0.0,0.74,0.0,0.664,0.0,MedQA
+qwen/qwen1.5-7b,1,0.004,0.0,0.46,0.0,0.456,0.0,MedQA
+qwen/qwen2-72b-instruct,1,0.012,0.0,0.76,0.0,0.748,0.0,MedQA
+writer/palmyra-x-v2,1,0.015,0.0,0.56,0.0,0.575,0.0,MedQA
+01-ai/yi-6b,1,0.0578,0.0,0.58,0.0,0.5222,0.0,LegalBench
+ai21/jamba-1.5-large,1,0.0484,0.0,0.64,0.0,0.5916,0.0,LegalBench
+allenai/olmo-7b,1,0.0366,0.0,0.34,0.0,0.3766,0.0,LegalBench
+anthropic/claude-3-5-haiku-20241022,1,0.005,0.0,0.58,0.0,0.575,0.0,LegalBench
+anthropic/claude-3-5-sonnet-20240620,1,0.0596,0.0,0.68,0.0,0.6204,0.0,LegalBench
+anthropic/claude-3-5-sonnet-20241022,1,0.0948,0.0,0.64,0.0,0.5452,0.0,LegalBench
+cohere/command-r-plus,1,0.0219,0.0,0.62,0.0,0.6419,0.0,LegalBench
+google/gemini-1.5-flash-002,1,0.0976,0.0,0.72,0.0,0.6224,0.0,LegalBench
+google/gemini-1.5-pro-002,1,0.0571,0.0,0.64,0.0,0.6971,0.0,LegalBench
+google/text-bison@001,1,0.0323,0.0,0.6,0.0,0.5677,0.0,LegalBench
+meta/llama-65b,1,0.0377,0.0,0.38,0.0,0.4177,0.0,LegalBench
+mistralai/mistral-large-2407,1,0.0296,0.0,0.5,0.0,0.5296,0.0,LegalBench
+mistralai/mixtral-8x22b,1,0.0038,0.0,0.62,0.0,0.6238,0.0,LegalBench
+openai/gpt-4-0613,1,0.0381,0.0,0.7,0.0,0.6619,0.0,LegalBench
+openai/gpt-4o-mini-2024-07-18,1,0.0265,0.0,0.6,0.0,0.5735,0.0,LegalBench
+openai/text-davinci-002,1,0.014,0.0,0.56,0.0,0.574,0.0,LegalBench
+openai/text-davinci-003,1,0.0316,0.0,0.56,0.0,0.5916,0.0,LegalBench
+qwen/qwen1.5-110b-chat,1,0.0495,0.0,0.58,0.0,0.5305,0.0,LegalBench
+qwen/qwen1.5-72b,1,0.0015,0.0,0.64,0.0,0.6385,0.0,LegalBench
+qwen/qwen1.5-7b,1,0.0216,0.0,0.6,0.0,0.5784,0.0,LegalBench
+qwen/qwen2-72b-instruct,1,0.0668,0.0,0.6,0.0,0.6668,0.0,LegalBench
+writer/palmyra-x-v2,1,0.044,0.0,0.62,0.0,0.576,0.0,LegalBench
+01-ai/yi-6b,1,0.0264,0.0,0.2835,0.0,0.31,0.0,NaturalQA
+ai21/jamba-1.5-large,1,0.0359,0.0,0.3578,0.0,0.3937,0.0,NaturalQA
+allenai/olmo-7b,1,0.0895,0.0,0.1691,0.0,0.2586,0.0,NaturalQA
+anthropic/claude-3-5-haiku-20241022,1,0.0972,0.0,0.2467,0.0,0.3439,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0506,0.0,0.451,0.0,0.5016,0.0,NaturalQA
+anthropic/claude-3-5-sonnet-20241022,1,0.0218,0.0,0.4889,0.0,0.467,0.0,NaturalQA
+cohere/command-r-plus,1,0.0929,0.0,0.2502,0.0,0.3432,0.0,NaturalQA
+google/gemini-1.5-flash-002,1,0.0434,0.0,0.2794,0.0,0.3228,0.0,NaturalQA
+google/gemini-1.5-pro-002,1,0.0439,0.0,0.4116,0.0,0.4555,0.0,NaturalQA
+google/text-bison@001,1,0.022,0.0,0.368,0.0,0.39,0.0,NaturalQA
+meta/llama-65b,1,0.0233,0.0,0.4092,0.0,0.4326,0.0,NaturalQA
+mistralai/mistral-large-2407,1,0.0472,0.0,0.4055,0.0,0.4527,0.0,NaturalQA
+mistralai/mixtral-8x22b,1,0.0131,0.0,0.4644,0.0,0.4776,0.0,NaturalQA
+openai/gpt-4-0613,1,0.0329,0.0,0.4898,0.0,0.4569,0.0,NaturalQA
+openai/gpt-4o-mini-2024-07-18,1,0.0636,0.0,0.322,0.0,0.3855,0.0,NaturalQA
+openai/text-davinci-002,1,0.0416,0.0,0.3525,0.0,0.3941,0.0,NaturalQA
+openai/text-davinci-003,1,0.0492,0.0,0.3642,0.0,0.4134,0.0,NaturalQA
+qwen/qwen1.5-110b-chat,1,0.0929,0.0,0.2569,0.0,0.3499,0.0,NaturalQA
+qwen/qwen1.5-72b,1,0.0216,0.0,0.3956,0.0,0.4171,0.0,NaturalQA
+qwen/qwen1.5-7b,1,0.035,0.0,0.2346,0.0,0.2696,0.0,NaturalQA
+qwen/qwen2-72b-instruct,1,0.0466,0.0,0.3431,0.0,0.3897,0.0,NaturalQA
+writer/palmyra-x-v2,1,0.0884,0.0,0.3397,0.0,0.4281,0.0,NaturalQA
+01-ai/yi-6b,1,0.015,0.0,0.36,0.0,0.375,0.0,GSM8K-Lite
+ai21/jamba-1.5-large,1,0.066,0.0,0.78,0.0,0.846,0.0,GSM8K-Lite
+allenai/olmo-7b,1,0.024,0.0,0.02,0.0,0.044,0.0,GSM8K-Lite
+anthropic/claude-3-5-haiku-20241022,1,0.005,0.0,0.82,0.0,0.815,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20240620,1,0.029,0.0,0.92,0.0,0.949,0.0,GSM8K-Lite
+anthropic/claude-3-5-sonnet-20241022,1,0.036,0.0,0.92,0.0,0.956,0.0,GSM8K-Lite
+cohere/command-r-plus,1,0.158,0.0,0.58,0.0,0.738,0.0,GSM8K-Lite
+google/gemini-1.5-flash-002,1,0.012,0.0,0.34,0.0,0.328,0.0,GSM8K-Lite
+google/gemini-1.5-pro-002,1,0.017,0.0,0.8,0.0,0.817,0.0,GSM8K-Lite
+google/text-bison@001,1,0.03,0.0,0.64,0.0,0.61,0.0,GSM8K-Lite
+meta/llama-65b,1,0.069,0.0,0.42,0.0,0.489,0.0,GSM8K-Lite
+mistralai/mistral-large-2407,1,0.112,0.0,0.8,0.0,0.912,0.0,GSM8K-Lite
+mistralai/mixtral-8x22b,1,0.06,0.0,0.74,0.0,0.8,0.0,GSM8K-Lite
+openai/gpt-4-0613,1,0.032,0.0,0.9,0.0,0.932,0.0,GSM8K-Lite
+openai/gpt-4o-mini-2024-07-18,1,0.083,0.0,0.76,0.0,0.843,0.0,GSM8K-Lite
+openai/text-davinci-002,1,0.019,0.0,0.46,0.0,0.479,0.0,GSM8K-Lite
+openai/text-davinci-003,1,0.095,0.0,0.52,0.0,0.615,0.0,GSM8K-Lite
+qwen/qwen1.5-110b-chat,1,0.095,0.0,0.72,0.0,0.815,0.0,GSM8K-Lite
+qwen/qwen1.5-72b,1,0.001,0.0,0.8,0.0,0.799,0.0,GSM8K-Lite
+qwen/qwen1.5-7b,1,0.02,0.0,0.58,0.0,0.6,0.0,GSM8K-Lite
+qwen/qwen2-72b-instruct,1,0.04,0.0,0.88,0.0,0.92,0.0,GSM8K-Lite
+writer/palmyra-x-v2,1,0.055,0.0,0.68,0.0,0.735,0.0,GSM8K-Lite
+01-ai/yi-6b,1,0.002,0.0,0.7104,0.0,0.7124,0.0,NarrativeQA
+ai21/jamba-1.5-large,1,0.0473,0.0,0.6321,0.0,0.6794,0.0,NarrativeQA
+allenai/olmo-7b,1,0.0424,0.0,0.5705,0.0,0.6128,0.0,NarrativeQA
+anthropic/claude-3-5-haiku-20241022,1,0.0319,0.0,0.7436,0.0,0.7755,0.0,NarrativeQA
+anthropic/claude-3-5-sonnet-20240620,1,0.0207,0.0,0.7401,0.0,0.7609,0.0,NarrativeQA
+anthropic/claude-3-5-sonnet-20241022,1,0.0581,0.0,0.7227,0.0,0.7808,0.0,NarrativeQA
+cohere/command-r-plus,1,0.0071,0.0,0.7523,0.0,0.7452,0.0,NarrativeQA
+google/gemini-1.5-flash-002,1,0.0107,0.0,0.7645,0.0,0.7539,0.0,NarrativeQA
+google/gemini-1.5-pro-002,1,0.0117,0.0,0.7784,0.0,0.7667,0.0,NarrativeQA
+google/text-bison@001,1,0.0027,0.0,0.7191,0.0,0.7217,0.0,NarrativeQA
+meta/llama-65b,1,0.0283,0.0,0.738,0.0,0.7663,0.0,NarrativeQA
+mistralai/mistral-large-2407,1,0.0082,0.0,0.7896,0.0,0.7814,0.0,NarrativeQA
+mistralai/mixtral-8x22b,1,0.0381,0.0,0.7474,0.0,0.7855,0.0,NarrativeQA
+openai/gpt-4-0613,1,0.0612,0.0,0.7175,0.0,0.7787,0.0,NarrativeQA
+openai/gpt-4o-mini-2024-07-18,1,0.0114,0.0,0.7845,0.0,0.7731,0.0,NarrativeQA
+openai/text-davinci-002,1,0.07,0.0,0.6673,0.0,0.7373,0.0,NarrativeQA
+openai/text-davinci-003,1,0.048,0.0,0.6939,0.0,0.7419,0.0,NarrativeQA
+qwen/qwen1.5-110b-chat,1,0.0273,0.0,0.7032,0.0,0.7304,0.0,NarrativeQA
+qwen/qwen1.5-72b,1,0.0482,0.0,0.5575,0.0,0.6057,0.0,NarrativeQA
+qwen/qwen1.5-7b,1,0.0261,0.0,0.4831,0.0,0.457,0.0,NarrativeQA
+qwen/qwen2-72b-instruct,1,0.0249,0.0,0.7124,0.0,0.7373,0.0,NarrativeQA
+writer/palmyra-x-v2,1,0.0681,0.0,0.6964,0.0,0.7645,0.0,NarrativeQA

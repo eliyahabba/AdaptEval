@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+amazon/nova-micro-v1:0,1,0.0282,0.0,0.82,0.0,0.7918,0.0
+anthropic/claude-2.1,1,0.0043,0.0,0.7,0.0,0.6957,0.0
+anthropic/claude-3-sonnet-20240229,1,0.007,0.0,0.08,0.0,0.087,0.0
+google/gemma-2-27b-it,1,0.0872,0.0,0.7,0.0,0.7872,0.0
+google/gemma-7b,1,0.0148,0.0,0.58,0.0,0.5652,0.0
+meta/llama-2-70b,1,0.0762,0.0,0.44,0.0,0.3638,0.0
+meta/llama-3.2-11b-vision-instruct-turbo,1,0.0289,0.0,0.74,0.0,0.7689,0.0
+qwen/qwen1.5-72b,1,0.0552,0.0,0.76,0.0,0.7048,0.0
+snowflake/snowflake-arctic-instruct,1,0.0473,0.0,0.64,0.0,0.5927,0.0
+upstage/solar-pro-241126,1,0.0667,0.0,0.68,0.0,0.6133,0.0

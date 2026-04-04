@@ -1,0 +1,11 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+ai21/j2-grande,1,0.0074,0.0,0.7659,0.0,0.7585,0.0
+anthropic/claude-2.1,1,0.0038,0.0,0.6758,0.0,0.6796,0.0
+anthropic/claude-v1.3,1,0.0129,0.0,0.7218,0.0,0.7346,0.0
+meta/llama-3.1-8b-instruct-turbo,1,0.0359,0.0,0.726,0.0,0.7619,0.0
+meta/llama-3.3-70b-instruct-turbo,1,0.0109,0.0,0.7809,0.0,0.7918,0.0
+openai/gpt-4-0613,1,0.0119,0.0,0.7905,0.0,0.7787,0.0
+openai/gpt-4o-2024-08-06,1,0.0145,0.0,0.7869,0.0,0.8014,0.0
+qwen/qwen1.5-110b-chat,1,0.0137,0.0,0.7441,0.0,0.7304,0.0
+tiiuae/falcon-40b,1,0.0267,0.0,0.6462,0.0,0.6729,0.0
+tiiuae/falcon-7b,1,0.0205,0.0,0.6534,0.0,0.633,0.0

@@ -1,0 +1,6 @@
+model_name,dataset_name,scenario_name,num_questions,num_anchors,estimated_theta,true_performance,anchor_prediction,irt_prediction,gp_irt_prediction,pirt_prediction,anchor_error,irt_error,gp_irt_error,pirt_error,dataset_lambda,pirt_lambda
+01-ai/yi-34b,GSM8K-Lite,GSM8K-Lite,1000,50,-3.2915,0.648,0.68,0.7565,0.6959,0.7517,0.032,0.1085,0.0479,0.1037,0.7785,0.05
+anthropic/claude-2.0,GSM8K-Lite,GSM8K-Lite,1000,50,-3.4117,0.583,0.592,0.649,0.6038,0.6455,0.009,0.066,0.0208,0.0625,0.7785,0.05
+cohere/command-light,GSM8K-Lite,GSM8K-Lite,1000,50,-1.7316,0.149,0.154,0.1634,0.1561,0.1636,0.005,0.0144,0.0071,0.0146,0.7785,0.05
+meta/llama-3.1-8b-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,-3.8198,0.798,0.805,0.6915,0.781,0.6968,0.007,0.1065,0.017,0.1012,0.7785,0.05
+meta/llama-3.2-90b-vision-instruct-turbo,GSM8K-Lite,GSM8K-Lite,1000,50,-3.957,0.936,0.961,0.8755,0.9429,0.8791,0.025,0.0605,0.0069,0.0569,0.7785,0.05
