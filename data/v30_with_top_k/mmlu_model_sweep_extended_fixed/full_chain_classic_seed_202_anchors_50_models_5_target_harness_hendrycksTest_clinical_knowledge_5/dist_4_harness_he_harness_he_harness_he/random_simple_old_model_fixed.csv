@@ -1,0 +1,6 @@
+model_name,n_seeds,simple_random_error_mean,simple_random_error_std,simple_random_prediction_mean,simple_random_prediction_std,simple_random_true_performance_mean,simple_random_true_performance_std
+open-llm-leaderboard/details_meta-math__MetaMath-Llemma-7B,1,0.0208,0.0,0.5,0.0,0.4792,0.0
+open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B,1,0.0457,0.0,0.74,0.0,0.6943,0.0
+open-llm-leaderboard/details_ewqr2130__mistral-se-inst-ppo,1,0.0045,0.0,0.68,0.0,0.6755,0.0
+open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,1,0.0306,0.0,0.66,0.0,0.6906,0.0
+open-llm-leaderboard/details_Intel__neural-chat-7b-v3-3-Slerp,1,0.0068,0.0,0.68,0.0,0.6868,0.0
