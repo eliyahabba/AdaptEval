@@ -286,6 +286,7 @@ class ParallelChainConfig(ExperimentConfig):
     cleanup_models: bool = False  # Remove IRT model files from dist_* directories (saves space, keeps only metrics)
     cleanup_training_data: bool = True  # Remove training datasets (*.jsonlines) immediately after training (saves ~88% per IRT dir)
     force_resume: bool = False  # Force resume existing experiment (skip auto-increment check)
+    save_item_params_dir: str | None = None  # If set, copy base IRT item_params.parquet to this dir for discriminative-items analysis
     
     def __post_init__(self):
         # Auto-adjust for tinybenchmarks/lb (only 6 datasets available)
@@ -943,6 +944,27 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             base_seed=task.random_seed + task.distance * 100,  # Random seed for baseline scenarios
             return_per_model=True,
         )
+
+    # ==========================================================================
+    # Discriminative Baselines for Validation 2: Old Model + New Data (same split as random V2)
+    # ==========================================================================
+    discriminative_baseline_old_model = {}
+    discriminative_baseline_old_model_per_model_df = pd.DataFrame()
+    if task.distance >= 1 and target_train_df is not None and len(target_train_df) > 0:
+        print(f"      Task {task.task_id}: Running discriminative baselines for Validation 2 (Old Model + New Data)...")
+        discriminative_baseline_old_model, discriminative_baseline_old_model_per_model_df = (
+            run_discriminative_baseline_validation(
+                test_df=target_train_df,
+                item_params=irt_params,
+                n_anchors=task.n_anchors_per_dataset,
+                target_name=task.target_name,
+                train_df=final_df,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                precomputed_thetas=None,
+                return_per_model=True,
+            )
+        )
     
     # ==========================================================================
     # Discriminative Baselines for Validation 2b: All Train Models on New Data
@@ -1389,13 +1411,15 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Validation 3: multiple datasets (Base+Chain) - use mean-of-means for consistency with random baselines
     add_metrics_mean_of_means(val_test_on_base_df, 'new_model_old_data')
     
-    # Add Discriminative baselines
+    # Add Discriminative baselines (keys already include discriminative_*; mirror random-baseline merge patterns)
     for key, val in discriminative_baseline_results.items():
-        result[f'discriminative_{key}'] = val
+        result[key] = val
     for key, val in discriminative_baseline_all_train.items():
-        result[f'discriminative_all_train_{key}'] = val
+        result[f'all_train_new_data_{key}'] = val
     for key, val in discriminative_baseline_new_model_old_data.items():
-        result[f'discriminative_new_model_old_data_{key}'] = val
+        result[f'new_model_old_data_{key}'] = val
+    for key, val in discriminative_baseline_old_model.items():
+        result[f'old_model_new_data_{key}'] = val
 
     # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
@@ -1549,6 +1573,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     save_per_model_df(discriminative_baseline_per_model_df, 'discriminative_irt')
     save_per_model_df(discriminative_baseline_all_train_per_model_df, 'discriminative_irt_all_train')
     save_per_model_df(discriminative_baseline_new_model_old_data_per_model_df, 'discriminative_irt_new_model_old_data')
+    save_per_model_df(discriminative_baseline_old_model_per_model_df, 'discriminative_irt_old_model')
 
     save_per_model_df(random_baseline_per_model_df, 'random_irt')
     save_per_model_df(random_simple_per_model_df, 'random_simple')
@@ -1775,7 +1800,22 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     base_irt_dir = output_dir / "irt_base"
     base_irt, A_base, B_base = train_irt_on_base(base_df, config, base_irt_dir)
-    
+
+    # Optionally export per-dataset item_params for discriminative-items analysis.
+    # Each base dataset gets its own file: <save_dir>/irt_<Dataset>_item_params.parquet
+    if config.save_item_params_dir and base_irt is not None:
+        save_dir = Path(config.save_item_params_dir)
+        save_dir.mkdir(parents=True, exist_ok=True)
+        for ds_name in base_names:
+            prefix = f"{ds_name}:"
+            ds_params = base_irt[base_irt.index.str.startswith(prefix)]
+            if len(ds_params) == 0:
+                print(f"   ⚠️  save_item_params_dir: no items found for '{ds_name}' — skipping")
+                continue
+            out_file = save_dir / f"irt_{ds_name.replace(' ', '_')}_item_params.parquet"
+            ds_params.to_parquet(out_file)
+            print(f"   📁 Saved item_params for '{ds_name}' ({len(ds_params)} items) → {out_file}")
+
     # Clean up training datasets from base IRT
     if config.cleanup_training_data and base_irt_dir.exists():
         freed_bytes = cleanup_training_datasets(base_irt_dir)
@@ -2537,6 +2577,12 @@ if __name__ == "__main__":
     parser.add_argument("--anchor-method", type=str, default="irt_clustering",
                         choices=["irt_clustering", "top_k_discrimination", "correctness_clustering"],
                         help="Anchor selection method (default: irt_clustering)")
+    parser.add_argument("--save-item-params-dir", type=str, default=None,
+                        help=(
+                            "If set, copy base-IRT item_params.parquet for each base dataset to this "
+                            "directory as 'irt_<Dataset>_item_params.parquet'. Used by "
+                            "visualize_discriminative_items.py to avoid re-training."
+                        ))
 
     args = parser.parse_args()
     
@@ -2561,6 +2607,7 @@ if __name__ == "__main__":
         force_resume=args.force_resume,
         compare_anchor_methods=args.compare_anchor_methods,
         anchor_method=args.anchor_method,
+        save_item_params_dir=args.save_item_params_dir,
     )
     
     if args.output_dir:

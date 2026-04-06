@@ -29,6 +29,8 @@
 #   bash run_all_balanced.sh --category 7       # Only HELM Lite Model Sweep Extended
 #   bash run_all_balanced.sh --category 8       # Only MMLU Anchor Sweep (5, 10, 25, 50, 100)
 #   bash run_all_balanced.sh --category 9       # Only MMLU Baseline 50 anchors
+#   bash run_all_balanced.sh --category 10      # LB discriminative-items IRT params (24 runs, like cat 1)
+#   bash run_all_balanced.sh --category 11      # MMLU discriminative-items IRT params (20 runs, like cat 3)
 #   bash run_all_balanced.sh --seeds 5          # Use 5 seeds per config (categories 5,6,7)
 #   bash run_all_balanced.sh --setup-only       # Test only
 #   bash run_all_balanced.sh --force            # Re-run all (ignore existing)
@@ -613,6 +615,80 @@ if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "9" ]; then
     echo "✓ Category 9 complete: $CAT9_TOTAL experiments (MMLU baseline, 50 anchors)"
 fi
 
+# ============================================================
+# CATEGORY 10: LB Discriminative Items — save IRT params
+#   Same structure as Category 1 baseline (6 targets × 4 seeds = 24 experiments).
+#   Adds --save-item-params-dir so each run exports its base-dataset
+#   item_params.parquet for use by visualize_discriminative_items.py.
+# ============================================================
+if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "10" ]; then
+    echo ""
+    echo "=================================================================="
+    echo "CATEGORY 10: LB Discriminative Items IRT Params (24 experiments)"
+    echo "=================================================================="
+    echo ""
+
+    LB_DISC_SAVE_DIR="${BASE_DIR}/discriminative_items_params/lb"
+    echo "-- LB baseline + save item_params → ${LB_DISC_SAVE_DIR} --"
+    SEED=21
+    for target in "${LB_DATASETS[@]}"; do
+        for offset in 0 1 2 3; do
+            RUN_SEED=$((SEED + offset))
+            echo "   Submitting $target (seed=$RUN_SEED)..."
+            submit_job sbatch --time=12:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+                --output-dir ${BASE_DIR}/lb_disc_items_params \
+                --preset lb_standard \
+                --shuffle-seed $RUN_SEED \
+                --seed $RUN_SEED \
+                --target "$target" \
+                --random-seed 1000 \
+                --save-item-params-dir "${LB_DISC_SAVE_DIR}" \
+                $SKIP_EXISTING $FORCE_RESUME
+            SUBMITTED=$((SUBMITTED + 1))
+        done
+        SEED=$((SEED + 4))
+    done
+
+    echo ""
+    echo "✓ Category 10 complete: 24 experiments"
+    echo "   After completion, run visualize_discriminative_items.py with:"
+    echo "   --params-dir ${LB_DISC_SAVE_DIR}"
+fi
+
+# ============================================================
+# CATEGORY 11: MMLU Discriminative Items — save IRT params
+#   Same structure as Category 3 (seeds 11-30 = 20 experiments).
+#   Adds --save-item-params-dir so each run exports its base-subject
+#   item_params.parquet for use by visualize_discriminative_items_mmlu.py.
+# ============================================================
+if [ -z "$RUN_CATEGORY" ] || [ "$RUN_CATEGORY" = "11" ]; then
+    echo ""
+    echo "=================================================================="
+    echo "CATEGORY 11: MMLU Discriminative Items IRT Params (20 experiments)"
+    echo "=================================================================="
+    echo ""
+
+    MMLU_DISC_SAVE_DIR="${BASE_DIR}/discriminative_items_params/mmlu"
+    echo "-- MMLU fields baseline + save item_params → ${MMLU_DISC_SAVE_DIR} --"
+    for seed in $(seq 11 30); do
+        echo "   Submitting MMLU fields (seed=$seed)..."
+        submit_job sbatch --mem=8g --time=10:0:0 $SETUP_ONLY sh_run/run_chain_linking_unified.sh \
+            --output-dir ${BASE_DIR}/mmlu_disc_items_params \
+            --preset mmlu_fields \
+            --shuffle-seed $seed \
+            --seed $seed \
+            --random-seed 1000 \
+            --save-item-params-dir "${MMLU_DISC_SAVE_DIR}" \
+            $SKIP_EXISTING $FORCE_RESUME
+        SUBMITTED=$((SUBMITTED + 1))
+    done
+
+    echo ""
+    echo "✓ Category 11 complete: 20 experiments"
+    echo "   After completion, run visualize_discriminative_items_mmlu.py with:"
+    echo "   --params-dir ${MMLU_DISC_SAVE_DIR}"
+fi
+
 # Summary
 echo ""
 echo "=================================================================="
@@ -638,8 +714,10 @@ else
     echo "  Category 7 (HELM Model Ext):  $CAT7_EXP experiments (6 counts × 9 datasets × $N_SEEDS seeds)"
     echo "  Category 8 (MMLU Anchor):    20 experiments (4 seeds × 5 anchor counts 5,10,25,50,100)"
     echo "  Category 9 (MMLU 50 anchors): 20 experiments (same as cat 3, 50 anchors)"
+    echo "  Category 10 (LB disc params): 24 experiments (like cat 1, saves item_params)"
+    echo "  Category 11 (MMLU disc par.): 20 experiments (like cat 3, saves item_params)"
     echo "  ───────────────────────────────────────"
-    echo "  TOTAL:                        $TOTAL_EXP experiments (with --seeds $N_SEEDS)"
+    echo "  TOTAL:                        $((TOTAL_EXP + 44)) experiments (with --seeds $N_SEEDS)"
     echo ""
     echo "Actually submitted: $SUBMITTED"
     [ $SKIPPED -gt 0 ] && echo "Skipped (complete): $SKIPPED"
