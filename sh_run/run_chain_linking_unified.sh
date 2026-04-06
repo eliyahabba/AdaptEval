@@ -259,6 +259,10 @@ while [[ $# -gt 0 ]]; do
             ANCHOR_METHOD="$2"
             shift 2
             ;;
+        --save-item-params-dir)
+            SAVE_ITEM_PARAMS_DIR="$2"
+            shift 2
+            ;;
         --n-bridge-models)
             N_BRIDGE_MODELS="$2"
             shift 2
