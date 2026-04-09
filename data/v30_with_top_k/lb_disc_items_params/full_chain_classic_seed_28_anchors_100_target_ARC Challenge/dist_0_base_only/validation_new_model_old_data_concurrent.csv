@@ -25,12 +25,12 @@ open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201,MMLU,MMLU,14042,
 open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties,MMLU,MMLU,14042,100,-4.4337,0.6439,0.6265,0.6417,0.6305,0.6416,0.0174,0.0023,0.0134,0.0023,0.731,0.0071
 open-llm-leaderboard/details_decapoda-research__Antares-11b-v1,MMLU,MMLU,14042,100,-0.8648,0.6436,0.6528,0.6273,0.646,0.6275,0.0092,0.0163,0.0024,0.0162,0.731,0.0071
 open-llm-leaderboard/details_dfurman__Mistral-7B-Instruct-v0.2,MMLU,MMLU,14042,100,-0.013,0.5887,0.604,0.5932,0.6011,0.5933,0.0153,0.0045,0.0124,0.0045,0.731,0.0071
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,MMLU,MMLU,14042,100,-108.1142,0.6539,0.6567,0.6408,0.6524,0.6408,0.0028,0.0131,0.0015,0.0131,0.731,0.0071
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3,MMLU,MMLU,14042,100,-107.9561,0.6539,0.6567,0.6408,0.6524,0.6408,0.0028,0.0131,0.0015,0.0131,0.731,0.0071
 open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient,MMLU,MMLU,14042,100,-0.4816,0.6087,0.6258,0.5831,0.6144,0.5833,0.0171,0.0256,0.0056,0.0255,0.731,0.0071
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,-34.0597,0.6528,0.6701,0.6455,0.6635,0.6455,0.0173,0.0072,0.0107,0.0072,0.731,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO,MMLU,MMLU,14042,100,-34.0358,0.6528,0.6701,0.6455,0.6635,0.6455,0.0173,0.0072,0.0107,0.0072,0.731,0.0071
 open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp,MMLU,MMLU,14042,100,-1.9323,0.6417,0.6688,0.6637,0.6674,0.6637,0.0271,0.022,0.0257,0.022,0.731,0.0071
-open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,MMLU,MMLU,14042,100,-108.1142,0.6543,0.6567,0.6408,0.6524,0.6408,0.0024,0.0135,0.0019,0.0135,0.731,0.0071
-open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,-24.5721,0.6552,0.6625,0.6558,0.6607,0.6558,0.0073,0.0006,0.0055,0.0006,0.731,0.0071
+open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1,MMLU,MMLU,14042,100,-107.9561,0.6543,0.6567,0.6408,0.6524,0.6408,0.0024,0.0135,0.0019,0.0135,0.731,0.0071
+open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2,MMLU,MMLU,14042,100,-24.5749,0.6552,0.6625,0.6558,0.6607,0.6558,0.0073,0.0006,0.0055,0.0006,0.731,0.0071
 open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b,MMLU,MMLU,14042,100,0.6555,0.6176,0.6153,0.6211,0.6169,0.6211,0.0024,0.0035,0.0008,0.0034,0.731,0.0071
 open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf,MMLU,MMLU,14042,100,0.7935,0.5063,0.4402,0.4618,0.4459,0.4616,0.0661,0.0444,0.0603,0.0447,0.731,0.0071
 open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5,MMLU,MMLU,14042,100,-1.6724,0.7776,0.7507,0.7835,0.7594,0.7833,0.0269,0.0059,0.0182,0.0057,0.731,0.0071
