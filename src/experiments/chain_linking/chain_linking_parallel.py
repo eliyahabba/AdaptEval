@@ -77,6 +77,18 @@ from src.experiments.equating.cross_dataset_equating import (
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import train_item_parameters
 
+# Reviewer-requested alternative model splits and stress-test grouping.
+# The default split_mode="random" path is preserved bit-for-bit for reproducibility.
+from src.experiments.chain_linking.model_splits import (
+    split_reference_test_models,
+    dates_cache_for_suite,
+)
+from src.experiments.chain_linking.model_families import (
+    load_holdout_models,
+    holdout_config_for_suite,
+)
+from src.experiments.chain_linking.subject_groups import datasets_in_group
+
 
 # =============================================================================
 # Configuration
@@ -275,7 +287,10 @@ class ParallelChainConfig(ExperimentConfig):
     filter_zero_variance: bool = False
     validate_dimensions: bool = True
     compare_anchor_methods: bool = False  # Compare IRT vs correctness clustering
-    anchor_method: str = "irt_clustering"  # Anchor selection method: irt_clustering | top_k_discrimination | correctness_clustering
+    anchor_method: str = "irt_clustering"  # Anchor selection method: irt_clustering | top_k_discrimination | correctness_clustering | stratified_difficulty
+    # Reviewer additions (all default to the original paper behavior):
+    split_mode: str = "random"  # random | time_ordered | family_holdout (reference/test model split)
+    subject_group: str | None = None  # None | stem | math : restrict MMLU subjects (out-of-domain stress test)
     epochs: int = 2000
     epochs_fixed: int = 1000
     n_anchors_per_dataset: int = 100
@@ -1647,7 +1662,23 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
             del datasets[ds]
         print(f"   ⚠️  Excluded {len(excluded_found)} degenerate datasets: {excluded_found}")
         print(f"   Remaining: {len(datasets)} datasets")
-    
+
+    # Out-of-domain stress test (a): restrict MMLU to a narrow skill group (e.g. STEM)
+    # or a tighter math cluster. base/chain/target are then drawn only from that group,
+    # i.e. the group's subjects are added sequentially along the chain.
+    if config.subject_group:
+        in_group = set(datasets_in_group(list(datasets.keys()), config.subject_group))
+        if len(in_group) < 2:
+            raise ValueError(
+                f"subject_group='{config.subject_group}' matched only {len(in_group)} "
+                f"dataset(s); need >=2. Is this an MMLU run (data_source_mode=mmlu_fields)?"
+            )
+        dropped = [d for d in datasets if d not in in_group]
+        for d in dropped:
+            del datasets[d]
+        print(f"   🎯 Stress test: restricted to subject_group='{config.subject_group}' "
+              f"({len(in_group)} subjects, dropped {len(dropped)})")
+
     skill_to_datasets = group_all_datasets_together(datasets, min_common_models=4)
     if not skill_to_datasets:
         raise ValueError("No valid dataset groups found!")
@@ -1748,11 +1779,37 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     
     base_models_list = sorted(list(base_models))
 
-    # Use seed for model splitting (shuffle_seed is for dataset ordering/target selection).
-    np.random.seed(config.seed)
-    n_test = max(1, int(len(base_models_list) * config.test_ratio))
-    test_models = set(np.random.choice(base_models_list, size=n_test, replace=False))
-    train_models = base_models - test_models
+    if config.split_mode == "random":
+        # ORIGINAL PAPER PATH — unchanged. Use seed for model splitting
+        # (shuffle_seed is for dataset ordering/target selection).
+        np.random.seed(config.seed)
+        n_test = max(1, int(len(base_models_list) * config.test_ratio))
+        test_models = set(np.random.choice(base_models_list, size=n_test, replace=False))
+        train_models = base_models - test_models
+    elif config.split_mode in ("time_ordered", "noniid"):
+        # Reviewer: chronological split — earliest models = reference, latest = test.
+        cache_path = dates_cache_for_suite(config.data_source_mode)
+        train_models, test_models = split_reference_test_models(
+            base_models_list, test_ratio=config.test_ratio,
+            split_mode="time_ordered", seed=config.seed, dates_cache_path=cache_path,
+        )
+        print(f"   🕒 time_ordered split (dates: {cache_path.name})")
+    elif config.split_mode == "family_holdout":
+        # Reviewer: hold out entire model families as the test set.
+        holdout_path = holdout_config_for_suite(config.data_source_mode)
+        holdout_models = load_holdout_models(holdout_path)
+        train_models, test_models = split_reference_test_models(
+            base_models_list, split_mode="family_holdout", holdout_models=holdout_models,
+        )
+        print(f"   👪 family_holdout split (config: {holdout_path.name}, "
+              f"{len(holdout_models)} family models)")
+    else:
+        raise ValueError(
+            f"Unknown split_mode {config.split_mode!r}. "
+            f"Expected 'random', 'time_ordered', or 'family_holdout'."
+        )
+    test_models = set(test_models)
+    train_models = set(train_models)
     
     # Subset of train_models for chain steps (if specified)
     if config.n_models_per_chain is not None:
@@ -1777,6 +1834,8 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     config_dict['n_chain_train_models'] = len(chain_train_models)
     config_dict['n_test_models'] = len(test_models_sorted)
     config_dict['test_model_split_seed'] = config.seed
+    config_dict['split_mode'] = config.split_mode
+    config_dict['subject_group'] = config.subject_group
     config_dict['candidate_models'] = candidate_models_sorted
     config_dict['train_models'] = train_models_sorted
     config_dict['chain_train_models'] = chain_train_models_sorted
@@ -2575,8 +2634,20 @@ if __name__ == "__main__":
     parser.add_argument("--compare-anchor-methods", action="store_true", default=False,
                         help="Compare IRT clustering vs correctness clustering for anchor selection (research mode)")
     parser.add_argument("--anchor-method", type=str, default="irt_clustering",
-                        choices=["irt_clustering", "top_k_discrimination", "correctness_clustering"],
-                        help="Anchor selection method (default: irt_clustering)")
+                        choices=["irt_clustering", "top_k_discrimination", "correctness_clustering",
+                                 "stratified_difficulty"],
+                        help="Anchor selection method (default: irt_clustering). "
+                             "stratified_difficulty = sample anchors stratified by item difficulty "
+                             "(reviewer baseline).")
+    parser.add_argument("--split-mode", type=str, default="random",
+                        choices=["random", "time_ordered", "family_holdout"],
+                        help="Reference/test model split: random 75/25 (paper default), "
+                             "time_ordered (chronological by release date), or family_holdout "
+                             "(hold out entire model families).")
+    parser.add_argument("--subject-group", type=str, default=None,
+                        choices=["stem", "math"],
+                        help="Out-of-domain stress test: restrict MMLU to a skill group "
+                             "(stem) or tighter math cluster (math). MMLU runs only.")
     parser.add_argument("--save-item-params-dir", type=str, default=None,
                         help=(
                             "If set, copy base-IRT item_params.parquet for each base dataset to this "
@@ -2607,6 +2678,8 @@ if __name__ == "__main__":
         force_resume=args.force_resume,
         compare_anchor_methods=args.compare_anchor_methods,
         anchor_method=args.anchor_method,
+        split_mode=args.split_mode,
+        subject_group=args.subject_group,
         save_item_params_dir=args.save_item_params_dir,
     )
     

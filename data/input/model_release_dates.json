@@ -1,0 +1,1582 @@
+{
+  "open-llm-leaderboard/details_922-CA__monika-ddlc-7b-v1": {
+    "date": "2023-11-23T08:44:19+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_AA051610__A0106": {
+    "date": "2024-01-07T13:49:16+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_AA051611__A0110": {
+    "date": "2024-01-11T07:25:34+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_AA051611__limb": {
+    "date": "2024-01-14T17:33:21+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_APMIC__caigun-lora-model-34B-v3": {
+    "date": "2023-12-23T18:33:40+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_AdaptLLM__finance-chat": {
+    "date": "2024-01-05T00:16:08+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Aeala__GPT4-x-AlpacaDente2-30b": {
+    "date": "2023-08-17T23:57:46+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Aeala__GPT4-x-Alpasta-13b": {
+    "date": "2023-08-17T23:57:37+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_AlekseyKorshuk__vic15-exp-syn-fight-cp3838": {
+    "date": "2023-10-01T15:44:42+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Aspik101__StableBeluga-13B-instruct-PL-lora_unload": {
+    "date": "2023-08-18T11:40:01+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Aspik101__trurl-2-13b-pl-instruct_unload": {
+    "date": "2023-08-18T18:54:56+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Aspik101__vicuna-13b-v1.5-PL-lora_unload": {
+    "date": "2023-08-18T11:41:12+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Austism__chronos-hermes-13b-v2": {
+    "date": "2023-08-18T11:42:33+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Azazelle__Half-NSFW_Noromaid-7b": {
+    "date": "2023-12-29T22:31:55+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Azazelle__xDAN-SlimOrca": {
+    "date": "2023-12-30T02:49:32+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_BAAI__Aquila2-34B": {
+    "date": "2024-01-15T18:29:44+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_BELLE-2__BELLE-Llama2-13B-chat-0.4M": {
+    "date": "2023-10-01T13:36:59+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Brillibits__Instruct_Mixtral-8x7B-v0.1_Dolly15K": {
+    "date": "2023-12-24T18:22:10+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Brouz__Slerpeno": {
+    "date": "2023-09-16T11:43:21+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE1_17w-r4": {
+    "date": "2023-09-12T10:37:42+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r16-gate_up_down": {
+    "date": "2023-10-01T14:43:38+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE3_3.3w-r8-gate_up_down": {
+    "date": "2023-10-01T14:36:10+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE4_3.8w-r8-q_k_v_o": {
+    "date": "2023-10-01T14:53:27+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE4_3.8w-r8-q_k_v_o_gate_up_down": {
+    "date": "2023-10-04T05:24:32+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-FINETUNE5_4w-r4-q_k_v_o": {
+    "date": "2023-10-10T09:49:16+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_FINETUNE2_3w": {
+    "date": "2023-09-01T02:01:02+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CHIH-HUNG__llama-2-13b-huangyt_Fintune_1_17w-q_k_v_o_proj": {
+    "date": "2023-09-04T02:20:08+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CallComply__SOLAR-10.7B-Instruct-v1.0-128k": {
+    "date": "2024-01-14T22:40:30+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CallComply__Starling-LM-11B-alpha": {
+    "date": "2024-01-14T22:53:11+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CallComply__zephyr-7b-beta-128k": {
+    "date": "2024-01-14T19:47:57+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mctaco-modified1": {
+    "date": "2023-09-11T17:12:57+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-mixed-datasets-time-unit": {
+    "date": "2023-10-08T16:13:43+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Charlie911__vicuna-7b-v1.5-lora-timedial": {
+    "date": "2023-10-10T08:03:52+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CobraMamba__mamba-gpt-7b-v1": {
+    "date": "2023-11-09T14:37:23+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_CultriX__MistralTrixTest": {
+    "date": "2024-01-10T15:52:02+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Danielbrdz__Barcenas-13b": {
+    "date": "2023-09-13T03:48:32+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Dans-DiscountModels__Dans-07YahooAnswers-7b": {
+    "date": "2023-12-12T12:02:35+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Delcos__Velara-11B-V2": {
+    "date": "2024-01-10T16:25:27+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_DevaMalla__llama_7b_lora": {
+    "date": "2023-09-13T05:07:51+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_DevaMalla__llama_7b_qlora_pds-eval": {
+    "date": "2023-10-01T13:07:51+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Doctor-Shotgun__mythospice-limarp-70b": {
+    "date": "2023-10-10T17:32:34+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_DopeorNope__LaOT": {
+    "date": "2023-10-04T06:29:12+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Envoid__Libra-19B": {
+    "date": "2023-10-10T13:07:09+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Expert68__llama2_13b_instructed_version2": {
+    "date": "2023-11-12T19:47:45+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_FelixChao__ExtremeDolphin-MoE": {
+    "date": "2024-01-16T06:23:23+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_FelixChao__WizardDolphin-7B": {
+    "date": "2024-01-13T19:49:31+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_FreedomIntelligence__phoenix-inst-chat-7b": {
+    "date": "2023-08-18T11:18:08+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_GOAT-AI__GOAT-7B-Community": {
+    "date": "2023-08-18T12:00:01+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Gryphe__MythoMix-L2-13b": {
+    "date": "2023-08-18T11:58:36+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_HenryJJ__Instruct_Mistral-7B-v0.1_Dolly15K": {
+    "date": "2024-01-04T13:29:53+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_HenryJJ__dolphin-2.6-mistral-7b-dpo-orca-v3": {
+    "date": "2024-01-14T10:25:11+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_HiTZ__alpaca-lora-65b-en-pt-es-ca": {
+    "date": "2023-08-17T23:52:23+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_HuggingFaceH4__starchat-beta": {
+    "date": "2023-08-17T23:53:41+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v0": {
+    "date": "2023-08-26T12:16:27+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_HyperbeeAI__Tulpar-7b-v1": {
+    "date": "2023-09-14T07:59:55+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_IGeniusDev__llama13B-quant8-testv1-openorca-customdataset": {
+    "date": "2023-08-25T21:11:22+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Intel__neural-chat-7b-v3-1": {
+    "date": "2023-11-18T15:22:20+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Intel__neural-chat-7b-v3-3": {
+    "date": "2023-12-09T20:36:24+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Intel__neural-chat-7b-v3-3-Slerp": {
+    "date": "2023-12-10T18:00:41+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_JosephusCheung__Pwen-14B-Chat-20_30": {
+    "date": "2023-10-08T18:25:46+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_KaeriJenti__Kaori-34B-v1": {
+    "date": "2023-12-23T19:12:06+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_KnutJaegersberg__Deacon-34b-Adapter": {
+    "date": "2024-01-05T02:36:41+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_KnutJaegersberg__Qwen-14B-Llamafied": {
+    "date": "2024-01-13T19:33:11+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_KnutJaegersberg__Qwen-1_8B-Llamafied": {
+    "date": "2024-01-04T14:31:53+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_KnutJaegersberg__Walter-Mistral-7B": {
+    "date": "2023-12-18T13:59:45+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_KnutJaegersberg__deacon-13b": {
+    "date": "2023-09-22T07:24:38+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_LTC-AI-Labs__L2-7b-Beluga-WVG-Test": {
+    "date": "2023-10-04T08:52:49+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_LTC-AI-Labs__L2-7b-Synthia-WVG-Test": {
+    "date": "2023-10-04T08:34:11+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_LoSboccacc__orthogonal-2x7B-base": {
+    "date": "2024-01-16T21:23:43+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Locutusque__Orca-2-13B-no_robots": {
+    "date": "2023-12-09T20:25:19+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Locutusque__Orca-2-13b-SFT-v6": {
+    "date": "2023-12-30T02:06:02+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Locutusque__Rhino-Mistral-7B": {
+    "date": "2024-01-14T22:13:01+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Metis-0.1": {
+    "date": "2023-12-16T17:22:25+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Metis-0.3": {
+    "date": "2023-12-18T10:32:43+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Pallas-0.2": {
+    "date": "2023-12-08T21:21:17+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Pallas-0.4": {
+    "date": "2023-12-23T21:27:58+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.1": {
+    "date": "2024-01-05T01:51:34+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.4": {
+    "date": "2024-01-05T05:11:02+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-0.6": {
+    "date": "2024-01-05T05:10:08+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Mihaiii__Pallas-0.5-LASER-exp2-0.1": {
+    "date": "2024-01-05T05:07:51+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Neko-Institute-of-Science__metharme-7b": {
+    "date": "2023-08-17T23:45:04+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Neuronovo__neuronovo-7B-v0.1": {
+    "date": "2024-01-06T02:53:11+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_NewstaR__Koss-7B-chat": {
+    "date": "2023-10-04T03:20:07+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_NobodyExistsOnTheInternet__GiftedConvo13bLoraNoEconsE4": {
+    "date": "2023-09-02T17:04:22+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_NousResearch__CodeLlama-34b-hf": {
+    "date": "2023-08-26T04:48:39+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-SOLAR-10.7B": {
+    "date": "2024-01-04T13:47:05+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_NousResearch__Nous-Hermes-2-Yi-34B": {
+    "date": "2023-12-29T16:57:35+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Open-Orca__Mixtral-SlimOrca-8x7B": {
+    "date": "2023-12-14T10:57:25+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Open-Orca__OpenOrca-Preview1-13B": {
+    "date": "2023-08-18T00:18:40+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_OpenAssistant__llama2-70b-oasst-sft-v10": {
+    "date": "2023-08-27T11:58:02+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_OpenBuddyEA__openbuddy-llama-30b-v7.1-bf16": {
+    "date": "2023-08-18T00:05:26+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_OpenBuddy__openbuddy-deepseek-67b-v15-base": {
+    "date": "2023-12-10T00:21:39+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_OpenBuddy__openbuddy-falcon-40b-v16.1-4k": {
+    "date": "2024-01-05T01:57:23+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_OpenBuddy__openbuddy-mixtral-7bx8-v16.3-32k": {
+    "date": "2024-01-05T04:59:57+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PSanni__MPOMixtral-8x7B-Instruct-v0.1": {
+    "date": "2024-01-14T14:25:44+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PeanutJar__Mistral-v0.1-PeanutButter-v0.0.2-7B": {
+    "date": "2023-11-08T16:58:50+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Pierre-obi__Mistral_solar-slerp": {
+    "date": "2024-01-13T23:35:29+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PocketDoc__Dans-AdventurousWinds-7b": {
+    "date": "2023-10-10T04:05:21+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PocketDoc__Dans-RetroRodeo-13b": {
+    "date": "2023-09-22T03:52:14+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PulsarAI__2x-LoRA-Assemble-Nova-13B": {
+    "date": "2023-10-08T14:51:33+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PulsarAI__EnsembleV5-Nova-13B": {
+    "date": "2023-10-03T19:23:22+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PulsarAI__OpenHermes-2.5-neural-chat-v3-3-Slerp": {
+    "date": "2023-12-10T01:54:43+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PygmalionAI__pygmalion-2-13b": {
+    "date": "2023-10-03T17:49:44+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_PygmalionAI__pygmalion-2-7b": {
+    "date": "2023-10-08T20:23:05+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Q-bert__MetaMath-Cybertron": {
+    "date": "2023-12-07T21:46:29+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_RatanRohith__MistralBeagle-RS-7B-V0.1": {
+    "date": "2024-01-10T22:54:30+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_SanjiWatsuki__Kunoichi-7B": {
+    "date": "2024-01-05T04:32:50+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_SanjiWatsuki__Loyal-Macaroni-Maid-7B": {
+    "date": "2023-12-27T13:07:47+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_SanjiWatsuki__neural-chat-7b-v3-3-wizardmath-dare-me": {
+    "date": "2023-12-27T13:10:06+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__BrainDerp2": {
+    "date": "2023-10-04T07:47:16+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Euryale-L2-70B": {
+    "date": "2023-09-19T00:30:46+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Frostwind-10.7B-v1": {
+    "date": "2023-12-23T16:16:55+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Mythical-Destroyer-V2-L2-13B": {
+    "date": "2023-08-29T20:53:38+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Sensualize-Mixtral-bf16": {
+    "date": "2024-01-10T22:31:49+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Sensualize-Solar-10.7B": {
+    "date": "2024-01-06T17:10:42+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Stheno-1.8-L2-13B": {
+    "date": "2023-10-04T00:46:01+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Stheno-L2-13B": {
+    "date": "2023-08-31T22:32:35+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__WinterGoddess-1.4x-70B-L2": {
+    "date": "2023-12-24T23:40:34+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Sao10K__Zephyrus-L1-33B": {
+    "date": "2023-10-04T01:26:30+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_SciPhi__SciPhi-Self-RAG-Mistral-7B-32k": {
+    "date": "2023-11-20T07:37:08+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Secbone__llama-2-13B-instructed": {
+    "date": "2023-09-13T18:39:34+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_SkunkworksAI__Mistralic-7B-1": {
+    "date": "2023-10-11T09:21:44+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_SuperAGI__SAM": {
+    "date": "2023-12-29T12:00:21+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Swisslex__Mixtral-Orca-v0.1": {
+    "date": "2024-01-15T21:15:32+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TFLai__Airboros2.1-Platypus2-13B-QLora-0.80-epoch": {
+    "date": "2023-08-30T11:41:12+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TFLai__Luban-Platypus2-13B-QLora-0.80-epoch": {
+    "date": "2023-08-30T01:02:54+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TFLai__Nous-Hermes-Platypus2-13B-QLoRA-0.80-epoch": {
+    "date": "2023-08-28T22:45:43+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TIGER-Lab__TIGERScore-13B": {
+    "date": "2024-01-05T03:16:56+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TaylorAI__Flash-Llama-7B": {
+    "date": "2023-08-25T21:56:48+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_The-Face-Of-Goonery__Chronos-Beluga-v2-13bfp16": {
+    "date": "2023-08-18T11:08:57+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-FP16": {
+    "date": "2023-08-18T11:09:06+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_The-Face-Of-Goonery__Huginn-13b-v1.2": {
+    "date": "2023-10-01T15:14:56+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_The-Face-Of-Goonery__huginnv1.2": {
+    "date": "2023-08-18T11:08:49+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TheBloke__OpenOrca-Platypus2-13B-GPTQ": {
+    "date": "2023-08-31T16:41:54+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TheBloke__Wizard-Vicuna-13B-Uncensored-HF": {
+    "date": "2023-08-18T11:26:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TheBloke__Wizard-Vicuna-7B-Uncensored-HF": {
+    "date": "2023-08-18T11:29:36+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TheBloke__airoboros-13B-HF": {
+    "date": "2023-08-18T11:26:26+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TheBloke__koala-13B-HF": {
+    "date": "2023-08-18T11:28:27+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TheBloke__robin-65b-v2-fp16": {
+    "date": "2023-08-18T18:53:21+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TheBloke__tulu-7B-fp16": {
+    "date": "2023-08-18T11:28:53+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TigerResearch__tigerbot-13b-base": {
+    "date": "2023-10-04T03:31:37+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TinyPixel__testmodel2": {
+    "date": "2023-09-18T14:28:36+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TokenBender__pic_7B_mistral_Full_v0.1": {
+    "date": "2023-12-08T01:03:37+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TomGrc__FusionNet": {
+    "date": "2024-01-04T12:15:05+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TomGrc__FusionNet_SOLAR": {
+    "date": "2024-01-04T14:03:18+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TomGrc__FusionNet_passthrough": {
+    "date": "2024-01-05T01:57:10+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_TomGrc__FusionNet_passthrough_v0.1": {
+    "date": "2024-01-04T14:46:46+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_UCLA-AGI__test": {
+    "date": "2024-01-05T00:38:58+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_UCLA-AGI__test0": {
+    "date": "2024-01-05T12:02:30+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Unbabel__TowerInstruct-7B-v0.1": {
+    "date": "2024-01-13T19:01:12+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__Emerald-13B": {
+    "date": "2023-10-03T17:31:47+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__Llama2-13B-no_robots-alpaca-lora": {
+    "date": "2023-11-15T08:18:10+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__MLewd-Chat-v2-13B": {
+    "date": "2023-10-04T08:57:28+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__MLewd-L2-13B": {
+    "date": "2023-09-05T05:06:36+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__MLewd-ReMM-L2-Chat-20B": {
+    "date": "2023-10-03T13:01:33+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__Mistral-11B-v0.1": {
+    "date": "2023-12-30T00:58:05+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__Mixtral-8x7B-MoE-RP-Story": {
+    "date": "2023-12-16T21:35:22+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__Nous-Hermes-13B-Code": {
+    "date": "2023-09-05T02:42:25+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__ReMM-v2.1-L2-13B": {
+    "date": "2023-09-18T13:44:19+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Undi95__ReMM-v2.2-L2-13B": {
+    "date": "2023-10-03T16:45:45+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-Mixtral-8x7B-Instruct": {
+    "date": "2023-12-24T00:30:12+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_VAGOsolutions__SauerkrautLM-SOLAR-Instruct": {
+    "date": "2023-12-20T21:14:52+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Walmart-the-bag__Solar-10.7B-Cato": {
+    "date": "2023-12-30T02:09:28+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_WeOpenML__Alpaca-7B-v1": {
+    "date": "2023-08-18T11:11:34+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_WebraftAI__synapsellm-7b-mistral-v0.3-preview": {
+    "date": "2023-12-04T11:05:04+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_WebraftAI__synapsellm-7b-mistral-v0.4-preview3": {
+    "date": "2023-12-09T20:27:33+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__Bagel-Hermes-2x34b": {
+    "date": "2024-01-14T04:27:11+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__Bagel-Hermes-34B-Slerp": {
+    "date": "2024-01-14T01:58:30+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__Helion-4x34B": {
+    "date": "2024-01-14T13:25:54+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__MetaMath-OpenHermes-2.5-neural-chat-v3-3-Slerp": {
+    "date": "2024-01-08T05:13:55+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__Nous-Hermes-2-SUS-Chat-2x34B": {
+    "date": "2024-01-05T07:41:52+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__OpenHermes-2.5-neural-chat-v3-3-openchat-3.5-1210-Slerp": {
+    "date": "2023-12-27T14:08:04+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__Platypus-Nebula-v2-7B": {
+    "date": "2023-12-04T11:28:45+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__SauerkrautLM-UNA-SOLAR-Instruct": {
+    "date": "2023-12-23T16:57:18+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Weyaxi__openchat-3.5-1210-Seraph-Slerp": {
+    "date": "2023-12-29T16:01:44+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_WizardLM__WizardLM-70B-V1.0": {
+    "date": "2023-08-17T23:52:58+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_WizardLM__WizardMath-7B-V1.0": {
+    "date": "2023-08-24T11:16:38+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-pretrain": {
+    "date": "2023-09-11T16:09:17+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_YeungNLP__firefly-llama2-13b-v1.2": {
+    "date": "2023-08-18T11:02:36+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_YeungNLP__firefly-llama2-7b-pretrain": {
+    "date": "2023-09-11T15:29:53+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Yhyu13__LMCocktail-Mistral-7B-v1": {
+    "date": "2023-12-29T14:30:46+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_Zangs3011__mistral_7b_DolphinCoder": {
+    "date": "2023-12-23T17:20:42+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_abdulrahman-nuzha__finetuned-Mistral-5000-v1.0": {
+    "date": "2023-12-29T19:46:32+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_abhinand__tamil-llama-13b-instruct-v0.1": {
+    "date": "2023-12-16T20:46:25+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_acrastt__kalomaze-stuff": {
+    "date": "2023-12-23T16:29:14+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_adamo1139__Yi-34B-AEZAKMI-v1": {
+    "date": "2023-12-04T22:20:07+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ajibawa-2023__Python-Code-33B": {
+    "date": "2023-12-05T01:47:51+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ajibawa-2023__Uncensored-Frank-33B": {
+    "date": "2023-10-03T17:30:23+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_akjindal53244__Mistral-7B-v0.1-Open-Platypus": {
+    "date": "2023-10-09T12:53:05+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_alignment-handbook__zephyr-7b-sft-full": {
+    "date": "2024-01-16T04:09:14+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_argilla__notus-7b-v1": {
+    "date": "2023-11-29T22:19:52+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ashercn97__giraffe-7b": {
+    "date": "2023-08-18T11:57:27+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ashercn97__manatee-7b": {
+    "date": "2023-08-18T11:57:35+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_augtoma__qCammel-70x": {
+    "date": "2023-08-18T18:40:36+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ausboss__llama7b-wizardlm-unfiltered": {
+    "date": "2023-08-25T14:23:45+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_beaugogh__Llama2-7b-openorca-mc-v2-dpo": {
+    "date": "2023-10-08T19:52:47+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_beberik__rawr": {
+    "date": "2023-12-30T05:25:47+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_bhavinjawade__SOLAR-10B-Nector-DPO-Jawade": {
+    "date": "2024-01-14T21:43:01+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_bn22__OpenHermes-2.5-Mistral-7B-MISALIGNED": {
+    "date": "2023-12-27T13:25:18+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_bofenghuang__vigogne-7b-instruct": {
+    "date": "2023-08-18T11:33:18+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_bofenghuang__vigostral-7b-chat": {
+    "date": "2023-11-13T15:32:26+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_bongchoi__MoMo-70B-LoRA-V1.1": {
+    "date": "2023-12-09T13:00:45+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_bongchoi__test-llama2-7b": {
+    "date": "2023-08-29T04:26:30+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_brucethemoose__Yi-34B-200K-DARE-merge-v5": {
+    "date": "2023-12-24T23:52:02+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_budecosystem__genz-13b-v2": {
+    "date": "2023-09-01T20:11:22+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_camel-ai__CAMEL-13B-Combined-Data": {
+    "date": "2023-08-18T00:02:49+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_camel-ai__CAMEL-13B-Role-Playing-Data": {
+    "date": "2023-08-18T00:02:32+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_chanwit__flux-7b-v0.1": {
+    "date": "2024-01-13T22:27:49+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_chargoddard__MelangeC-70b": {
+    "date": "2023-08-27T12:13:53+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_chargoddard__llama2-22b-blocktriangular": {
+    "date": "2023-08-18T18:57:28+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_chargoddard__mistral-11b-slimorca": {
+    "date": "2024-01-08T07:34:15+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_chargoddard__mixtralmerge-8x7B-rebalanced-test": {
+    "date": "2024-01-05T14:04:05+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_chargoddard__servile-harpsichord-cdpo": {
+    "date": "2023-12-10T06:47:01+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_chargoddard__storytime-13b": {
+    "date": "2023-10-01T15:28:51+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_charlesdedampierre__TopicNeuralHermes-2.5-Mistral-7B": {
+    "date": "2024-01-13T20:21:50+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_clibrain__Llama-2-7b-ft-instruct-es": {
+    "date": "2023-08-18T00:00:44+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_cloudyu__Yi-34Bx3-MoE-90B": {
+    "date": "2024-01-14T23:03:51+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_codellama__CodeLlama-34b-Python-hf": {
+    "date": "2023-08-26T20:08:49+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_codellama__CodeLlama-7b-hf": {
+    "date": "2023-08-26T04:20:39+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2-yi-34b-200k": {
+    "date": "2023-12-30T04:54:32+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_cognitivecomputations__dolphin-2.2.1-mistral-7b": {
+    "date": "2024-01-04T12:02:45+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_cognitivecomputations__yayi2-30b-llama": {
+    "date": "2024-01-10T16:22:01+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_cookinai__BruinHermes": {
+    "date": "2023-12-18T08:31:05+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_crumb__apricot-wildflower-20": {
+    "date": "2023-12-24T18:42:58+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_cyberagent__calm2-7b-chat": {
+    "date": "2023-12-11T04:44:11+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_davzoku__cria-llama2-7b-v1.3": {
+    "date": "2023-08-18T11:55:25+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_decapoda-research__Antares-11b-v1": {
+    "date": "2024-01-04T13:15:29+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_deepseek-ai__deepseek-moe-16b-base": {
+    "date": "2024-01-15T06:35:55+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_defog__sqlcoder-34b-alpha": {
+    "date": "2024-01-06T03:07:38+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_dfurman__Mistral-7B-Instruct-v0.2": {
+    "date": "2024-01-04T13:50:50+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_dhmeltzer__Llama-2-13b-hf-ds_wiki_1024_full_r_64_alpha_16_merged": {
+    "date": "2023-10-03T17:04:23+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_dhmeltzer__llama-7b-SFT_ds_wiki65k_1024_r_64_alpha_16_merged": {
+    "date": "2023-08-31T20:12:22+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-gradient": {
+    "date": "2023-12-29T22:34:03+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_diffnamehard__Mistral-CatMacaroni-slerp-uncensored": {
+    "date": "2023-12-29T10:26:20+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_diffnamehard__Psyfighter2-Noromaid-ties-Capybara-13B": {
+    "date": "2024-01-13T20:23:14+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_digitous__13B-Chimera": {
+    "date": "2023-08-18T18:48:50+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_digitous__Javalion-R": {
+    "date": "2023-08-18T11:05:12+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_dotvignesh__perry-7b": {
+    "date": "2023-10-04T00:15:43+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_duliadotio__dulia-13b-8k-alpha": {
+    "date": "2023-08-18T11:35:52+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ehartford__Samantha-1.11-CodeLlama-34b": {
+    "date": "2023-08-26T02:58:13+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ehartford__WizardLM-1.0-Uncensored-CodeLlama-34b": {
+    "date": "2023-09-05T09:02:41+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ehartford__based-30b": {
+    "date": "2023-08-18T11:03:52+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ehartford__dolphin-2.2-yi-34b-200k": {
+    "date": "2023-12-10T09:22:04+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_elinas__chronos-13b-v2": {
+    "date": "2023-08-18T11:56:10+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_elinas__chronos-70b-v2": {
+    "date": "2023-09-13T13:40:03+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_elyza__ELYZA-japanese-Llama-2-13b-instruct": {
+    "date": "2024-01-11T10:47:47+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_euclaise__Ferret-7B": {
+    "date": "2023-11-19T15:55:56+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_ewqr2130__mistral-se-inst-ppo": {
+    "date": "2024-01-05T01:24:31+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_fblgit__UNA-SOLAR-10.7B-Instruct-v1.0": {
+    "date": "2023-12-21T16:29:56+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_fblgit__una-cybertron-7b-v2-bf16": {
+    "date": "2023-12-04T16:31:29+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_fireballoon__baichuan-vicuna-chinese-7b": {
+    "date": "2023-08-18T11:13:19+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_flemmingmiguel__Distilled-HermesChat-7B": {
+    "date": "2024-01-13T17:44:12+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_flemmingmiguel__NeuDist-Ro-7B": {
+    "date": "2024-01-13T17:19:56+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_gagan3012__MetaModel_moe": {
+    "date": "2024-01-06T06:00:51+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_glaiveai__glaive-coder-7b": {
+    "date": "2023-09-22T05:33:36+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_h2m__mhm-7b-v1.3": {
+    "date": "2024-01-14T21:49:34+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_haoranxu__ALMA-13B": {
+    "date": "2023-12-09T15:46:54+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_heegyu__LIMA-13b-hf": {
+    "date": "2023-08-18T18:58:06+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_heegyu__LIMA2-7b-hf": {
+    "date": "2023-08-18T12:02:38+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_heegyu__RedTulu-Uncensored-3B-0719": {
+    "date": "2023-08-18T12:03:04+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_hfl__chinese-alpaca-2-13b-16k": {
+    "date": "2023-12-09T15:56:28+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_huangyt__Mistral-7B-v0.1-Open-Platypus_2.5w-r16-gate_up_down": {
+    "date": "2024-01-14T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_huggingface__llama-30b": {
+    "date": "2023-10-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_huggingface__llama-65b": {
+    "date": "2023-10-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_huggingface__llama-7b": {
+    "date": "2023-10-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_hyunseoki__ko-ref-llama2-13b": {
+    "date": "2023-10-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_hywu__Camelidae-8x13B": {
+    "date": "2024-01-10T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_itsliupeng__openllama-7b-base": {
+    "date": "2023-12-09T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jae24__openhermes_dpo_norobot_0201": {
+    "date": "2024-01-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_janhq__supermario-slerp": {
+    "date": "2023-12-12T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jarradh__llama2_70b_chat_uncensored": {
+    "date": "2023-10-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v1": {
+    "date": "2023-12-29T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jeonsworld__CarbonVillain-en-10.7B-v3": {
+    "date": "2023-12-30T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jilp00__Hermes-2-SOLAR-10.7B-Symbolic": {
+    "date": "2024-01-07T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-13b": {
+    "date": "2023-10-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-33b-gpt4-m2.0": {
+    "date": "2023-10-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-7b": {
+    "date": "2023-10-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-7b-gpt4-1.1": {
+    "date": "2023-10-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-7b-gpt4-1.4.1-qlora": {
+    "date": "2023-10-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-c34b-2.1": {
+    "date": "2023-10-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-c34b-2.2.1": {
+    "date": "2023-10-27T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-l2-70b-gpt4-m2.0": {
+    "date": "2023-10-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-l2-7b-gpt4-m2.0": {
+    "date": "2023-10-18T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__airoboros-m-7b-3.1.2": {
+    "date": "2023-11-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__bagel-7b-v0.1": {
+    "date": "2023-12-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__bagel-dpo-34b-v0.2": {
+    "date": "2024-01-05T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jondurbin__spicyboros-70b-2.2": {
+    "date": "2023-12-09T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_jphme__em_german_leo_mistral": {
+    "date": "2023-10-26T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kashif__stack-llama-2": {
+    "date": "2023-09-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kekmodel__StopCarbon-10.7B-v6": {
+    "date": "2024-01-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kevinpro__Vicuna-13B-CoT": {
+    "date": "2023-09-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kingbri__chronolima-airo-grad-l2-13B": {
+    "date": "2023-09-18T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_klosax__open_llama_13b_600bt_preview": {
+    "date": "2023-10-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kyujinpy__PlatYi-34B-200K-Q": {
+    "date": "2023-12-10T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kyujinpy__PlatYi-34B-200k-Q-FastChat": {
+    "date": "2023-12-10T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kyujinpy__PlatYi-34B-Llama": {
+    "date": "2023-12-08T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kyujinpy__PlatYi-34B-Llama-Q-v3": {
+    "date": "2023-12-14T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kyujinpy__Sakura-SOLAR-Instruct-DPO-v2": {
+    "date": "2023-12-29T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_kyujinpy__Sakura-SOLRCA-Instruct-DPO": {
+    "date": "2023-12-29T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_l3utterfly__mistral-7b-v0.1-layla-v1": {
+    "date": "2023-11-19T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_lilloukas__Platypus-30B": {
+    "date": "2023-09-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_liuda1__dm7b_sft_gpt88w_merge": {
+    "date": "2023-12-29T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_llm-agents__tora-7b-v1.0": {
+    "date": "2023-10-27T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_lmsys__vicuna-13b-v1.5-16k": {
+    "date": "2023-10-15T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_lmsys__vicuna-7b-v1.5": {
+    "date": "2023-10-21T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_lu-vae__llama2-13B-sharegpt4-orca-openplatypus-8w": {
+    "date": "2023-10-25T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_luffycodes__llama-shishya-7b-ep3-v1": {
+    "date": "2023-11-09T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_luffycodes__vicuna-class-shishya-ac-hal-13b-ep3": {
+    "date": "2023-12-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_macadeliccc__laser-dolphin-mixtral-2x7b-dpo": {
+    "date": "2024-01-14T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_macadeliccc__polyglot-math-4x7b": {
+    "date": "2024-01-14T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_martyn__llama-megamerge-dare-13b": {
+    "date": "2023-12-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_martyn__llama2-megamerge-dare-13b-v2": {
+    "date": "2023-12-18T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_martyn__mistral-megamerge-dare-7b": {
+    "date": "2023-12-16T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_maximuslee07__llama-2-7b-rockwell-final": {
+    "date": "2023-10-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_maywell__PiVoT-SUS-RP": {
+    "date": "2024-01-15T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_maywell__Synatra-7B-v0.3-RP": {
+    "date": "2023-11-18T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_maywell__Synatra-RP-Orca-2-7b-v0.1": {
+    "date": "2024-01-07T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_meta-math__MetaMath-Llemma-7B": {
+    "date": "2023-12-10T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_microsoft__phi-2": {
+    "date": "2024-04-15T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_migtissera__SynthIA-7B-v1.3": {
+    "date": "2023-10-28T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_migtissera__Tess-7B-v1.4": {
+    "date": "2023-12-07T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_migtissera__Tess-M-v1.3": {
+    "date": "2023-12-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_migtissera__Tess-XS-v1-3-yarn-128K": {
+    "date": "2023-12-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_mistralai__Mixtral-8x7B-v0.1": {
+    "date": "2024-01-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_mlabonne__NeuralMarcoro14-7B": {
+    "date": "2024-01-07T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_mncai__Llama2-7B-guanaco-1k": {
+    "date": "2023-10-24T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_moreh__MoMo-70B-lora-1.8.6-DPO": {
+    "date": "2024-01-16T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_mosaicml__mpt-30b-chat": {
+    "date": "2023-10-16T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_mosaicml__mpt-7b": {
+    "date": "2023-10-03T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_mrfakename__NeuralOrca-7B-v1": {
+    "date": "2023-12-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_nfaheem__Marcoroni-7b-DPO-Merge": {
+    "date": "2024-01-15T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_nlpguy__ColorShadow-7B": {
+    "date": "2023-12-30T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_notbdq__alooowso": {
+    "date": "2024-01-06T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_oh-yeontaek__llama-2-13B-LoRA-assemble": {
+    "date": "2023-10-28T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_one-man-army__una-neural-chat-v3-3-P2-OMA": {
+    "date": "2023-12-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_openaccess-ai-collective__DPOpenHermes-7B": {
+    "date": "2023-12-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_openaccess-ai-collective__manticore-13b": {
+    "date": "2023-09-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_openbmb__UltraLM-65b": {
+    "date": "2023-09-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_openlm-research__open_llama_7b": {
+    "date": "2023-10-18T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_openthaigpt__openthaigpt-1.0.0-beta-13b-chat-hf": {
+    "date": "2023-12-29T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_osanseviero__mistral-instruct-frankenmerge": {
+    "date": "2024-01-10T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_pe-nlp__llama-2-13b-platypus-vicuna-wizard": {
+    "date": "2023-09-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2": {
+    "date": "2023-12-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2.03": {
+    "date": "2023-12-11T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_perlthoughts__Chupacabra-7B-v2.03-128k": {
+    "date": "2023-12-11T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_perlthoughts__Chupacabra-8x7B-MoE": {
+    "date": "2023-12-16T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_perlthoughts__Falkor-7b": {
+    "date": "2023-12-09T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_perlthoughts__Starling-LM-alpha-8x7B-MoE": {
+    "date": "2023-12-16T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_psmathur__orca_mini_v3_7b": {
+    "date": "2023-10-18T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_qblocks__codellama_7b_DolphinCoder": {
+    "date": "2024-01-05T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_rishiraj__CatPPT-base": {
+    "date": "2023-12-18T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_rishiraj__oswald-2x7b": {
+    "date": "2024-01-11T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_rishiraj__oswald-7b": {
+    "date": "2024-01-11T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_rombodawg__Leaderboard-killer-MoE_4x7b": {
+    "date": "2024-01-16T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_rombodawg__LosslessMegaCoder-llama2-7b-mini": {
+    "date": "2023-09-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_rombodawg__Open_Gpt4_8x7B": {
+    "date": "2024-01-06T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_rwitz2__pee": {
+    "date": "2023-12-12T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_shadowml__Daredevil-7B": {
+    "date": "2024-01-06T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_shadowml__Marcoro14-7B-ties": {
+    "date": "2024-01-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_shareAI__CodeLLaMA-chat-13b-Chinese": {
+    "date": "2023-09-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_shareAI__bimoGPT-llama2-13b": {
+    "date": "2023-09-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_simonveitner__MathHermes-2.5-Mistral-7B": {
+    "date": "2023-12-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_speechlessai__speechless-mistral-7b-dare-0.85": {
+    "date": "2023-11-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_spmurrayzzz__Mistral-Syndicate-7B": {
+    "date": "2023-12-30T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_sr5434__CodegebraGPT-10b": {
+    "date": "2024-01-05T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_stabilityai__StableBeluga-13B": {
+    "date": "2023-10-15T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_superlazycoder__NeuralPipe-7B-slerp": {
+    "date": "2024-01-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_teknium__CollectiveCognition-v1-Mistral-7B": {
+    "date": "2023-10-29T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_teknium__Mistral-Trismegistus-7B": {
+    "date": "2023-10-25T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_togethercomputer__GPT-JT-6B-v0": {
+    "date": "2023-10-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_togethercomputer__Llama-2-7B-32K-Instruct": {
+    "date": "2023-10-25T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V2-16k": {
+    "date": "2023-09-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_totally-not-an-llm__EverythingLM-13b-V3-peft": {
+    "date": "2023-10-24T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_udkai__Turdus": {
+    "date": "2024-01-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_umd-zhou-lab__claude2-alpaca-13B": {
+    "date": "2024-01-10T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_umd-zhou-lab__recycled-wizardlm-7b-v2.0": {
+    "date": "2024-01-10T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_upaya07__Birbal-7B-V1": {
+    "date": "2023-12-19T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_upstage__llama-65b-instruct": {
+    "date": "2023-10-24T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_uukuguy__speechless-code-mistral-7b-v2.0": {
+    "date": "2024-01-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_uukuguy__speechless-coder-ds-6.7b": {
+    "date": "2023-12-30T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_vikash06__mistral_v1": {
+    "date": "2023-12-29T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_wahaha1987__llama_13b_sharegpt94k_fastchat": {
+    "date": "2023-10-13T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_wang7776__Llama-2-7b-chat-hf-10-sparsity": {
+    "date": "2023-12-11T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_wang7776__Mistral-7B-Instruct-v0.2-sparsity-20": {
+    "date": "2024-01-15T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_webbigdata__ALMA-7B-Ja-V2": {
+    "date": "2023-12-09T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_wei123602__llama2-13b-FINETUNE3_TEST": {
+    "date": "2023-10-24T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_wenge-research__yayi-7b": {
+    "date": "2023-09-23T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_xDAN-AI__xDAN-L1Mix-DeepThinking-v2": {
+    "date": "2023-12-20T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_xxyyy123__Mistral7B_adaptor_v1": {
+    "date": "2023-12-04T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_xzuyn__Alpacino-SuperCOT-13B": {
+    "date": "2023-10-14T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_yeontaek__WizardCoder-Python-13B-LoRa": {
+    "date": "2023-10-22T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_zarakiquemparte__kuchiki-l2-7b": {
+    "date": "2023-10-27T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_zhengr__MixTAO-7Bx2-MoE-DPO": {
+    "date": "2024-01-17T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_zyh3826__GML-Mistral-merged-v1": {
+    "date": "2023-12-27T00:00:00+00:00",
+    "source": "leaderboard_results"
+  },
+  "open-llm-leaderboard/details_zyh3826__llama2-13b-ft-openllm-leaderboard-v1": {
+    "date": "2023-12-09T00:00:00+00:00",
+    "source": "leaderboard_results"
+  }
+}

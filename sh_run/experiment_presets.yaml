@@ -143,3 +143,84 @@ presets:
     n_isolated_per_chain: 50
     bridge_mode: random
 
+  # ============================================================================
+  # Reviewer additions (alternative splits, stress tests, new baseline).
+  # All reuse the standard paper settings and toggle one new flag. The original
+  # random-split presets above are unchanged.
+  # ============================================================================
+
+  # --- Alternative model splits ---
+  lb_time_ordered:
+    description: "LB, chronological reference/test split (earliest=ref, latest=test)"
+    data_source_mode: lb
+    n_base: 1
+    max_chain: 5
+    n_anchors: 100
+    split_mode: time_ordered
+
+  lb_family_holdout:
+    description: "LB, hold out entire model families (see config/holdout_families_lb.json)"
+    data_source_mode: lb
+    n_base: 1
+    max_chain: 5
+    n_anchors: 100
+    split_mode: family_holdout
+
+  mmlu_time_ordered:
+    description: "MMLU, chronological reference/test split"
+    data_source_mode: mmlu_fields
+    n_base: 8
+    max_chain: 10
+    n_anchors: 10
+    split_mode: time_ordered
+
+  mmlu_family_holdout:
+    description: "MMLU, hold out entire model families (config/holdout_families_mmlu.json)"
+    data_source_mode: mmlu_fields
+    n_base: 8
+    max_chain: 10
+    n_anchors: 10
+    split_mode: family_holdout
+
+  # --- Out-of-domain stress test ---
+  mmlu_stem_stress:
+    description: "MMLU OOD stress: calibrate only on STEM subjects (added sequentially)"
+    data_source_mode: mmlu_fields
+    n_base: 1
+    max_chain: 10
+    n_anchors: 10
+    subject_group: stem
+
+  mmlu_math_stress:
+    description: "MMLU OOD stress: tighter math-only subject cluster"
+    data_source_mode: mmlu_fields
+    n_base: 1
+    max_chain: 4
+    n_anchors: 10
+    subject_group: math
+
+  lb_gsm8k_stress:
+    description: "LB OOD stress: GSM8K held out as the final dataset in the chain"
+    data_source_mode: lb
+    n_base: 1
+    max_chain: 5
+    n_anchors: 100
+    target_dataset: GSM8K
+
+  # --- Stratified-by-difficulty anchor baseline ---
+  lb_stratified:
+    description: "LB, anchors stratified by item difficulty (instead of random/clustering)"
+    data_source_mode: lb
+    n_base: 1
+    max_chain: 5
+    n_anchors: 100
+    anchor_method: stratified_difficulty
+
+  mmlu_stratified:
+    description: "MMLU, anchors stratified by item difficulty"
+    data_source_mode: mmlu_fields
+    n_base: 8
+    max_chain: 10
+    n_anchors: 10
+    anchor_method: stratified_difficulty
+

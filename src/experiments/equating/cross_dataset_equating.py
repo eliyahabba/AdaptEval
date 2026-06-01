@@ -1574,6 +1574,46 @@ def select_anchors(
             print(f"      Warning: {dataset} has only {len(ds_items)} items, skipping")
             continue
 
+        # Fast path for stratified_difficulty (reviewer baseline): sample anchors
+        # stratified across item difficulty instead of randomly/by clustering.
+        # Difficulty proxy = raw accuracy on reference models (mean normalized_score
+        # per item); ties broken by IRT difficulty when available, else question id.
+        if clustering_method == "stratified_difficulty":
+            ds_train_df = train_df[train_df['dataset'] == dataset]
+            if 'normalized_score' in ds_train_df.columns and len(ds_train_df) > 0:
+                difficulty = ds_train_df.groupby('question_id')['normalized_score'].mean()
+            else:
+                # Fall back to IRT difficulty column if raw accuracy unavailable.
+                diff_col = next((c for c in ('b', 'd', 'difficulty') if c in ds_items.columns), None)
+                difficulty = ds_items[diff_col] if diff_col else pd.Series(
+                    np.arange(len(ds_items)), index=ds_items.index)
+            difficulty = difficulty[difficulty.index.isin(ds_items.index)]
+            if len(difficulty) == 0:
+                print(f"      Warning: no difficulty signal for {dataset}, skipping")
+                continue
+            # Sort by difficulty (deterministic mergesort) then take evenly spaced
+            # positions so every difficulty stratum is represented.
+            ids_sorted = list(difficulty.sort_values(kind='mergesort').index)
+            n_sel = min(n_anchors, len(ids_sorted))
+            positions = np.linspace(0, len(ids_sorted) - 1, n_sel).round().astype(int)
+            seen = []
+            for p in positions:
+                if ids_sorted[p] not in seen:
+                    seen.append(ids_sorted[p])
+            # Backfill if rounding produced duplicates so we still return n_sel anchors.
+            if len(seen) < n_sel:
+                for qid in ids_sorted:
+                    if qid not in seen:
+                        seen.append(qid)
+                    if len(seen) >= n_sel:
+                        break
+            anchor_ids = [str(q) for q in seen]
+            anchor_weights = [1.0 / max(len(anchor_ids), 1)] * len(anchor_ids)
+            all_anchor_ids.extend(anchor_ids)
+            all_anchor_weights.extend(anchor_weights)
+            print(f"      ✓ {dataset}: {len(anchor_ids)} anchors selected (method={clustering_method})")
+            continue
+
         # Fast path for top_k_discrimination: skip O(n²) MIRT index lookup
         if clustering_method == "top_k_discrimination":
             from llm_eval.selection.tinyBenchmarks.anchors import find_anchor_items_top_k_discrimination

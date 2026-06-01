@@ -169,7 +169,9 @@ EPOCHS=""
 EPOCHS_FIXED=""
 TEST_RATIO=""
 NUM_WORKERS=""
-ANCHOR_METHOD=""  # Optional: irt_clustering | top_k_discrimination | correctness_clustering (passed to chain_linking_parallel.py)
+ANCHOR_METHOD=""  # Optional: irt_clustering | top_k_discrimination | correctness_clustering | stratified_difficulty
+SPLIT_MODE=""     # Optional: random (default) | time_ordered | family_holdout
+SUBJECT_GROUP=""  # Optional (MMLU stress test): stem | math
 
 # Disjoint-specific parameters
 N_BRIDGE_MODELS=""
@@ -259,6 +261,14 @@ while [[ $# -gt 0 ]]; do
             ANCHOR_METHOD="$2"
             shift 2
             ;;
+        --split-mode)
+            SPLIT_MODE="$2"
+            shift 2
+            ;;
+        --subject-group)
+            SUBJECT_GROUP="$2"
+            shift 2
+            ;;
         --save-item-params-dir)
             SAVE_ITEM_PARAMS_DIR="$2"
             shift 2
@@ -337,6 +347,8 @@ if [ -n "$PRESET" ]; then
     CLI_NUM_WORKERS="$NUM_WORKERS"
     CLI_RANDOM_SEED="$RANDOM_SEED"
     CLI_ANCHOR_METHOD="$ANCHOR_METHOD"
+    CLI_SPLIT_MODE="$SPLIT_MODE"
+    CLI_SUBJECT_GROUP="$SUBJECT_GROUP"
     
     # Load preset configuration
     eval $(parse_yaml "$PRESET_FILE" "$PRESET")
@@ -353,6 +365,8 @@ if [ -n "$PRESET" ]; then
     [ -n "$CLI_NUM_WORKERS" ] && NUM_WORKERS="$CLI_NUM_WORKERS"
     [ -n "$CLI_RANDOM_SEED" ] && RANDOM_SEED="$CLI_RANDOM_SEED"
     [ -n "$CLI_ANCHOR_METHOD" ] && ANCHOR_METHOD="$CLI_ANCHOR_METHOD"
+    [ -n "$CLI_SPLIT_MODE" ] && SPLIT_MODE="$CLI_SPLIT_MODE"
+    [ -n "$CLI_SUBJECT_GROUP" ] && SUBJECT_GROUP="$CLI_SUBJECT_GROUP"
 fi
 
 # Set defaults if still empty
@@ -524,6 +538,8 @@ echo "  EPOCHS: $EPOCHS"
 echo "  EPOCHS_FIXED: $EPOCHS_FIXED"
 echo "  NUM_WORKERS: $NUM_WORKERS"
 echo "  ANCHOR_METHOD: ${ANCHOR_METHOD:-default}"
+echo "  SPLIT_MODE: ${SPLIT_MODE:-random}"
+echo "  SUBJECT_GROUP: ${SUBJECT_GROUP:-none}"
 echo ""
 echo "SLURM Resources (override at submission with sbatch --mem=Xg --time=H:M:S):"
 echo "  Defaults: 10g RAM, 6 hours, 4 GPUs, 2 CPUs"
@@ -662,6 +678,12 @@ else
     
     if [ -n "$ANCHOR_METHOD" ]; then
         ARGS="$ARGS --anchor-method ${ANCHOR_METHOD}"
+    fi
+    if [ -n "$SPLIT_MODE" ]; then
+        ARGS="$ARGS --split-mode ${SPLIT_MODE}"
+    fi
+    if [ -n "$SUBJECT_GROUP" ]; then
+        ARGS="$ARGS --subject-group ${SUBJECT_GROUP}"
     fi
     
     if [ -n "$N_MODELS_PER_CHAIN" ] && [ "$N_MODELS_PER_CHAIN" != "null" ]; then
