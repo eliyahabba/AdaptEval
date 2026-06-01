@@ -88,6 +88,7 @@ from src.experiments.chain_linking.model_families import (
     holdout_config_for_suite,
 )
 from src.experiments.chain_linking.subject_groups import datasets_in_group
+from src.experiments.chain_linking.rank_metrics import compute_rank_metrics
 
 
 # =============================================================================
@@ -102,6 +103,22 @@ DEBUG_EPOCHS = 10
 DEBUG_N_ANCHORS = 10
 
 ERROR_METRICS = ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']
+
+# Prediction columns -> short method name, used for the reviewer rank-stability
+# metrics (computed inline alongside the error metrics, no re-evaluation).
+PREDICTION_COLS = {
+    'gp_irt_prediction': 'gp_irt',
+    'anchor_prediction': 'anchor',
+    'irt_prediction': 'irt',
+    'pirt_prediction': 'pirt',
+}
+# Metric keys emitted by rank_metrics.compute_rank_metrics (top{k}_overlap added
+# dynamically). These sit alongside the existing *_error_mean summary fields.
+RANK_METRIC_KEYS = (
+    'spearman_rho', 'pairwise_flip_rate', 'adjacent_flip_rate',
+    'adjacent_gap_mae', 'top_model_abs_error', 'top1_identified',
+)
+RANK_TOPK = (1, 5, 10)
 
 # Datasets to exclude from experiments (degenerate: near-zero mean, near-zero model variance)
 # These make random baseline look artificially good because all models score ~0
@@ -1357,6 +1374,41 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
         'min_anchors_per_eval_dataset': int(min(anchor_counts_by_dataset.values())) if anchor_counts_by_dataset else 0,
     }
     
+    def _rank_metrics_for(sub, pred_col):
+        """Reviewer rank-stability metrics for one (true, pred) slice. None if too few models."""
+        cols = sub[['model_name', 'true_performance', pred_col]].dropna()
+        cols = cols.drop_duplicates(subset='model_name')
+        if len(cols) < 3:
+            return None
+        return compute_rank_metrics(
+            cols['true_performance'].to_numpy(dtype=float),
+            cols[pred_col].to_numpy(dtype=float),
+            k_values=RANK_TOPK,
+        )
+
+    def add_rank_metrics(df, prefix):
+        """Add reviewer rank-stability metrics (flat over all rows) per prediction method.
+
+        Additive only: emits new ``{prefix}_{method}_<metric>`` keys alongside the
+        existing error means. Reuses prediction columns already in the validation df,
+        so it triggers no re-evaluation and never changes the legacy numbers.
+        """
+        if df is None or len(df) == 0 or 'true_performance' not in df.columns:
+            return
+        for pred_col, method in PREDICTION_COLS.items():
+            if pred_col not in df.columns:
+                continue
+            m = _rank_metrics_for(df, pred_col)
+            if m is None:
+                continue
+            for key in RANK_METRIC_KEYS:
+                if key in m:
+                    result[f'{prefix}_{method}_{key}'] = m[key]
+            for k in RANK_TOPK:
+                ok = f'top{k}_overlap'
+                if ok in m:
+                    result[f'{prefix}_{method}_{ok}'] = m[ok]
+
     # Helper to add metrics from a validation DataFrame (flat mean across all rows)
     def add_metrics(df, prefix):
         if df is not None and len(df) > 0:
@@ -1370,6 +1422,7 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             if 'true_performance' in df.columns:
                 result[f'{prefix}_true_perf_mean'] = df['true_performance'].mean()
                 result[f'{prefix}_true_perf_std'] = df['true_performance'].std()
+            add_rank_metrics(df, prefix)
     
     # Helper to add metrics using mean-of-means (first average per dataset, then across datasets)
     # This ensures each dataset has equal weight regardless of size
@@ -1416,6 +1469,24 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             if per_dataset_perf:
                 result[f'{prefix}_true_perf_mean'] = np.mean(per_dataset_perf)
                 result[f'{prefix}_true_perf_std'] = np.std(per_dataset_perf)
+
+        # Reviewer rank-stability metrics: compute per dataset, then average across
+        # datasets (same mean-of-means weighting as the error metrics above).
+        if 'true_performance' in df.columns:
+            for pred_col, method in PREDICTION_COLS.items():
+                if pred_col not in df.columns:
+                    continue
+                per_ds_metrics: dict[str, list[float]] = {}
+                for ds in datasets:
+                    m = _rank_metrics_for(df[df[dataset_col] == ds], pred_col)
+                    if m is None:
+                        continue
+                    for key in (*RANK_METRIC_KEYS, *(f'top{k}_overlap' for k in RANK_TOPK)):
+                        if key in m and not (isinstance(m[key], float) and np.isnan(m[key])):
+                            per_ds_metrics.setdefault(key, []).append(m[key])
+                for key, vals in per_ds_metrics.items():
+                    if vals:
+                        result[f'{prefix}_{method}_{key}'] = float(np.mean(vals))
     
     # Add metrics for all three validation types
     # Validation 1 & 2: single dataset (target) - use flat mean
