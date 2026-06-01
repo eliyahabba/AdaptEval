@@ -1488,6 +1488,60 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                     if vals:
                         result[f'{prefix}_{method}_{key}'] = float(np.mean(vals))
     
+    def add_baseline_rank_metrics(df, prefix):
+        """Reviewer rank-stability metrics for a baseline per-model df (random / topk).
+
+        Baseline per-model frames store predictions as ``<method>_prediction[_mean]`` and
+        truth as ``<method>_true_performance_mean`` (or ``true_performance``). This emits
+        ``{prefix}_{method}_<metric>`` keys that line up 1:1 with the existing
+        ``{prefix}_{method}_error_mean`` columns, so every baseline gets the same rank
+        metrics as the IRT methods. Multi-dataset frames use mean-of-means weighting.
+        """
+        if df is None or len(df) == 0 or 'model_name' not in df.columns:
+            return
+        true_col = ('true_performance' if 'true_performance' in df.columns
+                    else next((c for c in df.columns if c.endswith('_true_performance_mean')), None))
+        if true_col is None:
+            return
+        pred_cols = [c for c in df.columns
+                     if c.endswith('_prediction_mean') or c.endswith('_prediction')]
+        if not pred_cols:
+            return
+        dataset_col = next((c for c in ('scenario_name', 'dataset', 'dataset_name')
+                            if c in df.columns), None)
+        keys = (*RANK_METRIC_KEYS, *(f'top{k}_overlap' for k in RANK_TOPK))
+
+        def _metrics_on(sub, pred_col):
+            cols = sub[['model_name', true_col, pred_col]].dropna().drop_duplicates('model_name')
+            if len(cols) < 3:
+                return None
+            return compute_rank_metrics(
+                cols[true_col].to_numpy(dtype=float),
+                cols[pred_col].to_numpy(dtype=float), k_values=RANK_TOPK)
+
+        for pred_col in pred_cols:
+            method = (pred_col[:-len('_prediction_mean')] if pred_col.endswith('_prediction_mean')
+                      else pred_col[:-len('_prediction')])
+            keybase = f'{prefix}_{method}' if prefix else method
+            if dataset_col:
+                acc: dict[str, list[float]] = {}
+                for ds in df[dataset_col].unique():
+                    m = _metrics_on(df[df[dataset_col] == ds], pred_col)
+                    if m is None:
+                        continue
+                    for k in keys:
+                        if k in m and not (isinstance(m[k], float) and np.isnan(m[k])):
+                            acc.setdefault(k, []).append(m[k])
+                for k, vals in acc.items():
+                    if vals:
+                        result[f'{keybase}_{k}'] = float(np.mean(vals))
+            else:
+                m = _metrics_on(df, pred_col)
+                if m:
+                    for k in keys:
+                        if k in m and not (isinstance(m[k], float) and np.isnan(m[k])):
+                            result[f'{keybase}_{k}'] = m[k]
+
     # Add metrics for all three validation types
     # Validation 1 & 2: single dataset (target) - use flat mean
     add_metrics(validation_df, 'new_model_new_data')
@@ -1552,6 +1606,22 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     # Add PROPORTIONAL Random with GP-IRT for Validation 3 (fair comparison with Proportional IRT)
     for key, val in proportional_random_irt_new_model_old_data.items():
         result[f'new_model_old_data_{key}'] = val
+
+    # Reviewer rank-stability metrics for the BASELINES (random / discriminative-topk),
+    # mirroring the error-mean key namespace so every method is comparable on the new
+    # metrics (not just the IRT methods). Post-hoc over per-model predictions; no re-eval.
+    add_baseline_rank_metrics(discriminative_baseline_per_model_df, '')
+    add_baseline_rank_metrics(random_baseline_per_model_df, '')
+    add_baseline_rank_metrics(random_simple_per_model_df, '')
+    add_baseline_rank_metrics(discriminative_baseline_all_train_per_model_df, 'all_train_new_data')
+    add_baseline_rank_metrics(random_baseline_all_train_per_model_df, 'all_train_new_data')
+    add_baseline_rank_metrics(random_simple_all_train_per_model_df, 'all_train_new_data')
+    add_baseline_rank_metrics(discriminative_baseline_old_model_per_model_df, 'old_model_new_data')
+    add_baseline_rank_metrics(random_baseline_old_model_per_model_df, 'old_model_new_data')
+    add_baseline_rank_metrics(random_simple_old_model_per_model_df, 'old_model_new_data')
+    add_baseline_rank_metrics(discriminative_baseline_new_model_old_data_per_model_df, 'new_model_old_data')
+    add_baseline_rank_metrics(random_baseline_new_model_old_data_per_model_df, 'new_model_old_data')
+    add_baseline_rank_metrics(random_simple_new_model_old_data_per_model_df, 'new_model_old_data')
 
     # Add comparison results if they exist
     if validation_comparison_results:

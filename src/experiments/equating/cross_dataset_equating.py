@@ -1223,6 +1223,40 @@ def select_anchors_for_dataset(
         print(f"      Warning: {dataset_name} has only {len(ds_items)} items, need at least 5")
         return [], []
     
+    # Stratified-by-difficulty (reviewer baseline): sample anchors evenly across the
+    # item-difficulty spectrum. Mirrors the branch in ``select_anchors`` so the FIXED
+    # calibration path supports this method too (otherwise the fixed regime fails and
+    # only concurrent results are produced). Needs no A/B matrices.
+    if method == "stratified_difficulty":
+        ds_train_df = train_df[train_df['dataset'] == dataset_name]
+        if 'normalized_score' in ds_train_df.columns and len(ds_train_df) > 0:
+            difficulty = ds_train_df.groupby('question_id')['normalized_score'].mean()
+        else:
+            diff_col = next((c for c in ('b', 'd', 'difficulty') if c in ds_items.columns), None)
+            difficulty = ds_items[diff_col] if diff_col else pd.Series(
+                np.arange(len(ds_items)), index=ds_items.index)
+        difficulty = difficulty[difficulty.index.isin(ds_items.index)]
+        if len(difficulty) == 0:
+            print(f"      Warning: no difficulty signal for {dataset_name}, skipping")
+            return [], []
+        ids_sorted = list(difficulty.sort_values(kind='mergesort').index)
+        n_sel = min(n_anchors, len(ids_sorted))
+        positions = np.linspace(0, len(ids_sorted) - 1, n_sel).round().astype(int)
+        seen: list = []
+        for p in positions:
+            if ids_sorted[p] not in seen:
+                seen.append(ids_sorted[p])
+        if len(seen) < n_sel:
+            for qid in ids_sorted:
+                if qid not in seen:
+                    seen.append(qid)
+                if len(seen) >= n_sel:
+                    break
+        anchor_ids = [str(q) for q in seen]
+        uniform_w = [1.0 / max(len(anchor_ids), 1)] * len(anchor_ids)
+        print(f"      ✓ {dataset_name}: {len(anchor_ids)} anchors selected (method={method})")
+        return anchor_ids, uniform_w
+
     # For top_k_discrimination, skip the expensive O(n²) MIRT index lookup entirely —
     # the method only needs item_params["a"] and doesn't use A/B matrices at all.
     if method == "top_k_discrimination":
