@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import defaultdict
 from glob import glob
 from pathlib import Path
@@ -57,17 +58,23 @@ RANK_METRICS = (
     "top_model_abs_error", "top1_identified",
 )
 
-# experiment -> human label / what was promised to reviewers
+# experiment -> human label / what was promised to reviewers. Keys match the preset
+# name (the rebuttal_v2 dirs are named "{preset}_seed{N}"; seeds are aggregated).
 EXP_INFO = {
-    "lb_time": "LB time-ordered split",
-    "mmlu_time": "MMLU time-ordered split",
-    "lb_family": "LB family-held-out split",
-    "mmlu_family": "MMLU family-held-out split",
-    "mmlu_stem": "MMLU OOD stress (STEM only)",
-    "mmlu_math": "MMLU OOD stress (math only)",
-    "lb_gsm8k": "LB OOD stress (GSM8K held to end)",
-    "lb_strat": "LB stratified-by-difficulty anchors",
-    "mmlu_strat": "MMLU stratified-by-difficulty anchors",
+    "lb_time_ordered": "LB time-ordered split",
+    "mmlu_time_ordered": "MMLU time-ordered split",
+    "lb_family_holdout": "LB family-held-out split",
+    "mmlu_family_holdout": "MMLU family-held-out split",
+    "mmlu_stem_stress": "MMLU OOD stress (STEM only)",
+    "mmlu_math_stress": "MMLU OOD stress (math only)",
+    "lb_gsm8k_stress": "LB OOD stress (GSM8K held to end)",
+    "lb_stratified": "LB stratified-by-difficulty anchors",
+    "mmlu_stratified": "MMLU stratified-by-difficulty anchors",
+    # legacy single-seed dir names (data/rebuttal)
+    "lb_time": "LB time-ordered split", "mmlu_time": "MMLU time-ordered split",
+    "lb_family": "LB family-held-out split", "mmlu_family": "MMLU family-held-out split",
+    "mmlu_stem": "MMLU OOD stress (STEM only)", "lb_gsm8k": "LB OOD stress (GSM8K held to end)",
+    "lb_strat": "LB stratified-by-difficulty anchors", "mmlu_strat": "MMLU stratified-by-difficulty anchors",
 }
 
 
@@ -75,24 +82,29 @@ def _col(df: pd.DataFrame, name: str) -> pd.Series:
     return df[name] if name in df.columns else pd.Series([np.nan] * len(df))
 
 
-def load_experiment(exp_dir: Path) -> tuple[list[pd.DataFrame], dict]:
-    """Return (list of per-run all_results DataFrames, merged meta)."""
+def load_experiment(seed_dirs: list[Path]) -> tuple[list[pd.DataFrame], dict]:
+    """Return (list of per-run all_results DataFrames across seeds, merged meta).
+
+    ``seed_dirs`` is one or more top-level dirs for the same preset (one per seed).
+    Each may itself contain run subdirs (target variants).
+    """
     runs, meta = [], {}
-    for run in sorted(exp_dir.glob("*/")):
-        res = run / "all_results.csv"
-        if not res.exists():
-            continue
-        df = pd.read_csv(res)
-        cfg_path = run / "config.json"
-        if cfg_path.exists():
-            cfg = json.loads(cfg_path.read_text())
-            meta = {
-                "split_mode": cfg.get("split_mode"),
-                "subject_group": cfg.get("subject_group"),
-                "target_dataset": cfg.get("target_dataset"),
-                "n_test_models": cfg.get("n_test_models"),
-            }
-        runs.append(df)
+    for seed_dir in seed_dirs:
+        for run in sorted(seed_dir.glob("*/")):
+            res = run / "all_results.csv"
+            if not res.exists():
+                continue
+            df = pd.read_csv(res)
+            cfg_path = run / "config.json"
+            if cfg_path.exists() and not meta:
+                cfg = json.loads(cfg_path.read_text())
+                meta = {
+                    "split_mode": cfg.get("split_mode"),
+                    "subject_group": cfg.get("subject_group"),
+                    "target_dataset": cfg.get("target_dataset"),
+                    "n_test_models": cfg.get("n_test_models"),
+                }
+            runs.append(df)
     return runs, meta
 
 
@@ -225,12 +237,20 @@ def main() -> int:
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
-    exp_dirs = [d for d in sorted(args.rebuttal_dir.glob("*/")) if d.is_dir()]
+    # Group top-level dirs by preset, stripping a trailing _seed<N> so multiple seeds
+    # of the same experiment aggregate together.
+    groups: dict[str, list[Path]] = defaultdict(list)
+    for d in sorted(args.rebuttal_dir.glob("*/")):
+        if not d.is_dir():
+            continue
+        exp = re.sub(r"_seed\d+$", "", d.name)
+        groups[exp].append(d)
+
     all_rows = []
     status = []
-    for exp_dir in exp_dirs:
-        exp = exp_dir.name
-        runs, meta = load_experiment(exp_dir)
+    for exp, seed_dirs in sorted(groups.items()):
+        runs, meta = load_experiment(seed_dirs)
+        n_seeds = len(seed_dirs)
         if not runs:
             status.append((exp, "no completed runs", 0, "-"))
             continue
@@ -241,7 +261,7 @@ def main() -> int:
         has_topk = rdf[rdf.method == "discriminative_gp_irt"]["spearman_rho"].notna().any()
         note = ("fixed+concurrent" if has_fixed else "concurrent ONLY")
         note += ", baseline-rankmetrics" if has_topk else ""
-        status.append((exp, "ok", len(runs), note))
+        status.append((exp, f"{n_seeds} seed(s), {len(runs)} run(s)", len(runs), note))
 
     tidy = pd.DataFrame(all_rows)
     tidy.to_csv(args.out / "rebuttal_metrics_tidy.csv", index=False)
@@ -267,7 +287,7 @@ def main() -> int:
     # console report
     print("\n=== Rebuttal experiment status ===")
     for exp, st, n, regimes in status:
-        print(f"  {exp:14s} {st:18s} runs={n}  regimes={regimes}")
+        print(f"  {exp:22s} {st:22s} | {regimes}")
     print(f"\nWrote: {args.out}/rebuttal_metrics_tidy.csv, rebuttal_summary.csv, fig_rebuttal_*.pdf")
     print("\n=== Summary (mean over distance>=1, Scenario 2: old_model_new_data, primary regime) ===")
     s2 = sm[(sm.scenario == "old_model_new_data")]
