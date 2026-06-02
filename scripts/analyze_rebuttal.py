@@ -42,14 +42,23 @@ REGIME_LABEL = {"fixed": "Fixed Calibration", "concurrent": "Concurrent"}
 REGIME_COLOR = {"fixed": "#009E73", "concurrent": "#D55E00", "random": "#0072B2"}
 REGIME_MARKER = {"fixed": "o", "concurrent": "s", "random": "^"}
 
-# Methods compared within each regime: our IRT estimate vs the two baselines
-# (random anchors and top-k discrimination). All share the same column pattern
-# {regime}_{scenario}_{method}_<metric>, so extraction is uniform.
+# Methods extracted into the tidy table (per regime): our gp-IRT estimate plus the
+# two baselines. All share the column pattern {regime}_{scenario}_{method}_<metric>.
 METHODS = {
     "gp_irt": ("gp-IRT (ours)", "#009E73", "o", "-"),
     "simple_random": ("Random anchors", "#0072B2", "^", "--"),
     "discriminative_gp_irt": ("Top-K discrim.", "#CC79A7", "D", "-."),
 }
+
+# Series drawn in every figure panel: BOTH of our calibration variants
+# (Fixed + Concurrent) and the two baselines. Tuple = (regime, method, label,
+# color, marker, linestyle). Baselines fall back to the other regime if missing.
+SERIES = [
+    ("fixed",      "gp_irt",                "Fixed Calib. (ours)", "#009E73", "o", "-"),
+    ("concurrent", "gp_irt",                "Concurrent (ours)",   "#D55E00", "s", "-"),
+    ("fixed",      "simple_random",         "Random anchors",      "#0072B2", "^", "--"),
+    ("fixed",      "discriminative_gp_irt", "Top-K discrim.",      "#CC79A7", "D", "-."),
+]
 
 # rank-stability metrics emitted inline by the pipeline (per regime/scenario/method)
 RANK_METRICS = (
@@ -139,60 +148,50 @@ def _series(df: pd.DataFrame, regime: str, method: str, col: str) -> tuple[np.nd
     return g.index.to_numpy(), g.to_numpy()
 
 
-def _primary_regime(sub: pd.DataFrame) -> str:
-    """Prefer 'fixed' (paper headline) if it has gp_irt data, else 'concurrent'."""
-    fixed_gp = sub[(sub.regime == "fixed") & (sub.method == "gp_irt")]["mae"].notna().any() or \
-        sub[(sub.regime == "fixed") & (sub.method == "gp_irt")]["spearman_rho"].notna().any()
-    return "fixed" if fixed_gp else "concurrent"
+def _series_fallback(df: pd.DataFrame, regime: str, method: str, col: str):
+    """Like _series but for baselines fall back to the other regime if empty."""
+    x, y = _series(df, regime, method, col)
+    if len(x) == 0 and method != "gp_irt":
+        other = "concurrent" if regime == "fixed" else "fixed"
+        x, y = _series(df, other, method, col)
+    return x, y
 
 
 def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Path):
     sub = tidy[(tidy.experiment == exp) & (tidy.scenario == scenario)]
     if sub["mae"].notna().sum() == 0 and sub["spearman_rho"].notna().sum() == 0:
         return False
-    reg = _primary_regime(sub)
     fig, axes = plt.subplots(1, 4, figsize=(20, 4.2))
     meta = sub.iloc[0]
     title = f"{EXP_INFO.get(exp, exp)}  |  split={meta['split_mode']}"
     if meta["subject_group"] and str(meta["subject_group"]) != "None":
         title += f", group={meta['subject_group']}"
-    title += (f"  |  {SCENARIO_TITLE[scenario]}  |  regime={REGIME_LABEL[reg]}"
-              f"  (target={meta['target']})")
+    title += f"  |  {SCENARIO_TITLE[scenario]}  (target={meta['target']})"
     fig.suptitle(title, fontsize=12)
 
-    def plot_methods(ax, col):
-        for method, (label, color, marker, ls) in METHODS.items():
-            x, y = _series(sub, reg, method, col)
+    def plot_series(ax, col):
+        for regime, method, label, color, marker, ls in SERIES:
+            x, y = _series_fallback(sub, regime, method, col)
             if len(x):
                 ax.plot(x, y, marker=marker, color=color, linestyle=ls, label=label)
 
-    # Panel 1: MAE vs distance (ours vs baselines) + concurrent gp-IRT reference
     ax = axes[0]
-    plot_methods(ax, "mae")
-    xc, yc = _series(sub, "concurrent", "gp_irt", "mae")
-    if reg != "concurrent" and len(xc):
-        ax.plot(xc, yc, marker="s", color="#D55E00", linestyle=":", label="gp-IRT (concurrent)")
+    plot_series(ax, "mae")
     ax.set_xlabel("Chain distance"); ax.set_ylabel("MAE"); ax.set_title("Estimation error")
     ax.legend(fontsize=8)
 
-    # Panel 2: Spearman rho (ours vs baselines)
     ax = axes[1]
-    plot_methods(ax, "spearman_rho")
+    plot_series(ax, "spearman_rho")
     ax.set_xlabel("Chain distance"); ax.set_ylabel("Spearman \u03c1"); ax.set_title("Rank correlation")
     ax.set_ylim(0, 1.02); ax.legend(fontsize=8)
 
-    # Panel 3: top-5 overlap (ours vs baselines) + ours top-10
     ax = axes[2]
-    plot_methods(ax, "top5_overlap")
-    x, y = _series(sub, reg, "gp_irt", "top10_overlap")
-    if len(x):
-        ax.plot(x, y, marker="o", color="#005641", linestyle="--", label="gp-IRT top10")
-    ax.set_xlabel("Chain distance"); ax.set_ylabel("Top-k overlap"); ax.set_title("Top-k rank stability")
+    plot_series(ax, "top5_overlap")
+    ax.set_xlabel("Chain distance"); ax.set_ylabel("Top-5 overlap"); ax.set_title("Top-k rank stability")
     ax.set_ylim(0, 1.02); ax.legend(fontsize=8)
 
-    # Panel 4: pairwise rank-flip rate (ours vs baselines)
     ax = axes[3]
-    plot_methods(ax, "pairwise_flip_rate")
+    plot_series(ax, "pairwise_flip_rate")
     ax.set_xlabel("Chain distance"); ax.set_ylabel("Pairwise flip rate"); ax.set_title("Rank-flip rate")
     ax.legend(fontsize=8)
 
@@ -212,9 +211,8 @@ def make_overview(tidy: pd.DataFrame, scenario: str, out: Path):
     for j, exp in enumerate(exps):
         ax = axes[0][j]
         sub = tidy[(tidy.experiment == exp) & (tidy.scenario == scenario)]
-        reg = _primary_regime(sub)
-        for method, (label, color, marker, ls) in METHODS.items():
-            x, y = _series(sub, reg, method, "mae")
+        for regime, method, label, color, marker, ls in SERIES:
+            x, y = _series_fallback(sub, regime, method, "mae")
             if len(x):
                 ax.plot(x, y, marker=marker, color=color, linestyle=ls, label=label)
         ax.set_title(EXP_INFO.get(exp, exp), fontsize=10)
@@ -289,15 +287,29 @@ def main() -> int:
     for exp, st, n, regimes in status:
         print(f"  {exp:22s} {st:22s} | {regimes}")
     print(f"\nWrote: {args.out}/rebuttal_metrics_tidy.csv, rebuttal_summary.csv, fig_rebuttal_*.pdf")
-    print("\n=== Summary (mean over distance>=1, Scenario 2: old_model_new_data, primary regime) ===")
+    print("\n=== Summary (mean over distance>=1, Scenario 2: old_model_new_data) ===")
     s2 = sm[(sm.scenario == "old_model_new_data")]
-    # show, per experiment, our gp_irt vs the two baselines (whichever regime has data)
+    # Per experiment: our Fixed + Concurrent gp-IRT, then the two baselines.
+    rows_spec = [
+        ("Fixed (ours)", "fixed", "gp_irt"),
+        ("Concurrent (ours)", "concurrent", "gp_irt"),
+        ("Random anchors", "fixed", "simple_random"),
+        ("Top-K discrim.", "fixed", "discriminative_gp_irt"),
+    ]
     for exp in s2.experiment.unique():
         esub = s2[s2.experiment == exp]
-        reg = "fixed" if esub[(esub.regime == "fixed") & (esub.method == "gp_irt")]["mae"].notna().any() else "concurrent"
-        show = esub[esub.regime == reg][["method", "mae", "spearman", "top5", "pairwise_flip"]]
-        print(f"\n  {exp}  (regime={reg}):")
-        print(show.to_string(index=False))
+        print(f"\n  {exp}:")
+        recs = []
+        for label, reg, method in rows_spec:
+            m = esub[(esub.regime == reg) & (esub.method == method)]
+            if m.empty and method != "gp_irt":  # baseline fallback
+                m = esub[(esub.regime == "concurrent") & (esub.method == method)]
+            if m.empty:
+                continue
+            r = m.iloc[0]
+            recs.append({"method": label, "mae": r["mae"], "spearman": r["spearman"],
+                         "top5": r["top5"], "pairwise_flip": r["pairwise_flip"]})
+        print(pd.DataFrame(recs).to_string(index=False))
     return 0
 
 
