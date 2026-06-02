@@ -344,8 +344,16 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--rebuttal-dir", type=Path, default=REBUTTAL_DIR)
     ap.add_argument("--out", type=Path, default=OUT_DIR)
+    ap.add_argument("--no-topk", action="store_true",
+                    help="Drop the Top-K discrimination series from the plots.")
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
+
+    if args.no_topk:
+        # Remove the Top-K discrimination baseline from the plotted series (figures only;
+        # the tidy/summary CSVs still contain it as data).
+        global SERIES
+        SERIES = [s for s in SERIES if s[1] != "discriminative_gp_irt"]
 
     # Group top-level dirs by preset, stripping a trailing _seed<N> so multiple seeds
     # of the same experiment aggregate together.
