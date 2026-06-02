@@ -196,23 +196,36 @@ def _series_fallback(df: pd.DataFrame, regime: str, method: str, col: str):
     return res
 
 
-# The six reviewer-promised metrics, one panel each:
-# (column, y-label, title, optional y-limit, "lower is better"?)
-METRIC_PANELS = [
-    ("mae", "MAE", "Estimation error (MAE)", None, True),
-    ("spearman_rho", "Spearman \u03c1", "Rank correlation", (0, 1.02), False),
-    ("top5_overlap", "Top-5 overlap", "Top-k rank stability", (0, 1.02), False),
-    ("pairwise_flip_rate", "Pairwise flip rate", "Pairwise rank-flip rate", None, True),
-    ("adjacent_gap_mae", "Adjacent gap MAE", "Adjacent-model error", None, True),
-    ("top_model_abs_error", "Top-model |err|", "Top-model error", None, True),
-]
+# Per-metric panel spec: (column, y-label, title, optional y-limit, "lower is better"?)
+PANEL = {
+    "mae":          ("mae", "MAE", "Estimation error (MAE)", None, True),
+    "spearman":     ("spearman_rho", "Spearman \u03c1", "Rank correlation", (0, 1.02), False),
+    "top5":         ("top5_overlap", "Top-5 overlap", "Top-k rank stability", (0, 1.02), False),
+    "pairwise":     ("pairwise_flip_rate", "Pairwise flip rate", "Pairwise rank-flip rate", None, True),
+    "adjacent":     ("adjacent_gap_mae", "Adjacent gap MAE", "Adjacent-model error", None, True),
+    "top_model":    ("top_model_abs_error", "Top-model |err|", "Top-model error", None, True),
+}
+
+# Focused panel groups so each reviewer concern maps to ONE artifact:
+#   headline  -> the two metrics already in the paper (answers "realistic splits / OOD":
+#                does the main result hold?). Used for split + stress figures.
+#   newmetrics-> the four reviewer-requested leaderboard metrics (answers "report
+#                top-k / flip / adjacent / top-model"). Used as the dedicated metrics figure.
+#   full      -> all six (kept for the appendix / internal use).
+PANEL_GROUPS = {
+    "headline":   (["mae", "spearman"], (1, 2), (10.5, 4.2)),
+    "newmetrics": (["top5", "pairwise", "adjacent", "top_model"], (2, 2), (11, 8)),
+    "full":       (["mae", "spearman", "top5", "pairwise", "adjacent", "top_model"], (2, 3), (16, 8)),
+}
 
 
-def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Path):
+def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Path,
+                           group: str = "full"):
     sub = tidy[(tidy.experiment == exp) & (tidy.scenario == scenario)]
     if sub["mae"].notna().sum() == 0 and sub["spearman_rho"].notna().sum() == 0:
         return False
-    fig, axes = plt.subplots(2, 3, figsize=(16, 8))
+    panel_keys, (nr, nc), figsize = PANEL_GROUPS[group]
+    fig, axes = plt.subplots(nr, nc, figsize=figsize, squeeze=False)
     axes = axes.ravel()
     meta = sub.iloc[0]
     title = f"{EXP_INFO.get(exp, exp)}  |  split={meta['split_mode']}"
@@ -228,7 +241,8 @@ def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Pat
                 ax.plot(x, y, marker=marker, color=color, linestyle=ls, label=label)
                 ax.fill_between(x, lo, hi, color=color, alpha=0.12, linewidth=0)
 
-    for ax, (col, ylab, ttl, ylim, lower_better) in zip(axes, METRIC_PANELS):
+    for ax, key in zip(axes, panel_keys):
+        col, ylab, ttl, ylim, lower_better = PANEL[key]
         plot_series(ax, col)
         ax.set_xlabel("Chain distance")
         ax.set_ylabel(ylab + ("  (\u2193)" if lower_better else "  (\u2191)"))
@@ -236,8 +250,10 @@ def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Pat
         if ylim:
             ax.set_ylim(*ylim)
         ax.legend(fontsize=8)
+    for ax in axes[len(panel_keys):]:  # hide unused axes
+        ax.set_visible(False)
 
-    fig.tight_layout(rect=[0, 0, 1, 0.94])
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(out.with_suffix(".pdf")); fig.savefig(out.with_suffix(".png"), dpi=130)
     plt.close(fig)
     return True
@@ -398,11 +414,19 @@ def main() -> int:
     sm.to_csv(args.out / "rebuttal_summary.csv", index=False)
     conclusions = write_conclusions(sm, status, args.out)
 
+    # Per experiment we emit THREE focused variants so each reviewer point maps to one
+    # artifact: *_headline (MAE + Spearman -> "does the main result hold?"), *_metrics
+    # (the four new leaderboard metrics), and *_full (all six, appendix). Scenario 2
+    # (add a new dataset) is the headline; Scenario 1 kept as *_full only.
     for exp in tidy.experiment.unique():
         make_experiment_figure(exp, tidy, "old_model_new_data",
-                               args.out / f"fig_rebuttal_{exp}_s2")
+                               args.out / f"fig_rebuttal_{exp}_headline_s2", group="headline")
+        make_experiment_figure(exp, tidy, "old_model_new_data",
+                               args.out / f"fig_rebuttal_{exp}_metrics_s2", group="newmetrics")
+        make_experiment_figure(exp, tidy, "old_model_new_data",
+                               args.out / f"fig_rebuttal_{exp}_s2", group="full")
         make_experiment_figure(exp, tidy, "new_model_old_data",
-                               args.out / f"fig_rebuttal_{exp}_s1")
+                               args.out / f"fig_rebuttal_{exp}_s1", group="full")
     make_overview(tidy, "old_model_new_data", args.out / "fig_rebuttal_overview_s2")
 
     # console report
