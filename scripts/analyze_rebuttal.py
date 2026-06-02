@@ -184,8 +184,21 @@ def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Pat
     title += f"  |  {SCENARIO_TITLE[scenario]}  (target={meta['target']})"
     fig.suptitle(title, fontsize=13)
 
+    # In the stratified-by-difficulty experiments the calibration line *is* the
+    # stratified-anchor baseline (anchor_method=stratified_difficulty), so relabel
+    # it explicitly instead of the generic "(ours)" so the baseline is identifiable.
+    is_stratified = "strat" in exp
+    series = list(SERIES)
+    if is_stratified:
+        series = [
+            ("fixed",      "gp_irt",                "Stratified-by-diff (Fixed)",      "#009E73", "o", "-"),
+            ("concurrent", "gp_irt",                "Stratified-by-diff (Concurrent)", "#D55E00", "s", "-"),
+            ("fixed",      "simple_random",         "Random anchors",                  "#0072B2", "^", "--"),
+            ("fixed",      "discriminative_gp_irt", "Top-K discrim.",                  "#CC79A7", "D", "-."),
+        ]
+
     def plot_series(ax, col):
-        for regime, method, label, color, marker, ls in SERIES:
+        for regime, method, label, color, marker, ls in series:
             x, y = _series_fallback(sub, regime, method, col)
             if len(x):
                 ax.plot(x, y, marker=marker, color=color, linestyle=ls, label=label)

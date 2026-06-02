@@ -1977,6 +1977,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     config_dict['test_model_split_seed'] = config.seed
     config_dict['split_mode'] = config.split_mode
     config_dict['subject_group'] = config.subject_group
+    config_dict['anchor_method'] = config.anchor_method
     config_dict['candidate_models'] = candidate_models_sorted
     config_dict['train_models'] = train_models_sorted
     config_dict['chain_train_models'] = chain_train_models_sorted
