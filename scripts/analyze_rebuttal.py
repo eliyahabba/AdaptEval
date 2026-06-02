@@ -60,10 +60,12 @@ SERIES = [
     ("fixed",      "discriminative_gp_irt", "Top-K discrim.",      "#CC79A7", "D", "-."),
 ]
 
-# rank-stability metrics emitted inline by the pipeline (per regime/scenario/method)
+# rank-stability metrics emitted inline by the pipeline (per regime/scenario/method).
+# Covers the full reviewer-promised set: top-k stability, pairwise & adjacent flip,
+# adjacent-model error (gap MAE), top-model error, top-1 hit.
 RANK_METRICS = (
     "spearman_rho", "top5_overlap", "top10_overlap",
-    "pairwise_flip_rate", "adjacent_flip_rate",
+    "pairwise_flip_rate", "adjacent_flip_rate", "adjacent_gap_mae",
     "top_model_abs_error", "top1_identified",
 )
 
@@ -157,17 +159,30 @@ def _series_fallback(df: pd.DataFrame, regime: str, method: str, col: str):
     return x, y
 
 
+# The six reviewer-promised metrics, one panel each:
+# (column, y-label, title, optional y-limit, "lower is better"?)
+METRIC_PANELS = [
+    ("mae", "MAE", "Estimation error (MAE)", None, True),
+    ("spearman_rho", "Spearman \u03c1", "Rank correlation", (0, 1.02), False),
+    ("top5_overlap", "Top-5 overlap", "Top-k rank stability", (0, 1.02), False),
+    ("pairwise_flip_rate", "Pairwise flip rate", "Pairwise rank-flip rate", None, True),
+    ("adjacent_gap_mae", "Adjacent gap MAE", "Adjacent-model error", None, True),
+    ("top_model_abs_error", "Top-model |err|", "Top-model error", None, True),
+]
+
+
 def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Path):
     sub = tidy[(tidy.experiment == exp) & (tidy.scenario == scenario)]
     if sub["mae"].notna().sum() == 0 and sub["spearman_rho"].notna().sum() == 0:
         return False
-    fig, axes = plt.subplots(1, 4, figsize=(20, 4.2))
+    fig, axes = plt.subplots(2, 3, figsize=(16, 8))
+    axes = axes.ravel()
     meta = sub.iloc[0]
     title = f"{EXP_INFO.get(exp, exp)}  |  split={meta['split_mode']}"
     if meta["subject_group"] and str(meta["subject_group"]) != "None":
         title += f", group={meta['subject_group']}"
     title += f"  |  {SCENARIO_TITLE[scenario]}  (target={meta['target']})"
-    fig.suptitle(title, fontsize=12)
+    fig.suptitle(title, fontsize=13)
 
     def plot_series(ax, col):
         for regime, method, label, color, marker, ls in SERIES:
@@ -175,27 +190,16 @@ def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Pat
             if len(x):
                 ax.plot(x, y, marker=marker, color=color, linestyle=ls, label=label)
 
-    ax = axes[0]
-    plot_series(ax, "mae")
-    ax.set_xlabel("Chain distance"); ax.set_ylabel("MAE"); ax.set_title("Estimation error")
-    ax.legend(fontsize=8)
+    for ax, (col, ylab, ttl, ylim, lower_better) in zip(axes, METRIC_PANELS):
+        plot_series(ax, col)
+        ax.set_xlabel("Chain distance")
+        ax.set_ylabel(ylab + ("  (\u2193)" if lower_better else "  (\u2191)"))
+        ax.set_title(ttl)
+        if ylim:
+            ax.set_ylim(*ylim)
+        ax.legend(fontsize=8)
 
-    ax = axes[1]
-    plot_series(ax, "spearman_rho")
-    ax.set_xlabel("Chain distance"); ax.set_ylabel("Spearman \u03c1"); ax.set_title("Rank correlation")
-    ax.set_ylim(0, 1.02); ax.legend(fontsize=8)
-
-    ax = axes[2]
-    plot_series(ax, "top5_overlap")
-    ax.set_xlabel("Chain distance"); ax.set_ylabel("Top-5 overlap"); ax.set_title("Top-k rank stability")
-    ax.set_ylim(0, 1.02); ax.legend(fontsize=8)
-
-    ax = axes[3]
-    plot_series(ax, "pairwise_flip_rate")
-    ax.set_xlabel("Chain distance"); ax.set_ylabel("Pairwise flip rate"); ax.set_title("Rank-flip rate")
-    ax.legend(fontsize=8)
-
-    fig.tight_layout(rect=[0, 0, 1, 0.92])
+    fig.tight_layout(rect=[0, 0, 1, 0.94])
     fig.savefig(out.with_suffix(".pdf")); fig.savefig(out.with_suffix(".png"), dpi=130)
     plt.close(fig)
     return True
@@ -271,7 +275,9 @@ def main() -> int:
         spearman=("spearman_rho", "mean"), top5=("top5_overlap", "mean"),
         top10=("top10_overlap", "mean"), pairwise_flip=("pairwise_flip_rate", "mean"),
         adjacent_flip=("adjacent_flip_rate", "mean"),
+        adjacent_gap_mae=("adjacent_gap_mae", "mean"),
         top_model_err=("top_model_abs_error", "mean"),
+        top1_hit=("top1_identified", "mean"),
     ).round(4).reset_index()
     sm.to_csv(args.out / "rebuttal_summary.csv", index=False)
 
