@@ -2,16 +2,16 @@
 
 All numbers are mean over chain steps d>=1, **Scenario 2 (add a new dataset to an existing chain)**, averaged across seeds. Bands in the figures are 95% CIs over seeds. MAE is on the model-score scale (lower is better); Spearman rho is rank correlation (higher is better). "Fixed" = Fixed Parameter Calibration (ours), "Concurrent" = Concurrent Calibration (ours); baselines are Random anchors and Top-K discrimination.
 
-| Experiment | Fixed MAE | Concurrent MAE | Random MAE | Top-K MAE | Fixed rho | Fixed vs Random | Fixed vs Top-K |
-|---|---|---|---|---|---|---|---|
-| LB family-held-out split | 0.018 | 0.018 | 0.038 | 0.170 | 0.957 | +52% | +89% |
-| LB OOD stress (GSM8K held to end) | 0.027 | 0.026 | 0.027 | 0.130 | 0.985 | +3% | +79% |
-| LB stratified-by-difficulty anchors | 0.020 | 0.020 | 0.041 | 0.191 | 0.958 | +50% | +89% |
-| LB time-ordered split | 0.023 | 0.022 | 0.042 | 0.240 | 0.952 | +45% | +90% |
-| MMLU family-held-out split | 0.083 | 0.086 | 0.117 | 0.111 | 0.662 | +29% | +26% |
-| MMLU OOD stress (STEM only) | 0.082 | 0.084 | 0.116 | 0.232 | 0.713 | +30% | +65% |
-| MMLU stratified-by-difficulty anchors | 0.094 | 0.090 | 0.117 | 0.112 | 0.303 | +19% | +16% |
-| MMLU time-ordered split | 0.082 | 0.085 | 0.118 | 0.122 | 0.641 | +30% | +33% |
+| Experiment | Fixed MAE | Concurrent MAE | Random MAE | Top-K MAE | Stratified MAE | Fixed rho | Fixed vs Random | Fixed vs Top-K |
+|---|---|---|---|---|---|---|---|---|
+| LB family-held-out split | 0.018 | 0.018 | 0.038 | 0.170 | n/a | 0.957 | +52% | +89% |
+| LB OOD stress (GSM8K held to end) | 0.027 | 0.026 | 0.027 | 0.130 | n/a | 0.985 | +3% | +79% |
+| LB stratified-by-difficulty anchors | 0.020 | 0.020 | 0.041 | 0.191 | n/a | 0.958 | +50% | +89% |
+| LB time-ordered split | 0.023 | 0.022 | 0.042 | 0.240 | n/a | 0.952 | +45% | +90% |
+| MMLU family-held-out split | 0.083 | 0.086 | 0.117 | 0.111 | n/a | 0.662 | +29% | +26% |
+| MMLU OOD stress (STEM only) | 0.082 | 0.084 | 0.116 | 0.232 | n/a | 0.713 | +30% | +65% |
+| MMLU stratified-by-difficulty anchors | 0.094 | 0.090 | 0.117 | 0.112 | n/a | 0.303 | +19% | +16% |
+| MMLU time-ordered split | 0.082 | 0.085 | 0.118 | 0.122 | n/a | 0.641 | +30% | +33% |
 
 ## Per-experiment takeaways
 

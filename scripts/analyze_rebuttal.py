@@ -64,16 +64,22 @@ METHODS = {
     "gp_irt": ("gp-IRT (ours)", "#009E73", "o", "-"),
     "simple_random": ("Random anchors", "#0072B2", "^", "--"),
     "discriminative_gp_irt": ("Top-K discrim.", "#CC79A7", "D", "-."),
+    # Stratified-by-difficulty is an anchor-selection BASELINE (sibling of random /
+    # top-K), emitted by the pipeline as {regime}_{scenario}_stratified_gp_irt_*.
+    "stratified_gp_irt": ("Stratified-by-diff.", "#E69F00", "v", ":"),
 }
 
-# Series drawn in every figure panel: BOTH of our calibration variants
-# (Fixed + Concurrent) and the two baselines. Tuple = (regime, method, label,
-# color, marker, linestyle). Baselines fall back to the other regime if missing.
+# Series drawn in every figure panel: our calibration (Fixed + Concurrent) and the
+# three anchor-selection baselines (random, top-K, stratified). Tuple = (regime,
+# method, label, color, marker, linestyle). Baselines fall back to the other regime
+# if missing. All baselines share the same calibration as our method, so the lines
+# are directly comparable as anchor-selection strategies.
 SERIES = [
     ("fixed",      "gp_irt",                "Fixed Calib. (ours)", "#009E73", "o", "-"),
     ("concurrent", "gp_irt",                "Concurrent (ours)",   "#D55E00", "s", "-"),
     ("fixed",      "simple_random",         "Random anchors",      "#0072B2", "^", "--"),
     ("fixed",      "discriminative_gp_irt", "Top-K discrim.",      "#CC79A7", "D", "-."),
+    ("fixed",      "stratified_gp_irt",     "Stratified-by-diff.", "#E69F00", "v", ":"),
 ]
 
 # rank-stability metrics emitted inline by the pipeline (per regime/scenario/method).
@@ -95,8 +101,11 @@ EXP_INFO = {
     "mmlu_stem_stress": "MMLU OOD stress (STEM only)",
     "mmlu_math_stress": "MMLU OOD stress (math only)",
     "lb_gsm8k_stress": "LB OOD stress (GSM8K held to end)",
-    "lb_stratified": "LB stratified-by-difficulty anchors",
-    "mmlu_stratified": "MMLU stratified-by-difficulty anchors",
+    # NOTE: these dirs are the OLD ablation (our method's anchors replaced by
+    # stratified), NOT the stratified baseline. The stratified baseline now appears as
+    # its own line (stratified_gp_irt) in every experiment after a re-run.
+    "lb_stratified": "LB ABLATION: ours w/ stratified anchors",
+    "mmlu_stratified": "MMLU ABLATION: ours w/ stratified anchors",
     # legacy single-seed dir names (data/rebuttal)
     "lb_time": "LB time-ordered split", "mmlu_time": "MMLU time-ordered split",
     "lb_family": "LB family-held-out split", "mmlu_family": "MMLU family-held-out split",
@@ -212,21 +221,8 @@ def make_experiment_figure(exp: str, tidy: pd.DataFrame, scenario: str, out: Pat
     title += f"  |  {SCENARIO_TITLE[scenario]}  (target={meta['target']})"
     fig.suptitle(title, fontsize=13)
 
-    # In the stratified-by-difficulty experiments the calibration line *is* the
-    # stratified-anchor baseline (anchor_method=stratified_difficulty), so relabel
-    # it explicitly instead of the generic "(ours)" so the baseline is identifiable.
-    is_stratified = "strat" in exp
-    series = list(SERIES)
-    if is_stratified:
-        series = [
-            ("fixed",      "gp_irt",                "Stratified-by-diff (Fixed)",      "#009E73", "o", "-"),
-            ("concurrent", "gp_irt",                "Stratified-by-diff (Concurrent)", "#D55E00", "s", "-"),
-            ("fixed",      "simple_random",         "Random anchors",                  "#0072B2", "^", "--"),
-            ("fixed",      "discriminative_gp_irt", "Top-K discrim.",                  "#CC79A7", "D", "-."),
-        ]
-
     def plot_series(ax, col):
-        for regime, method, label, color, marker, ls in series:
+        for regime, method, label, color, marker, ls in SERIES:
             x, y, lo, hi = _series_fallback(sub, regime, method, col)
             if len(x):
                 ax.plot(x, y, marker=marker, color=color, linestyle=ls, label=label)
@@ -295,9 +291,9 @@ def write_conclusions(sm: pd.DataFrame, status: list, out: Path) -> str:
         "(higher is better). \"Fixed\" = Fixed Parameter Calibration (ours), \"Concurrent\" = "
         "Concurrent Calibration (ours); baselines are Random anchors and Top-K discrimination.",
         "",
-        "| Experiment | Fixed MAE | Concurrent MAE | Random MAE | Top-K MAE | Fixed rho | "
-        "Fixed vs Random | Fixed vs Top-K |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Experiment | Fixed MAE | Concurrent MAE | Random MAE | Top-K MAE | Stratified MAE | "
+        "Fixed rho | Fixed vs Random | Fixed vs Top-K |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     takeaways = []
     for exp in sorted(s2.experiment.unique()):
@@ -305,12 +301,14 @@ def write_conclusions(sm: pd.DataFrame, status: list, out: Path) -> str:
         cc = val(exp, "concurrent", "gp_irt", "mae")
         rnd = val(exp, "fixed", "simple_random", "mae")
         tk = val(exp, "fixed", "discriminative_gp_irt", "mae")
+        strat = val(exp, "fixed", "stratified_gp_irt", "mae")
         rho = val(exp, "fixed", "gp_irt", "spearman")
         vs_rnd = f"{(rnd - fx) / rnd * 100:+.0f}%" if rnd and not np.isnan(rnd) and not np.isnan(fx) else "-"
         vs_tk = f"{(tk - fx) / tk * 100:+.0f}%" if tk and not np.isnan(tk) and not np.isnan(fx) else "-"
+        strat_s = f"{strat:.3f}" if not np.isnan(strat) else "n/a"
         label = EXP_INFO.get(exp, exp)
         lines.append(
-            f"| {label} | {fx:.3f} | {cc:.3f} | {rnd:.3f} | {tk:.3f} | {rho:.3f} | "
+            f"| {label} | {fx:.3f} | {cc:.3f} | {rnd:.3f} | {tk:.3f} | {strat_s} | {rho:.3f} | "
             f"{vs_rnd} | {vs_tk} |")
         if not np.isnan(fx) and not np.isnan(rnd):
             better = "lower" if fx < rnd else "higher"
@@ -412,6 +410,7 @@ def main() -> int:
         ("Concurrent (ours)", "concurrent", "gp_irt"),
         ("Random anchors", "fixed", "simple_random"),
         ("Top-K discrim.", "fixed", "discriminative_gp_irt"),
+        ("Stratified-by-diff.", "fixed", "stratified_gp_irt"),
     ]
     for exp in s2.experiment.unique():
         esub = s2[s2.experiment == exp]

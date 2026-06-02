@@ -208,16 +208,23 @@ presets:
     target_dataset: GSM8K
 
   # --- Stratified-by-difficulty anchor baseline ---
-  lb_stratified:
-    description: "LB, anchors stratified by item difficulty (instead of random/clustering)"
+  # NOTE: stratified-by-difficulty is now computed as a first-class BASELINE inside
+  # every run (run_stratified_baseline_validation), alongside the random and Top-K
+  # baselines and under the SAME calibration as our method. It therefore appears as
+  # its own `stratified_*` columns in ANY experiment. The presets below are kept ONLY
+  # for the (different) ablation where our main method's anchors are *replaced* by
+  # stratified selection (anchor_method=stratified_difficulty); they are NOT the
+  # baseline comparison and should not be used to evaluate stratified-vs-ours.
+  lb_stratified_ablation:
+    description: "ABLATION: our method using stratified anchors (NOT the baseline)"
     data_source_mode: lb
     n_base: 1
     max_chain: 5
     n_anchors: 100
     anchor_method: stratified_difficulty
 
-  mmlu_stratified:
-    description: "MMLU, anchors stratified by item difficulty"
+  mmlu_stratified_ablation:
+    description: "ABLATION: our method using stratified anchors (NOT the baseline)"
     data_source_mode: mmlu_fields
     n_base: 8
     max_chain: 10
