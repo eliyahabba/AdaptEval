@@ -74,6 +74,7 @@ from src.experiments.equating.cross_dataset_equating import (
     run_random_simple_baseline,
     run_discriminative_baseline_validation,
     run_stratified_baseline_validation,
+    run_regression_baseline_validation,
 )
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import train_item_parameters
@@ -930,6 +931,21 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             return_per_model=True,
         )
 
+    # Regression (non-IRT) baseline for Validation 1 (New Model + New Data): predict the
+    # held-out model's target accuracy from its old-dataset scores (no IRT, no anchors).
+    regression_baseline_results = {}
+    regression_baseline_per_model_df = pd.DataFrame()
+    if (task.distance >= 1 and base_chain_test_df is not None and len(base_chain_test_df) > 0
+            and 'dataset' in final_df.columns):
+        regression_baseline_results, regression_baseline_per_model_df = run_regression_baseline_validation(
+            target_name=task.target_name,
+            eval_target_df=target_test_df,
+            eval_features_df=base_chain_test_df,
+            ref_target_df=(target_all_train_df if target_all_train_df is not None and len(target_all_train_df) > 0 else target_train_df),
+            ref_features_df=final_df[final_df['dataset'] != task.target_name],
+            return_per_model=True,
+        )
+
     # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
     # SKIP for distance=0 (Base only - no target dataset)
@@ -1032,6 +1048,22 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 return_per_model=True,
             )
         )
+
+    # Regression (non-IRT) baseline for Validation 2 (Old Model + New Data). Eval models
+    # are reference models, so the function uses leave-one-out refits internally.
+    regression_baseline_old_model = {}
+    regression_baseline_old_model_per_model_df = pd.DataFrame()
+    if (task.distance >= 1 and target_train_df is not None and len(target_train_df) > 0
+            and 'dataset' in final_df.columns):
+        _reg_ref_feat = final_df[final_df['dataset'] != task.target_name]
+        regression_baseline_old_model, regression_baseline_old_model_per_model_df = run_regression_baseline_validation(
+            target_name=task.target_name,
+            eval_target_df=target_train_df,
+            eval_features_df=_reg_ref_feat,
+            ref_target_df=(target_all_train_df if target_all_train_df is not None and len(target_all_train_df) > 0 else target_train_df),
+            ref_features_df=_reg_ref_feat,
+            return_per_model=True,
+        )
     
     # ==========================================================================
     # Discriminative Baselines for Validation 2b: All Train Models on New Data
@@ -1066,6 +1098,21 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             A_matrix=A_matrix,
             B_matrix=B_matrix,
             precomputed_thetas=None,
+            return_per_model=True,
+        )
+
+    # Regression (non-IRT) baseline for Validation 2b (All Train Models on Target).
+    regression_baseline_all_train = {}
+    regression_baseline_all_train_per_model_df = pd.DataFrame()
+    if (target_all_train_df is not None and len(target_all_train_df) > 0
+            and 'dataset' in final_df.columns):
+        _reg_ref_feat_at = final_df[final_df['dataset'] != task.target_name]
+        regression_baseline_all_train, regression_baseline_all_train_per_model_df = run_regression_baseline_validation(
+            target_name=task.target_name,
+            eval_target_df=target_all_train_df,
+            eval_features_df=_reg_ref_feat_at,
+            ref_target_df=target_all_train_df,
+            ref_features_df=_reg_ref_feat_at,
             return_per_model=True,
         )
 
@@ -1655,6 +1702,15 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     for key, val in stratified_baseline_old_model.items():
         result[f'old_model_new_data_{key}'] = val
 
+    # Add Regression (non-IRT) baseline (keys include regression_*; same namespacing as
+    # the other baselines so it gets fixed_/concurrent_ prefixes in the regime expansion).
+    for key, val in regression_baseline_results.items():
+        result[key] = val
+    for key, val in regression_baseline_all_train.items():
+        result[f'all_train_new_data_{key}'] = val
+    for key, val in regression_baseline_old_model.items():
+        result[f'old_model_new_data_{key}'] = val
+
     # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
         result[key] = val
@@ -1720,6 +1776,9 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     add_baseline_rank_metrics(stratified_baseline_all_train_per_model_df, 'all_train_new_data')
     add_baseline_rank_metrics(stratified_baseline_old_model_per_model_df, 'old_model_new_data')
     add_baseline_rank_metrics(stratified_baseline_new_model_old_data_per_model_df, 'new_model_old_data')
+    add_baseline_rank_metrics(regression_baseline_per_model_df, '')
+    add_baseline_rank_metrics(regression_baseline_all_train_per_model_df, 'all_train_new_data')
+    add_baseline_rank_metrics(regression_baseline_old_model_per_model_df, 'old_model_new_data')
 
     # Add comparison results if they exist
     if validation_comparison_results:
@@ -1832,6 +1891,9 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     save_per_model_df(stratified_baseline_all_train_per_model_df, 'stratified_irt_all_train')
     save_per_model_df(stratified_baseline_new_model_old_data_per_model_df, 'stratified_irt_new_model_old_data')
     save_per_model_df(stratified_baseline_old_model_per_model_df, 'stratified_irt_old_model')
+    save_per_model_df(regression_baseline_per_model_df, 'regression')
+    save_per_model_df(regression_baseline_all_train_per_model_df, 'regression_all_train')
+    save_per_model_df(regression_baseline_old_model_per_model_df, 'regression_old_model')
 
     save_per_model_df(random_baseline_per_model_df, 'random_irt')
     save_per_model_df(random_simple_per_model_df, 'random_simple')

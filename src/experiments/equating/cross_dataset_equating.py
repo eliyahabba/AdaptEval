@@ -2239,6 +2239,159 @@ def run_stratified_baseline_validation(
     return output
 
 
+def run_regression_baseline_validation(
+    target_name: str,
+    eval_target_df: pd.DataFrame,
+    eval_features_df: pd.DataFrame,
+    ref_target_df: pd.DataFrame,
+    ref_features_df: pd.DataFrame,
+    alpha: float = 1.0,
+    return_per_model: bool = False,
+) -> dict | tuple[dict, pd.DataFrame]:
+    """Non-IRT regression baseline over the model x benchmark score matrix.
+
+    A direct test of whether the IRT layer earns its complexity (Reviewers D6td/QJcd):
+    predict each model's *mean accuracy on the target dataset* from its mean accuracy on
+    the previously-integrated (base+chain) datasets, with Ridge regression fit on the
+    reference models. It uses NO items from the target dataset (zero anchor budget) and
+    NO IRT. Because it ignores anchor budget, it is a flat reference line vs the
+    anchor-budget axis, not anchor-matched to gp-IRT; it varies across chain distance
+    only because the set of observed old datasets (features) grows.
+
+    Leakage-safe by construction: an eval model that is also a reference model is
+    predicted by a Ridge refit that *excludes* that model (leave-one-out); held-out eval
+    models (the time-ordered / family / new-model test set) use a single fit on all
+    reference rows.
+
+    Args:
+        target_name: dataset being predicted.
+        eval_target_df: responses on the TARGET dataset for the models we score
+            (defines eval models + true target accuracy).
+        eval_features_df: responses on the OLD (base+chain) datasets for those eval
+            models (regression features).
+        ref_target_df: responses on the TARGET dataset for the reference models
+            (regression labels).
+        ref_features_df: responses on the OLD datasets for the reference models
+            (regression features for training). Only fully-observed reference rows are
+            used for training.
+        alpha: Ridge regularization strength.
+        return_per_model: also return a per-model DataFrame (for rank metrics).
+
+    Emits ``regression_error_mean`` (and a per-model frame carrying
+    ``regression_prediction_mean`` / ``regression_true_performance_mean``) so the shared
+    baseline rank-metric machinery treats it exactly like random / top-K / stratified.
+    """
+    empty = (pd.DataFrame())
+
+    def _score_col(df):
+        if df is None or len(df) == 0:
+            return None
+        return 'correct' if 'correct' in df.columns else (
+            'normalized_score' if 'normalized_score' in df.columns else None)
+
+    def _per_dataset_acc(df):
+        """model x dataset mean-accuracy matrix (rows=model, cols=dataset)."""
+        sc = _score_col(df)
+        if sc is None or 'dataset' not in df.columns:
+            return None
+        return df.groupby(['model_name', 'dataset'])[sc].mean().unstack()
+
+    def _target_acc(df):
+        sc = _score_col(df)
+        if sc is None:
+            return None
+        return df.groupby('model_name')[sc].mean()
+
+    ref_feat = _per_dataset_acc(ref_features_df)
+    eval_feat = _per_dataset_acc(eval_features_df)
+    ref_label = _target_acc(ref_target_df)
+    eval_truth = _target_acc(eval_target_df)
+    if ref_feat is None or eval_feat is None or ref_label is None or eval_truth is None:
+        return ({}, empty) if return_per_model else {}
+
+    # Old-dataset feature columns shared between reference and eval (exclude the target).
+    old_datasets = sorted(
+        (set(ref_feat.columns) & set(eval_feat.columns)) - {target_name}
+    )
+    if len(old_datasets) < 1:
+        print(f"      Regression baseline: no shared old-dataset features for '{target_name}', skipping")
+        return ({}, empty) if return_per_model else {}
+
+    ref_feat = ref_feat[old_datasets]
+    eval_feat = eval_feat[old_datasets]
+
+    # Train only on fully-observed reference rows (avoids imputing the training set):
+    # at distance 1 this is every reference model; at deeper chains it is the
+    # chain-train models that actually have the chain datasets.
+    X_ref_df = ref_feat.dropna()
+    common_ref = X_ref_df.index.intersection(ref_label.dropna().index)
+    X_ref_df = X_ref_df.loc[common_ref]
+    if len(X_ref_df) < 5:
+        print(f"      Regression baseline: too few complete reference rows ({len(X_ref_df)}), skipping")
+        return ({}, empty) if return_per_model else {}
+
+    X_ref = X_ref_df.to_numpy(dtype=float)
+    y_ref = ref_label.loc[common_ref].to_numpy(dtype=float)
+    ref_index = list(X_ref_df.index)
+
+    # Column means (from the reference rows) guard any missing eval features.
+    col_means = np.nanmean(X_ref, axis=0)
+
+    try:
+        from sklearn.linear_model import Ridge
+    except Exception as e:  # pragma: no cover - sklearn is a hard dependency
+        print(f"      Regression baseline: sklearn unavailable ({e}), skipping")
+        return ({}, empty) if return_per_model else {}
+
+    full_model = Ridge(alpha=alpha).fit(X_ref, y_ref)
+
+    eval_models = [m for m in eval_truth.dropna().index if m in eval_feat.index]
+    per_model_rows = []
+    errors = []
+    for m in eval_models:
+        x = eval_feat.loc[m].to_numpy(dtype=float)
+        nan_mask = np.isnan(x)
+        if nan_mask.all():
+            continue
+        if nan_mask.any():
+            x = np.where(nan_mask, col_means, x)
+        # Leave-one-out refit when the eval model is part of the training rows.
+        if m in ref_index:
+            keep = [i for i, rm in enumerate(ref_index) if rm != m]
+            if len(keep) < 5:
+                continue
+            model = Ridge(alpha=alpha).fit(X_ref[keep], y_ref[keep])
+        else:
+            model = full_model
+        pred = float(np.clip(model.predict(x.reshape(1, -1))[0], 0.0, 1.0))
+        true = float(eval_truth.loc[m])
+        err = abs(pred - true)
+        errors.append(err)
+        per_model_rows.append({
+            'model_name': m,
+            'regression_prediction_mean': pred,
+            'regression_true_performance_mean': true,
+            'regression_error_mean': err,
+        })
+
+    if not errors:
+        return ({}, empty) if return_per_model else {}
+
+    output = {
+        'regression_error_mean': float(np.mean(errors)),
+        'regression_error_std': float(np.std(errors)),
+        'regression_n_features': len(old_datasets),
+        'regression_n_ref': len(X_ref_df),
+        'regression_n_eval': len(errors),
+    }
+    print(f"      Regression baseline ({len(old_datasets)} feat, {len(X_ref_df)} ref): "
+          f"error={output['regression_error_mean']:.4f}")
+
+    if return_per_model:
+        return output, pd.DataFrame(per_model_rows)
+    return output
+
+
 def run_random_simple_baseline(
     test_df: pd.DataFrame,
     target_name: str,

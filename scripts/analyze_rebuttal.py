@@ -67,6 +67,9 @@ METHODS = {
     # Stratified-by-difficulty is an anchor-selection BASELINE (sibling of random /
     # top-K), emitted by the pipeline as {regime}_{scenario}_stratified_gp_irt_*.
     "stratified_gp_irt": ("Stratified-by-diff.", "#E69F00", "v", ":"),
+    # Regression (non-IRT) predictor over the model x benchmark score matrix: predicts
+    # target accuracy from old-dataset scores, no IRT/anchors. Flat reference vs budget.
+    "regression": ("Regression (non-IRT)", "#8c564b", "P", (0, (3, 1, 1, 1))),
 }
 
 # Series drawn in every figure panel: our calibration (Fixed + Concurrent) and the
@@ -80,6 +83,7 @@ SERIES = [
     ("fixed",      "simple_random",         "Random anchors",      "#0072B2", "^", "--"),
     ("fixed",      "discriminative_gp_irt", "Top-K discrim.",      "#CC79A7", "D", "-."),
     ("fixed",      "stratified_gp_irt",     "Stratified-by-diff.", "#E69F00", "v", ":"),
+    ("fixed",      "regression",            "Regression (non-IRT)", "#8c564b", "P", (0, (3, 1, 1, 1))),
 ]
 
 # rank-stability metrics emitted inline by the pipeline (per regime/scenario/method).
