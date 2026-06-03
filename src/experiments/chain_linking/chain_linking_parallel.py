@@ -73,6 +73,7 @@ from src.experiments.equating.cross_dataset_equating import (
     run_random_baseline_validation,
     run_random_simple_baseline,
     run_discriminative_baseline_validation,
+    run_stratified_baseline_validation,
 )
 from llm_eval.selection.tinyBenchmarks.training import TrainingConfig
 from llm_eval.training import train_item_parameters
@@ -913,6 +914,22 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             return_per_model=True,
         )
 
+    # Stratified-by-difficulty anchor baseline for Validation 1 (sibling of discriminative)
+    stratified_baseline_results = {}
+    stratified_baseline_per_model_df = pd.DataFrame()
+    if task.distance >= 1:
+        stratified_baseline_results, stratified_baseline_per_model_df = run_stratified_baseline_validation(
+            test_df=target_test_df,
+            item_params=irt_params,
+            n_anchors=task.n_anchors_per_dataset,
+            target_name=task.target_name,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=None,
+            return_per_model=True,
+        )
+
     # ==========================================================================
     # Random Baselines for Validation 1: New Model + New Data
     # SKIP for distance=0 (Base only - no target dataset)
@@ -997,6 +1014,24 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
                 return_per_model=True,
             )
         )
+
+    # Stratified-by-difficulty anchor baseline for Validation 2 (Old Model + New Data)
+    stratified_baseline_old_model = {}
+    stratified_baseline_old_model_per_model_df = pd.DataFrame()
+    if task.distance >= 1 and target_train_df is not None and len(target_train_df) > 0:
+        stratified_baseline_old_model, stratified_baseline_old_model_per_model_df = (
+            run_stratified_baseline_validation(
+                test_df=target_train_df,
+                item_params=irt_params,
+                n_anchors=task.n_anchors_per_dataset,
+                target_name=task.target_name,
+                train_df=final_df,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                precomputed_thetas=None,
+                return_per_model=True,
+            )
+        )
     
     # ==========================================================================
     # Discriminative Baselines for Validation 2b: All Train Models on New Data
@@ -1015,6 +1050,22 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             A_matrix=A_matrix,
             B_matrix=B_matrix,
             precomputed_thetas=None,  # Keep baseline truly discriminative (theta from top-K anchors)
+            return_per_model=True,
+        )
+
+    # Stratified-by-difficulty anchor baseline for Validation 2b (All Train on Target)
+    stratified_baseline_all_train = {}
+    stratified_baseline_all_train_per_model_df = pd.DataFrame()
+    if target_all_train_df is not None and len(target_all_train_df) > 0:
+        stratified_baseline_all_train, stratified_baseline_all_train_per_model_df = run_stratified_baseline_validation(
+            test_df=target_all_train_df,
+            item_params=irt_params,
+            n_anchors=task.n_anchors_per_dataset,
+            target_name=task.target_name,
+            train_df=final_df,
+            A_matrix=A_matrix,
+            B_matrix=B_matrix,
+            precomputed_thetas=None,
             return_per_model=True,
         )
 
@@ -1092,6 +1143,39 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
             }
     
     discriminative_baseline_new_model_old_data_per_model_df = pd.concat(discriminative_baseline_new_model_old_data_per_model_dfs) if discriminative_baseline_new_model_old_data_per_model_dfs else pd.DataFrame()
+
+    # Stratified-by-difficulty anchor baseline for Validation 3 (New Model + Old Data)
+    stratified_baseline_new_model_old_data = {}
+    stratified_baseline_new_model_old_data_per_model_dfs = []
+    if base_chain_test_df is not None and len(base_chain_test_df) > 0 and precomputed_thetas_base_chain is not None:
+        all_stratified_errors = []
+        for ds_name in base_chain_test_df['dataset'].unique():
+            ds_test_df = base_chain_test_df[base_chain_test_df['dataset'] == ds_name].copy()
+            if len(ds_test_df) == 0:
+                continue
+            ds_strat, ds_strat_per_model = run_stratified_baseline_validation(
+                test_df=ds_test_df,
+                item_params=irt_params,
+                n_anchors=min(task.n_anchors_per_dataset, ds_test_df['question_id'].nunique()),
+                target_name=ds_name,
+                train_df=final_df,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                precomputed_thetas=None,
+                return_per_model=True,
+            )
+            if 'stratified_gp_irt_error_mean' in ds_strat:
+                all_stratified_errors.append(ds_strat['stratified_gp_irt_error_mean'])
+            if len(ds_strat_per_model) > 0:
+                ds_strat_per_model['dataset'] = ds_name
+                stratified_baseline_new_model_old_data_per_model_dfs.append(ds_strat_per_model)
+        if all_stratified_errors:
+            stratified_baseline_new_model_old_data = {
+                'stratified_gp_irt_error_mean': np.mean(all_stratified_errors),
+                'stratified_gp_irt_error_std': np.std(all_stratified_errors),
+                'n_datasets': len(all_stratified_errors),
+            }
+    stratified_baseline_new_model_old_data_per_model_df = pd.concat(stratified_baseline_new_model_old_data_per_model_dfs) if stratified_baseline_new_model_old_data_per_model_dfs else pd.DataFrame()
 
     # ==========================================================================
     # Random Baselines for Validation 3: New Model + Old Data
@@ -1561,6 +1645,16 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     for key, val in discriminative_baseline_old_model.items():
         result[f'old_model_new_data_{key}'] = val
 
+    # Add Stratified-by-difficulty baselines (keys include stratified_*; same namespacing)
+    for key, val in stratified_baseline_results.items():
+        result[key] = val
+    for key, val in stratified_baseline_all_train.items():
+        result[f'all_train_new_data_{key}'] = val
+    for key, val in stratified_baseline_new_model_old_data.items():
+        result[f'new_model_old_data_{key}'] = val
+    for key, val in stratified_baseline_old_model.items():
+        result[f'old_model_new_data_{key}'] = val
+
     # Add Random baselines for Validation 1 (New Model + New Data) - backward compatible
     for key, val in random_baseline_results.items():
         result[key] = val
@@ -1622,6 +1716,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     add_baseline_rank_metrics(discriminative_baseline_new_model_old_data_per_model_df, 'new_model_old_data')
     add_baseline_rank_metrics(random_baseline_new_model_old_data_per_model_df, 'new_model_old_data')
     add_baseline_rank_metrics(random_simple_new_model_old_data_per_model_df, 'new_model_old_data')
+    add_baseline_rank_metrics(stratified_baseline_per_model_df, '')
+    add_baseline_rank_metrics(stratified_baseline_all_train_per_model_df, 'all_train_new_data')
+    add_baseline_rank_metrics(stratified_baseline_old_model_per_model_df, 'old_model_new_data')
+    add_baseline_rank_metrics(stratified_baseline_new_model_old_data_per_model_df, 'new_model_old_data')
 
     # Add comparison results if they exist
     if validation_comparison_results:
@@ -1730,6 +1828,10 @@ def run_scenario_task(task: ScenarioTask, gpu_id: int | None = None) -> dict:
     save_per_model_df(discriminative_baseline_all_train_per_model_df, 'discriminative_irt_all_train')
     save_per_model_df(discriminative_baseline_new_model_old_data_per_model_df, 'discriminative_irt_new_model_old_data')
     save_per_model_df(discriminative_baseline_old_model_per_model_df, 'discriminative_irt_old_model')
+    save_per_model_df(stratified_baseline_per_model_df, 'stratified_irt')
+    save_per_model_df(stratified_baseline_all_train_per_model_df, 'stratified_irt_all_train')
+    save_per_model_df(stratified_baseline_new_model_old_data_per_model_df, 'stratified_irt_new_model_old_data')
+    save_per_model_df(stratified_baseline_old_model_per_model_df, 'stratified_irt_old_model')
 
     save_per_model_df(random_baseline_per_model_df, 'random_irt')
     save_per_model_df(random_simple_per_model_df, 'random_simple')
@@ -1977,6 +2079,7 @@ def run_chain_linking_parallel(config: ParallelChainConfig):
     config_dict['test_model_split_seed'] = config.seed
     config_dict['split_mode'] = config.split_mode
     config_dict['subject_group'] = config.subject_group
+    config_dict['anchor_method'] = config.anchor_method
     config_dict['candidate_models'] = candidate_models_sorted
     config_dict['train_models'] = train_models_sorted
     config_dict['chain_train_models'] = chain_train_models_sorted

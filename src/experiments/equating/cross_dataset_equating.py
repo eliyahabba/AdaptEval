@@ -2113,6 +2113,132 @@ def run_discriminative_baseline_validation(
     return output
 
 
+def run_stratified_baseline_validation(
+    test_df: pd.DataFrame,
+    item_params: pd.DataFrame,
+    n_anchors: int,
+    target_name: str,
+    train_df: pd.DataFrame,
+    A_matrix: np.ndarray | None = None,
+    B_matrix: np.ndarray | None = None,
+    precomputed_thetas: dict[str, float] | None = None,
+    return_per_model: bool = False,
+) -> dict | tuple[dict, pd.DataFrame]:
+    """Stratified-by-difficulty anchor baseline.
+
+    A sibling of ``run_random_baseline_validation`` /
+    ``run_discriminative_baseline_validation``: it is an *anchor-selection* baseline
+    run under the SAME calibration pipeline as our method. Anchors are sampled evenly
+    across the item-difficulty spectrum (difficulty proxy = mean raw accuracy on the
+    reference/train models, falling back to the IRT difficulty column). Emits
+    ``stratified_*`` keys so it sits alongside ``random_*`` and ``discriminative_*``.
+    """
+    target_questions = [q for q in item_params.index if q.startswith(f"{target_name}:")]
+    if len(target_questions) < n_anchors:
+        print(f"      Warning: Only {len(target_questions)} questions available, using all")
+        n_anchors = len(target_questions)
+    if len(target_questions) < 5:
+        print(f"      Warning: Too few questions ({len(target_questions)}) for stratified baseline, skipping")
+        return ({}, pd.DataFrame()) if return_per_model else {}
+
+    # Difficulty signal: mean accuracy on reference models (lower acc = harder), with a
+    # fallback to the IRT difficulty column. Matches the select_anchors implementation.
+    ds_train = train_df[train_df.get('dataset') == target_name] if 'dataset' in train_df.columns else train_df
+    difficulty = None
+    if 'normalized_score' in getattr(ds_train, 'columns', []) and len(ds_train) > 0:
+        acc = ds_train.groupby('question_id')['normalized_score'].mean()
+        acc.index = [f"{target_name}:{q}" if not str(q).startswith(f"{target_name}:") else str(q)
+                     for q in acc.index]
+        difficulty = acc[acc.index.isin(target_questions)]
+    if difficulty is None or len(difficulty) == 0:
+        tp = item_params.loc[target_questions]
+        diff_col = next((c for c in ('b', 'd', 'difficulty') if c in tp.columns), None)
+        difficulty = (tp[diff_col] if diff_col
+                      else pd.Series(np.arange(len(tp)), index=tp.index))
+
+    ids_sorted = list(difficulty.sort_values(kind='mergesort').index)
+    n_sel = min(n_anchors, len(ids_sorted))
+    positions = np.linspace(0, len(ids_sorted) - 1, n_sel).round().astype(int)
+    stratified_questions: list[str] = []
+    for p in positions:
+        if ids_sorted[p] not in stratified_questions:
+            stratified_questions.append(ids_sorted[p])
+    if len(stratified_questions) < n_sel:  # backfill rounding collisions
+        for qid in ids_sorted:
+            if qid not in stratified_questions:
+                stratified_questions.append(qid)
+            if len(stratified_questions) >= n_sel:
+                break
+    n_anchors = len(stratified_questions)
+    weights = [1.0 / n_anchors] * n_anchors
+    anchors_by_dataset = {target_name: stratified_questions}
+    anchor_weights_by_dataset = {target_name: weights}
+
+    attrs = getattr(item_params, 'attrs', {})
+    validation_errors = attrs.get('validation_errors', {})
+    best_dim = attrs.get('best_dimension', 5)
+    dims_search = attrs.get('config_dims_search', [5, 10])
+    best_dim_idx = dims_search.index(best_dim) if best_dim in dims_search else 0
+    question_ids_order = list(item_params.index) if hasattr(item_params, 'index') else None
+
+    lambdas_by_dataset = compute_lambda_values(
+        original_matrix_df=train_df,
+        validation_errors=validation_errors,
+        best_dim_idx=best_dim_idx,
+        number_item=n_anchors,
+    )
+
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import sys
+        import io
+        old_stdout = sys.stdout
+        sys.stdout = io.StringIO()
+        try:
+            results = run_estimation_validation(
+                test_matrix=test_df,
+                item_params=item_params,
+                anchors_by_dataset=anchors_by_dataset,
+                lambdas_by_dataset=lambdas_by_dataset,
+                anchor_weights_by_dataset=anchor_weights_by_dataset,
+                precomputed_thetas=precomputed_thetas,
+                A_matrix=A_matrix,
+                B_matrix=B_matrix,
+                question_ids_order=question_ids_order,
+            )
+        finally:
+            sys.stdout = old_stdout
+
+    if not results:
+        return ({}, pd.DataFrame()) if return_per_model else {}
+
+    output = {'n_anchors': n_anchors}
+    for metric in ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error']:
+        vals = [r[metric] for r in results if not np.isnan(r.get(metric, np.nan))]
+        if vals:
+            output[f'stratified_{metric}_mean'] = float(np.mean(vals))
+            output[f'stratified_{metric}_std'] = float(np.std(vals))
+
+    print(f"      Stratified-by-difficulty baseline ({n_anchors} anchors):")
+    print(f"         anchor_error: {output.get('stratified_anchor_error_mean', 'N/A')}")
+    print(f"         gp_irt_error: {output.get('stratified_gp_irt_error_mean', 'N/A')}")
+
+    if return_per_model:
+        per_model_rows = []
+        for r in results:
+            row = {'model_name': r['model_name']}
+            for metric in ['anchor_error', 'irt_error', 'gp_irt_error', 'pirt_error',
+                           'true_performance', 'anchor_prediction', 'gp_irt_prediction']:
+                val = r.get(metric, np.nan)
+                if not np.isnan(val):
+                    row[f'stratified_{metric}_mean'] = float(val)
+            per_model_rows.append(row)
+        return output, (pd.DataFrame(per_model_rows) if per_model_rows else pd.DataFrame())
+
+    return output
+
+
 def run_random_simple_baseline(
     test_df: pd.DataFrame,
     target_name: str,
