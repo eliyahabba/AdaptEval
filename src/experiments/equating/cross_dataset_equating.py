@@ -1179,6 +1179,62 @@ def build_anchor_items_for_fixed_calibration(
     return anchors
 
 
+def _select_stratified_difficulty_items(
+    difficulty: pd.Series,
+    n_anchors: int,
+) -> list:
+    """Select one item from each equal-count difficulty stratum.
+
+    This is the reviewer-requested non-IRT anchor-selection baseline. It uses only
+    item difficulty/accuracy, never the MIRT item representation used by K-means.
+    """
+    clean = difficulty.dropna().sort_values(kind='mergesort')
+    if len(clean) == 0:
+        return []
+
+    n_sel = min(int(n_anchors), len(clean))
+    ordered_ids = np.array(list(clean.index), dtype=object)
+    ordered_vals = clean.to_numpy(dtype=float)
+    positions = np.arange(len(clean))
+
+    selected = []
+    used = set()
+    for stratum in np.array_split(positions, n_sel):
+        if len(stratum) == 0:
+            continue
+        center_value = float(np.median(ordered_vals[stratum]))
+        center_pos = float(np.mean(stratum))
+        candidates = sorted(
+            (
+                (
+                    abs(float(ordered_vals[pos]) - center_value),
+                    abs(float(pos) - center_pos),
+                    str(ordered_ids[pos]),
+                    pos,
+                )
+                for pos in stratum
+                if ordered_ids[pos] not in used
+            ),
+            key=lambda x: (x[0], x[1], x[2]),
+        )
+        if not candidates:
+            continue
+        chosen_pos = candidates[0][3]
+        chosen_id = ordered_ids[chosen_pos]
+        selected.append(chosen_id)
+        used.add(chosen_id)
+
+    if len(selected) < n_sel:
+        for qid in ordered_ids:
+            if qid in used:
+                continue
+            selected.append(qid)
+            used.add(qid)
+            if len(selected) >= n_sel:
+                break
+    return selected
+
+
 def select_anchors_for_dataset(
     item_params: pd.DataFrame,
     n_anchors: int,
@@ -1223,10 +1279,10 @@ def select_anchors_for_dataset(
         print(f"      Warning: {dataset_name} has only {len(ds_items)} items, need at least 5")
         return [], []
     
-    # Stratified-by-difficulty (reviewer baseline): sample anchors evenly across the
-    # item-difficulty spectrum. Mirrors the branch in ``select_anchors`` so the FIXED
-    # calibration path supports this method too (otherwise the fixed regime fails and
-    # only concurrent results are produced). Needs no A/B matrices.
+    # Stratified-by-difficulty (reviewer baseline): split items into explicit
+    # equal-count difficulty strata and choose the item closest to each stratum center.
+    # Mirrors the branch in ``select_anchors`` so the FIXED calibration path supports
+    # this method too. Needs no A/B matrices.
     if method == "stratified_difficulty":
         ds_train_df = train_df[train_df['dataset'] == dataset_name]
         if 'normalized_score' in ds_train_df.columns and len(ds_train_df) > 0:
@@ -1239,20 +1295,7 @@ def select_anchors_for_dataset(
         if len(difficulty) == 0:
             print(f"      Warning: no difficulty signal for {dataset_name}, skipping")
             return [], []
-        ids_sorted = list(difficulty.sort_values(kind='mergesort').index)
-        n_sel = min(n_anchors, len(ids_sorted))
-        positions = np.linspace(0, len(ids_sorted) - 1, n_sel).round().astype(int)
-        seen: list = []
-        for p in positions:
-            if ids_sorted[p] not in seen:
-                seen.append(ids_sorted[p])
-        if len(seen) < n_sel:
-            for qid in ids_sorted:
-                if qid not in seen:
-                    seen.append(qid)
-                if len(seen) >= n_sel:
-                    break
-        anchor_ids = [str(q) for q in seen]
+        anchor_ids = [str(q) for q in _select_stratified_difficulty_items(difficulty, n_anchors)]
         uniform_w = [1.0 / max(len(anchor_ids), 1)] * len(anchor_ids)
         print(f"      ✓ {dataset_name}: {len(anchor_ids)} anchors selected (method={method})")
         return anchor_ids, uniform_w
@@ -1608,10 +1651,9 @@ def select_anchors(
             print(f"      Warning: {dataset} has only {len(ds_items)} items, skipping")
             continue
 
-        # Fast path for stratified_difficulty (reviewer baseline): sample anchors
-        # stratified across item difficulty instead of randomly/by clustering.
-        # Difficulty proxy = raw accuracy on reference models (mean normalized_score
-        # per item); ties broken by IRT difficulty when available, else question id.
+        # Fast path for stratified_difficulty (reviewer baseline): split items into
+        # explicit equal-count difficulty strata and choose the item closest to each
+        # stratum center instead of using MIRT/K-means item representations.
         if clustering_method == "stratified_difficulty":
             ds_train_df = train_df[train_df['dataset'] == dataset]
             if 'normalized_score' in ds_train_df.columns and len(ds_train_df) > 0:
@@ -1625,23 +1667,7 @@ def select_anchors(
             if len(difficulty) == 0:
                 print(f"      Warning: no difficulty signal for {dataset}, skipping")
                 continue
-            # Sort by difficulty (deterministic mergesort) then take evenly spaced
-            # positions so every difficulty stratum is represented.
-            ids_sorted = list(difficulty.sort_values(kind='mergesort').index)
-            n_sel = min(n_anchors, len(ids_sorted))
-            positions = np.linspace(0, len(ids_sorted) - 1, n_sel).round().astype(int)
-            seen = []
-            for p in positions:
-                if ids_sorted[p] not in seen:
-                    seen.append(ids_sorted[p])
-            # Backfill if rounding produced duplicates so we still return n_sel anchors.
-            if len(seen) < n_sel:
-                for qid in ids_sorted:
-                    if qid not in seen:
-                        seen.append(qid)
-                    if len(seen) >= n_sel:
-                        break
-            anchor_ids = [str(q) for q in seen]
+            anchor_ids = [str(q) for q in _select_stratified_difficulty_items(difficulty, n_anchors)]
             anchor_weights = [1.0 / max(len(anchor_ids), 1)] * len(anchor_ids)
             all_anchor_ids.extend(anchor_ids)
             all_anchor_weights.extend(anchor_weights)
@@ -2156,19 +2182,7 @@ def run_stratified_baseline_validation(
         difficulty = (tp[diff_col] if diff_col
                       else pd.Series(np.arange(len(tp)), index=tp.index))
 
-    ids_sorted = list(difficulty.sort_values(kind='mergesort').index)
-    n_sel = min(n_anchors, len(ids_sorted))
-    positions = np.linspace(0, len(ids_sorted) - 1, n_sel).round().astype(int)
-    stratified_questions: list[str] = []
-    for p in positions:
-        if ids_sorted[p] not in stratified_questions:
-            stratified_questions.append(ids_sorted[p])
-    if len(stratified_questions) < n_sel:  # backfill rounding collisions
-        for qid in ids_sorted:
-            if qid not in stratified_questions:
-                stratified_questions.append(qid)
-            if len(stratified_questions) >= n_sel:
-                break
+    stratified_questions = [str(q) for q in _select_stratified_difficulty_items(difficulty, n_anchors)]
     n_anchors = len(stratified_questions)
     weights = [1.0 / n_anchors] * n_anchors
     anchors_by_dataset = {target_name: stratified_questions}
@@ -2236,6 +2250,117 @@ def run_stratified_baseline_validation(
             per_model_rows.append(row)
         return output, (pd.DataFrame(per_model_rows) if per_model_rows else pd.DataFrame())
 
+    return output
+
+
+def run_mean_correction_baseline_validation(
+    target_name: str,
+    eval_target_df: pd.DataFrame,
+    eval_features_df: pd.DataFrame,
+    ref_target_df: pd.DataFrame,
+    ref_features_df: pd.DataFrame,
+    return_per_model: bool = False,
+) -> dict | tuple[dict, pd.DataFrame]:
+    """Per-dataset mean-correction baseline over benchmark-level accuracies.
+
+    For each already-calibrated dataset d, estimate a reference-set offset
+    ``mean_ref(target) - mean_ref(d)``. A model's target accuracy prediction is the
+    average of ``acc_model(d) + offset_d`` over observed old datasets. No item-level
+    structure, no IRT, and no learned regression weights are used.
+    """
+    empty = pd.DataFrame()
+
+    def _score_col(df):
+        if df is None or len(df) == 0:
+            return None
+        return 'correct' if 'correct' in df.columns else (
+            'normalized_score' if 'normalized_score' in df.columns else None)
+
+    def _per_dataset_acc(df):
+        sc = _score_col(df)
+        if sc is None or 'dataset' not in df.columns:
+            return None
+        return df.groupby(['model_name', 'dataset'])[sc].mean().unstack()
+
+    def _target_acc(df):
+        sc = _score_col(df)
+        if sc is None:
+            return None
+        return df.groupby('model_name')[sc].mean()
+
+    ref_feat = _per_dataset_acc(ref_features_df)
+    eval_feat = _per_dataset_acc(eval_features_df)
+    ref_label = _target_acc(ref_target_df)
+    eval_truth = _target_acc(eval_target_df)
+    if ref_feat is None or eval_feat is None or ref_label is None or eval_truth is None:
+        return ({}, empty) if return_per_model else {}
+
+    old_datasets = sorted((set(ref_feat.columns) & set(eval_feat.columns)) - {target_name})
+    if len(old_datasets) < 1:
+        print(f"      Mean correction: no shared old-dataset features for '{target_name}', skipping")
+        return ({}, empty) if return_per_model else {}
+
+    ref_feat = ref_feat[old_datasets]
+    eval_feat = eval_feat[old_datasets]
+    common_ref = ref_feat.dropna(how='all').index.intersection(ref_label.dropna().index)
+    if len(common_ref) < 2:
+        print(f"      Mean correction: too few reference rows ({len(common_ref)}), skipping")
+        return ({}, empty) if return_per_model else {}
+
+    ref_feat = ref_feat.loc[common_ref]
+    ref_label = ref_label.loc[common_ref]
+    eval_models = [m for m in eval_truth.dropna().index if m in eval_feat.index]
+
+    def _predict_one(model_name: str) -> float | None:
+        # Leave the evaluated reference model out of offset estimation when needed.
+        ref_idx = ref_feat.index
+        if model_name in ref_idx:
+            ref_idx = ref_idx[ref_idx != model_name]
+        if len(ref_idx) < 2:
+            return None
+
+        target_mean = ref_label.loc[ref_idx].mean()
+        old_means = ref_feat.loc[ref_idx, old_datasets].mean(axis=0, skipna=True)
+        offsets = target_mean - old_means
+
+        x = eval_feat.loc[model_name, old_datasets]
+        usable = x.dropna().index.intersection(offsets.dropna().index)
+        if len(usable) == 0:
+            return None
+        pred = float((x.loc[usable] + offsets.loc[usable]).mean())
+        return float(np.clip(pred, 0.0, 1.0))
+
+    per_model_rows = []
+    errors = []
+    for model_name in eval_models:
+        pred = _predict_one(model_name)
+        if pred is None:
+            continue
+        true = float(eval_truth.loc[model_name])
+        err = abs(pred - true)
+        errors.append(err)
+        per_model_rows.append({
+            'model_name': model_name,
+            'mean_correction_prediction_mean': pred,
+            'mean_correction_true_performance_mean': true,
+            'mean_correction_error_mean': err,
+        })
+
+    if not errors:
+        return ({}, empty) if return_per_model else {}
+
+    output = {
+        'mean_correction_error_mean': float(np.mean(errors)),
+        'mean_correction_error_std': float(np.std(errors)),
+        'mean_correction_n_features': len(old_datasets),
+        'mean_correction_n_ref': len(common_ref),
+        'mean_correction_n_eval': len(errors),
+    }
+    print(f"      Mean correction baseline ({len(old_datasets)} feat, {len(common_ref)} ref): "
+          f"error={output['mean_correction_error_mean']:.4f}")
+
+    if return_per_model:
+        return output, pd.DataFrame(per_model_rows)
     return output
 
 
